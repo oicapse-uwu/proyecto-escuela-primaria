@@ -1,0 +1,104 @@
+.container {
+  /* Using global container and styles from index.css */
+}
+
+/* Specific overrides for TokenPage */
+.header {
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.title {
+  color: var(--primary-color);
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-sm);
+  font-weight: bold;
+}
+
+.subtitle {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.9;
+}
+
+.description {
+  text-align: center;
+  line-height: 1.6;
+  margin-bottom: 3rem;
+  color: var(--text-secondary);
+}
+
+.token-section {
+  margin-bottom: 3rem;
+  background-color: var(--primary-dark);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.token-header {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  padding: 0.8rem 1.5rem;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.token-content {
+  padding: 1.5rem;
+  color: var(--accent-success);
+  font-family: var(--font-family-code);
+  word-break: break-all;
+  font-size: 1.1rem;
+  background-color: rgba(0,0,0,0.2);
+}
+
+.form-section {
+  /* Inherits card styles globally if class is applied correctly, but let's keep specific override just in case */
+  background-color: var(--bg-card);
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border: 1px solid var(--border-color);
+}
+
+.form-title {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+/* Inputs use global styles by tag name, specific overrides here if needed */
+.input-field {
+  /* Already styled globally by input[type="text"] etc */
+}
+
+.btn-register {
+  /* Extending global .btn and .btn-primary */
+  width: auto;
+  min-width: 150px;
+}
+  border: none;
+  padding: 12px 30px;
+  font-size: 1.1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s;
+  margin-top: 1rem;
+}
+
+.btn-register:hover {
+  background-color: #0f1c4d;
+}
+
+.btn-register:active {
+  transform: scale(0.98);
+}

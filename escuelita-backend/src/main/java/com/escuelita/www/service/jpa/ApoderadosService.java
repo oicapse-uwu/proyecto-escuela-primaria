@@ -17,10 +17,12 @@ public class ApoderadosService implements IApoderadosService{
     public List<Apoderados> buscarTodos(){
         return repoApoderados.findAll();
     }
-    public void guardar(Apoderados apoderado){
+    @Override
+    public Apoderados guardar(Apoderados apoderado){
         repoApoderados.save(apoderado);
     }
-    public void modificar(Apoderados apoderado){
+    @Override
+    public Apoderados modificar(Apoderados apoderado){
         repoApoderados.save(apoderado);
     }
     public Optional<Apoderados> buscarId(Long id){

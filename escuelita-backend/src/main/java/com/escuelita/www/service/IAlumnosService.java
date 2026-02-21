@@ -7,8 +7,8 @@ import com.escuelita.www.entity.Alumnos;
 
 public interface IAlumnosService {
     List<Alumnos> buscarTodos();
-    void guardar(Alumnos alumno);
-    void modificar(Alumnos alumno);
+    Alumnos guardar(Alumnos alumno);
+    Alumnos modificar(Alumnos alumno);
     Optional<Alumnos> buscarId(Long id);
     void eliminar(Long id); 
 }

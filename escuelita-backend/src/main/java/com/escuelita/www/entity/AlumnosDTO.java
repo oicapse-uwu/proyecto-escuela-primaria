@@ -5,17 +5,13 @@ import java.time.LocalDate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -28,11 +24,11 @@ import jakarta.persistence.Table;
     "foto_url", "observaciones_salud", "tipo_ingreso", "estado_alumno", "estado",
     "id_sede", "id_tipo_doc"
 })
-public class Alumnos {
+public class AlumnosDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_alumno;
-
+    
     @Column(length = 20)
     private String numero_documento;
     
@@ -57,21 +53,13 @@ public class Alumnos {
     private String foto_url;
     
     @Column(columnDefinition = "TEXT")
+
     private String observaciones_salud;
     private String tipo_ingreso;
     private String estado_alumno;
-
+    private Long id_sede;
+    private Long id_tipo_doc;
     private Integer estado = 1;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id_sede")
-    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Sedes id_sede;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id_tipo_doc")
-    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private TipoDocumentos id_tipo_doc;
     
     public Long getId_alumno() {
         return id_alumno;
@@ -145,23 +133,23 @@ public class Alumnos {
     public void setEstado_alumno(String estado_alumno) {
         this.estado_alumno = estado_alumno;
     }
+    public Long getId_sede() {
+        return id_sede;
+    }
+    public void setId_sede(Long id_sede) {
+        this.id_sede = id_sede;
+    }
+    public Long getId_tipo_doc() {
+        return id_tipo_doc;
+    }
+    public void setId_tipo_doc(Long id_tipo_doc) {
+        this.id_tipo_doc = id_tipo_doc;
+    }
     public Integer getEstado() {
         return estado;
     }
     public void setEstado(Integer estado) {
         this.estado = estado;
-    }
-    public Sedes getId_sede() {
-        return id_sede;
-    }
-    public void setId_sede(Sedes id_sede) {
-        this.id_sede = id_sede;
-    }
-    public TipoDocumentos getId_tipo_doc() {
-        return id_tipo_doc;
-    }
-    public void setId_tipo_doc(TipoDocumentos id_tipo_doc) {
-        this.id_tipo_doc = id_tipo_doc;
     }
     @Override
     public String toString() {
@@ -169,6 +157,6 @@ public class Alumnos {
                 + ", apellidos=" + apellidos + ", fecha_nacimiento=" + fecha_nacimiento + ", genero=" + genero
                 + ", direccion=" + direccion + ", telefono_contacto=" + telefono_contacto + ", foto_url=" + foto_url
                 + ", observaciones_salud=" + observaciones_salud + ", tipo_ingreso=" + tipo_ingreso + ", estado_alumno="
-                + estado_alumno + ", estado=" + estado + ", id_sede=" + id_sede + ", id_tipo_doc=" + id_tipo_doc + "]";
+                + estado_alumno + ", id_sede=" + id_sede + ", id_tipo_doc=" + id_tipo_doc + ", estado=" + estado + "]";
     }
 }

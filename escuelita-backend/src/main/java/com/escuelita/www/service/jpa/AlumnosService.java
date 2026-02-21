@@ -17,10 +17,12 @@ public class AlumnosService implements IAlumnosService{
     public List<Alumnos> buscarTodos(){
         return repoAlumnos.findAll();
     }
-    public void guardar(Alumnos alumno){
+    @Override
+    public Alumnos guardar(Alumnos alumno){
         repoAlumnos.save(alumno);
     }
-    public void modificar(Alumnos alumno){
+    @Override
+    public Alumnos modificar(Alumnos alumno){
         repoAlumnos.save(alumno);
     }
     public Optional<Alumnos> buscarId(Long id){

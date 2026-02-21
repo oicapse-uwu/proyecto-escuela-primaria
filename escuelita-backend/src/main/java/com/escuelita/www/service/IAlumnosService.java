@@ -1,5 +1,5 @@
 package com.escuelita.www.service;
 
-public class prueba1 {
+public class IAlumnosService {
     
 }

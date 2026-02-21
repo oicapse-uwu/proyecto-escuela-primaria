@@ -15,14 +15,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "documentos_alumnos")
-@SQLDelete(sql = "UPDATE documentos_alumnos SET estado=0 WHERE id_doc_alumno=?")
+@Table(name = "documentos_alumno")
+@SQLDelete(sql = "UPDATE documentos_alumno SET estado=0 WHERE id_doc_alumno=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
     "id_doc_alumno", "ruta_archivo", "fecha_subida", "estado_revision",
     "observaciones", "estado", "id_alumno", "id_requisito"
 })
-public class DocumentosAlumnos {
+public class DocumentosAlumno {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_doc_alumno;

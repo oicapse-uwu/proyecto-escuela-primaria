@@ -11,7 +11,7 @@ public class AsistenciasDTO {
     private String estadoAsistencia;
     private String observaciones;
 
-    // getters y setters
+  
 
     public Long getIdAsistencia() {
         return idAsistencia;

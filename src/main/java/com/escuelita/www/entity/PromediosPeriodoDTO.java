@@ -8,7 +8,7 @@ public class PromediosPeriodoDTO {
     private String promedio;
     private String observacion;
 
-    // getters y setters
+  
 
     public Long getIdPromedio() {
         return idPromedio;

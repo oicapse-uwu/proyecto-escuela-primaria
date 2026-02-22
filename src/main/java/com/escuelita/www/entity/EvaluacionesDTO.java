@@ -12,7 +12,7 @@ public class EvaluacionesDTO {
     private String nombre;
     private Date fecha;
 
-    // getters y setters
+ 
 
     public Long getIdEvaluacion() {
         return idEvaluacion;

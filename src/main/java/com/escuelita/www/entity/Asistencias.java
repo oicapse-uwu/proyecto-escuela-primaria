@@ -40,10 +40,10 @@ public class Asistencias {
 
     private Integer estado = 1;
 
-    // Constructor vacío
+   
     public Asistencias() {}
 
-    // getters y setters
+  
 
     public Long getIdAsistencia() {
         return idAsistencia;

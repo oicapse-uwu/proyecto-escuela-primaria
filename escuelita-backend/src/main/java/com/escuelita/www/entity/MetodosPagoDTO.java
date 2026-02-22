@@ -1,27 +1,11 @@
 package com.escuelita.www.entity;
 
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "metodos_pago")
-@SQLDelete(sql = "UPDATE metodos_pago SET estado=0 WHERE id_metodo=?")
-@SQLRestriction("estado = 1")
-public class MetodosPago {
+public class MetodosPagoDTO {
     
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_metodo")
     private Long idMetodo;
-    
-    @Column(name = "nombre_metodo", nullable = false, length = 50, unique = true)
     private String nombreMetodo;
-    
-    @Column(name = "requiere_comprobante")
-    private Integer requiereComprobante = 1;
-    
-    private Integer estado = 1;
+    private Integer requiereComprobante;
+    private Integer estado;
 
     // Getters y Setters
     public Long getIdMetodo() { return idMetodo; }

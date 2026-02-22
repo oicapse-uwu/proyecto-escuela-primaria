@@ -1,51 +1,41 @@
 package com.escuelita.www.controller;
 
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.escuelita.www.entity.DeudasAlumno;
+import org.springframework.web.bind.annotation.*;
+import com.escuelita.www.entity.DeudasAlumnoDTO;
 import com.escuelita.www.service.IDeudasAlumnoService;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
-@RequestMapping("/restful")
+@RequestMapping("/restful/deudas-alumno")
 public class DeudasAlumnoController {
     
     @Autowired
-    private IDeudasAlumnoService serviceDeudasAlumno;
+    private IDeudasAlumnoService serviceDeudas;
 
-    @GetMapping("/deudas-alumno")
-    public List<DeudasAlumno> buscartodos() {
-        return serviceDeudasAlumno.buscarTodos(); 
+    @GetMapping
+    public List<DeudasAlumnoDTO> buscartodos() {
+        return serviceDeudas.buscarTodos(); 
     }
     
-    @PostMapping("/deudas-alumno")
-    public DeudasAlumno guardar(@RequestBody DeudasAlumno deudaAlumno) {
-        serviceDeudasAlumno.guardar(deudaAlumno);
-        return deudaAlumno;
+    @PostMapping
+    public DeudasAlumnoDTO guardar(@RequestBody DeudasAlumnoDTO dto) {
+        return serviceDeudas.guardar(dto);
     }
     
-    @PutMapping("/deudas-alumno")
-    public DeudasAlumno modificar(@RequestBody DeudasAlumno deudaAlumno) {
-        serviceDeudasAlumno.modificar(deudaAlumno);
-        return deudaAlumno;
+    @PutMapping
+    public DeudasAlumnoDTO modificar(@RequestBody DeudasAlumnoDTO dto) {
+        return serviceDeudas.modificar(dto);
     }
     
-    @GetMapping("/deudas-alumno/{id}")
-    public Optional<DeudasAlumno> buscarId(@PathVariable("id") Long id) {
-        return serviceDeudasAlumno.buscarId(id);
+    @GetMapping("/{id}")
+    public DeudasAlumnoDTO buscarId(@PathVariable("id") Long id) {
+        return serviceDeudas.buscarId(id);
     }
     
-    @DeleteMapping("/deudas-alumno/{id}")
+    @DeleteMapping("/{id}")
     public String eliminar(@PathVariable Long id) {
-        serviceDeudasAlumno.eliminar(id);
-        return "Deuda de alumno eliminada";
+        serviceDeudas.eliminar(id);
+        return "Deuda de alumno eliminada correctamente";
     }   
 }

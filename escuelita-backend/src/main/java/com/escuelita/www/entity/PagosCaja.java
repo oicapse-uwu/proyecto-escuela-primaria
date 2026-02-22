@@ -4,22 +4,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "pagos_caja")
 @SQLDelete(sql = "UPDATE pagos_caja SET estado=0 WHERE id_pago=?")
 @SQLRestriction("estado = 1")
-@JsonPropertyOrder({
-    "idPago", "idMetodo", "idUsuario", "fechaPago", "montoTotalPagado", 
-    "comprobanteNumero", "observacionPago", "estado"
-})
 public class PagosCaja {
     
     @Id
@@ -27,35 +17,45 @@ public class PagosCaja {
     @Column(name = "id_pago")
     private Long idPago;
     
-    @Column(name = "id_metodo")
-    private Long idMetodo;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_metodo", nullable = false)
+    private MetodosPago metodo; 
     
-    @Column(name = "id_usuario")
-    private Long idUsuario;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private Usuarios usuario; 
     
-    @Column(name = "fecha_pago", insertable = false, updatable = false)
-    private LocalDateTime fechaPago; // La BD se encarga de poner la fecha actual (current_timestamp)
+    @Column(name = "fecha_pago")
+    private LocalDateTime fechaPago;
     
-    @Column(name = "monto_total_pagado")
+    @Column(name = "monto_total_pagado", nullable = false)
     private BigDecimal montoTotalPagado;
     
-    @Column(name = "comprobante_numero")
+    @Column(name = "comprobante_numero", length = 50)
     private String comprobanteNumero;
     
-    @Column(name = "observacion_pago")
+    @Column(name = "observacion_pago", columnDefinition = "TEXT")
     private String observacionPago;
     
     private Integer estado = 1;
+
+    // Métodos para asignar la fecha automáticamente antes de guardar si viene vacía
+    @PrePersist
+    public void prePersist() {
+        if (fechaPago == null) {
+            fechaPago = LocalDateTime.now();
+        }
+    }
 
     // Getters y Setters
     public Long getIdPago() { return idPago; }
     public void setIdPago(Long idPago) { this.idPago = idPago; }
 
-    public Long getIdMetodo() { return idMetodo; }
-    public void setIdMetodo(Long idMetodo) { this.idMetodo = idMetodo; }
+    public MetodosPago getMetodo() { return metodo; }
+    public void setMetodo(MetodosPago metodo) { this.metodo = metodo; }
 
-    public Long getIdUsuario() { return idUsuario; }
-    public void setIdUsuario(Long idUsuario) { this.idUsuario = idUsuario; }
+    public Usuarios getUsuario() { return usuario; }
+    public void setUsuario(Usuarios usuario) { this.usuario = usuario; }
 
     public LocalDateTime getFechaPago() { return fechaPago; }
     public void setFechaPago(LocalDateTime fechaPago) { this.fechaPago = fechaPago; }
@@ -71,12 +71,4 @@ public class PagosCaja {
 
     public Integer getEstado() { return estado; }
     public void setEstado(Integer estado) { this.estado = estado; }
-
-    @Override
-    public String toString() {
-        return "PagosCaja [idPago=" + idPago + ", idMetodo=" + idMetodo + ", idUsuario=" + idUsuario + 
-               ", fechaPago=" + fechaPago + ", montoTotalPagado=" + montoTotalPagado + 
-               ", comprobanteNumero=" + comprobanteNumero + ", observacionPago=" + observacionPago + 
-               ", estado=" + estado + "]";
-    }
 }

@@ -1,13 +1,12 @@
 package com.escuelita.www.service;
 
 import java.util.List;
-import java.util.Optional;
-import com.escuelita.www.entity.ConceptosPago;
+import com.escuelita.www.entity.ConceptosPagoDTO;
 
 public interface IConceptosPagoService {
-    List<ConceptosPago> buscarTodos();
-    void guardar(ConceptosPago conceptoPago);
-    void modificar(ConceptosPago conceptoPago);
-    Optional<ConceptosPago> buscarId(Long id);
+    List<ConceptosPagoDTO> buscarTodos();
+    ConceptosPagoDTO guardar(ConceptosPagoDTO dto);
+    ConceptosPagoDTO modificar(ConceptosPagoDTO dto);
+    ConceptosPagoDTO buscarId(Long id);
     void eliminar(Long id);
 }

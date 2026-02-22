@@ -3,21 +3,20 @@ package com.escuelita.www.entity;
 import java.math.BigDecimal;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "conceptos_pago")
 @SQLDelete(sql = "UPDATE conceptos_pago SET estado=0 WHERE id_concepto=?")
 @SQLRestriction("estado = 1")
-@JsonPropertyOrder({
-    "idConcepto", "idInstitucion", "idGrado", "nombreConcepto", "monto", "estadoConcepto", "estado"
-})
 public class ConceptosPago {
     
     @Id
@@ -25,11 +24,13 @@ public class ConceptosPago {
     @Column(name = "id_concepto")
     private Long idConcepto;
     
-    @Column(name = "id_institucion")
-    private Long idInstitucion;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_institucion")
+    private Institucion institucion; 
     
-    @Column(name = "id_grado")
-    private Long idGrado;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_grado")
+    private Grados grado; 
     
     @Column(name = "nombre_concepto")
     private String nombreConcepto;
@@ -46,11 +47,11 @@ public class ConceptosPago {
     public Long getIdConcepto() { return idConcepto; }
     public void setIdConcepto(Long idConcepto) { this.idConcepto = idConcepto; }
 
-    public Long getIdInstitucion() { return idInstitucion; }
-    public void setIdInstitucion(Long idInstitucion) { this.idInstitucion = idInstitucion; }
+    public Institucion getInstitucion() { return institucion; }
+    public void setInstitucion(Institucion institucion) { this.institucion = institucion; }
 
-    public Long getIdGrado() { return idGrado; }
-    public void setIdGrado(Long idGrado) { this.idGrado = idGrado; }
+    public Grados getGrado() { return grado; }
+    public void setGrado(Grados grado) { this.grado = grado; }
 
     public String getNombreConcepto() { return nombreConcepto; }
     public void setNombreConcepto(String nombreConcepto) { this.nombreConcepto = nombreConcepto; }
@@ -63,11 +64,4 @@ public class ConceptosPago {
 
     public Integer getEstado() { return estado; }
     public void setEstado(Integer estado) { this.estado = estado; }
-
-    @Override
-    public String toString() {
-        return "ConceptosPago [idConcepto=" + idConcepto + ", idInstitucion=" + idInstitucion + 
-               ", idGrado=" + idGrado + ", nombreConcepto=" + nombreConcepto + 
-               ", monto=" + monto + ", estadoConcepto=" + estadoConcepto + ", estado=" + estado + "]";
-    }
 }

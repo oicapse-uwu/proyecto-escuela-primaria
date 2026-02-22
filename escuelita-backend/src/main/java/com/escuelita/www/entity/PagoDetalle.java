@@ -3,21 +3,12 @@ package com.escuelita.www.entity;
 import java.math.BigDecimal;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "pago_detalle")
 @SQLDelete(sql = "UPDATE pago_detalle SET estado=0 WHERE id_pago_detalle=?")
 @SQLRestriction("estado = 1")
-@JsonPropertyOrder({
-    "idPagoDetalle", "idPago", "idDeuda", "montoAplicado", "estado"
-})
 public class PagoDetalle {
     
     @Id
@@ -25,13 +16,15 @@ public class PagoDetalle {
     @Column(name = "id_pago_detalle")
     private Long idPagoDetalle;
     
-    @Column(name = "id_pago")
-    private Long idPago;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_pago", nullable = false)
+    private PagosCaja pago;
     
-    @Column(name = "id_deuda")
-    private Long idDeuda;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_deuda", nullable = false)
+    private DeudasAlumno deuda;
     
-    @Column(name = "monto_aplicado")
+    @Column(name = "monto_aplicado", nullable = false)
     private BigDecimal montoAplicado;
     
     private Integer estado = 1;
@@ -40,22 +33,15 @@ public class PagoDetalle {
     public Long getIdPagoDetalle() { return idPagoDetalle; }
     public void setIdPagoDetalle(Long idPagoDetalle) { this.idPagoDetalle = idPagoDetalle; }
 
-    public Long getIdPago() { return idPago; }
-    public void setIdPago(Long idPago) { this.idPago = idPago; }
+    public PagosCaja getPago() { return pago; }
+    public void setPago(PagosCaja pago) { this.pago = pago; }
 
-    public Long getIdDeuda() { return idDeuda; }
-    public void setIdDeuda(Long idDeuda) { this.idDeuda = idDeuda; }
+    public DeudasAlumno getDeuda() { return deuda; }
+    public void setDeuda(DeudasAlumno deuda) { this.deuda = deuda; }
 
     public BigDecimal getMontoAplicado() { return montoAplicado; }
     public void setMontoAplicado(BigDecimal montoAplicado) { this.montoAplicado = montoAplicado; }
 
     public Integer getEstado() { return estado; }
     public void setEstado(Integer estado) { this.estado = estado; }
-
-    @Override
-    public String toString() {
-        return "PagoDetalle [idPagoDetalle=" + idPagoDetalle + ", idPago=" + idPago + 
-               ", idDeuda=" + idDeuda + ", montoAplicado=" + montoAplicado + 
-               ", estado=" + estado + "]";
-    }
 }

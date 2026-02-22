@@ -7,8 +7,8 @@ import com.escuelita.www.entity.Matriculas;
 
 public interface IMatriculasService {
     List<Matriculas> buscarTodos();
-    void guardar(Matriculas matricula);
-    void modificar(Matriculas matricula);
+    Matriculas guardar(Matriculas matricula);
+    Matriculas modificar(Matriculas matricula);
     Optional<Matriculas> buscarId(Long id);
     void eliminar(Long id); 
 }

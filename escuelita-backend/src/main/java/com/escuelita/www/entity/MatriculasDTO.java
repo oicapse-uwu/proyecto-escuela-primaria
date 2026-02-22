@@ -6,17 +6,13 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -29,7 +25,7 @@ import jakarta.persistence.Table;
     "observaciones_matricula", "fecha_retiro", "motivo_retiro",
     "colegio_destino", "estado", "id_alumno", "id_seccion", "id_anio"
 })
-public class Matriculas {
+public class MatriculasDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_matricula;
@@ -57,20 +53,10 @@ public class Matriculas {
     @Column(length = 150)
     private String colegio_destino;
 
-    private Integer estado = 1;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id_alumno")
-    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Long id_alumno;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id_seccion")
-    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Long id_seccion;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id_anio")
-    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Long id_anio;
+    private Integer estado = 1;
 
     public Long getId_matricula() {
         return id_matricula;
@@ -126,12 +112,6 @@ public class Matriculas {
     public void setColegio_destino(String colegio_destino) {
         this.colegio_destino = colegio_destino;
     }
-    public Integer getEstado() {
-        return estado;
-    }
-    public void setEstado(Integer estado) {
-        this.estado = estado;
-    }
     public Long getId_alumno() {
         return id_alumno;
     }
@@ -150,13 +130,19 @@ public class Matriculas {
     public void setId_anio(Long id_anio) {
         this.id_anio = id_anio;
     }
+    public Integer getEstado() {
+        return estado;
+    }
+    public void setEstado(Integer estado) {
+        this.estado = estado;
+    }
     @Override
     public String toString() {
-        return "Matriculas [id_matricula=" + id_matricula + ", codigo_matricula=" + codigo_matricula
+        return "MatriculasDTO [id_matricula=" + id_matricula + ", codigo_matricula=" + codigo_matricula
                 + ", fecha_matricula=" + fecha_matricula + ", situacion_academica_previa=" + situacion_academica_previa
                 + ", estado_matricula=" + estado_matricula + ", observaciones_matricula=" + observaciones_matricula
                 + ", fecha_retiro=" + fecha_retiro + ", motivo_retiro=" + motivo_retiro + ", colegio_destino="
-                + colegio_destino + ", estado=" + estado + ", id_alumno=" + id_alumno + ", id_seccion=" + id_seccion
-                + ", id_anio=" + id_anio + "]";
+                + colegio_destino + ", id_alumno=" + id_alumno + ", id_seccion=" + id_seccion + ", id_anio=" + id_anio
+                + ", estado=" + estado + "]";
     }
 }

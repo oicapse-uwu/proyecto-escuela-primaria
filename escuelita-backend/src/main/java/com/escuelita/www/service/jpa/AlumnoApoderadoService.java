@@ -17,11 +17,11 @@ public class AlumnoApoderadoService implements IAlumnoApoderadoService{
     public List<AlumnoApoderado> buscarTodos(){
         return repoAlumnoApoderado.findAll();
     }
-    public void guardar(AlumnoApoderado alumno){
-        repoAlumnoApoderado.save(alumno);
+    public AlumnoApoderado guardar(AlumnoApoderado alumnoapoderado){
+        repoAlumnoApoderado.save(alumnoapoderado);
     }
-    public void modificar(AlumnoApoderado alumno){
-        repoAlumnoApoderado.save(alumno);
+    public AlumnoApoderado modificar(AlumnoApoderado alumnoapoderado){
+        repoAlumnoApoderado.save(alumnoapoderado);
     }
     public Optional<AlumnoApoderado> buscarId(Long id){
         return repoAlumnoApoderado.findById(id);

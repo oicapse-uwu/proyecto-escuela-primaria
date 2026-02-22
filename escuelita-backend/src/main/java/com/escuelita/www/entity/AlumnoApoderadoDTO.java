@@ -3,17 +3,13 @@ package com.escuelita.www.entity;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -24,7 +20,7 @@ import jakarta.persistence.Table;
     "id_alumno_apod", "parentesco", "es_representante_financiero", 
     "vive_con_estudiante", "estado", "id_alumno", "id_apoderado"
 })
-public class AlumnoApoderado {
+public class AlumnoApoderadoDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_alumno_apod; 
@@ -34,17 +30,10 @@ public class AlumnoApoderado {
     
     private Boolean es_representante_financiero;
     private Boolean vive_con_estudiante;
+    private Long id_alumno;
+    private Long id_apoderado;
     private Integer estado = 1;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id_alumno")
-    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Long id_alumno;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="id_apoderado")
-    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Long id_apoderado;
-    
     public Long getId_alumno_apod() {
         return id_alumno_apod;
     }
@@ -69,12 +58,6 @@ public class AlumnoApoderado {
     public void setVive_con_estudiante(Boolean vive_con_estudiante) {
         this.vive_con_estudiante = vive_con_estudiante;
     }
-    public Integer getEstado() {
-        return estado;
-    }
-    public void setEstado(Integer estado) {
-        this.estado = estado;
-    }
     public Long getId_alumno() {
         return id_alumno;
     }
@@ -87,11 +70,17 @@ public class AlumnoApoderado {
     public void setId_apoderado(Long id_apoderado) {
         this.id_apoderado = id_apoderado;
     }
+    public Integer getEstado() {
+        return estado;
+    }
+    public void setEstado(Integer estado) {
+        this.estado = estado;
+    }
     @Override
     public String toString() {
-        return "AlumnoApoderado [id_alumno_apod=" + id_alumno_apod + ", parentesco=" + parentesco
+        return "AlumnoApoderadoDTO [id_alumno_apod=" + id_alumno_apod + ", parentesco=" + parentesco
                 + ", es_representante_financiero=" + es_representante_financiero + ", vive_con_estudiante="
-                + vive_con_estudiante + ", estado=" + estado + ", id_alumno=" + id_alumno + ", id_apoderado="
-                + id_apoderado + "]";
+                + vive_con_estudiante + ", id_alumno=" + id_alumno + ", id_apoderado=" + id_apoderado + ", estado="
+                + estado + "]";
     }
 }

@@ -19,11 +19,11 @@ public class ApoderadosService implements IApoderadosService{
     }
     @Override
     public Apoderados guardar(Apoderados apoderado){
-        repoApoderados.save(apoderado);
+        return repoApoderados.save(apoderado);
     }
     @Override
     public Apoderados modificar(Apoderados apoderado){
-        repoApoderados.save(apoderado);
+        return repoApoderados.save(apoderado);
     }
     public Optional<Apoderados> buscarId(Long id){
         return repoApoderados.findById(id);

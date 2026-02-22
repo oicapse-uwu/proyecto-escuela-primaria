@@ -73,6 +73,13 @@ public class Alumnos {
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private TipoDocumentos id_tipo_doc;
     
+    //Constructor vacio
+    public Alumnos() {}
+    public Alumnos(Long id_alumno) {
+        this.id_alumno = id_alumno;
+    }
+
+    //Getters y Setters / ToString
     public Long getId_alumno() {
         return id_alumno;
     }

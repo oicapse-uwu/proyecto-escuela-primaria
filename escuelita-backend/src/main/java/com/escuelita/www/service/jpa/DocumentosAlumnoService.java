@@ -18,10 +18,10 @@ public class DocumentosAlumnoService implements IDocumentosAlumnoService{
         return repoDocumentosAlumno.findAll();
     }
     public DocumentosAlumno guardar(DocumentosAlumno documentoalumno){
-        repoDocumentosAlumno.save(documentoalumno);
+        return repoDocumentosAlumno.save(documentoalumno);
     }
     public DocumentosAlumno modificar(DocumentosAlumno documentoalumno){
-        repoDocumentosAlumno.save(documentoalumno);
+        return repoDocumentosAlumno.save(documentoalumno);
     }
     public Optional<DocumentosAlumno> buscarId(Long id){
         return repoDocumentosAlumno.findById(id);

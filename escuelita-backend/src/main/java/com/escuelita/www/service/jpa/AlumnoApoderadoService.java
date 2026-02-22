@@ -18,10 +18,10 @@ public class AlumnoApoderadoService implements IAlumnoApoderadoService{
         return repoAlumnoApoderado.findAll();
     }
     public AlumnoApoderado guardar(AlumnoApoderado alumnoapoderado){
-        repoAlumnoApoderado.save(alumnoapoderado);
+        return repoAlumnoApoderado.save(alumnoapoderado);
     }
     public AlumnoApoderado modificar(AlumnoApoderado alumnoapoderado){
-        repoAlumnoApoderado.save(alumnoapoderado);
+        return repoAlumnoApoderado.save(alumnoapoderado);
     }
     public Optional<AlumnoApoderado> buscarId(Long id){
         return repoAlumnoApoderado.findById(id);

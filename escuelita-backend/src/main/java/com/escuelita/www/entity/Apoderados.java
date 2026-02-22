@@ -60,6 +60,13 @@ public class Apoderados {
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private TiposDocumentos id_tipo_doc;
 
+    //Constructor vacio
+    public Apoderados() {}
+    public Apoderados(Long id_apoderado) {
+        this.id_apoderado = id_apoderado;
+    }
+
+    //Getters y Setters / ToString
     public Long getId_apoderado() {
         return id_apoderado;
     }

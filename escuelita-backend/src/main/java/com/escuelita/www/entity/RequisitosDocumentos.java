@@ -38,42 +38,40 @@ public class RequisitosDocumentos {
     @Column(nullable = false)
     private Integer estado;
 
-    public Long getId_requisito() {
-        return id_requisito;
-    }
-
-    public void setId_requisito(Long id_requisito) {
+    //Constructor vacio
+    public RequisitosDocumentos() {}
+    public RequisitosDocumentos(Long id_requisito) {
         this.id_requisito = id_requisito;
     }
 
+    //Getters y Setters / ToString
+    public Long getId_requisito() {
+        return id_requisito;
+    }
+    public void setId_requisito(Long id_requisito) {
+        this.id_requisito = id_requisito;
+    }
     public String getNombre_documento() {
         return nombre_documento;
     }
-
     public void setNombre_documento(String nombre_documento) {
         this.nombre_documento = nombre_documento;
     }
-
     public String getDescripcion() {
         return descripcion;
     }
-
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-
     public Boolean getEs_obligatorio() {
         return es_obligatorio;
     }
-
     public void setEs_obligatorio(Boolean es_obligatorio) {
         this.es_obligatorio = es_obligatorio;
     }
-
     public Integer getEstado() {
         return estado;
     }
-
     public void setEstado(Integer estado) {
         this.estado = estado;
     }

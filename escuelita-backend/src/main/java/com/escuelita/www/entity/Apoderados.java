@@ -58,7 +58,7 @@ public class Apoderados {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_tipo_doc")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private TiposDocumentos id_tipo_doc;
+    private TipoDocumentos id_tipo_doc;
 
     //Constructor vacio
     public Apoderados() {}
@@ -121,10 +121,10 @@ public class Apoderados {
     public void setId_sede(Sedes id_sede) {
         this.id_sede = id_sede;
     }
-    public TiposDocumentos getId_tipo_doc() {
+    public TipoDocumentos getId_tipo_doc() {
         return id_tipo_doc;
     }
-    public void setId_tipo_doc(TiposDocumentos id_tipo_doc) {
+    public void setId_tipo_doc(TipoDocumentos id_tipo_doc) {
         this.id_tipo_doc = id_tipo_doc;
     }
     @Override

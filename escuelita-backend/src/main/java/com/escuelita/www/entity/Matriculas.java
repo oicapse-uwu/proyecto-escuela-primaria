@@ -62,15 +62,15 @@ public class Matriculas {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_alumno")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Long id_alumno;
+    private Alumnos id_alumno;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_seccion")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Long id_seccion;
+    private Secciones id_seccion;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_anio")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Long id_anio;
+    private AnioEscolar id_anio;
 
     public Long getId_matricula() {
         return id_matricula;
@@ -132,22 +132,22 @@ public class Matriculas {
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-    public Long getId_alumno() {
+    public Alumnos getId_alumno() {
         return id_alumno;
     }
-    public void setId_alumno(Long id_alumno) {
+    public void setId_alumno(Alumnos id_alumno) {
         this.id_alumno = id_alumno;
     }
-    public Long getId_seccion() {
+    public Secciones getId_seccion() {
         return id_seccion;
     }
-    public void setId_seccion(Long id_seccion) {
+    public void setId_seccion(Secciones id_seccion) {
         this.id_seccion = id_seccion;
     }
-    public Long getId_anio() {
+    public AnioEscolar getId_anio() {
         return id_anio;
     }
-    public void setId_anio(Long id_anio) {
+    public void setId_anio(AnioEscolar id_anio) {
         this.id_anio = id_anio;
     }
     @Override

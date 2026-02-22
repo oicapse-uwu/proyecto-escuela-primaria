@@ -39,11 +39,11 @@ public class AlumnoApoderado {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_alumno")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Long id_alumno;
+    private Alumnos id_alumno;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_apoderado")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Long id_apoderado;
+    private Apoderados id_apoderado;
     
     public Long getId_alumno_apod() {
         return id_alumno_apod;
@@ -75,16 +75,16 @@ public class AlumnoApoderado {
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-    public Long getId_alumno() {
+    public Alumnos getId_alumno() {
         return id_alumno;
     }
-    public void setId_alumno(Long id_alumno) {
+    public void setId_alumno(Alumnos id_alumno) {
         this.id_alumno = id_alumno;
     }
-    public Long getId_apoderado() {
+    public Apoderados getId_apoderado() {
         return id_apoderado;
     }
-    public void setId_apoderado(Long id_apoderado) {
+    public void setId_apoderado(Apoderados id_apoderado) {
         this.id_apoderado = id_apoderado;
     }
     @Override

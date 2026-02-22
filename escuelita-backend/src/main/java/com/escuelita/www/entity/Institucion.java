@@ -40,6 +40,12 @@ public class Institucion {
     private String planContratado = "Plan Básico";
     private Integer estado = 1;
 
+    //Constructor vacio
+    public Institucion() {}
+    public Institucion(Long id_institucion) {
+        this.idInstitucion = id_institucion;
+    }
+
     public Long getIdInstitucion() { return idInstitucion; }
     public void setIdInstitucion(Long idInstitucion) { this.idInstitucion = idInstitucion; }
 

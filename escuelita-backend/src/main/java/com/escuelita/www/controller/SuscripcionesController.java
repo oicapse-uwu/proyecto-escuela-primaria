@@ -1,19 +1,37 @@
 package com.escuelita.www.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import com.escuelita.www.entity.*;
-import com.escuelita.www.repository.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+//Entidades
+import com.escuelita.www.entity.CiclosFacturacion;
+import com.escuelita.www.entity.Institucion;
+import com.escuelita.www.entity.EstadosSuscripcion;
+import com.escuelita.www.entity.Planes;
+import com.escuelita.www.entity.Suscripciones;
+import com.escuelita.www.entity.SuscripcionesDTO;
+//Repositorios
+import com.escuelita.www.repository.CiclosFacturacionRepository;
+import com.escuelita.www.repository.EstadosSuscripcionRepository;
+import com.escuelita.www.repository.PlanesRepository;
+import com.escuelita.www.repository.InstitucionRepository;
+//Servicios
 import com.escuelita.www.service.ISuscripcionesService;
-import java.util.*;
 
 @RestController
 @RequestMapping("/restful")
 public class SuscripcionesController {
 
     @Autowired private ISuscripcionesService serviceSuscripciones;
-    @Autowired private InstitucionesRepository repoInst; // Asumiendo que existe
+    @Autowired private InstitucionRepository repoInst; // Asumiendo que existe
     @Autowired private PlanesRepository repoPlanes;
     @Autowired private CiclosFacturacionRepository repoCiclos;
     @Autowired private EstadosSuscripcionRepository repoEstados;
@@ -43,7 +61,7 @@ public class SuscripcionesController {
         s.setIdSuscripcion(dto.getIdSuscripcion());
         mapear(s, dto);
         
-        s.setIdInstitucion(new Instituciones(dto.getIdInstitucion()));
+        s.setIdInstitucion(new Institucion(dto.getIdInstitucion()));
         s.setIdPlan(new Planes(dto.getIdPlan()));
         s.setIdCiclo(new CiclosFacturacion(dto.getIdCiclo()));
         s.setIdEstado(new EstadosSuscripcion(dto.getIdEstado()));

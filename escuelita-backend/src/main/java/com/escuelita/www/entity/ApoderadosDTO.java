@@ -110,7 +110,7 @@ public class ApoderadosDTO {
     }
     @Override
     public String toString() {
-        return "Apoderados [id_apoderado=" + id_apoderado + ", numero_documento=" + numero_documento + ", nombres="
+        return "ApoderadosDTO [id_apoderado=" + id_apoderado + ", numero_documento=" + numero_documento + ", nombres="
                 + nombres + ", apellidos=" + apellidos + ", telefono_principal=" + telefono_principal + ", correo="
                 + correo + ", lugar_trabajo=" + lugar_trabajo + ", id_sede=" + id_sede + ", id_tipo_doc=" + id_tipo_doc
                 + ", estado=" + estado + "]";

@@ -17,10 +17,10 @@ public class DocumentosAlumnoService implements IDocumentosAlumnoService{
     public List<DocumentosAlumno> buscarTodos(){
         return repoDocumentosAlumno.findAll();
     }
-    public void guardar(DocumentosAlumno documentoalumno){
+    public DocumentosAlumno guardar(DocumentosAlumno documentoalumno){
         repoDocumentosAlumno.save(documentoalumno);
     }
-    public void modificar(DocumentosAlumno documentoalumno){
+    public DocumentosAlumno modificar(DocumentosAlumno documentoalumno){
         repoDocumentosAlumno.save(documentoalumno);
     }
     public Optional<DocumentosAlumno> buscarId(Long id){

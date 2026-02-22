@@ -7,8 +7,8 @@ import com.escuelita.www.entity.DocumentosAlumno;
 
 public interface IDocumentosAlumnoService {
     List<DocumentosAlumno> buscarTodos();
-    void guardar(DocumentosAlumno documentosalumno);
-    void modificar(DocumentosAlumno documentosalumno);
+    DocumentosAlumno guardar(DocumentosAlumno documentosalumno);
+    DocumentosAlumno modificar(DocumentosAlumno documentosalumno);
     Optional<DocumentosAlumno> buscarId(Long id);
     void eliminar(Long id); 
 }

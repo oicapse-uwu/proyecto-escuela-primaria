@@ -5,27 +5,22 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.escuelita.www.entity.Alumnos;
-import com.escuelita.www.entity.AlumnosDTO;
-import com.escuelita.www.entity.Apoderados;
-import com.escuelita.www.entity.ApoderadosDTO;
-import com.escuelita.www.entity.Sedes;
-import com.escuelita.www.entity.TiposDocumento;
-
-import com.escuelita.www.repository.SedesRepository;
-import com.escuelita.www.repository.TiposDocumentoRepository;
-
-import com.escuelita.www.service.IApoderadosService;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.escuelita.www.entity.Apoderados;
+import com.escuelita.www.entity.ApoderadosDTO;
+import com.escuelita.www.entity.Sedes;
+import com.escuelita.www.entity.TipoDocumentos;
+import com.escuelita.www.repository.SedesRepository;
+import com.escuelita.www.repository.TipoDocumentosRepository;
+import com.escuelita.www.service.IApoderadosService;
 
 @RestController
 @RequestMapping("/restful")
@@ -35,7 +30,7 @@ public class ApoderadosController {
     private IApoderadosService serviceApoderados;
 
     @Autowired
-    private TiposDocumentoRepository repoTiposDocumento;
+    private TipoDocumentosRepository repoTipoDocumentos;
     @Autowired
     private SedesRepository repoSedes;
 
@@ -56,7 +51,7 @@ public class ApoderadosController {
         Sedes sede = repoSedes
             .findById(dto.getId_sede())
             .orElse(null);
-        TiposDocumentos tipo = repoTiposDocumento
+        TipoDocumentos tipo = repoTipoDocumentos
             .findById(dto.getId_tipo_doc())
             .orElse(null);
         
@@ -80,8 +75,8 @@ public class ApoderadosController {
         apoderado.setCorreo(dto.getCorreo());
         apoderado.setLugar_trabajo(dto.getLugar_trabajo());
 
-        apoderado.setId_sede(new Sede(dto.getId_sede()));
-        apoderado.setId_tipo_doc(new TiposDocumento(dto.getId_tipo_doc()));
+        apoderado.setId_sede(new Sedes(dto.getId_sede()));
+        apoderado.setId_tipo_doc(new TipoDocumentos(dto.getId_tipo_doc()));
 
         return ResponseEntity.ok(serviceApoderados.modificar(apoderado));
     }

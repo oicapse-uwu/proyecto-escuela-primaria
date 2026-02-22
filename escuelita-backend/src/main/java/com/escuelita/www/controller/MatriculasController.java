@@ -65,12 +65,12 @@ public class MatriculasController {
             .findById(dto.getId_seccion())
             .orElse(null);
         AnioEscolar anioEscolar = repoAnioEscolar
-            .findById(dto.getId_anio_escolar())
+            .findById(dto.getId_anio())
             .orElse(null);
         
         matricula.setId_alumno(alumno);
         matricula.setId_seccion(seccion);
-        matricula.setId_anio_escolar(anioEscolar);
+        matricula.setId_anio(anioEscolar);
 
         return ResponseEntity.ok(serviceMatriculas.guardar(matricula));
     }
@@ -93,7 +93,7 @@ public class MatriculasController {
 
         matricula.setId_alumno(new Alumnos(dto.getId_alumno()));
         matricula.setId_seccion(new Secciones(dto.getId_seccion()));
-        matricula.setId_anio_escolar(new AnioEscolar(dto.getId_anio_escolar()));    
+        matricula.setId_anio(new AnioEscolar(dto.getId_anio()));    
         
         return ResponseEntity.ok(serviceMatriculas.modificar(matricula));
     }

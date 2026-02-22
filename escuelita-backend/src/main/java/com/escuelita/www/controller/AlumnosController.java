@@ -5,25 +5,24 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.escuelita.www.entity.Alumnos;
 import com.escuelita.www.entity.AlumnosDTO;
+import com.escuelita.www.entity.TipoDocumentos;
 import com.escuelita.www.entity.Sedes;
-import com.escuelita.www.entity.TiposDocumento;
 
 import com.escuelita.www.repository.SedesRepository;
-import com.escuelita.www.repository.TiposDocumentoRepository;
+import com.escuelita.www.repository.TipoDocumentosRepository;
 
 import com.escuelita.www.service.IAlumnosService;
-
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/restful")
@@ -33,7 +32,7 @@ public class AlumnosController {
     private IAlumnosService serviceAlumnos;
 
     @Autowired
-    private TiposDocumentoRepository repoTiposDocumento;
+    private TipoDocumentosRepository repoTipoDocumentos;
     @Autowired
     private SedesRepository repoSedes;
 
@@ -56,15 +55,15 @@ public class AlumnosController {
         alumno.setTipo_ingreso(dto.getTipo_ingreso());
         alumno.setEstado_alumno(dto.getEstado_alumno());
 
-        Sede sede = repoSedes
+        Sedes sede = repoSedes
             .findById(dto.getId_sede())
             .orElse(null);
-        TiposDocumento tipo = repoTiposDocumento
-            .findById(dto.getId_tipo_documento())
+        TipoDocumentos tipo = repoTipoDocumentos
+            .findById(dto.getId_tipo_doc())
             .orElse(null);
         
         alumno.setId_sede(sede);
-        alumno.setId_tipo_documento(tipo);
+        alumno.setId_tipo_doc(tipo);
 
         return ResponseEntity.ok(serviceAlumnos.guardar(alumno));
     }
@@ -87,8 +86,8 @@ public class AlumnosController {
         alumno.setObservaciones_salud(dto.getObservaciones_salud());
         alumno.setTipo_ingreso(dto.getTipo_ingreso());
 
-        alumno.setId_sede(new Sede(dto.getId_sede()));
-        alumno.setId_tipo_documento(new TiposDocumento(dto.getId_tipo_documento()));
+        alumno.setId_sede(new Sedes(dto.getId_sede()));
+        alumno.setId_tipo_doc(new TipoDocumentos(dto.getId_tipo_doc()));
 
         return ResponseEntity.ok(serviceAlumnos.modificar(alumno));
     }

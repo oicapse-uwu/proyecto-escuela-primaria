@@ -3,14 +3,15 @@ package com.escuelita.www.entity;
 import java.time.LocalTime;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "horarios")
 @SQLDelete(sql = "UPDATE horarios SET estado=0 WHERE id_horario=?")
 @SQLRestriction("estado = 1")
-public class Horarios {
+@JsonPropertyOrder({ "id_horario", "dia_semana", "hora_inicio", "hora_fin", "estado", "id_asignacion", "id_aula" })
+public class HorariosDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,24 +20,9 @@ public class Horarios {
     private String dia_semana;
     private LocalTime hora_inicio;
     private LocalTime hora_fin;
+    private Long id_asignacion;
+    private Long id_aula;
     private Integer estado = 1;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_asignacion")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private AsignacionDocente asignacion;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_aula")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private Aulas aula;
-
-    public Horarios() {
-    }
-
-    public Horarios(Long id_horario) {
-        this.id_horario = id_horario;
-    }
 
     public Long getId_horario() {
         return id_horario;
@@ -70,6 +56,22 @@ public class Horarios {
         this.hora_fin = hora_fin;
     }
 
+    public Long getId_asignacion() {
+        return id_asignacion;
+    }
+
+    public void setId_asignacion(Long id_asignacion) {
+        this.id_asignacion = id_asignacion;
+    }
+
+    public Long getId_aula() {
+        return id_aula;
+    }
+
+    public void setId_aula(Long id_aula) {
+        this.id_aula = id_aula;
+    }
+
     public Integer getEstado() {
         return estado;
     }
@@ -78,25 +80,10 @@ public class Horarios {
         this.estado = estado;
     }
 
-    public AsignacionDocente getAsignacion() {
-        return asignacion;
-    }
-
-    public void setAsignacion(AsignacionDocente asignacion) {
-        this.asignacion = asignacion;
-    }
-
-    public Aulas getAula() {
-        return aula;
-    }
-
-    public void setAula(Aulas aula) {
-        this.aula = aula;
-    }
-
     @Override
     public String toString() {
-        return "Horarios [id_horario=" + id_horario + ", dia_semana=" + dia_semana + ", hora_inicio=" + hora_inicio
-                + ", hora_fin=" + hora_fin + ", estado=" + estado + "]";
+        return "HorariosDTO [id_horario=" + id_horario + ", dia_semana=" + dia_semana + ", hora_inicio=" + hora_inicio
+                + ", hora_fin=" + hora_fin + ", id_asignacion=" + id_asignacion + ", id_aula=" + id_aula + ", estado="
+                + estado + "]";
     }
 }

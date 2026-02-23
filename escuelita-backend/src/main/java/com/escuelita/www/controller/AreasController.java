@@ -2,18 +2,26 @@ package com.escuelita.www.controller;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.escuelita.www.entity.Areas;
+import com.escuelita.www.entity.AreasDTO;
+import com.escuelita.www.entity.Sedes;
+import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.service.IAreasService;
 
 @RestController
-@RequestMapping("/restful")
+@RequestMapping("/primaria_bd_real")
 public class AreasController {
 
     @Autowired
     private IAreasService serviceAreas;
+
+    @Autowired
+    private SedesRepository repoSedes; // Repositorio inyectado para el POST
 
     @GetMapping("/areas")
     public List<Areas> buscartodos() {
@@ -21,15 +29,42 @@ public class AreasController {
     }
 
     @PostMapping("/areas")
-    public Areas guardar(@RequestBody Areas area) {
+    public ResponseEntity<?> guardar(@RequestBody AreasDTO dto) {
+        Areas area = new Areas();
+        area.setNombre_area(dto.getNombre_area());
+        area.setDescripcion(dto.getDescripcion());
+        if (dto.getEstado() != null)
+            area.setEstado(dto.getEstado());
+
+        // Buscando la relación
+        Sedes sede = repoSedes
+                .findById(dto.getId_sede())
+                .orElse(null);
+
+        area.setSede(sede);
+
         serviceAreas.guardar(area);
-        return area;
+        return ResponseEntity.ok(area);
     }
 
     @PutMapping("/areas")
-    public Areas modificar(@RequestBody Areas area) {
+    public ResponseEntity<?> modificar(@RequestBody AreasDTO dto) {
+        if (dto.getId_area() == null) {
+            return ResponseEntity.badRequest()
+                    .body("ID de área es requerido");
+        }
+        Areas area = new Areas();
+        area.setId_area(dto.getId_area());
+        area.setNombre_area(dto.getNombre_area());
+        area.setDescripcion(dto.getDescripcion());
+        if (dto.getEstado() != null)
+            area.setEstado(dto.getEstado());
+
+        // Instanciando la relación con el constructor de ID
+        area.setSede(new Sedes(dto.getId_sede()));
+
         serviceAreas.modificar(area);
-        return area;
+        return ResponseEntity.ok(area);
     }
 
     @GetMapping("/areas/{id}")

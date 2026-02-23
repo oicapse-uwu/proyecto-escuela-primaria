@@ -2,36 +2,70 @@ package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import jakarta.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "sedes")
 @SQLDelete(sql = "UPDATE sedes SET estado=0 WHERE id_sede=?")
 @SQLRestriction("estado = 1")
+@JsonPropertyOrder({
+    "idSede", "nombreSede", "direccion", "distrito", "provincia", 
+    "departamento", "ugel", "telefono", "correoInstitucional", "estado", "idInstitucion"
+})
 public class Sedes {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_sede")
     private Long idSede;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_institucion", nullable = false)
-    private Institucion institucion;
-
+    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
+    private Institucion idInstitucion;
+    
+    @Column(name = "nombre_sede", length = 100)
     private String nombreSede;
+    
+    @Column(length = 255)
     private String direccion;
+    
+    @Column(length = 100)
     private String distrito;
+    
+    @Column(length = 100)
     private String provincia;
+    
+    @Column(length = 100)
     private String departamento;
+    
+    @Column(length = 100)
     private String ugel;
+    
+    @Column(length = 20)
     private String telefono;
+    
+    @Column(name = "correo_institucional", length = 100)
     private String correoInstitucional;
+    
     private Integer estado = 1;
 
     //Constructor vacio
     public Sedes() {}
-    public Sedes(Long id_sede) {
-        this.idSede = id_sede;
+    public Sedes(Long idSede) {
+        this.idSede = idSede;
     }
 
     //Getters y Setters / ToString
@@ -41,11 +75,11 @@ public class Sedes {
     public void setIdSede(Long idSede) {
         this.idSede = idSede;
     }
-    public Institucion getInstitucion() {
-        return institucion;
+    public Institucion getIdInstitucion() {
+        return idInstitucion;
     }
-    public void setInstitucion(Institucion institucion) {
-        this.institucion = institucion;
+    public void setIdInstitucion(Institucion idInstitucion) {
+        this.idInstitucion = idInstitucion;
     }
     public String getNombreSede() {
         return nombreSede;
@@ -100,5 +134,12 @@ public class Sedes {
     }
     public void setEstado(Integer estado) {
         this.estado = estado;
+    }
+    @Override
+    public String toString() {
+        return "Sedes [idSede=" + idSede + ", idInstitucion=" + idInstitucion + ", nombreSede=" + nombreSede
+                + ", direccion=" + direccion + ", distrito=" + distrito + ", provincia=" + provincia
+                + ", departamento=" + departamento + ", ugel=" + ugel + ", telefono=" + telefono
+                + ", correoInstitucional=" + correoInstitucional + ", estado=" + estado + "]";
     }
 }

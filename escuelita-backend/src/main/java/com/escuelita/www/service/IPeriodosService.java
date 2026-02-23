@@ -1,12 +1,14 @@
 package com.escuelita.www.service;
 
 import java.util.List;
-import com.escuelita.www.entity.PeriodosDTO;
+import java.util.Optional;
+
+import com.escuelita.www.entity.Periodos;
 
 public interface IPeriodosService {
-    List<PeriodosDTO> buscarTodos();
-    PeriodosDTO guardar(PeriodosDTO periodoDTO);
-    PeriodosDTO modificar(PeriodosDTO periodoDTO);
-    PeriodosDTO buscarId(Long id);
+    List<Periodos> buscarTodos();
+    Periodos guardar(Periodos periodo);
+    Periodos modificar(Periodos periodo);
+    Optional<Periodos> buscarId(Long id);
     void eliminar(Long id);
 }

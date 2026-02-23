@@ -2,11 +2,13 @@ package com.escuelita.www.service.jpa;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.escuelita.www.entity.DeudasAlumnoDTO;
-import com.escuelita.www.entity.DeudasAlumno;
+
 import com.escuelita.www.entity.ConceptosPago;
+import com.escuelita.www.entity.DeudasAlumno;
+import com.escuelita.www.entity.DeudasAlumnoDTO;
 import com.escuelita.www.entity.Matriculas;
 import com.escuelita.www.repository.DeudasAlumnoRepository;
 import com.escuelita.www.service.IDeudasAlumnoService;
@@ -63,8 +65,7 @@ public class DeudasAlumnoService implements IDeudasAlumnoService {
         
         if (dto.getIdMatricula() != null) {
             Matriculas mat = new Matriculas();
-            // CORRECCIÓN 1: Usamos setId_matricula() en lugar de setIdMatricula()
-            mat.setId_matricula(dto.getIdMatricula()); 
+            mat.setIdMatricula(dto.getIdMatricula()); 
             entidad.setMatricula(mat);
         }
         
@@ -87,8 +88,7 @@ public class DeudasAlumnoService implements IDeudasAlumnoService {
         dto.setFechaPagoTotal(entidad.getFechaPagoTotal());
         
         if (entidad.getMatricula() != null) {
-            // CORRECCIÓN 2: Usamos getId_matricula() en lugar de getIdMatricula()
-            dto.setIdMatricula(entidad.getMatricula().getId_matricula());
+            dto.setIdMatricula(entidad.getMatricula().getIdMatricula());
         }
         if (entidad.getConcepto() != null) {
             dto.setIdConcepto(entidad.getConcepto().getIdConcepto());

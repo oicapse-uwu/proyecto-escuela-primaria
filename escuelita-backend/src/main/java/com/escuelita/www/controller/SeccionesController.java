@@ -1,42 +1,83 @@
 package com.escuelita.www.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.escuelita.www.entity.Grados;
+import com.escuelita.www.entity.Secciones;
 import com.escuelita.www.entity.SeccionesDTO;
+import com.escuelita.www.entity.Sedes;
+import com.escuelita.www.repository.GradosRepository;
+import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.service.ISeccionesService;
 
 @RestController
 @RequestMapping("/restful")
 public class SeccionesController {
-    
-    @Autowired 
+
+    @Autowired
     private ISeccionesService serviceSecciones;
 
+    @Autowired
+    private GradosRepository repoGrados;
+    @Autowired
+    private SedesRepository repoSedes;
+
     @GetMapping("/secciones")
-    public List<SeccionesDTO> buscartodos() {
+    public List<Secciones> buscartodos() {
         return serviceSecciones.buscarTodos(); 
     }
-    
     @PostMapping("/secciones")
-    public SeccionesDTO guardar(@RequestBody SeccionesDTO seccionDTO) {
-        return serviceSecciones.guardar(seccionDTO);
+    public ResponseEntity<?> guardar(@RequestBody SeccionesDTO dto) {
+        Secciones seccion = new Secciones();
+        seccion.setNombreSeccion(dto.getNombreSeccion());
+        seccion.setVacantes(dto.getVacantes());
+
+        Grados grado = repoGrados
+            .findById(dto.getIdGrado())
+            .orElse(null);
+        Sedes sede = repoSedes
+            .findById(dto.getIdSede())
+            .orElse(null);
+        
+        seccion.setIdGrado(grado);
+        seccion.setIdSede(sede);
+
+        return ResponseEntity.ok(serviceSecciones.guardar(seccion));
     }
-    
     @PutMapping("/secciones")
-    public SeccionesDTO modificar(@RequestBody SeccionesDTO seccionDTO) {
-        return serviceSecciones.modificar(seccionDTO);
+    public ResponseEntity<?> modificar(@RequestBody SeccionesDTO dto) {
+        if(dto.getIdSeccion() == null){
+            return ResponseEntity.badRequest()
+                    .body("ID de seccion es requerido");
+        }
+        Secciones seccion = new Secciones();
+        seccion.setIdSeccion(dto.getIdSeccion());
+        seccion.setNombreSeccion(dto.getNombreSeccion());
+        seccion.setVacantes(dto.getVacantes());
+
+        seccion.setIdGrado(new Grados(dto.getIdGrado()));
+        seccion.setIdSede(new Sedes(dto.getIdSede()));
+
+        return ResponseEntity.ok(serviceSecciones.modificar(seccion));
     }
-    
     @GetMapping("/secciones/{id}")
-    public SeccionesDTO buscarId(@PathVariable("id") Long id) {
+    public Optional<Secciones> buscarId(@PathVariable("id") Long id){
         return serviceSecciones.buscarId(id);
     }
-    
     @DeleteMapping("/secciones/{id}")
-    public String eliminar(@PathVariable Long id) {
+    public String eliminar(@PathVariable Long id){
         serviceSecciones.eliminar(id);
         return "Seccion eliminada";
     }   

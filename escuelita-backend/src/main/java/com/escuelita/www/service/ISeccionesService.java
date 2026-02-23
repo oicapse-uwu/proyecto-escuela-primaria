@@ -1,12 +1,14 @@
 package com.escuelita.www.service;
 
 import java.util.List;
-import com.escuelita.www.entity.SeccionesDTO;
+import java.util.Optional;
+
+import com.escuelita.www.entity.Secciones;
 
 public interface ISeccionesService {
-    List<SeccionesDTO> buscarTodos();
-    SeccionesDTO guardar(SeccionesDTO seccionDTO);
-    SeccionesDTO modificar(SeccionesDTO seccionDTO);
-    SeccionesDTO buscarId(Long id);
+    List<Secciones> buscarTodos();
+    Secciones guardar(Secciones seccion);
+    Secciones modificar(Secciones seccion);
+    Optional<Secciones> buscarId(Long id);
     void eliminar(Long id);
 }

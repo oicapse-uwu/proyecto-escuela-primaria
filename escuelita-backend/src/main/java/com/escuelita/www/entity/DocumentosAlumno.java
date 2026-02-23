@@ -55,6 +55,13 @@ public class DocumentosAlumno {
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private RequisitosDocumentos idRequisito;
 
+    //Constructor vacio
+    public DocumentosAlumno() {}
+    public DocumentosAlumno(Long idDocumentoAlumno) {
+        this.idDocumentoAlumno = idDocumentoAlumno;
+    }
+
+    //Getters y Setters / ToString
     public Long getIdDocumentoAlumno() {
         return idDocumentoAlumno;
     }

@@ -21,16 +21,17 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE anio_escolar SET estado=0 WHERE id_anio_escolar=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "id_anio_escolar", "nombre_anio", "activo", "estado", "id_sede"
+    "idAnioEscolar", "nombreAnio", "activo", "estado", "idSede"
 })
 
 public class AnioEscolar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_anio_escolar;
+    @Column(name = "id_anio_escolar")
+    private Long idAnioEscolar;
     
-    @Column(length = 50)
-    private String nombre_anio;
+    @Column(name = "nombre_anio", length = 50)
+    private String nombreAnio;
     
     private Integer activo = 1;
     private Integer estado = 1;
@@ -38,25 +39,25 @@ public class AnioEscolar {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_sede")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Sedes id_sede;
+    private Sedes idSede;
 
     //Constructor vacio
     public AnioEscolar() {}
-    public AnioEscolar(Long id_anio_escolar) {
-        this.id_anio_escolar = id_anio_escolar;
+    public AnioEscolar(Long idAnioEscolar) {
+        this.idAnioEscolar = idAnioEscolar;
     }
 
-    public Long getId_anio_escolar() {
-        return id_anio_escolar;
+    public Long getIdAnioEscolar() {
+        return idAnioEscolar;
     }
-    public void setId_anio_escolar(Long id_anio_escolar) {
-        this.id_anio_escolar = id_anio_escolar;
+    public void setIdAnioEscolar(Long idAnioEscolar) {
+        this.idAnioEscolar = idAnioEscolar;
     }
-    public String getNombre_anio() {
-        return nombre_anio;
+    public String getNombreAnio() {
+        return nombreAnio;
     }
-    public void setNombre_anio(String nombre_anio) {
-        this.nombre_anio = nombre_anio;
+    public void setNombreAnio(String nombreAnio) {
+        this.nombreAnio = nombreAnio;
     }
     public Integer getActivo() {
         return activo;
@@ -70,15 +71,15 @@ public class AnioEscolar {
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-    public Sedes getId_sede() {
-        return id_sede;
+    public Sedes getIdSede() {
+        return idSede;
     }
-    public void setId_sede(Sedes id_sede) {
-        this.id_sede = id_sede;
+    public void setIdSede(Sedes idSede) {
+        this.idSede = idSede;
     }
     @Override
     public String toString() {
-        return "AnioEscolar [id_anio_escolar=" + id_anio_escolar + ", nombre_anio=" + nombre_anio + ", activo=" + activo
-                + ", estado=" + estado + ", id_sede=" + id_sede + "]";
+        return "AnioEscolar [idAnioEscolar=" + idAnioEscolar + ", nombreAnio=" + nombreAnio + ", activo=" + activo
+                + ", estado=" + estado + ", idSede=" + idSede + "]";
     }
 }

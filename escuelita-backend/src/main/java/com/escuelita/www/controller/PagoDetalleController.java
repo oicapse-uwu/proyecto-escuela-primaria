@@ -7,33 +7,33 @@ import com.escuelita.www.entity.PagoDetalleDTO;
 import com.escuelita.www.service.IPagoDetalleService;
 
 @RestController
-@RequestMapping("/restful/pago-detalle")
+@RequestMapping("/restful")
 public class PagoDetalleController {
     
     @Autowired
     private IPagoDetalleService servicePagoDetalle;
 
-    @GetMapping
+    @GetMapping("/pago-detalle")
     public List<PagoDetalleDTO> buscartodos() {
         return servicePagoDetalle.buscarTodos(); 
     }
     
-    @PostMapping
+    @PostMapping("/pago-detalle")
     public PagoDetalleDTO guardar(@RequestBody PagoDetalleDTO dto) {
         return servicePagoDetalle.guardar(dto);
     }
     
-    @PutMapping
+    @PutMapping("/pago-detalle")
     public PagoDetalleDTO modificar(@RequestBody PagoDetalleDTO dto) {
         return servicePagoDetalle.modificar(dto);
     }
     
-    @GetMapping("/{id}")
+    @GetMapping("/pago-detalle/{id}")
     public PagoDetalleDTO buscarId(@PathVariable("id") Long id) {
         return servicePagoDetalle.buscarId(id);
     }
     
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/pago-detalle/{id}")
     public String eliminar(@PathVariable Long id) {
         servicePagoDetalle.eliminar(id);
         return "Detalle de pago eliminado correctamente";

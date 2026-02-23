@@ -7,33 +7,33 @@ import com.escuelita.www.entity.DeudasAlumnoDTO;
 import com.escuelita.www.service.IDeudasAlumnoService;
 
 @RestController
-@RequestMapping("/restful/deudas-alumno")
+@RequestMapping("/restful")
 public class DeudasAlumnoController {
     
     @Autowired
     private IDeudasAlumnoService serviceDeudas;
 
-    @GetMapping
+    @GetMapping("/deudas-alumno")
     public List<DeudasAlumnoDTO> buscartodos() {
         return serviceDeudas.buscarTodos(); 
     }
     
-    @PostMapping
+    @PostMapping("/deudas-alumno")
     public DeudasAlumnoDTO guardar(@RequestBody DeudasAlumnoDTO dto) {
         return serviceDeudas.guardar(dto);
     }
     
-    @PutMapping
+    @PutMapping("/deudas-alumno")
     public DeudasAlumnoDTO modificar(@RequestBody DeudasAlumnoDTO dto) {
         return serviceDeudas.modificar(dto);
     }
     
-    @GetMapping("/{id}")
+    @GetMapping("/deudas-alumno/{id}")
     public DeudasAlumnoDTO buscarId(@PathVariable("id") Long id) {
         return serviceDeudas.buscarId(id);
     }
     
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/deudas-alumno/{id}")
     public String eliminar(@PathVariable Long id) {
         serviceDeudas.eliminar(id);
         return "Deuda de alumno eliminada correctamente";

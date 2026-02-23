@@ -2,52 +2,72 @@ package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import jakarta.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "secciones")
 @SQLDelete(sql = "UPDATE secciones SET estado=0 WHERE id_seccion=?")
 @SQLRestriction("estado = 1")
+@JsonPropertyOrder({
+    "idSeccion", "nombreSeccion", "vacantes", "estado", "idGrado", "idSede"
+})
 public class Secciones {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_seccion")
     private Long idSeccion;
 
-    @ManyToOne
-    @JoinColumn(name = "id_grado", nullable = false)
-    private Grados grado;
-    @ManyToOne
-    @JoinColumn(name = "id_sede", nullable = false)
-    private Sedes sede;
-
+    @Column(name = "nombre_seccion", length = 10)
     private String nombreSeccion;
+    
     private Integer vacantes;
     private Integer estado = 1;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_grado", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
+    private Grados idGrado;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_sede", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
+    private Sedes idSede;
 
-        //Constructor vacio
+    //Constructor vacio
     public Secciones() {}
     public Secciones(Long idSeccion) {
         this.idSeccion = idSeccion;
     }
 
+    //Getters y Setters / ToString
     public Long getIdSeccion() {
         return idSeccion;
     }
     public void setIdSeccion(Long idSeccion) {
         this.idSeccion = idSeccion;
     }
-    public Grados getGrado() {
-        return grado;
+    public Grados getIdGrado() {
+        return idGrado;
     }
-    public void setGrado(Grados grado) {
-        this.grado = grado;
+    public void setIdGrado(Grados idGrado) {
+        this.idGrado = idGrado;
     }
-    public Sedes getSede() {
-        return sede;
+    public Sedes getIdSede() {
+        return idSede;
     }
-    public void setSede(Sedes sede) {
-        this.sede = sede;
+    public void setIdSede(Sedes idSede) {
+        this.idSede = idSede;
     }
     public String getNombreSeccion() {
         return nombreSeccion;
@@ -66,5 +86,10 @@ public class Secciones {
     }
     public void setEstado(Integer estado) {
         this.estado = estado;
+    }
+    @Override
+    public String toString() {
+        return "Secciones [idSeccion=" + idSeccion + ", idGrado=" + idGrado + ", idSede=" + idSede
+                + ", nombreSeccion=" + nombreSeccion + ", vacantes=" + vacantes + ", estado=" + estado + "]";
     }
 }

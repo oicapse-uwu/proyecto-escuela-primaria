@@ -1,12 +1,14 @@
 package com.escuelita.www.service;
 
 import java.util.List;
-import com.escuelita.www.entity.SedesDTO;
+import java.util.Optional;
+
+import com.escuelita.www.entity.Sedes;
 
 public interface ISedesService {
-    List<SedesDTO> buscarTodos();
-    SedesDTO guardar(SedesDTO sedeDTO);
-    SedesDTO modificar(SedesDTO sedeDTO);
-    SedesDTO buscarId(Long id);
+    List<Sedes> buscarTodos();
+    Sedes guardar(Sedes sede);
+    Sedes modificar(Sedes sede);
+    Optional<Sedes> buscarId(Long id);
     void eliminar(Long id);
 }

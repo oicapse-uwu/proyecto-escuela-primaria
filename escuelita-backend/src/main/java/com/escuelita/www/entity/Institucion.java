@@ -19,41 +19,45 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE institucion SET estado=0 WHERE id_institucion=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "id_institucion", "nombre", "cod_modular", "tipo_gestion", 
-    "resolucion_creacion", "nombre_director", "logo_path",
-    "estado_suscripcion", "fecha_inicio_suscripcion", 
-    "fecha_vencimiento_licencia", "plan_contratado", "estado"
+    "idInstitucion", "nombre", "codModular", "tipoGestion", 
+    "resolucionCreacion", "nombreDirector", "logoPath",
+    "estadoSuscripcion", "fechaInicioSuscripcion", 
+    "fechaVencimientoLicencia", "planContratado", "estado"
 })
 public class Institucion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_institucion")
     private Long idInstitucion;
     
     @Column(length = 150)
     private String nombre;
     
-    @Column(length = 10)
+    @Column(name = "cod_modular", length = 10)
     private String codModular;
     
-    @Column(length = 50)
+    @Column(name = "tipo_gestion", length = 50)
     private String tipoGestion;
     
-    @Column(length = 50)
+    @Column(name = "resolucion_creacion", length = 50)
     private String resolucionCreacion;
     
-    @Column(length = 100)
+    @Column(name = "nombre_director", length = 100)
     private String nombreDirector;
     
-    @Column(length = 255)
+    @Column(name = "logo_path", length = 255)
     private String logoPath;
     
-    @Column(length = 50)
+    @Column(name = "estado_suscripcion", length = 50)
     private String estadoSuscripcion = "DEMO";
     
+    @Column(name = "fecha_inicio_suscripcion")
     private LocalDate fechaInicioSuscripcion;
+    
+    @Column(name = "fecha_vencimiento_licencia")
     private LocalDate fechaVencimientoLicencia;
     
-    @Column(length = 50)
+    @Column(name = "plan_contratado", length = 50)
     private String planContratado = "Plan Básico";
     
     private Integer estado = 1;

@@ -1,12 +1,14 @@
 package com.escuelita.www.service;
 
 import java.util.List;
-import com.escuelita.www.entity.GradosDTO;
+import java.util.Optional;
+
+import com.escuelita.www.entity.Grados;
 
 public interface IGradosService {
-    List<GradosDTO> buscarTodos();
-    GradosDTO guardar(GradosDTO gradoDTO);
-    GradosDTO modificar(GradosDTO gradoDTO);
-    GradosDTO buscarId(Long id);
+    List<Grados> buscarTodos();
+    Grados guardar(Grados grado);
+    Grados modificar(Grados grado);
+    Optional<Grados> buscarId(Long id);
     void eliminar(Long id);
 }

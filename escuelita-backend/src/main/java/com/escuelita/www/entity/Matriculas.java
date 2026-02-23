@@ -76,6 +76,13 @@ public class Matriculas {
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private AnioEscolar idAnio;
 
+    //Constructor vacio
+    public Matriculas() {}
+    public Matriculas(Long idMatricula) {
+        this.idMatricula = idMatricula;
+    }
+
+    //Getters y Setters / ToString
     public Long getIdMatricula() {
         return idMatricula;
     }

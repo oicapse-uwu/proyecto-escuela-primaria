@@ -48,6 +48,13 @@ public class AlumnoApoderado {
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Apoderados idApoderado;
 
+    //Constructor vacio
+    public AlumnoApoderado() {}
+    public AlumnoApoderado(Long idAlumnoApoderado) {
+        this.idAlumnoApoderado = idAlumnoApoderado;
+    }
+
+    //Getters y Setters / ToString
     public Long getIdAlumnoApoderado() {
         return idAlumnoApoderado;
     }

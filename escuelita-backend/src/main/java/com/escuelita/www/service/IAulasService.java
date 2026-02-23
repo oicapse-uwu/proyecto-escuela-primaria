@@ -1,12 +1,14 @@
 package com.escuelita.www.service;
 
 import java.util.List;
-import com.escuelita.www.entity.AulasDTO;
+import java.util.Optional;
+
+import com.escuelita.www.entity.Aulas;
 
 public interface IAulasService {
-    List<AulasDTO> buscarTodos();
-    AulasDTO guardar(AulasDTO aulaDTO);
-    AulasDTO modificar(AulasDTO aulaDTO);
-    AulasDTO buscarId(Long id);
+    List<Aulas> buscarTodos();
+    Aulas guardar(Aulas aula);
+    Aulas modificar(Aulas aula);
+    Optional<Aulas> buscarId(Long id);
     void eliminar(Long id);
 }

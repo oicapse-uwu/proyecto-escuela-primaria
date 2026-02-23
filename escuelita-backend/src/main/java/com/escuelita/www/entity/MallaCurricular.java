@@ -11,12 +11,48 @@ import jakarta.persistence.*;
 @SQLRestriction("estado = 1")
 public class MallaCurricular {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id_malla;
+
+    private Integer estado = 1;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_anio")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    private AnioEscolar anioEscolar;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_grado")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    private Grados grado;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_curso")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    private Cursos curso;
+
+    public MallaCurricular() {
+    }
+
+    public MallaCurricular(Long id_malla) {
+        this.id_malla = id_malla;
+    }
+
     public Long getId_malla() {
         return id_malla;
     }
 
     public void setId_malla(Long id_malla) {
         this.id_malla = id_malla;
+    }
+
+    public Integer getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Integer estado) {
+        this.estado = estado;
     }
 
     public AnioEscolar getAnioEscolar() {
@@ -43,34 +79,8 @@ public class MallaCurricular {
         this.curso = curso;
     }
 
-    public Integer getEstado() {
-        return estado;
+    @Override
+    public String toString() {
+        return "MallaCurricular [id_malla=" + id_malla + ", estado=" + estado + "]";
     }
-
-    public void setEstado(Integer estado) {
-        this.estado = estado;
-    }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_malla;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_anio")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private AnioEscolar anioEscolar; // Necesitas crear AnioEscolar
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_grado")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private Grados grado; // Necesitas crear Grados
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_curso")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private Cursos curso;
-
-    private Integer estado = 1;
-
-    // Generar Getters, Setters y Constructores aquí
 }

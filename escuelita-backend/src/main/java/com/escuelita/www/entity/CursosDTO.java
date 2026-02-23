@@ -2,33 +2,23 @@ package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "cursos")
 @SQLDelete(sql = "UPDATE cursos SET estado=0 WHERE id_curso=?")
 @SQLRestriction("estado = 1")
-public class Cursos {
+@JsonPropertyOrder({ "id_curso", "nombre_curso", "estado", "id_area" })
+public class CursosDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_curso;
 
     private String nombre_curso;
+    private Long id_area;
     private Integer estado = 1;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_area")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private Areas area;
-
-    public Cursos() {
-    }
-
-    public Cursos(Long id_curso) {
-        this.id_curso = id_curso;
-    }
 
     public Long getId_curso() {
         return id_curso;
@@ -46,6 +36,14 @@ public class Cursos {
         this.nombre_curso = nombre_curso;
     }
 
+    public Long getId_area() {
+        return id_area;
+    }
+
+    public void setId_area(Long id_area) {
+        this.id_area = id_area;
+    }
+
     public Integer getEstado() {
         return estado;
     }
@@ -54,16 +52,9 @@ public class Cursos {
         this.estado = estado;
     }
 
-    public Areas getArea() {
-        return area;
-    }
-
-    public void setArea(Areas area) {
-        this.area = area;
-    }
-
     @Override
     public String toString() {
-        return "Cursos [id_curso=" + id_curso + ", nombre_curso=" + nombre_curso + ", estado=" + estado + "]";
+        return "CursosDTO [id_curso=" + id_curso + ", nombre_curso=" + nombre_curso + ", id_area=" + id_area
+                + ", estado=" + estado + "]";
     }
 }

@@ -10,6 +10,21 @@ import jakarta.persistence.*;
 @SQLRestriction("estado = 1")
 public class Especialidades {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id_especialidad;
+
+    private String nombre_especialidad;
+    private String descripcion;
+    private Integer estado = 1;
+
+    public Especialidades() {
+    }
+
+    public Especialidades(Long id_especialidad) {
+        this.id_especialidad = id_especialidad;
+    }
+
     public Long getId_especialidad() {
         return id_especialidad;
     }
@@ -42,12 +57,9 @@ public class Especialidades {
         this.estado = estado;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_especialidad;
-    private String nombre_especialidad;
-    private String descripcion;
-    private Integer estado = 1;
-
-    // Generar Getters, Setters y Constructores aquí
+    @Override
+    public String toString() {
+        return "Especialidades [id_especialidad=" + id_especialidad + ", nombre_especialidad=" + nombre_especialidad
+                + ", descripcion=" + descripcion + ", estado=" + estado + "]";
+    }
 }

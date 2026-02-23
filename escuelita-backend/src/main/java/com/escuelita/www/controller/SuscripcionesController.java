@@ -43,37 +43,58 @@ public class SuscripcionesController {
 
     @PostMapping("/suscripciones")
     public ResponseEntity<?> guardar(@RequestBody SuscripcionesDTO dto) {
-        Suscripciones s = new Suscripciones();
-        mapear(s, dto);
+        Suscripciones suscripciones = new Suscripciones();
+        suscripciones.setLimiteAlumnosContratado(dto.getLimiteAlumnosContratado());
+        suscripciones.setLimiteSedesContratadas(dto.getLimiteSedesContratadas());
+        suscripciones.setPrecioAcordado(dto.getPrecioAcordado());
+        suscripciones.setFechaInicio(dto.getFechaInicio());
+        suscripciones.setFechaVencimiento(dto.getFechaVencimiento());
         
-        s.setIdInstitucion(repoInst.findById(dto.getIdInstitucion()).orElse(null));
-        s.setIdPlan(repoPlanes.findById(dto.getIdPlan()).orElse(null));
-        s.setIdCiclo(repoCiclos.findById(dto.getIdCiclo()).orElse(null));
-        s.setIdEstado(repoEstados.findById(dto.getIdEstado()).orElse(null));
 
-        return ResponseEntity.ok(serviceSuscripciones.guardar(s));
+        Institucion institucion = repoInst
+            .findById(dto.getIdInstitucion())
+            .orElse(null);
+        
+        
+        Planes planes = repoPlanes
+            .findById(dto.getIdPlan())
+            .orElse(null);
+        
+        CiclosFacturacion ciclosfacturacion = repoCiclos
+            .findById(dto.getIdCiclo())
+            .orElse(null);
+        
+        EstadosSuscripcion estadosSuscripcion = repoEstados
+            .findById(dto.getIdEstado())
+            .orElse(null);
+
+        suscripciones.setIdInstitucion(institucion);
+        suscripciones.setIdPlan(planes);
+        suscripciones.setIdCiclo(ciclosfacturacion);
+        suscripciones.setIdEstado(estadosSuscripcion);
+
+        return ResponseEntity.ok(serviceSuscripciones.guardar(suscripciones));
     }
 
     @PutMapping("/suscripciones")
     public ResponseEntity<?> modificar(@RequestBody SuscripcionesDTO dto) {
-        if(dto.getIdSuscripcion() == null) return ResponseEntity.badRequest().body("ID requerido");
-        Suscripciones s = new Suscripciones();
-        s.setIdSuscripcion(dto.getIdSuscripcion());
-        mapear(s, dto);
+        if(dto.getIdSuscripcion() == null) {return ResponseEntity.badRequest().body("ID requerido");
+       }
         
-        s.setIdInstitucion(new Institucion(dto.getIdInstitucion()));
-        s.setIdPlan(new Planes(dto.getIdPlan()));
-        s.setIdCiclo(new CiclosFacturacion(dto.getIdCiclo()));
-        s.setIdEstado(new EstadosSuscripcion(dto.getIdEstado()));
+        Suscripciones suscripciones = new Suscripciones();
+        suscripciones.setIdSuscripcion(dto.getIdSuscripcion());
+        suscripciones.setLimiteAlumnosContratado(dto.getLimiteAlumnosContratado());
+        suscripciones.setLimiteSedesContratadas(dto.getLimiteSedesContratadas());
+        suscripciones.setPrecioAcordado(dto.getPrecioAcordado());
+        suscripciones.setFechaInicio(dto.getFechaInicio());
+        suscripciones.setFechaVencimiento(dto.getFechaVencimiento());
+        
+        suscripciones.setIdInstitucion(new Institucion(dto.getIdInstitucion()));
+        suscripciones.setIdPlan(new Planes(dto.getIdPlan()));
+        suscripciones.setIdCiclo(new CiclosFacturacion(dto.getIdCiclo()));
+        suscripciones.setIdEstado(new EstadosSuscripcion(dto.getIdEstado()));
 
-        return ResponseEntity.ok(serviceSuscripciones.modificar(s));
+        return ResponseEntity.ok(serviceSuscripciones.modificar(suscripciones));
     }
 
-    private void mapear(Suscripciones s, SuscripcionesDTO dto) {
-        s.setLimiteAlumnosContratado(dto.getLimiteAlumnosContratado());
-        s.setLimiteSedesContratadas(dto.getLimiteSedesContratadas());
-        s.setPrecioAcordado(dto.getPrecioAcordado());
-        s.setFechaInicio(dto.getFechaInicio());
-        s.setFechaVencimiento(dto.getFechaVencimiento());
-    }
 }

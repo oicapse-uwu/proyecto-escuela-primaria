@@ -33,11 +33,27 @@ public class RolModuloPermisoController {
 
     @PostMapping("/rolmodulopermiso")
     public ResponseEntity<?> guardar(@RequestBody RolModuloPermisoDTO dto) {
+        
         RolModuloPermiso rmp = new RolModuloPermiso();
         
         rmp.setIdRol(repoRoles.findById(dto.getIdRol()).orElse(null));
         rmp.setIdModulo(repoModulos.findById(dto.getIdModulo()).orElse(null));
         rmp.setIdPermiso(repoPermisos.findById(dto.getIdPermiso()).orElse(null));
+
+        Modulos modulos = repoModulos
+                   .findById(dto.getIdModulo())
+                   .orElse(null);
+
+        Roles roles = repoRoles
+                   .findById(dto.getIdRol())
+                   .orElse(null);
+        Permisos permisos = repoPermisos
+                   .findById(dto.getIdPermiso())
+                   .orElse(null);
+        
+        rmp.setIdRol(roles);
+        rmp.setIdModulo(modulos);
+        rmp.setIdPermiso(permisos);
 
         return ResponseEntity.ok(serviceRmp.guardar(rmp));
     }
@@ -48,6 +64,7 @@ public class RolModuloPermisoController {
         
         RolModuloPermiso rmp = new RolModuloPermiso();
         rmp.setIdRmp(dto.getIdRmp());
+        
         rmp.setIdRol(new Roles(dto.getIdRol()));
         rmp.setIdModulo(new Modulos(dto.getIdModulo()));
         rmp.setIdPermiso(new Permisos(dto.getIdPermiso()));

@@ -1,64 +1,61 @@
 package com.escuelita.www.entity;
 
 public class PromediosPeriodoDTO {
-    private Long id_promedio;
-    private Long id_asignacion;
-    private Long id_matricula;
-    private Long id_periodo;
-    private String nota_final_area;
-    private String comentario_libreta;
-    private String estado_cierre;
-    public Long getId_promedio() {
-        return id_promedio;
+    private Long idPromedio;
+    private Long idAsignacion;
+    private Long idMatricula;
+    private Long idPeriodo;
+    private String notaFinalArea;
+    private String comentarioLibreta;
+    private String estadoCierre;
+    
+    public Long getIdPromedio() {
+        return idPromedio;
     }
-    public void setId_promedio(Long id_promedio) {
-        this.id_promedio = id_promedio;
+    public void setIdPromedio(Long idPromedio) {
+        this.idPromedio = idPromedio;
     }
-    public Long getId_asignacion() {
-        return id_asignacion;
+    public Long getIdAsignacion() {
+        return idAsignacion;
     }
-    public void setId_asignacion(Long id_asignacion) {
-        this.id_asignacion = id_asignacion;
+    public void setIdAsignacion(Long idAsignacion) {
+        this.idAsignacion = idAsignacion;
     }
-    public Long getId_matricula() {
-        return id_matricula;
+    public Long getIdMatricula() {
+        return idMatricula;
     }
-    public void setId_matricula(Long id_matricula) {
-        this.id_matricula = id_matricula;
+    public void setIdMatricula(Long idMatricula) {
+        this.idMatricula = idMatricula;
     }
-    public Long getId_periodo() {
-        return id_periodo;
+    public Long getIdPeriodo() {
+        return idPeriodo;
     }
-    public void setId_periodo(Long id_periodo) {
-        this.id_periodo = id_periodo;
+    public void setIdPeriodo(Long idPeriodo) {
+        this.idPeriodo = idPeriodo;
     }
-    public String getNota_final_area() {
-        return nota_final_area;
+    public String getNotaFinalArea() {
+        return notaFinalArea;
     }
-    public void setNota_final_area(String nota_final_area) {
-        this.nota_final_area = nota_final_area;
+    public void setNotaFinalArea(String notaFinalArea) {
+        this.notaFinalArea = notaFinalArea;
     }
-    public String getComentario_libreta() {
-        return comentario_libreta;
+    public String getComentarioLibreta() {
+        return comentarioLibreta;
     }
-    public void setComentario_libreta(String comentario_libreta) {
-        this.comentario_libreta = comentario_libreta;
+    public void setComentarioLibreta(String comentarioLibreta) {
+        this.comentarioLibreta = comentarioLibreta;
     }
-    public String getEstado_cierre() {
-        return estado_cierre;
+    public String getEstadoCierre() {
+        return estadoCierre;
     }
-    public void setEstado_cierre(String estado_cierre) {
-        this.estado_cierre = estado_cierre;
+    public void setEstadoCierre(String estadoCierre) {
+        this.estadoCierre = estadoCierre;
     }
     @Override
     public String toString() {
-        return "PromediosPeriodoDTO [id_promedio=" + id_promedio + ", id_asignacion=" + id_asignacion
-                + ", id_matricula=" + id_matricula + ", id_periodo=" + id_periodo + ", nota_final_area="
-                + nota_final_area + ", comentario_libreta=" + comentario_libreta + ", estado_cierre=" + estado_cierre
+        return "PromediosPeriodoDTO [idPromedio=" + idPromedio + ", idAsignacion=" + idAsignacion
+                + ", idMatricula=" + idMatricula + ", idPeriodo=" + idPeriodo + ", notaFinalArea="
+                + notaFinalArea + ", comentarioLibreta=" + comentarioLibreta + ", estadoCierre=" + estadoCierre
                 + "]";
     }
-
-
-    
-
 }

@@ -1,108 +1,110 @@
 package com.escuelita.www.entity;
 
+import java.time.LocalDateTime;
+
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import jakarta.persistence.*;
-import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "calificaciones")
 @SQLDelete(sql = "UPDATE calificaciones SET estado=0 WHERE id_calificacion=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "id_calificacion", "id_evaluacion", "id_matricula", 
-    "nota_obtenida", "observaciones", "fecha_calificacion", "estado"
+    "idCalificacion", "idEvaluacion", "idMatricula", 
+    "notaObtenida", "observaciones", "fechaCalificacion", "estado"
 })
 public class Calificaciones {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_calificacion;
+    @Column(name = "id_calificacion")
+    private Long idCalificacion;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_evaluacion")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private Evaluaciones id_evaluacion;
+    private Evaluaciones idEvaluacion;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_matricula")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private Matriculas id_matricula;
+    private Matriculas idMatricula;
 
-    @Column(length = 10)
-    private String nota_obtenida;
+    @Column(name = "nota_obtenida", length = 10)
+    private String notaObtenida;
 
     @Column(length = 255)
     private String observaciones;
 
-    private LocalDateTime fecha_calificacion;
+    @Column(name = "fecha_calificacion")
+    private LocalDateTime fechaCalificacion;
     private Integer estado = 1;
 
+    //Constructor vacio
     public Calificaciones() {}
-
-    public Long getId_calificacion() {
-        return id_calificacion;
+    public Calificaciones(Long idCalificacion) {
+        this.idCalificacion = idCalificacion;
     }
 
-    public void setId_calificacion(Long id_calificacion) {
-        this.id_calificacion = id_calificacion;
+    //Getters y Setters / ToString
+    public Long getIdCalificacion() {
+        return idCalificacion;
     }
-
-    public Evaluaciones getId_evaluacion() {
-        return id_evaluacion;
+    public void setIdCalificacion(Long idCalificacion) {
+        this.idCalificacion = idCalificacion;
     }
-
-    public void setId_evaluacion(Evaluaciones id_evaluacion) {
-        this.id_evaluacion = id_evaluacion;
+    public Evaluaciones getIdEvaluacion() {
+        return idEvaluacion;
     }
-
-    public Matriculas getId_matricula() {
-        return id_matricula;
+    public void setIdEvaluacion(Evaluaciones idEvaluacion) {
+        this.idEvaluacion = idEvaluacion;
     }
-
-    public void setId_matricula(Matriculas id_matricula) {
-        this.id_matricula = id_matricula;
+    public Matriculas getIdMatricula() {
+        return idMatricula;
     }
-
-    public String getNota_obtenida() {
-        return nota_obtenida;
+    public void setIdMatricula(Matriculas idMatricula) {
+        this.idMatricula = idMatricula;
     }
-
-    public void setNota_obtenida(String nota_obtenida) {
-        this.nota_obtenida = nota_obtenida;
+    public String getNotaObtenida() {
+        return notaObtenida;
     }
-
+    public void setNotaObtenida(String notaObtenida) {
+        this.notaObtenida = notaObtenida;
+    }
     public String getObservaciones() {
         return observaciones;
     }
-
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
     }
-
-    public LocalDateTime getFecha_calificacion() {
-        return fecha_calificacion;
+    public LocalDateTime getFechaCalificacion() {
+        return fechaCalificacion;
     }
-
-    public void setFecha_calificacion(LocalDateTime fecha_calificacion) {
-        this.fecha_calificacion = fecha_calificacion;
+    public void setFechaCalificacion(LocalDateTime fechaCalificacion) {
+        this.fechaCalificacion = fechaCalificacion;
     }
-
     public Integer getEstado() {
         return estado;
     }
-
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-
     @Override
     public String toString() {
-        return "Calificaciones [id_calificacion=" + id_calificacion + ", id_evaluacion=" + id_evaluacion
-                + ", id_matricula=" + id_matricula + ", nota_obtenida=" + nota_obtenida + ", observaciones="
-                + observaciones + ", fecha_calificacion=" + fecha_calificacion + ", estado=" + estado + "]";
+        return "Calificaciones [idCalificacion=" + idCalificacion + ", idEvaluacion=" + idEvaluacion
+                + ", idMatricula=" + idMatricula + ", notaObtenida=" + notaObtenida + ", observaciones="
+                + observaciones + ", fechaCalificacion=" + fechaCalificacion + ", estado=" + estado + "]";
     }
-
-
 }

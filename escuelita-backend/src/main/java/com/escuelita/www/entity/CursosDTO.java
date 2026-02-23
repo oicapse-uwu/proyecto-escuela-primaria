@@ -1,47 +1,34 @@
 package com.escuelita.www.entity;
 
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "cursos")
-@SQLDelete(sql = "UPDATE cursos SET estado=0 WHERE id_curso=?")
-@SQLRestriction("estado = 1")
-@JsonPropertyOrder({ "id_curso", "nombre_curso", "estado", "id_area" })
 public class CursosDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_curso;
-
-    private String nombre_curso;
-    private Long id_area;
+    private Long idCurso;
+    private String nombreCurso;
+    private Long idArea;
     private Integer estado = 1;
 
-    public Long getId_curso() {
-        return id_curso;
+    public Long getIdCurso() {
+        return idCurso;
     }
 
-    public void setId_curso(Long id_curso) {
-        this.id_curso = id_curso;
+    public void setIdCurso(Long idCurso) {
+        this.idCurso = idCurso;
     }
 
-    public String getNombre_curso() {
-        return nombre_curso;
+    public String getNombreCurso() {
+        return nombreCurso;
     }
 
-    public void setNombre_curso(String nombre_curso) {
-        this.nombre_curso = nombre_curso;
+    public void setNombreCurso(String nombreCurso) {
+        this.nombreCurso = nombreCurso;
     }
 
-    public Long getId_area() {
-        return id_area;
+    public Long getIdArea() {
+        return idArea;
     }
 
-    public void setId_area(Long id_area) {
-        this.id_area = id_area;
+    public void setIdArea(Long idArea) {
+        this.idArea = idArea;
     }
 
     public Integer getEstado() {
@@ -54,7 +41,7 @@ public class CursosDTO {
 
     @Override
     public String toString() {
-        return "CursosDTO [id_curso=" + id_curso + ", nombre_curso=" + nombre_curso + ", id_area=" + id_area
+        return "CursosDTO [idCurso=" + idCurso + ", nombreCurso=" + nombreCurso + ", idArea=" + idArea
                 + ", estado=" + estado + "]";
     }
 }

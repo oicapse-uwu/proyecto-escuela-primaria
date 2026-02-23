@@ -12,54 +12,47 @@ public class Especialidades {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_especialidad;
+    @Column(name = "id_especialidad")
+    private Long idEspecialidad;
 
-    private String nombre_especialidad;
+    @Column(name = "nombre_especialidad")
+    private String nombreEspecialidad;
     private String descripcion;
     private Integer estado = 1;
 
     public Especialidades() {
     }
 
-    public Especialidades(Long id_especialidad) {
-        this.id_especialidad = id_especialidad;
+    public Especialidades(Long idEspecialidad) {
+        this.idEspecialidad = idEspecialidad;
     }
-
-    public Long getId_especialidad() {
-        return id_especialidad;
+    public Long getIdEspecialidad() {
+        return idEspecialidad;
     }
-
-    public void setId_especialidad(Long id_especialidad) {
-        this.id_especialidad = id_especialidad;
+    public void setIdEspecialidad(Long idEspecialidad) {
+        this.idEspecialidad = idEspecialidad;
     }
-
-    public String getNombre_especialidad() {
-        return nombre_especialidad;
+    public String getNombreEspecialidad() {
+        return nombreEspecialidad;
     }
-
-    public void setNombre_especialidad(String nombre_especialidad) {
-        this.nombre_especialidad = nombre_especialidad;
+    public void setNombreEspecialidad(String nombreEspecialidad) {
+        this.nombreEspecialidad = nombreEspecialidad;
     }
-
     public String getDescripcion() {
         return descripcion;
     }
-
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-
     public Integer getEstado() {
         return estado;
     }
-
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-
     @Override
     public String toString() {
-        return "Especialidades [id_especialidad=" + id_especialidad + ", nombre_especialidad=" + nombre_especialidad
+        return "Especialidades [idEspecialidad=" + idEspecialidad + ", nombreEspecialidad=" + nombreEspecialidad
                 + ", descripcion=" + descripcion + ", estado=" + estado + "]";
     }
 }

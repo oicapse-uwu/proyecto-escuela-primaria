@@ -13,9 +13,11 @@ public class Cursos {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_curso;
+    @Column(name = "id_curso")
+    private Long idCurso;
 
-    private String nombre_curso;
+    @Column(name = "nombre_curso")
+    private String nombreCurso;
     private Integer estado = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -26,44 +28,35 @@ public class Cursos {
     public Cursos() {
     }
 
-    public Cursos(Long id_curso) {
-        this.id_curso = id_curso;
+    public Cursos(Long idCurso) {
+        this.idCurso = idCurso;
     }
-
-    public Long getId_curso() {
-        return id_curso;
+    public Long getIdCurso() {
+        return idCurso;
     }
-
-    public void setId_curso(Long id_curso) {
-        this.id_curso = id_curso;
+    public void setIdCurso(Long idCurso) {
+        this.idCurso = idCurso;
     }
-
-    public String getNombre_curso() {
-        return nombre_curso;
+    public String getNombreCurso() {
+        return nombreCurso;
     }
-
-    public void setNombre_curso(String nombre_curso) {
-        this.nombre_curso = nombre_curso;
+    public void setNombreCurso(String nombreCurso) {
+        this.nombreCurso = nombreCurso;
     }
-
     public Integer getEstado() {
         return estado;
     }
-
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-
     public Areas getArea() {
         return area;
     }
-
     public void setArea(Areas area) {
         this.area = area;
     }
-
     @Override
     public String toString() {
-        return "Cursos [id_curso=" + id_curso + ", nombre_curso=" + nombre_curso + ", estado=" + estado + "]";
+        return "Cursos [idCurso=" + idCurso + ", nombreCurso=" + nombreCurso + ", estado=" + estado + "]";
     }
 }

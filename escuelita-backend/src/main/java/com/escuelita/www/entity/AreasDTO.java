@@ -1,40 +1,27 @@
 package com.escuelita.www.entity;
 
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "areas")
-@SQLDelete(sql = "UPDATE areas SET estado=0 WHERE id_area=?")
-@SQLRestriction("estado = 1")
-@JsonPropertyOrder({ "id_area", "nombre_area", "descripcion", "estado", "id_sede" })
 public class AreasDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_area;
-
-    private String nombre_area;
+    private Long idArea;
+    private String nombreArea;
     private String descripcion;
-    private Long id_sede;
+    private Long idSede;
     private Integer estado = 1;
 
-    public Long getId_area() {
-        return id_area;
+    public Long getIdArea() {
+        return idArea;
     }
 
-    public void setId_area(Long id_area) {
-        this.id_area = id_area;
+    public void setIdArea(Long idArea) {
+        this.idArea = idArea;
     }
 
-    public String getNombre_area() {
-        return nombre_area;
+    public String getNombreArea() {
+        return nombreArea;
     }
 
-    public void setNombre_area(String nombre_area) {
-        this.nombre_area = nombre_area;
+    public void setNombreArea(String nombreArea) {
+        this.nombreArea = nombreArea;
     }
 
     public String getDescripcion() {
@@ -45,12 +32,12 @@ public class AreasDTO {
         this.descripcion = descripcion;
     }
 
-    public Long getId_sede() {
-        return id_sede;
+    public Long getIdSede() {
+        return idSede;
     }
 
-    public void setId_sede(Long id_sede) {
-        this.id_sede = id_sede;
+    public void setIdSede(Long idSede) {
+        this.idSede = idSede;
     }
 
     public Integer getEstado() {
@@ -63,7 +50,7 @@ public class AreasDTO {
 
     @Override
     public String toString() {
-        return "AreasDTO [id_area=" + id_area + ", nombre_area=" + nombre_area + ", descripcion=" + descripcion
-                + ", id_sede=" + id_sede + ", estado=" + estado + "]";
+        return "AreasDTO [idArea=" + idArea + ", nombreArea=" + nombreArea + ", descripcion=" + descripcion
+                + ", idSede=" + idSede + ", estado=" + estado + "]";
     }
 }

@@ -1,11 +1,22 @@
 package com.escuelita.www.entity;
 
+import java.time.LocalDateTime;
+
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import jakarta.persistence.*;
-import java.util.Date;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "registros_api")
@@ -31,12 +42,10 @@ public class RegistrosApi {
     private String descripcion;
 
     @Column(name = "fecha_emision")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaEmision;
+    private LocalDateTime fechaEmision;
 
     @Column(name = "fecha_expiracion")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaExpiracion;
+    private LocalDateTime fechaExpiracion;
 
     @Column(name = "estado_token")
     private String estadoToken = "Activo";
@@ -47,79 +56,61 @@ public class RegistrosApi {
     @JoinColumn(name = "id_admin")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private SuperAdmins idAdmin;
-
+    
     public Long getIdRegistro() {
         return idRegistro;
     }
-
     public void setIdRegistro(Long idRegistro) {
         this.idRegistro = idRegistro;
     }
-
     public String getTokenGenerado() {
         return tokenGenerado;
     }
-
     public void setTokenGenerado(String tokenGenerado) {
         this.tokenGenerado = tokenGenerado;
     }
-
     public String getClaveSecreta() {
         return claveSecreta;
     }
-
     public void setClaveSecreta(String claveSecreta) {
         this.claveSecreta = claveSecreta;
     }
-
     public String getDescripcion() {
         return descripcion;
     }
-
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-
-    public Date getFechaEmision() {
+    public LocalDateTime getFechaEmision() {
         return fechaEmision;
     }
-
-    public void setFechaEmision(Date fechaEmision) {
+    public void setFechaEmision(LocalDateTime fechaEmision) {
         this.fechaEmision = fechaEmision;
     }
-
-    public Date getFechaExpiracion() {
+    public LocalDateTime getFechaExpiracion() {
         return fechaExpiracion;
     }
-
-    public void setFechaExpiracion(Date fechaExpiracion) {
+    public void setFechaExpiracion(LocalDateTime fechaExpiracion) {
         this.fechaExpiracion = fechaExpiracion;
     }
-
     public String getEstadoToken() {
         return estadoToken;
     }
-
     public void setEstadoToken(String estadoToken) {
         this.estadoToken = estadoToken;
     }
-
     public Integer getEstado() {
         return estado;
     }
-
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-
     public SuperAdmins getIdAdmin() {
         return idAdmin;
     }
-
     public void setIdAdmin(SuperAdmins idAdmin) {
         this.idAdmin = idAdmin;
     }
-
     @Override
     public String toString() {
         return "RegistrosApi [idRegistro=" + idRegistro + ", tokenGenerado=" + tokenGenerado + ", claveSecreta="
@@ -127,6 +118,4 @@ public class RegistrosApi {
                 + ", fechaExpiracion=" + fechaExpiracion + ", estadoToken=" + estadoToken + ", estado=" + estado
                 + ", idAdmin=" + idAdmin + "]";
     }
-
- 
 }

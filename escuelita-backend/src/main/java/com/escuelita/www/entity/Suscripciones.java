@@ -1,7 +1,7 @@
 package com.escuelita.www.entity;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -18,8 +18,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "suscripciones")
@@ -47,12 +45,10 @@ public class Suscripciones {
     private BigDecimal precioAcordado;
 
     @Column(name = "fecha_inicio")
-    @Temporal(TemporalType.DATE)
-    private Date fechaInicio;
+    private LocalDate fechaInicio;
 
     @Column(name = "fecha_vencimiento")
-    @Temporal(TemporalType.DATE)
-    private Date fechaVencimiento;
+    private LocalDate fechaVencimiento;
 
     private Integer estado = 1;
 
@@ -97,16 +93,16 @@ public class Suscripciones {
     public void setPrecioAcordado(BigDecimal precioAcordado) {
         this.precioAcordado = precioAcordado;
     }
-    public Date getFechaInicio() {
+    public LocalDate getFechaInicio() {
         return fechaInicio;
     }
-    public void setFechaInicio(Date fechaInicio) {
+    public void setFechaInicio(LocalDate fechaInicio) {
         this.fechaInicio = fechaInicio;
     }
-    public Date getFechaVencimiento() {
+    public LocalDate getFechaVencimiento() {
         return fechaVencimiento;
     }
-    public void setFechaVencimiento(Date fechaVencimiento) {
+    public void setFechaVencimiento(LocalDate fechaVencimiento) {
         this.fechaVencimiento = fechaVencimiento;
     }
     public Integer getEstado() {

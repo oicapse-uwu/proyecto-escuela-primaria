@@ -1,8 +1,13 @@
 package com.escuelita.www.entity;
 
-import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "suscripciones")
@@ -18,8 +23,8 @@ public class SuscripcionesDTO {
     private Integer limiteAlumnosContratado;
     private Integer limiteSedesContratadas;
     private BigDecimal precioAcordado;
-    private Date fechaInicio;
-    private Date fechaVencimiento;
+    private LocalDate fechaInicio;
+    private LocalDate fechaVencimiento;
     private Integer estado = 1;
     public Long getIdSuscripcion() {
         return idSuscripcion;
@@ -69,16 +74,16 @@ public class SuscripcionesDTO {
     public void setPrecioAcordado(BigDecimal precioAcordado) {
         this.precioAcordado = precioAcordado;
     }
-    public Date getFechaInicio() {
+    public LocalDate getFechaInicio() {
         return fechaInicio;
     }
-    public void setFechaInicio(Date fechaInicio) {
+    public void setFechaInicio(LocalDate fechaInicio) {
         this.fechaInicio = fechaInicio;
     }
-    public Date getFechaVencimiento() {
+    public LocalDate getFechaVencimiento() {
         return fechaVencimiento;
     }
-    public void setFechaVencimiento(Date fechaVencimiento) {
+    public void setFechaVencimiento(LocalDate fechaVencimiento) {
         this.fechaVencimiento = fechaVencimiento;
     }
     public Integer getEstado() {

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.escuelita.www.entity.Matriculas;
 import com.escuelita.www.entity.MatriculasDTO;
 import com.escuelita.www.entity.Alumnos;
-import com.escuelita.www.entity.AlumnosDTO;
 import com.escuelita.www.entity.Secciones;
 import com.escuelita.www.entity.AnioEscolar;
 

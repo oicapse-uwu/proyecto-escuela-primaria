@@ -14,31 +14,36 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "alumno_apoderado")
-@SQLDelete(sql = "UPDATE alumno_apoderado SET estado=0 WHERE id_alumno_apod=?")
+@SQLDelete(sql = "UPDATE alumno_apoderado SET estado=0 WHERE id_alum_apod=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "id_alumno_apod", "parentesco", "es_representante_financiero", 
-    "vive_con_estudiante", "estado", "id_alumno", "id_apoderado"
+    "idAlumnoApoderado", "parentesco", "esRepresentanteFinanciero", 
+    "viveConEstudiante", "estado", "idAlumno", "idApoderado"
 })
 public class AlumnoApoderadoDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_alumno_apod; 
+    @Column(name = "id_alum_apod")
+    private Long idAlumnoApoderado; 
     
     @Column(length = 50)
     private String parentesco;
     
-    private Boolean es_representante_financiero;
-    private Boolean vive_con_estudiante;
-    private Long id_alumno;
-    private Long id_apoderado;
+    @Column(name = "es_representante_financiero")
+    private Boolean esRepresentanteFinanciero;
+    @Column(name = "vive_con_estudiante")
+    private Boolean viveConEstudiante;
+    @Column(name = "id_alumno")
+    private Long idAlumno;
+    @Column(name = "id_apoderado")
+    private Long idApoderado;
     private Integer estado = 1;
 
-    public Long getId_alumno_apod() {
-        return id_alumno_apod;
+    public Long getIdAlumnoApoderado() {
+        return idAlumnoApoderado;
     }
-    public void setId_alumno_apod(Long id_alumno_apod) {
-        this.id_alumno_apod = id_alumno_apod;
+    public void setIdAlumnoApoderado(Long idAlumnoApoderado) {
+        this.idAlumnoApoderado = idAlumnoApoderado;
     }
     public String getParentesco() {
         return parentesco;
@@ -46,29 +51,29 @@ public class AlumnoApoderadoDTO {
     public void setParentesco(String parentesco) {
         this.parentesco = parentesco;
     }
-    public Boolean getEs_representante_financiero() {
-        return es_representante_financiero;
+    public Boolean getEsRepresentanteFinanciero() {
+        return esRepresentanteFinanciero;
     }
-    public void setEs_representante_financiero(Boolean es_representante_financiero) {
-        this.es_representante_financiero = es_representante_financiero;
+    public void setEsRepresentanteFinanciero(Boolean esRepresentanteFinanciero) {
+        this.esRepresentanteFinanciero = esRepresentanteFinanciero;
     }
-    public Boolean getVive_con_estudiante() {
-        return vive_con_estudiante;
+    public Boolean getViveConEstudiante() {
+        return viveConEstudiante;
     }
-    public void setVive_con_estudiante(Boolean vive_con_estudiante) {
-        this.vive_con_estudiante = vive_con_estudiante;
+    public void setViveConEstudiante(Boolean viveConEstudiante) {
+        this.viveConEstudiante = viveConEstudiante;
     }
-    public Long getId_alumno() {
-        return id_alumno;
+    public Long getIdAlumno() {
+        return idAlumno;
     }
-    public void setId_alumno(Long id_alumno) {
-        this.id_alumno = id_alumno;
+    public void setIdAlumno(Long idAlumno) {
+        this.idAlumno = idAlumno;
     }
-    public Long getId_apoderado() {
-        return id_apoderado;
+    public Long getIdApoderado() {
+        return idApoderado;
     }
-    public void setId_apoderado(Long id_apoderado) {
-        this.id_apoderado = id_apoderado;
+    public void setIdApoderado(Long idApoderado) {
+        this.idApoderado = idApoderado;
     }
     public Integer getEstado() {
         return estado;
@@ -78,9 +83,9 @@ public class AlumnoApoderadoDTO {
     }
     @Override
     public String toString() {
-        return "AlumnoApoderadoDTO [id_alumno_apod=" + id_alumno_apod + ", parentesco=" + parentesco
-                + ", es_representante_financiero=" + es_representante_financiero + ", vive_con_estudiante="
-                + vive_con_estudiante + ", id_alumno=" + id_alumno + ", id_apoderado=" + id_apoderado + ", estado="
-                + estado + "]";
+        return "AlumnoApoderadoDTO [idAlumnoApoderado=" + idAlumnoApoderado + ", parentesco=" + parentesco
+                + ", esRepresentanteFinanciero=" + esRepresentanteFinanciero + ", viveConEstudiante="
+                + viveConEstudiante + ", idAlumno=" + idAlumno + ", idApoderado=" + idApoderado + ", estado=" + estado
+                + "]";
     }
 }

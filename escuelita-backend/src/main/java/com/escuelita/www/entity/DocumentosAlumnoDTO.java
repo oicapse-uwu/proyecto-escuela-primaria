@@ -19,50 +19,55 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE documentos_alumno SET estado=0 WHERE id_doc_alumno=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "id_doc_alumno", "ruta_archivo", "fecha_subida", "estado_revision",
-    "observaciones", "estado", "id_alumno", "id_requisito"
+    "idDocumentoAlumno", "rutaArchivo", "fechaSubida", "estadoRevision",
+    "observaciones", "estado", "idAlumno", "idRequisito"
 })
 public class DocumentosAlumnoDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_doc_alumno;
+    @Column(name = "id_doc_alumno")
+    private Long idDocumentoAlumno;
     
-    @Column(length = 255)
-    private String ruta_archivo;
+    @Column(name = "ruta_archivo", length = 255)
+    private String rutaArchivo;
     
-    private LocalDateTime fecha_subida;
-    private String estado_revision;
+    @Column(name = "fecha_subida")
+    private LocalDateTime fechaSubida;
+    @Column(name = "estado_revision", length = 50)
+    private String estadoRevision;
     
     @Column(columnDefinition = "TEXT")
     private String observaciones;
     
-    private Long id_alumno;
-    private Long id_requisito;
+    @Column(name = "id_alumno")
+    private Long idAlumno;
+    @Column(name = "id_requisito")
+    private Long idRequisito;
     private Integer estado = 1;
 
-    public Long getId_doc_alumno() {
-        return id_doc_alumno;
+    public Long getIdDocumentoAlumno() {
+        return idDocumentoAlumno;
     }
-    public void setId_doc_alumno(Long id_doc_alumno) {
-        this.id_doc_alumno = id_doc_alumno;
+    public void setIdDocumentoAlumno(Long idDocumentoAlumno) {
+        this.idDocumentoAlumno = idDocumentoAlumno;
     }
-    public String getRuta_archivo() {
-        return ruta_archivo;
+    public String getRutaArchivo() {
+        return rutaArchivo;
     }
-    public void setRuta_archivo(String ruta_archivo) {
-        this.ruta_archivo = ruta_archivo;
+    public void setRutaArchivo(String rutaArchivo) {
+        this.rutaArchivo = rutaArchivo;
     }
-    public LocalDateTime getFecha_subida() {
-        return fecha_subida;
+    public LocalDateTime getFechaSubida() {
+        return fechaSubida;
     }
-    public void setFecha_subida(LocalDateTime fecha_subida) {
-        this.fecha_subida = fecha_subida;
+    public void setFechaSubida(LocalDateTime fechaSubida) {
+        this.fechaSubida = fechaSubida;
     }
-    public String getEstado_revision() {
-        return estado_revision;
+    public String getEstadoRevision() {
+        return estadoRevision;
     }
-    public void setEstado_revision(String estado_revision) {
-        this.estado_revision = estado_revision;
+    public void setEstadoRevision(String estadoRevision) {
+        this.estadoRevision = estadoRevision;
     }
     public String getObservaciones() {
         return observaciones;
@@ -70,17 +75,17 @@ public class DocumentosAlumnoDTO {
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
     }
-    public Long getId_alumno() {
-        return id_alumno;
+    public Long getIdAlumno() {
+        return idAlumno;
     }
-    public void setId_alumno(Long id_alumno) {
-        this.id_alumno = id_alumno;
+    public void setIdAlumno(Long idAlumno) {
+        this.idAlumno = idAlumno;
     }
-    public Long getId_requisito() {
-        return id_requisito;
+    public Long getIdRequisito() {
+        return idRequisito;
     }
-    public void setId_requisito(Long id_requisito) {
-        this.id_requisito = id_requisito;
+    public void setIdRequisito(Long idRequisito) {
+        this.idRequisito = idRequisito;
     }
     public Integer getEstado() {
         return estado;
@@ -90,9 +95,9 @@ public class DocumentosAlumnoDTO {
     }
     @Override
     public String toString() {
-        return "DocumentosAlumnoDTO [id_doc_alumno=" + id_doc_alumno + ", ruta_archivo=" + ruta_archivo
-                + ", fecha_subida=" + fecha_subida + ", estado_revision=" + estado_revision + ", observaciones="
-                + observaciones + ", id_alumno=" + id_alumno + ", id_requisito=" + id_requisito + ", estado=" + estado
+        return "DocumentosAlumnoDTO [idDocumentoAlumno=" + idDocumentoAlumno + ", rutaArchivo=" + rutaArchivo
+                + ", fechaSubida=" + fechaSubida + ", estadoRevision=" + estadoRevision + ", observaciones="
+                + observaciones + ", idAlumno=" + idAlumno + ", idRequisito=" + idRequisito + ", estado=" + estado
                 + "]";
     }
 }

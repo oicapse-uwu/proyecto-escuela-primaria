@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -45,5 +46,5 @@ public class RequisitosDocumentosController {
     public String eliminar(@PathVariable Long id){
         serviceRequisitosDocumentos.eliminar(id);
         return "Requisito del documento perteneciente al Alumno eliminado";
-    }   
+    }
 }

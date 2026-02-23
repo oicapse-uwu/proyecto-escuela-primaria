@@ -17,17 +17,18 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE apoderados SET estado=0 WHERE id_apoderado=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "id_apoderado", "numero_documento", "nombres", "apellidos", 
-    "telefono_principal", "correo", "lugar_trabajo", "estado",
-    "id_sede", "id_tipo_doc"
+    "idApoderado", "numeroDocumento", "nombres", "apellidos", 
+    "telefonoPrincipal", "correo", "lugarTrabajo", "estado",
+    "idSede", "idTipoDoc"
 })
 public class ApoderadosDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_apoderado;    
+    @Column(name = "id_apoderado")
+    private Long idApoderado;    
     
-    @Column(length = 20)
-    private String numero_documento;
+    @Column(name = "numero_documento", length = 20)
+    private String numeroDocumento;
     
     @Column(length = 100)
     private String nombres;
@@ -35,30 +36,32 @@ public class ApoderadosDTO {
     @Column(length = 100)
     private String apellidos;
     
-    @Column(length = 20)
-    private String telefono_principal;
+    @Column(name = "telefono_principal", length = 20)
+    private String telefonoPrincipal;
     
     @Column(length = 100)
     private String correo;
     
     @Column(length = 100)
-    private String lugar_trabajo;
+    private String lugarTrabajo;
     
-    private Long id_sede;
-    private Long id_tipo_doc;
+    @Column(name = "id_sede")
+    private Long idSede;
+    @Column(name = "id_tipo_doc")
+    private Long idTipoDoc;
     private Integer estado = 1;
 
-    public Long getId_apoderado() {
-        return id_apoderado;
+    public Long getIdApoderado() {
+        return idApoderado;
     }
-    public void setId_apoderado(Long id_apoderado) {
-        this.id_apoderado = id_apoderado;
+    public void setIdApoderado(Long idApoderado) {
+        this.idApoderado = idApoderado;
     }
-    public String getNumero_documento() {
-        return numero_documento;
+    public String getNumeroDocumento() {
+        return numeroDocumento;
     }
-    public void setNumero_documento(String numero_documento) {
-        this.numero_documento = numero_documento;
+    public void setNumeroDocumento(String numeroDocumento) {
+        this.numeroDocumento = numeroDocumento;
     }
     public String getNombres() {
         return nombres;
@@ -72,11 +75,11 @@ public class ApoderadosDTO {
     public void setApellidos(String apellidos) {
         this.apellidos = apellidos;
     }
-    public String getTelefono_principal() {
-        return telefono_principal;
+    public String getTelefonoPrincipal() {
+        return telefonoPrincipal;
     }
-    public void setTelefono_principal(String telefono_principal) {
-        this.telefono_principal = telefono_principal;
+    public void setTelefonoPrincipal(String telefonoPrincipal) {
+        this.telefonoPrincipal = telefonoPrincipal;
     }
     public String getCorreo() {
         return correo;
@@ -84,23 +87,23 @@ public class ApoderadosDTO {
     public void setCorreo(String correo) {
         this.correo = correo;
     }
-    public String getLugar_trabajo() {
-        return lugar_trabajo;
+    public String getLugarTrabajo() {
+        return lugarTrabajo;
     }
-    public void setLugar_trabajo(String lugar_trabajo) {
-        this.lugar_trabajo = lugar_trabajo;
+    public void setLugarTrabajo(String lugarTrabajo) {
+        this.lugarTrabajo = lugarTrabajo;
     }
-    public Long getId_sede() {
-        return id_sede;
+    public Long getIdSede() {
+        return idSede;
     }
-    public void setId_sede(Long id_sede) {
-        this.id_sede = id_sede;
+    public void setIdSede(Long idSede) {
+        this.idSede = idSede;
     }
-    public Long getId_tipo_doc() {
-        return id_tipo_doc;
+    public Long getIdTipoDoc() {
+        return idTipoDoc;
     }
-    public void setId_tipo_doc(Long id_tipo_doc) {
-        this.id_tipo_doc = id_tipo_doc;
+    public void setIdTipoDoc(Long idTipoDoc) {
+        this.idTipoDoc = idTipoDoc;
     }
     public Integer getEstado() {
         return estado;
@@ -110,9 +113,9 @@ public class ApoderadosDTO {
     }
     @Override
     public String toString() {
-        return "ApoderadosDTO [id_apoderado=" + id_apoderado + ", numero_documento=" + numero_documento + ", nombres="
-                + nombres + ", apellidos=" + apellidos + ", telefono_principal=" + telefono_principal + ", correo="
-                + correo + ", lugar_trabajo=" + lugar_trabajo + ", id_sede=" + id_sede + ", id_tipo_doc=" + id_tipo_doc
+        return "ApoderadosDTO [idApoderado=" + idApoderado + ", numeroDocumento=" + numeroDocumento + ", nombres="
+                + nombres + ", apellidos=" + apellidos + ", telefonoPrincipal=" + telefonoPrincipal + ", correo="
+                + correo + ", lugarTrabajo=" + lugarTrabajo + ", idSede=" + idSede + ", idTipoDoc=" + idTipoDoc
                 + ", estado=" + estado + "]";
     }
 }

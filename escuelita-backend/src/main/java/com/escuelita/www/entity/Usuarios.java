@@ -53,99 +53,75 @@ public class Usuarios {
     public Long getIdUsuario() {
         return idUsuario;
     }
-
     public void setIdUsuario(Long idUsuario) {
         this.idUsuario = idUsuario;
     }
-
     public String getNumeroDocumento() {
         return numeroDocumento;
     }
-
     public void setNumeroDocumento(String numeroDocumento) {
         this.numeroDocumento = numeroDocumento;
     }
-
     public String getApellidos() {
         return apellidos;
     }
-
     public void setApellidos(String apellidos) {
         this.apellidos = apellidos;
     }
-
     public String getNombres() {
         return nombres;
     }
-
     public void setNombres(String nombres) {
         this.nombres = nombres;
     }
-
     public String getCorreo() {
         return correo;
     }
-
     public void setCorreo(String correo) {
         this.correo = correo;
     }
-
     public String getUsuario() {
         return usuario;
     }
-
     public void setUsuario(String usuario) {
         this.usuario = usuario;
     }
-
     public String getContrasena() {
         return contrasena;
     }
-
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
     }
-
     public String getFotoPerfil() {
         return fotoPerfil;
     }
-
     public void setFotoPerfil(String fotoPerfil) {
         this.fotoPerfil = fotoPerfil;
     }
-
     public Integer getEstado() {
         return estado;
     }
-
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-
     public Sedes getIdSede() {
         return idSede;
     }
-
     public void setIdSede(Sedes idSede) {
         this.idSede = idSede;
     }
-
     public Roles getIdRol() {
         return idRol;
     }
-
     public void setIdRol(Roles idRol) {
         this.idRol = idRol;
     }
-
     public TipoDocumentos getIdTipoDoc() {
         return idTipoDoc;
     }
-
     public void setIdTipoDoc(TipoDocumentos idTipoDoc) {
         this.idTipoDoc = idTipoDoc;
     }
-
     @Override
     public String toString() {
         return "Usuarios [idUsuario=" + idUsuario + ", numeroDocumento=" + numeroDocumento + ", apellidos=" + apellidos
@@ -153,6 +129,4 @@ public class Usuarios {
                 + ", fotoPerfil=" + fotoPerfil + ", estado=" + estado + ", idSede=" + idSede + ", idRol=" + idRol
                 + ", idTipoDoc=" + idTipoDoc + "]";
     }
-
-   
 }

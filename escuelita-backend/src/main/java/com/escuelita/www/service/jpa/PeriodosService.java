@@ -26,7 +26,7 @@ public class PeriodosService implements IPeriodosService {
         PeriodosDTO dto = new PeriodosDTO();
         dto.setIdPeriodo(periodo.getIdPeriodo());
         // Se actualiza a idAnio
-        dto.setIdAnio(periodo.getAnioEscolar().getIdAnioEscolar());
+        dto.setIdAnio(periodo.getAnioEscolar().getId_anio_escolar());
         dto.setNombrePeriodo(periodo.getNombrePeriodo());
         dto.setFechaInicio(periodo.getFechaInicio());
         dto.setFechaFin(periodo.getFechaFin());

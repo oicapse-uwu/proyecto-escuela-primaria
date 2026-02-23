@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -45,49 +46,49 @@ public class AlumnosController {
         Alumnos alumno = new Alumnos();
         alumno.setNombres(dto.getNombres());
         alumno.setApellidos(dto.getApellidos());
-        alumno.setNumero_documento(dto.getNumero_documento());
-        alumno.setFecha_nacimiento(dto.getFecha_nacimiento());
+        alumno.setNumeroDocumento(dto.getNumeroDocumento());
+        alumno.setFechaNacimiento(dto.getFechaNacimiento());
         alumno.setGenero(dto.getGenero());
         alumno.setDireccion(dto.getDireccion());
-        alumno.setTelefono_contacto(dto.getTelefono_contacto());
-        alumno.setFoto_url(dto.getFoto_url());
-        alumno.setObservaciones_salud(dto.getObservaciones_salud());
-        alumno.setTipo_ingreso(dto.getTipo_ingreso());
-        alumno.setEstado_alumno(dto.getEstado_alumno());
+        alumno.setTelefonoContacto(dto.getTelefonoContacto());
+        alumno.setFotoUrl(dto.getFotoUrl());
+        alumno.setObservacionesSalud(dto.getObservacionesSalud());
+        alumno.setTipoIngreso(dto.getTipoIngreso());
+        alumno.setEstadoAlumno(dto.getEstadoAlumno());
 
         Sedes sede = repoSedes
-            .findById(dto.getId_sede())
+            .findById(dto.getIdSede())
             .orElse(null);
         TipoDocumentos tipo = repoTipoDocumentos
-            .findById(dto.getId_tipo_doc())
+            .findById(dto.getIdTipoDoc())
             .orElse(null);
         
-        alumno.setId_sede(sede);
-        alumno.setId_tipo_doc(tipo);
+        alumno.setIdSede(sede);
+        alumno.setIdTipoDoc(tipo);
 
         return ResponseEntity.ok(serviceAlumnos.guardar(alumno));
     }
     @PutMapping("/alumnos")
     public ResponseEntity<?> modificar(@RequestBody AlumnosDTO dto) {
-        if(dto.getId_alumno() == null){
+        if(dto.getIdAlumno() == null){
             return ResponseEntity.badRequest()
                     .body("ID de alumno es requerido");
         }
         Alumnos alumno = new Alumnos();
-        alumno.setId_alumno(dto.getId_alumno());
+        alumno.setIdAlumno(dto.getIdAlumno());
         alumno.setNombres(dto.getNombres());
         alumno.setApellidos(dto.getApellidos());
-        alumno.setNumero_documento(dto.getNumero_documento());
-        alumno.setFecha_nacimiento(dto.getFecha_nacimiento());
+        alumno.setNumeroDocumento(dto.getNumeroDocumento());
+        alumno.setFechaNacimiento(dto.getFechaNacimiento());
         alumno.setGenero(dto.getGenero());
         alumno.setDireccion(dto.getDireccion());
-        alumno.setTelefono_contacto(dto.getTelefono_contacto());
-        alumno.setFoto_url(dto.getFoto_url());
-        alumno.setObservaciones_salud(dto.getObservaciones_salud());
-        alumno.setTipo_ingreso(dto.getTipo_ingreso());
+        alumno.setTelefonoContacto(dto.getTelefonoContacto());
+        alumno.setFotoUrl(dto.getFotoUrl());
+        alumno.setObservacionesSalud(dto.getObservacionesSalud());
+        alumno.setTipoIngreso(dto.getTipoIngreso());
 
-        alumno.setId_sede(new Sedes(dto.getId_sede()));
-        alumno.setId_tipo_doc(new TipoDocumentos(dto.getId_tipo_doc()));
+        alumno.setIdSede(new Sedes(dto.getIdSede()));
+        alumno.setIdTipoDoc(new TipoDocumentos(dto.getIdTipoDoc()));
 
         return ResponseEntity.ok(serviceAlumnos.modificar(alumno));
     }

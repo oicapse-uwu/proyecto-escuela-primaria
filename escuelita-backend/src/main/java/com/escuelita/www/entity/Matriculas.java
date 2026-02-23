@@ -24,107 +24,111 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE matriculas SET estado=0 WHERE id_matricula=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "id_matricula", "codigo_matricula", "fecha_matricula", 
-    "situacion_academica_previa", "estado_matricula", 
-    "observaciones_matricula", "fecha_retiro", "motivo_retiro",
-    "colegio_destino", "estado", "id_alumno", "id_seccion", "id_anio"
+    "idMatricula", "codigoMatricula", "fechaMatricula", 
+    "situacionAcademicaPrevia", "estadoMatricula", 
+    "observacionesMatricula", "fechaRetiro", "motivoRetiro",
+    "colegioDestino", "estado", "idAlumno", "idSeccion", "idAnio"
 })
 public class Matriculas {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_matricula;
+    @Column(name = "id_matricula")
+    private Long idMatricula;
     
-    @Column(length = 30, unique = true)
-    private String codigo_matricula;
+    @Column(name = "codigo_matricula", length = 30, unique = true)
+    private String codigoMatricula;
 
-    @Column(nullable = false)
-    private LocalDateTime fecha_matricula;
+    @Column(name = "fecha_matricula", nullable = false)
+    private LocalDateTime fechaMatricula;
 
-    @Column(columnDefinition = "ENUM('Promovido', 'Repitente', 'Ingresante')", nullable = false)
-    private String situacion_academica_previa;
+    @Column(name = "situacion_academica_previa", 
+            columnDefinition = "ENUM('Promovido', 'Repitente', 'Ingresante')", nullable = false)
+    private String situacionAcademicaPrevia;
 
-    @Column(columnDefinition = "ENUM('Activa', 'Retirada', 'Trasladado_Saliente')", nullable = false)
-    private String estado_matricula;
+    @Column(name = "estado_matricula", 
+            columnDefinition = "ENUM('Activa', 'Retirada', 'Trasladado_Saliente')", nullable = false)
+    private String estadoMatricula;
 
-    @Column(columnDefinition = "TEXT")
-    private String observaciones_matricula;
+    @Column(name = "observaciones_matricula", columnDefinition = "TEXT")
+    private String observacionesMatricula;
 
-    private LocalDate fecha_retiro;
+    @Column(name = "fecha_retiro")
+    private LocalDate fechaRetiro;
 
-    @Column(columnDefinition = "TEXT")
-    private String motivo_retiro;
+    @Column(name = "motivo_retiro", columnDefinition = "TEXT")
+    private String motivoRetiro;
 
-    @Column(length = 150)
-    private String colegio_destino;
+    @Column(name = "colegio_destino", length = 150)
+    private String colegioDestino;
 
     private Integer estado = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_alumno")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Alumnos id_alumno;
+    private Alumnos idAlumno;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_seccion")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Secciones id_seccion;
+    private Secciones idSeccion;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_anio")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private AnioEscolar id_anio;
+    private AnioEscolar idAnio;
 
-    public Long getId_matricula() {
-        return id_matricula;
+    public Long getIdMatricula() {
+        return idMatricula;
     }
-    public void setId_matricula(Long id_matricula) {
-        this.id_matricula = id_matricula;
+    public void setIdMatricula(Long idMatricula) {
+        this.idMatricula = idMatricula;
     }
-    public String getCodigo_matricula() {
-        return codigo_matricula;
+    public String getCodigoMatricula() {
+        return codigoMatricula;
     }
-    public void setCodigo_matricula(String codigo_matricula) {
-        this.codigo_matricula = codigo_matricula;
+    public void setCodigoMatricula(String codigoMatricula) {
+        this.codigoMatricula = codigoMatricula;
     }
-    public LocalDateTime getFecha_matricula() {
-        return fecha_matricula;
+    public LocalDateTime getFechaMatricula() {
+        return fechaMatricula;
     }
-    public void setFecha_matricula(LocalDateTime fecha_matricula) {
-        this.fecha_matricula = fecha_matricula;
+    public void setFechaMatricula(LocalDateTime fechaMatricula) {
+        this.fechaMatricula = fechaMatricula;
     }
-    public String getSituacion_academica_previa() {
-        return situacion_academica_previa;
+    public String getSituacionAcademicaPrevia() {
+        return situacionAcademicaPrevia;
     }
-    public void setSituacion_academica_previa(String situacion_academica_previa) {
-        this.situacion_academica_previa = situacion_academica_previa;
+    public void setSituacionAcademicaPrevia(String situacionAcademicaPrevia) {
+        this.situacionAcademicaPrevia = situacionAcademicaPrevia;
     }
-    public String getEstado_matricula() {
-        return estado_matricula;
+    public String getEstadoMatricula() {
+        return estadoMatricula;
     }
-    public void setEstado_matricula(String estado_matricula) {
-        this.estado_matricula = estado_matricula;
+    public void setEstadoMatricula(String estadoMatricula) {
+        this.estadoMatricula = estadoMatricula;
     }
-    public String getObservaciones_matricula() {
-        return observaciones_matricula;
+    public String getObservacionesMatricula() {
+        return observacionesMatricula;
     }
-    public void setObservaciones_matricula(String observaciones_matricula) {
-        this.observaciones_matricula = observaciones_matricula;
+    public void setObservacionesMatricula(String observacionesMatricula) {
+        this.observacionesMatricula = observacionesMatricula;
     }
-    public LocalDate getFecha_retiro() {
-        return fecha_retiro;
+    public LocalDate getFechaRetiro() {
+        return fechaRetiro;
     }
-    public void setFecha_retiro(LocalDate fecha_retiro) {
-        this.fecha_retiro = fecha_retiro;
+    public void setFechaRetiro(LocalDate fechaRetiro) {
+        this.fechaRetiro = fechaRetiro;
     }
-    public String getMotivo_retiro() {
-        return motivo_retiro;
+    public String getMotivoRetiro() {
+        return motivoRetiro;
     }
-    public void setMotivo_retiro(String motivo_retiro) {
-        this.motivo_retiro = motivo_retiro;
+    public void setMotivoRetiro(String motivoRetiro) {
+        this.motivoRetiro = motivoRetiro;
     }
-    public String getColegio_destino() {
-        return colegio_destino;
+    public String getColegioDestino() {
+        return colegioDestino;
     }
-    public void setColegio_destino(String colegio_destino) {
-        this.colegio_destino = colegio_destino;
+    public void setColegioDestino(String colegioDestino) {
+        this.colegioDestino = colegioDestino;
     }
     public Integer getEstado() {
         return estado;
@@ -132,31 +136,30 @@ public class Matriculas {
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-    public Alumnos getId_alumno() {
-        return id_alumno;
+    public Alumnos getIdAlumno() {
+        return idAlumno;
     }
-    public void setId_alumno(Alumnos id_alumno) {
-        this.id_alumno = id_alumno;
+    public void setIdAlumno(Alumnos idAlumno) {
+        this.idAlumno = idAlumno;
     }
-    public Secciones getId_seccion() {
-        return id_seccion;
+    public Secciones getIdSeccion() {
+        return idSeccion;
     }
-    public void setId_seccion(Secciones id_seccion) {
-        this.id_seccion = id_seccion;
+    public void setIdSeccion(Secciones idSeccion) {
+        this.idSeccion = idSeccion;
     }
-    public AnioEscolar getId_anio() {
-        return id_anio;
+    public AnioEscolar getIdAnio() {
+        return idAnio;
     }
-    public void setId_anio(AnioEscolar id_anio) {
-        this.id_anio = id_anio;
+    public void setIdAnio(AnioEscolar idAnio) {
+        this.idAnio = idAnio;
     }
     @Override
     public String toString() {
-        return "Matriculas [id_matricula=" + id_matricula + ", codigo_matricula=" + codigo_matricula
-                + ", fecha_matricula=" + fecha_matricula + ", situacion_academica_previa=" + situacion_academica_previa
-                + ", estado_matricula=" + estado_matricula + ", observaciones_matricula=" + observaciones_matricula
-                + ", fecha_retiro=" + fecha_retiro + ", motivo_retiro=" + motivo_retiro + ", colegio_destino="
-                + colegio_destino + ", estado=" + estado + ", id_alumno=" + id_alumno + ", id_seccion=" + id_seccion
-                + ", id_anio=" + id_anio + "]";
+        return "Matriculas [idMatricula=" + idMatricula + ", codigoMatricula=" + codigoMatricula + ", fechaMatricula="
+                + fechaMatricula + ", situacionAcademicaPrevia=" + situacionAcademicaPrevia + ", estadoMatricula="
+                + estadoMatricula + ", observacionesMatricula=" + observacionesMatricula + ", fechaRetiro="
+                + fechaRetiro + ", motivoRetiro=" + motivoRetiro + ", colegioDestino=" + colegioDestino + ", estado="
+                + estado + ", idAlumno=" + idAlumno + ", idSeccion=" + idSeccion + ", idAnio=" + idAnio + "]";
     }
 }

@@ -19,7 +19,6 @@ import com.escuelita.www.service.IInstitucionService;
 @RestController
 @RequestMapping("/restful")
 public class InstitucionController {
-    
     @Autowired
     private IInstitucionService serviceInstitucion;
 
@@ -27,24 +26,20 @@ public class InstitucionController {
     public List<Institucion> buscartodos() {
         return serviceInstitucion.buscarTodos(); 
     }
-    
     @PostMapping("/institucion")
     public Institucion guardar(@RequestBody Institucion institucion) {
         serviceInstitucion.guardar(institucion);
         return institucion;
     }
-    
     @PutMapping("/institucion")
     public Institucion modificar(@RequestBody Institucion institucion) {
         serviceInstitucion.modificar(institucion);
         return institucion;
     }
-    
     @GetMapping("/institucion/{id}")
     public Optional<Institucion> buscarId(@PathVariable("id") Long id){
         return serviceInstitucion.buscarId(id);
     }
-    
     @DeleteMapping("/institucion/{id}")
     public String eliminar(@PathVariable Long id){
         serviceInstitucion.eliminar(id);

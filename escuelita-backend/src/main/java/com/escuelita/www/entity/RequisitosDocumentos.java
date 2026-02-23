@@ -17,45 +17,46 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE requisitos_documentos SET estado=0 WHERE id_requisito=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "id_requisito", "nombre_documento", "descripcion",
-    "es_obligatorio", "estado"
+    "idRequisito", "nombreDocumento", "descripcion",
+    "esObligatorio", "estado"
 })
 public class RequisitosDocumentos {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_requisito;
+    @Column(name = "id_requisito")
+    private Long idRequisito;
 
-    @Column(length = 100)
-    private String nombre_documento;
+    @Column(name = "nombre_documento", length = 100)
+    private String nombreDocumento;
 
     @Column(length = 255)
     private String descripcion;
 
-    @Column(nullable = false)
-    private Boolean es_obligatorio;
+    @Column(name = "es_obligatorio", nullable = false)
+    private Boolean esObligatorio;
 
     @Column(nullable = false)
     private Integer estado;
 
     //Constructor vacio
     public RequisitosDocumentos() {}
-    public RequisitosDocumentos(Long id_requisito) {
-        this.id_requisito = id_requisito;
+    public RequisitosDocumentos(Long idRequisito) {
+        this.idRequisito = idRequisito;
     }
 
     //Getters y Setters / ToString
-    public Long getId_requisito() {
-        return id_requisito;
+    public Long getIdRequisito() {
+        return idRequisito;
     }
-    public void setId_requisito(Long id_requisito) {
-        this.id_requisito = id_requisito;
+    public void setIdRequisito(Long idRequisito) {
+        this.idRequisito = idRequisito;
     }
-    public String getNombre_documento() {
-        return nombre_documento;
+    public String getNombreDocumento() {
+        return nombreDocumento;
     }
-    public void setNombre_documento(String nombre_documento) {
-        this.nombre_documento = nombre_documento;
+    public void setNombreDocumento(String nombreDocumento) {
+        this.nombreDocumento = nombreDocumento;
     }
     public String getDescripcion() {
         return descripcion;
@@ -63,11 +64,11 @@ public class RequisitosDocumentos {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-    public Boolean getEs_obligatorio() {
-        return es_obligatorio;
+    public Boolean getEsObligatorio() {
+        return esObligatorio;
     }
-    public void setEs_obligatorio(Boolean es_obligatorio) {
-        this.es_obligatorio = es_obligatorio;
+    public void setEsObligatorio(Boolean esObligatorio) {
+        this.esObligatorio = esObligatorio;
     }
     public Integer getEstado() {
         return estado;
@@ -77,7 +78,7 @@ public class RequisitosDocumentos {
     }
     @Override
     public String toString() {
-        return "RequisitosDocumentos [id_requisito=" + id_requisito + ", nombre_documento=" + nombre_documento
-                + ", descripcion=" + descripcion + ", es_obligatorio=" + es_obligatorio + ", estado=" + estado + "]";
+        return "RequisitosDocumentos [idRequisito=" + idRequisito + ", nombreDocumento=" + nombreDocumento
+                + ", descripcion=" + descripcion + ", esObligatorio=" + esObligatorio + ", estado=" + estado + "]";
     }
 }

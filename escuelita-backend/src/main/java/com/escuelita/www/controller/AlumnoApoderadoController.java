@@ -9,9 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.escuelita.www.entity.Alumnos;
-import com.escuelita.www.entity.AlumnosDTO;
 import com.escuelita.www.entity.Apoderados;
-import com.escuelita.www.entity.ApoderadosDTO;
 import com.escuelita.www.entity.AlumnoApoderado;
 import com.escuelita.www.entity.AlumnoApoderadoDTO;
 

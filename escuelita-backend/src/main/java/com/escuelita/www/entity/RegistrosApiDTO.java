@@ -1,7 +1,12 @@
 package com.escuelita.www.entity;
 
-import jakarta.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "registros_api")
@@ -14,8 +19,8 @@ public class RegistrosApiDTO {
     private String tokenGenerado;
     private String claveSecreta;
     private String descripcion;
-    private Date fechaEmision;
-    private Date fechaExpiracion;
+    private LocalDateTime fechaEmision;
+    private LocalDateTime fechaExpiracion;
     private String estadoToken;
     private Integer estado = 1;
     public Long getIdRegistro() {
@@ -48,16 +53,16 @@ public class RegistrosApiDTO {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-    public Date getFechaEmision() {
+    public LocalDateTime getFechaEmision() {
         return fechaEmision;
     }
-    public void setFechaEmision(Date fechaEmision) {
+    public void setFechaEmision(LocalDateTime fechaEmision) {
         this.fechaEmision = fechaEmision;
     }
-    public Date getFechaExpiracion() {
+    public LocalDateTime getFechaExpiracion() {
         return fechaExpiracion;
     }
-    public void setFechaExpiracion(Date fechaExpiracion) {
+    public void setFechaExpiracion(LocalDateTime fechaExpiracion) {
         this.fechaExpiracion = fechaExpiracion;
     }
     public String getEstadoToken() {
@@ -78,6 +83,4 @@ public class RegistrosApiDTO {
                 + ", claveSecreta=" + claveSecreta + ", descripcion=" + descripcion + ", fechaEmision=" + fechaEmision
                 + ", fechaExpiracion=" + fechaExpiracion + ", estadoToken=" + estadoToken + ", estado=" + estado + "]";
     }
-
-
 }

@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -44,38 +45,38 @@ public class DocumentosAlumnoController {
     @PostMapping("/documentosalumno")
     public ResponseEntity<?> guardar(@RequestBody DocumentosAlumnoDTO dto) {
         DocumentosAlumno documentosalumno = new DocumentosAlumno();
-        documentosalumno.setRuta_archivo(dto.getRuta_archivo());
-        documentosalumno.setFecha_subida(dto.getFecha_subida());
-        documentosalumno.setEstado_revision(dto.getEstado_revision());
+        documentosalumno.setRutaArchivo(dto.getRutaArchivo());
+        documentosalumno.setFechaSubida(dto.getFechaSubida());
+        documentosalumno.setEstadoRevision(dto.getEstadoRevision());
         documentosalumno.setObservaciones(dto.getObservaciones());
 
         Alumnos alumno = repoAlumnos
-            .findById(dto.getId_alumno())
+            .findById(dto.getIdAlumno())
             .orElse(null);
         RequisitosDocumentos requisito = repoRequisitosDocumentos
-            .findById(dto.getId_requisito())
+            .findById(dto.getIdRequisito())
             .orElse(null);
         
-        documentosalumno.setId_alumno(alumno);
-        documentosalumno.setId_requisito(requisito);
+        documentosalumno.setIdAlumno(alumno);
+        documentosalumno.setIdRequisito(requisito);
 
         return ResponseEntity.ok(serviceDocumentosAlumno.guardar(documentosalumno));
     }
     @PutMapping("/documentosalumno")
     public ResponseEntity<?> modificar(@RequestBody DocumentosAlumnoDTO dto) {
-        if(dto.getId_doc_alumno() == null) {
+        if(dto.getIdDocumentoAlumno() == null) {
             return ResponseEntity.badRequest()
             .body("El ID del documento del alumno es requerido.");
         }
         DocumentosAlumno documentoalumno = new DocumentosAlumno();
-        documentoalumno.setId_doc_alumno(dto.getId_doc_alumno());
-        documentoalumno.setRuta_archivo(dto.getRuta_archivo());
-        documentoalumno.setFecha_subida(dto.getFecha_subida());
-        documentoalumno.setEstado_revision(dto.getEstado_revision());
+        documentoalumno.setIdDocumentoAlumno(dto.getIdDocumentoAlumno());
+        documentoalumno.setRutaArchivo(dto.getRutaArchivo());
+        documentoalumno.setFechaSubida(dto.getFechaSubida());
+        documentoalumno.setEstadoRevision(dto.getEstadoRevision());
         documentoalumno.setObservaciones(dto.getObservaciones());
 
-        documentoalumno.setId_alumno(new Alumnos(dto.getId_alumno()));
-        documentoalumno.setId_requisito(new RequisitosDocumentos(dto.getId_requisito()));
+        documentoalumno.setIdAlumno(new Alumnos(dto.getIdAlumno()));
+        documentoalumno.setIdRequisito(new RequisitosDocumentos(dto.getIdRequisito()));
         
         return ResponseEntity.ok(serviceDocumentosAlumno.modificar(documentoalumno));
     }

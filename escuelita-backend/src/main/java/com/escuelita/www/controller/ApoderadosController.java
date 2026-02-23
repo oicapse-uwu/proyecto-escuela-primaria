@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -18,8 +19,10 @@ import com.escuelita.www.entity.Apoderados;
 import com.escuelita.www.entity.ApoderadosDTO;
 import com.escuelita.www.entity.Sedes;
 import com.escuelita.www.entity.TipoDocumentos;
+
 import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.repository.TipoDocumentosRepository;
+
 import com.escuelita.www.service.IApoderadosService;
 
 @RestController
@@ -43,40 +46,40 @@ public class ApoderadosController {
         Apoderados apoderado = new Apoderados();
         apoderado.setNombres(dto.getNombres());
         apoderado.setApellidos(dto.getApellidos());
-        apoderado.setNumero_documento(dto.getNumero_documento());
-        apoderado.setTelefono_principal(dto.getTelefono_principal());
+        apoderado.setNumeroDocumento(dto.getNumeroDocumento());
+        apoderado.setTelefonoPrincipal(dto.getTelefonoPrincipal());
         apoderado.setCorreo(dto.getCorreo());
-        apoderado.setLugar_trabajo(dto.getLugar_trabajo());
+        apoderado.setLugarTrabajo(dto.getLugarTrabajo());
 
         Sedes sede = repoSedes
-            .findById(dto.getId_sede())
+            .findById(dto.getIdSede())
             .orElse(null);
         TipoDocumentos tipo = repoTipoDocumentos
-            .findById(dto.getId_tipo_doc())
+            .findById(dto.getIdTipoDoc())
             .orElse(null);
         
-        apoderado.setId_sede(sede);
-        apoderado.setId_tipo_doc(tipo);
+        apoderado.setIdSede(sede);
+        apoderado.setIdTipoDoc(tipo);
 
         return ResponseEntity.ok(serviceApoderados.guardar(apoderado));
     }
     @PutMapping("/apoderados")
     public ResponseEntity<?> modificar(@RequestBody ApoderadosDTO dto) {
-        if(dto.getId_apoderado() == null){
+        if(dto.getIdApoderado() == null){
             return ResponseEntity.badRequest()
                     .body("ID de apoderado es requerido");
         }
         Apoderados apoderado = new Apoderados();
-        apoderado.setId_apoderado(dto.getId_apoderado());
+        apoderado.setIdApoderado(dto.getIdApoderado());
         apoderado.setNombres(dto.getNombres());
         apoderado.setApellidos(dto.getApellidos());
-        apoderado.setNumero_documento(dto.getNumero_documento());
-        apoderado.setTelefono_principal(dto.getTelefono_principal());
+        apoderado.setNumeroDocumento(dto.getNumeroDocumento());
+        apoderado.setTelefonoPrincipal(dto.getTelefonoPrincipal());
         apoderado.setCorreo(dto.getCorreo());
-        apoderado.setLugar_trabajo(dto.getLugar_trabajo());
+        apoderado.setLugarTrabajo(dto.getLugarTrabajo());
 
-        apoderado.setId_sede(new Sedes(dto.getId_sede()));
-        apoderado.setId_tipo_doc(new TipoDocumentos(dto.getId_tipo_doc()));
+        apoderado.setIdSede(new Sedes(dto.getIdSede()));
+        apoderado.setIdTipoDoc(new TipoDocumentos(dto.getIdTipoDoc()));
 
         return ResponseEntity.ok(serviceApoderados.modificar(apoderado));
     }

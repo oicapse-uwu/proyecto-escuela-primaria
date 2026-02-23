@@ -1,51 +1,70 @@
-package com.escuelita.www.entity; 
+package com.escuelita.www.entity;
+
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "anio_escolar")
+@SQLDelete(sql = "UPDATE anio_escolar SET estado=0 WHERE id_anio_escolar=?")
+@SQLRestriction("estado = 1")
+@JsonPropertyOrder({
+    "id_anio_escolar", "nombre_anio", "activo", "estado", "id_sede"
+})
 
 public class AnioEscolarDTO {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id_anio_escolar;
     
-    private Long idAnioEscolar;
-    private Long idSede; 
-    private String nombreAnio;
+    @Column(length = 50)
+    private String nombre_anio;
+    
     private Integer activo = 1;
+    private Long id_sede;
     private Integer estado = 1;
 
-    // Getters y Setters tradicionales
-    public Long getIdAnioEscolar() {
-        return idAnioEscolar;
+    public Long getId_anio_escolar() {
+        return id_anio_escolar;
     }
-
-    public void setIdAnioEscolar(Long idAnioEscolar) {
-        this.idAnioEscolar = idAnioEscolar;
+    public void setId_anio_escolar(Long id_anio_escolar) {
+        this.id_anio_escolar = id_anio_escolar;
     }
-
-    public Long getIdSede() {
-        return idSede;
+    public String getNombre_anio() {
+        return nombre_anio;
     }
-
-    public void setIdSede(Long idSede) {
-        this.idSede = idSede;
+    public void setNombre_anio(String nombre_anio) {
+        this.nombre_anio = nombre_anio;
     }
-
-    public String getNombreAnio() {
-        return nombreAnio;
-    }
-
-    public void setNombreAnio(String nombreAnio) {
-        this.nombreAnio = nombreAnio;
-    }
-
     public Integer getActivo() {
         return activo;
     }
-
     public void setActivo(Integer activo) {
         this.activo = activo;
     }
-
+    public Long getId_sede() {
+        return id_sede;
+    }
+    public void setId_sede(Long id_sede) {
+        this.id_sede = id_sede;
+    }
     public Integer getEstado() {
         return estado;
     }
-
     public void setEstado(Integer estado) {
         this.estado = estado;
+    }
+    @Override
+    public String toString() {
+        return "AnioEscolarDTO [id_anio_escolar=" + id_anio_escolar + ", nombre_anio=" + nombre_anio + ", activo="
+                + activo + ", id_sede=" + id_sede + ", estado=" + estado + "]";
     }
 }

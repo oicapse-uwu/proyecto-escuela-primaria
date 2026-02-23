@@ -23,18 +23,19 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE alumnos SET estado=0 WHERE id_alumno=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "id_alumno", "numero_documento", "nombres", "apellidos", 
-    "fecha_nacimiento", "genero", "direccion", "telefono_contacto", 
-    "foto_url", "observaciones_salud", "tipo_ingreso", "estado_alumno", "estado",
-    "id_sede", "id_tipo_doc"
+    "idAlumno", "numeroDocumento", "nombres", "apellidos", 
+    "fechaNacimiento", "genero", "direccion", "telefonoContacto", 
+    "fotoUrl", "observacionesSalud", "tipoIngreso", "estadoAlumno", "estado",
+    "idSede", "idTipoDoc"
 })
 public class Alumnos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_alumno;
+    @Column(name = "id_alumno")
+    private Long idAlumno;
 
-    @Column(length = 20)
-    private String numero_documento;
+    @Column(name = "numero_documento", length = 20)
+    private String numeroDocumento;
     
     @Column(length = 100)
     private String nombres;
@@ -42,7 +43,8 @@ public class Alumnos {
     @Column(length = 100)
     private String apellidos;
     
-    private LocalDate fecha_nacimiento;
+    @Column(name = "fecha_nacimiento")
+    private LocalDate fechaNacimiento;
     
     @Column(length = 1)
     private String genero;
@@ -50,47 +52,49 @@ public class Alumnos {
     @Column(length = 255)
     private String direccion;
     
-    @Column(length = 20)
-    private String telefono_contacto;
+    @Column(name = "telefono_contacto", length = 20)
+    private String telefonoContacto;
     
-    @Column(length = 255)
-    private String foto_url;
+    @Column(name = "foto_url", length = 255)
+    private String fotoUrl;
     
-    @Column(columnDefinition = "TEXT")
-    private String observaciones_salud;
-    private String tipo_ingreso;
-    private String estado_alumno;
+    @Column(name = "observaciones_salud", columnDefinition = "TEXT")
+    private String observacionesSalud;
+    @Column(name = "tipo_ingreso", length = 50)
+    private String tipoIngreso;
+    @Column(name = "estado_alumno")
+    private String estadoAlumno;
 
     private Integer estado = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_sede")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Sedes id_sede;
+    private Sedes idSede;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_tipo_doc")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private TipoDocumentos id_tipo_doc;
+    private TipoDocumentos idTipoDoc;
     
     //Constructor vacio
     public Alumnos() {}
-    public Alumnos(Long id_alumno) {
-        this.id_alumno = id_alumno;
+    public Alumnos(Long idAlumno) {
+        this.idAlumno = idAlumno;
     }
 
     //Getters y Setters / ToString
-    public Long getId_alumno() {
-        return id_alumno;
+    public Long getIdAlumno() {
+        return idAlumno;
     }
-    public void setId_alumno(Long id_alumno) {
-        this.id_alumno = id_alumno;
+    public void setIdAlumno(Long idAlumno) {
+        this.idAlumno = idAlumno;
     }
-    public String getNumero_documento() {
-        return numero_documento;
+    public String getNumeroDocumento() {
+        return numeroDocumento;
     }
-    public void setNumero_documento(String numero_documento) {
-        this.numero_documento = numero_documento;
+    public void setNumeroDocumento(String numeroDocumento) {
+        this.numeroDocumento = numeroDocumento;
     }
     public String getNombres() {
         return nombres;
@@ -104,11 +108,11 @@ public class Alumnos {
     public void setApellidos(String apellidos) {
         this.apellidos = apellidos;
     }
-    public LocalDate getFecha_nacimiento() {
-        return fecha_nacimiento;
+    public LocalDate getFechaNacimiento() {
+        return fechaNacimiento;
     }
-    public void setFecha_nacimiento(LocalDate fecha_nacimiento) {
-        this.fecha_nacimiento = fecha_nacimiento;
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
     }
     public String getGenero() {
         return genero;
@@ -122,35 +126,35 @@ public class Alumnos {
     public void setDireccion(String direccion) {
         this.direccion = direccion;
     }
-    public String getTelefono_contacto() {
-        return telefono_contacto;
+    public String getTelefonoContacto() {
+        return telefonoContacto;
     }
-    public void setTelefono_contacto(String telefono_contacto) {
-        this.telefono_contacto = telefono_contacto;
+    public void setTelefonoContacto(String telefonoContacto) {
+        this.telefonoContacto = telefonoContacto;
     }
-    public String getFoto_url() {
-        return foto_url;
+    public String getFotoUrl() {
+        return fotoUrl;
     }
-    public void setFoto_url(String foto_url) {
-        this.foto_url = foto_url;
+    public void setFotoUrl(String fotoUrl) {
+        this.fotoUrl = fotoUrl;
     }
-    public String getObservaciones_salud() {
-        return observaciones_salud;
+    public String getObservacionesSalud() {
+        return observacionesSalud;
     }
-    public void setObservaciones_salud(String observaciones_salud) {
-        this.observaciones_salud = observaciones_salud;
+    public void setObservacionesSalud(String observacionesSalud) {
+        this.observacionesSalud = observacionesSalud;
     }
-    public String getTipo_ingreso() {
-        return tipo_ingreso;
+    public String getTipoIngreso() {
+        return tipoIngreso;
     }
-    public void setTipo_ingreso(String tipo_ingreso) {
-        this.tipo_ingreso = tipo_ingreso;
+    public void setTipoIngreso(String tipoIngreso) {
+        this.tipoIngreso = tipoIngreso;
     }
-    public String getEstado_alumno() {
-        return estado_alumno;
+    public String getEstadoAlumno() {
+        return estadoAlumno;
     }
-    public void setEstado_alumno(String estado_alumno) {
-        this.estado_alumno = estado_alumno;
+    public void setEstadoAlumno(String estadoAlumno) {
+        this.estadoAlumno = estadoAlumno;
     }
     public Integer getEstado() {
         return estado;
@@ -158,24 +162,24 @@ public class Alumnos {
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-    public Sedes getId_sede() {
-        return id_sede;
+    public Sedes getIdSede() {
+        return idSede;
     }
-    public void setId_sede(Sedes id_sede) {
-        this.id_sede = id_sede;
+    public void setIdSede(Sedes idSede) {
+        this.idSede = idSede;
     }
-    public TipoDocumentos getId_tipo_doc() {
-        return id_tipo_doc;
+    public TipoDocumentos getIdTipoDoc() {
+        return idTipoDoc;
     }
-    public void setId_tipo_doc(TipoDocumentos id_tipo_doc) {
-        this.id_tipo_doc = id_tipo_doc;
+    public void setIdTipoDoc(TipoDocumentos idTipoDoc) {
+        this.idTipoDoc = idTipoDoc;
     }
     @Override
     public String toString() {
-        return "Alumnos [id_alumno=" + id_alumno + ", numero_documento=" + numero_documento + ", nombres=" + nombres
-                + ", apellidos=" + apellidos + ", fecha_nacimiento=" + fecha_nacimiento + ", genero=" + genero
-                + ", direccion=" + direccion + ", telefono_contacto=" + telefono_contacto + ", foto_url=" + foto_url
-                + ", observaciones_salud=" + observaciones_salud + ", tipo_ingreso=" + tipo_ingreso + ", estado_alumno="
-                + estado_alumno + ", estado=" + estado + ", id_sede=" + id_sede + ", id_tipo_doc=" + id_tipo_doc + "]";
+        return "Alumnos [idAlumno=" + idAlumno + ", numeroDocumento=" + numeroDocumento + ", nombres=" + nombres
+                + ", apellidos=" + apellidos + ", fechaNacimiento=" + fechaNacimiento + ", genero=" + genero
+                + ", direccion=" + direccion + ", telefonoContacto=" + telefonoContacto + ", fotoUrl=" + fotoUrl
+                + ", observacionesSalud=" + observacionesSalud + ", tipoIngreso=" + tipoIngreso + ", estadoAlumno="
+                + estadoAlumno + ", estado=" + estado + ", idSede=" + idSede + ", idTipoDoc=" + idTipoDoc + "]";
     }
 }

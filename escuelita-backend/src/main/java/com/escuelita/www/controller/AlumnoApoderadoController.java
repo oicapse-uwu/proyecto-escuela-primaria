@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -45,45 +46,44 @@ public class AlumnoApoderadoController {
     public ResponseEntity<?> guardar(@RequestBody AlumnoApoderadoDTO dto) {
         AlumnoApoderado alumnoapoderado = new AlumnoApoderado();
         alumnoapoderado.setParentesco(dto.getParentesco());
-        alumnoapoderado.setEs_representante_financiero(dto.getEs_representante_financiero());
-        alumnoapoderado.setVive_con_estudiante(dto.getVive_con_estudiante());
+        alumnoapoderado.setEsRepresentanteFinanciero(dto.getEsRepresentanteFinanciero());
+        alumnoapoderado.setViveConEstudiante(dto.getViveConEstudiante());
 
         Alumnos alumno = repoAlumnos
-            .findById(dto.getId_alumno())
+            .findById(dto.getIdAlumno())
             .orElse(null);
         Apoderados apoderado = repoApoderados
-            .findById(dto.getId_apoderado())
+            .findById(dto.getIdApoderado())
             .orElse(null);
         
-        alumnoapoderado.setId_alumno(alumno);
-        alumnoapoderado.setId_apoderado(apoderado);
+        alumnoapoderado.setIdAlumno(alumno);
+        alumnoapoderado.setIdApoderado(apoderado);
 
         return ResponseEntity.ok(serviceAlumnoApoderado.guardar(alumnoapoderado));
     }
     @PutMapping("/alumnoapoderado")
     public ResponseEntity<?> modificar(@RequestBody AlumnoApoderadoDTO dto) {
-        if(dto.getId_alumno_apod() == null){
+        if(dto.getIdAlumnoApoderado() == null){
             return ResponseEntity.badRequest()
                     .body("ID de alumno_apoderado es requerido");
         }
         AlumnoApoderado alumnoapoderado = new AlumnoApoderado();
-        alumnoapoderado.setId_alumno_apod(dto.getId_alumno_apod());
+        alumnoapoderado.setIdAlumnoApoderado(dto.getIdAlumnoApoderado());
         alumnoapoderado.setParentesco(dto.getParentesco());
-        alumnoapoderado.setEs_representante_financiero(dto.getEs_representante_financiero());
-        alumnoapoderado.setVive_con_estudiante(dto.getVive_con_estudiante());
+        alumnoapoderado.setEsRepresentanteFinanciero(dto.getEsRepresentanteFinanciero());
+        alumnoapoderado.setViveConEstudiante(dto.getViveConEstudiante());
 
         // Crear objeto Alumnos con el ID
         Alumnos alumno = new Alumnos();
-        alumno.setId_alumno(dto.getId_alumno());
-        alumnoapoderado.setId_alumno(alumno);
+        alumno.setIdAlumno(dto.getIdAlumno());
+        alumnoapoderado.setIdAlumno(alumno);
 
         // Crear objeto Apoderados con el ID
         Apoderados apoderado = new Apoderados();
-        apoderado.setId_apoderado(dto.getId_apoderado());
-        alumnoapoderado.setId_apoderado(apoderado);
+        apoderado.setIdApoderado(dto.getIdApoderado());
+        alumnoapoderado.setIdApoderado(apoderado);
 
         return ResponseEntity.ok(serviceAlumnoApoderado.modificar(alumnoapoderado));
-        
     }
     @GetMapping("/alumnoapoderado/{id}")
     public Optional<AlumnoApoderado> buscarId(@PathVariable("id") Long id){

@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -48,51 +49,51 @@ public class MatriculasController {
     @PostMapping("/matriculas")
     public ResponseEntity<?> guardar(@RequestBody MatriculasDTO dto) {
         Matriculas matricula = new Matriculas();
-        matricula.setCodigo_matricula(dto.getCodigo_matricula());
-        matricula.setFecha_matricula(dto.getFecha_matricula());
-        matricula.setSituacion_academica_previa(dto.getSituacion_academica_previa());
-        matricula.setEstado_matricula(dto.getEstado_matricula());
-        matricula.setObservaciones_matricula(dto.getObservaciones_matricula());
-        matricula.setFecha_retiro(dto.getFecha_retiro());
-        matricula.setMotivo_retiro(dto.getMotivo_retiro());
-        matricula.setColegio_destino(dto.getColegio_destino());
+        matricula.setCodigoMatricula(dto.getCodigoMatricula());
+        matricula.setFechaMatricula(dto.getFechaMatricula());
+        matricula.setSituacionAcademicaPrevia(dto.getSituacionAcademicaPrevia());
+        matricula.setEstadoMatricula(dto.getEstadoMatricula());
+        matricula.setObservacionesMatricula(dto.getObservacionesMatricula());
+        matricula.setFechaRetiro(dto.getFechaRetiro());
+        matricula.setMotivoRetiro(dto.getMotivoRetiro());
+        matricula.setColegioDestino(dto.getColegioDestino());
 
         Alumnos alumno = repoAlumnos
-            .findById(dto.getId_alumno())
+            .findById(dto.getIdAlumno())
             .orElse(null);
         Secciones seccion = repoSecciones
-            .findById(dto.getId_seccion())
+            .findById(dto.getIdSeccion())
             .orElse(null);
         AnioEscolar anioEscolar = repoAnioEscolar
-            .findById(dto.getId_anio())
+            .findById(dto.getIdAnio())
             .orElse(null);
         
-        matricula.setId_alumno(alumno);
-        matricula.setId_seccion(seccion);
-        matricula.setId_anio(anioEscolar);
+        matricula.setIdAlumno(alumno);
+        matricula.setIdSeccion(seccion);
+        matricula.setIdAnio(anioEscolar);
 
         return ResponseEntity.ok(serviceMatriculas.guardar(matricula));
     }
     @PutMapping("/matriculas")
     public ResponseEntity<?> modificar(@RequestBody MatriculasDTO dto) {
-        if(dto.getId_matricula() == null){
+        if(dto.getIdMatricula() == null){
             return ResponseEntity.badRequest()
                     .body("ID de matricula es requerido");
         }
         Matriculas matricula = new Matriculas();
-        matricula.setId_matricula(dto.getId_matricula());
-        matricula.setCodigo_matricula(dto.getCodigo_matricula());
-        matricula.setFecha_matricula(dto.getFecha_matricula());
-        matricula.setSituacion_academica_previa(dto.getSituacion_academica_previa());
-        matricula.setEstado_matricula(dto.getEstado_matricula());
-        matricula.setObservaciones_matricula(dto.getObservaciones_matricula());
-        matricula.setFecha_retiro(dto.getFecha_retiro());
-        matricula.setMotivo_retiro(dto.getMotivo_retiro());
-        matricula.setColegio_destino(dto.getColegio_destino());
+        matricula.setIdMatricula(dto.getIdMatricula());
+        matricula.setCodigoMatricula(dto.getCodigoMatricula());
+        matricula.setFechaMatricula(dto.getFechaMatricula());
+        matricula.setSituacionAcademicaPrevia(dto.getSituacionAcademicaPrevia());
+        matricula.setEstadoMatricula(dto.getEstadoMatricula());
+        matricula.setObservacionesMatricula(dto.getObservacionesMatricula());
+        matricula.setFechaRetiro(dto.getFechaRetiro());
+        matricula.setMotivoRetiro(dto.getMotivoRetiro());
+        matricula.setColegioDestino(dto.getColegioDestino());
 
-        matricula.setId_alumno(new Alumnos(dto.getId_alumno()));
-        matricula.setId_seccion(new Secciones(dto.getId_seccion()));
-        matricula.setId_anio(new AnioEscolar(dto.getId_anio()));    
+        matricula.setIdAlumno(new Alumnos(dto.getIdAlumno()));
+        matricula.setIdSeccion(new Secciones(dto.getIdSeccion()));
+        matricula.setIdAnio(new AnioEscolar(dto.getIdAnio()));    
         
         return ResponseEntity.ok(serviceMatriculas.modificar(matricula));
     }

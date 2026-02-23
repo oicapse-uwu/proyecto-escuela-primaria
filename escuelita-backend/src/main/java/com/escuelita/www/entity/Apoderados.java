@@ -21,17 +21,18 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE apoderados SET estado=0 WHERE id_apoderado=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "id_apoderado", "numero_documento", "nombres", "apellidos", 
-    "telefono_principal", "correo", "lugar_trabajo", "estado",
-    "id_sede", "id_tipo_doc"
+    "idApoderado", "numeroDocumento", "nombres", "apellidos", 
+    "telefonoPrincipal", "correo", "lugarTrabajo", "estado",
+    "idSede", "idTipoDoc"
 })
 public class Apoderados {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_apoderado;    
+    @Column(name = "id_apoderado")
+    private Long idApoderado;    
     
-    @Column(length = 20)
-    private String numero_documento;
+    @Column(name = "numero_documento", length = 20)
+    private String numeroDocumento;
     
     @Column(length = 100)
     private String nombres;
@@ -39,45 +40,45 @@ public class Apoderados {
     @Column(length = 100)
     private String apellidos;
     
-    @Column(length = 20)
-    private String telefono_principal;
+    @Column(name = "telefono_principal", length = 20)
+    private String telefonoPrincipal;
     
     @Column(length = 100)
     private String correo;
     
-    @Column(length = 100)
-    private String lugar_trabajo;
+    @Column(name = "lugar_trabajo", length = 100)
+    private String lugarTrabajo;
     
     private Integer estado = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_sede")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Sedes id_sede;
+    private Sedes idSede;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_tipo_doc")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private TipoDocumentos id_tipo_doc;
+    private TipoDocumentos idTipoDoc;
 
     //Constructor vacio
     public Apoderados() {}
-    public Apoderados(Long id_apoderado) {
-        this.id_apoderado = id_apoderado;
+    public Apoderados(Long idApoderado) {
+        this.idApoderado = idApoderado;
     }
 
     //Getters y Setters / ToString
-    public Long getId_apoderado() {
-        return id_apoderado;
+    public Long getIdApoderado() {
+        return idApoderado;
     }
-    public void setId_apoderado(Long id_apoderado) {
-        this.id_apoderado = id_apoderado;
+    public void setIdApoderado(Long idApoderado) {
+        this.idApoderado = idApoderado;
     }
-    public String getNumero_documento() {
-        return numero_documento;
+    public String getNumeroDocumento() {
+        return numeroDocumento;
     }
-    public void setNumero_documento(String numero_documento) {
-        this.numero_documento = numero_documento;
+    public void setNumeroDocumento(String numeroDocumento) {
+        this.numeroDocumento = numeroDocumento;
     }
     public String getNombres() {
         return nombres;
@@ -91,11 +92,11 @@ public class Apoderados {
     public void setApellidos(String apellidos) {
         this.apellidos = apellidos;
     }
-    public String getTelefono_principal() {
-        return telefono_principal;
+    public String getTelefonoPrincipal() {
+        return telefonoPrincipal;
     }
-    public void setTelefono_principal(String telefono_principal) {
-        this.telefono_principal = telefono_principal;
+    public void setTelefonoPrincipal(String telefonoPrincipal) {
+        this.telefonoPrincipal = telefonoPrincipal;
     }
     public String getCorreo() {
         return correo;
@@ -103,11 +104,11 @@ public class Apoderados {
     public void setCorreo(String correo) {
         this.correo = correo;
     }
-    public String getLugar_trabajo() {
-        return lugar_trabajo;
+    public String getLugarTrabajo() {
+        return lugarTrabajo;
     }
-    public void setLugar_trabajo(String lugar_trabajo) {
-        this.lugar_trabajo = lugar_trabajo;
+    public void setLugarTrabajo(String lugarTrabajo) {
+        this.lugarTrabajo = lugarTrabajo;
     }
     public Integer getEstado() {
         return estado;
@@ -115,23 +116,23 @@ public class Apoderados {
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-    public Sedes getId_sede() {
-        return id_sede;
+    public Sedes getIdSede() {
+        return idSede;
     }
-    public void setId_sede(Sedes id_sede) {
-        this.id_sede = id_sede;
+    public void setIdSede(Sedes idSede) {
+        this.idSede = idSede;
     }
-    public TipoDocumentos getId_tipo_doc() {
-        return id_tipo_doc;
+    public TipoDocumentos getIdTipoDoc() {
+        return idTipoDoc;
     }
-    public void setId_tipo_doc(TipoDocumentos id_tipo_doc) {
-        this.id_tipo_doc = id_tipo_doc;
+    public void setIdTipoDoc(TipoDocumentos idTipoDoc) {
+        this.idTipoDoc = idTipoDoc;
     }
     @Override
     public String toString() {
-        return "Apoderados [id_apoderado=" + id_apoderado + ", numero_documento=" + numero_documento + ", nombres="
-                + nombres + ", apellidos=" + apellidos + ", telefono_principal=" + telefono_principal + ", correo="
-                + correo + ", lugar_trabajo=" + lugar_trabajo + ", estado=" + estado + ", id_sede=" + id_sede
-                + ", id_tipo_doc=" + id_tipo_doc + "]";
+        return "Apoderados [idApoderado=" + idApoderado + ", numeroDocumento=" + numeroDocumento + ", nombres="
+                + nombres + ", apellidos=" + apellidos + ", telefonoPrincipal=" + telefonoPrincipal + ", correo="
+                + correo + ", lugarTrabajo=" + lugarTrabajo + ", estado=" + estado + ", idSede=" + idSede
+                + ", idTipoDoc=" + idTipoDoc + "]";
     }
 }

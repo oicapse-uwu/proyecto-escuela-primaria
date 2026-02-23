@@ -23,7 +23,7 @@ public class UsuariosController {
     @Autowired
     private TipoDocumentosRepository repoTipoDocs;
 
-    // Suponiendo que ya creaste el repositorio de Sedes
+   
     @Autowired
     private SedesRepository repoSedes; 
 
@@ -34,41 +34,57 @@ public class UsuariosController {
 
     @PostMapping("/usuarios")
     public ResponseEntity<?> guardar(@RequestBody UsuariosDTO dto) {
-        Usuarios user = new Usuarios();
-        mapearDtoAEntidad(user, dto);
         
-        user.setIdSede(repoSedes.findById(dto.getIdSede()).orElse(null));
-        user.setIdRol(repoRoles.findById(dto.getIdRol()).orElse(null));
-        user.setIdTipoDoc(repoTipoDocs.findById(dto.getIdTipoDoc()).orElse(null));
+        Usuarios usuarios = new Usuarios();
+        usuarios.setNumeroDocumento(dto.getNumeroDocumento());
+        usuarios.setApellidos(dto.getApellidos());
+        usuarios.setNombres(dto.getNombres());
+        usuarios.setCorreo(dto.getCorreo());
+        usuarios.setUsuario(dto.getUsuario());
+        usuarios.setContrasena(dto.getContrasena());
+        usuarios.setFotoPerfil(dto.getFotoPerfil());
 
-        return ResponseEntity.ok(serviceUsuarios.guardar(user));
+        Sedes sedes = repoSedes
+                   .findById(dto.getIdSede())
+                   .orElse(null);
+
+        Roles roles = repoRoles
+                   .findById(dto.getIdRol())
+                   .orElse(null);
+        TipoDocumentos tipoDoc = repoTipoDocs
+                   .findById(dto.getIdTipoDoc())
+                   .orElse(null);
+        
+        usuarios.setIdSede(sedes);
+        usuarios.setIdRol(roles);
+        usuarios.setIdTipoDoc(tipoDoc);
+
+
+        return ResponseEntity.ok(serviceUsuarios.guardar(usuarios));
     }
 
     @PutMapping("/usuarios")
     public ResponseEntity<?> modificar(@RequestBody UsuariosDTO dto) {
-        if(dto.getIdUsuario() == null) return ResponseEntity.badRequest().body("ID requerido");
+        if(dto.getIdUsuario() == null) {return ResponseEntity.badRequest().body("ID requerido");
+       }
         
-        Usuarios user = new Usuarios();
-        user.setIdUsuario(dto.getIdUsuario());
-        mapearDtoAEntidad(user, dto);
+        Usuarios Usuarios = new Usuarios();
+        Usuarios.setIdUsuario(dto.getIdUsuario());
+        Usuarios.setNumeroDocumento(dto.getNumeroDocumento());
+        Usuarios.setApellidos(dto.getApellidos());
+        Usuarios.setNombres(dto.getNombres());
+        Usuarios.setCorreo(dto.getCorreo());
+        Usuarios.setUsuario(dto.getUsuario());
+        Usuarios.setContrasena(dto.getContrasena());
+        Usuarios.setFotoPerfil(dto.getFotoPerfil());
         
-        // Carga rápida para modificar
-        user.setIdSede(new Sedes(dto.getIdSede()));
-        user.setIdRol(new Roles(dto.getIdRol()));
-        user.setIdTipoDoc(new TipoDocumentos(dto.getIdTipoDoc()));
+        Usuarios.setIdSede(new Sedes(dto.getIdSede()));
+        Usuarios.setIdRol(new Roles(dto.getIdRol()));
+        Usuarios.setIdTipoDoc(new TipoDocumentos(dto.getIdTipoDoc()));
 
-        return ResponseEntity.ok(serviceUsuarios.modificar(user));
+        return ResponseEntity.ok(serviceUsuarios.modificar(Usuarios));
     }
 
-    private void mapearDtoAEntidad(Usuarios user, UsuariosDTO dto) {
-        user.setNumeroDocumento(dto.getNumeroDocumento());
-        user.setApellidos(dto.getApellidos());
-        user.setNombres(dto.getNombres());
-        user.setCorreo(dto.getCorreo());
-        user.setUsuario(dto.getUsuario());
-        user.setContrasena(dto.getContrasena());
-        user.setFotoPerfil(dto.getFotoPerfil());
-    }
 
     @GetMapping("/usuarios/{id}")
     public Optional<Usuarios> buscarId(@PathVariable Long id) {

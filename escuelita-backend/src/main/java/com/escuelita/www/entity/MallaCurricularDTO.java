@@ -1,56 +1,43 @@
 package com.escuelita.www.entity;
 
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "malla_curricular")
-@SQLDelete(sql = "UPDATE malla_curricular SET estado=0 WHERE id_malla=?")
-@SQLRestriction("estado = 1")
-@JsonPropertyOrder({ "id_malla", "estado", "id_anio", "id_grado", "id_curso" })
 public class MallaCurricularDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_malla;
-
-    private Long id_anio;
-    private Long id_grado;
-    private Long id_curso;
+    private Long idMalla;
+    private Long idAnio;
+    private Long idGrado;
+    private Long idCurso;
     private Integer estado = 1;
 
-    public Long getId_malla() {
-        return id_malla;
+    public Long getIdMalla() {
+        return idMalla;
     }
 
-    public void setId_malla(Long id_malla) {
-        this.id_malla = id_malla;
+    public void setIdMalla(Long idMalla) {
+        this.idMalla = idMalla;
     }
 
-    public Long getId_anio() {
-        return id_anio;
+    public Long getIdAnio() {
+        return idAnio;
     }
 
-    public void setId_anio(Long id_anio) {
-        this.id_anio = id_anio;
+    public void setIdAnio(Long idAnio) {
+        this.idAnio = idAnio;
     }
 
-    public Long getId_grado() {
-        return id_grado;
+    public Long getIdGrado() {
+        return idGrado;
     }
 
-    public void setId_grado(Long id_grado) {
-        this.id_grado = id_grado;
+    public void setIdGrado(Long idGrado) {
+        this.idGrado = idGrado;
     }
 
-    public Long getId_curso() {
-        return id_curso;
+    public Long getIdCurso() {
+        return idCurso;
     }
 
-    public void setId_curso(Long id_curso) {
-        this.id_curso = id_curso;
+    public void setIdCurso(Long idCurso) {
+        this.idCurso = idCurso;
     }
 
     public Integer getEstado() {
@@ -63,7 +50,7 @@ public class MallaCurricularDTO {
 
     @Override
     public String toString() {
-        return "MallaCurricularDTO [id_malla=" + id_malla + ", id_anio=" + id_anio + ", id_grado=" + id_grado
-                + ", id_curso=" + id_curso + ", estado=" + estado + "]";
+        return "MallaCurricularDTO [idMalla=" + idMalla + ", idAnio=" + idAnio + ", idGrado=" + idGrado
+                + ", idCurso=" + idCurso + ", estado=" + estado + "]";
     }
 }

@@ -1,10 +1,21 @@
 package com.escuelita.www.entity;
 
 import java.time.LocalDate;
+
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "perfil_docente")
@@ -14,11 +25,17 @@ public class PerfilDocente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_docente;
+    @Column(name = "id_docente")
+    private Long idDocente;
 
-    private String grado_academico;
-    private LocalDate fecha_contratacion;
-    private String estado_laboral;
+    @Column(name = "grado_academico")
+    private String gradoAcademico;
+    
+    @Column(name = "fecha_contratacion")
+    private LocalDate fechaContratacion;
+    
+    @Column(name = "estado_laboral")
+    private String estadoLaboral;
     private Integer estado = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -31,73 +48,61 @@ public class PerfilDocente {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private Especialidades especialidad;
 
+    //Constructor vacio
     public PerfilDocente() {
     }
 
-    public PerfilDocente(Long id_docente) {
-        this.id_docente = id_docente;
+    public PerfilDocente(Long idDocente) {
+        this.idDocente = idDocente;
     }
 
-    public Long getId_docente() {
-        return id_docente;
+    //Getters y Setters / ToString
+    public Long getIdDocente() {
+        return idDocente;
     }
-
-    public void setId_docente(Long id_docente) {
-        this.id_docente = id_docente;
+    public void setIdDocente(Long idDocente) {
+        this.idDocente = idDocente;
     }
-
-    public String getGrado_academico() {
-        return grado_academico;
+    public String getGradoAcademico() {
+        return gradoAcademico;
     }
-
-    public void setGrado_academico(String grado_academico) {
-        this.grado_academico = grado_academico;
+    public void setGradoAcademico(String gradoAcademico) {
+        this.gradoAcademico = gradoAcademico;
     }
-
-    public LocalDate getFecha_contratacion() {
-        return fecha_contratacion;
+    public LocalDate getFechaContratacion() {
+        return fechaContratacion;
     }
-
-    public void setFecha_contratacion(LocalDate fecha_contratacion) {
-        this.fecha_contratacion = fecha_contratacion;
+    public void setFechaContratacion(LocalDate fechaContratacion) {
+        this.fechaContratacion = fechaContratacion;
     }
-
-    public String getEstado_laboral() {
-        return estado_laboral;
+    public String getEstadoLaboral() {
+        return estadoLaboral;
     }
-
-    public void setEstado_laboral(String estado_laboral) {
-        this.estado_laboral = estado_laboral;
+    public void setEstadoLaboral(String estadoLaboral) {
+        this.estadoLaboral = estadoLaboral;
     }
-
     public Integer getEstado() {
         return estado;
     }
-
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-
     public Usuarios getUsuario() {
         return usuario;
     }
-
     public void setUsuario(Usuarios usuario) {
         this.usuario = usuario;
     }
-
     public Especialidades getEspecialidad() {
         return especialidad;
     }
-
     public void setEspecialidad(Especialidades especialidad) {
         this.especialidad = especialidad;
     }
-
     @Override
     public String toString() {
-        return "PerfilDocente [id_docente=" + id_docente + ", grado_academico=" + grado_academico
-                + ", fecha_contratacion=" + fecha_contratacion + ", estado_laboral=" + estado_laboral + ", estado="
+        return "PerfilDocente [idDocente=" + idDocente + ", gradoAcademico=" + gradoAcademico
+                + ", fechaContratacion=" + fechaContratacion + ", estadoLaboral=" + estadoLaboral + ", estado="
                 + estado + "]";
     }
 }

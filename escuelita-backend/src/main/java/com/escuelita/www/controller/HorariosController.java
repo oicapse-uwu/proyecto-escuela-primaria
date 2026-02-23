@@ -5,10 +5,21 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.escuelita.www.entity.*;
-import com.escuelita.www.repository.*;
+import com.escuelita.www.entity.AsignacionDocente;
+import com.escuelita.www.entity.Aulas;
+import com.escuelita.www.entity.Horarios;
+import com.escuelita.www.entity.HorariosDTO;
+import com.escuelita.www.repository.AsignacionDocenteRepository;
+import com.escuelita.www.repository.AulasRepository;
 import com.escuelita.www.service.IHorariosService;
 
 @RestController
@@ -30,14 +41,14 @@ public class HorariosController {
     @PostMapping("/horarios")
     public ResponseEntity<?> guardar(@RequestBody HorariosDTO dto) {
         Horarios horario = new Horarios();
-        horario.setDia_semana(dto.getDia_semana());
-        horario.setHora_inicio(dto.getHora_inicio());
-        horario.setHora_fin(dto.getHora_fin());
+        horario.setDiaSemana(dto.getDiaSemana());
+        horario.setHoraInicio(dto.getHoraInicio());
+        horario.setHoraFin(dto.getHoraFin());
         if (dto.getEstado() != null)
             horario.setEstado(dto.getEstado());
 
-        horario.setAsignacion(repoAsignacion.findById(dto.getId_asignacion()).orElse(null));
-        horario.setAula(repoAulas.findById(dto.getId_aula()).orElse(null));
+        horario.setAsignacion(repoAsignacion.findById(dto.getIdAsignacion()).orElse(null));
+        horario.setAula(repoAulas.findById(dto.getIdAula()).orElse(null));
 
         serviceHorarios.guardar(horario);
         return ResponseEntity.ok(horario);
@@ -45,19 +56,19 @@ public class HorariosController {
 
     @PutMapping("/horarios")
     public ResponseEntity<?> modificar(@RequestBody HorariosDTO dto) {
-        if (dto.getId_horario() == null) {
+        if (dto.getIdHorario() == null) {
             return ResponseEntity.badRequest().body("ID de horario es requerido");
         }
         Horarios horario = new Horarios();
-        horario.setId_horario(dto.getId_horario());
-        horario.setDia_semana(dto.getDia_semana());
-        horario.setHora_inicio(dto.getHora_inicio());
-        horario.setHora_fin(dto.getHora_fin());
+        horario.setIdHorario(dto.getIdHorario());
+        horario.setDiaSemana(dto.getDiaSemana());
+        horario.setHoraInicio(dto.getHoraInicio());
+        horario.setHoraFin(dto.getHoraFin());
         if (dto.getEstado() != null)
             horario.setEstado(dto.getEstado());
 
-        horario.setAsignacion(new AsignacionDocente(dto.getId_asignacion()));
-        horario.setAula(new Aulas(dto.getId_aula()));
+        horario.setAsignacion(new AsignacionDocente(dto.getIdAsignacion()));
+        horario.setAula(new Aulas(dto.getIdAula()));
 
         serviceHorarios.modificar(horario);
         return ResponseEntity.ok(horario);

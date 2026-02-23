@@ -2,21 +2,29 @@ package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tipos_nota")
 @SQLDelete(sql = "UPDATE tipos_nota SET estado=0 WHERE id_tipo_nota=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "id_tipo_nota", "nombre", "formato", "valor_minimo", "valor_maximo", "estado"
+    "idTipoNota", "nombre", "formato", "valorMinimo", "valorMaximo", "estado"
 })
 public class TiposNota {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_tipo_nota;
+    @Column(name = "id_tipo_nota")
+    private Long idTipoNota;
 
     @Column(length = 50)
     private String nombre;
@@ -24,25 +32,25 @@ public class TiposNota {
     @Column(columnDefinition = "ENUM('NUMERO', 'LETRA', 'SIMBOLO')")
     private String formato;
 
-    @Column(length = 10)
-    private String valor_minimo;
+    @Column(name = "valor_minimo", length = 10)
+    private String valorMinimo;
 
-    @Column(length = 10)
-    private String valor_maximo;
+    @Column(name = "valor_maximo", length = 10)
+    private String valorMaximo;
 
     @Column(nullable = false)
     private Integer estado = 1;
 
     public TiposNota() {}
-    public TiposNota(Long id_tipo_nota) { this.id_tipo_nota = id_tipo_nota; }
+    public TiposNota(Long idTipoNota) { this.idTipoNota = idTipoNota; }
 
     // Getters y Setters
 
-    public Long getId_tipo_nota() {
-        return id_tipo_nota;
+    public Long getIdTipoNota() {
+        return idTipoNota;
     }
-    public void setId_tipo_nota(Long id_tipo_nota) {
-        this.id_tipo_nota = id_tipo_nota;
+    public void setIdTipoNota(Long idTipoNota) {
+        this.idTipoNota = idTipoNota;
     }
     public String getNombre() {
         return nombre;
@@ -56,17 +64,17 @@ public class TiposNota {
     public void setFormato(String formato) {
         this.formato = formato;
     }
-    public String getValor_minimo() {
-        return valor_minimo;
+    public String getValorMinimo() {
+        return valorMinimo;
     }
-    public void setValor_minimo(String valor_minimo) {
-        this.valor_minimo = valor_minimo;
+    public void setValorMinimo(String valorMinimo) {
+        this.valorMinimo = valorMinimo;
     }
-    public String getValor_maximo() {
-        return valor_maximo;
+    public String getValorMaximo() {
+        return valorMaximo;
     }
-    public void setValor_maximo(String valor_maximo) {
-        this.valor_maximo = valor_maximo;
+    public void setValorMaximo(String valorMaximo) {
+        this.valorMaximo = valorMaximo;
     }
     public Integer getEstado() {
         return estado;
@@ -74,9 +82,8 @@ public class TiposNota {
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-
     @Override
     public String toString() {
-        return "TiposNota [id_tipo_nota=" + id_tipo_nota + ", nombre=" + nombre + ", formato=" + formato + "]";
+        return "TiposNota [idTipoNota=" + idTipoNota + ", nombre=" + nombre + ", formato=" + formato + "]";
     }
 }

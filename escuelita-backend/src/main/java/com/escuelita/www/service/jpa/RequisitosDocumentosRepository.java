@@ -1,4 +1,4 @@
-package com.escuelita.www.repository;
+package com.escuelita.www.service.jpa;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

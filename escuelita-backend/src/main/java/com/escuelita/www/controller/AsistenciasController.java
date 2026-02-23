@@ -2,11 +2,24 @@ package com.escuelita.www.controller;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import com.escuelita.www.entity.*;
-import com.escuelita.www.repository.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.escuelita.www.entity.AsignacionDocente;
+import com.escuelita.www.entity.Asistencias;
+import com.escuelita.www.entity.AsistenciasDTO;
+import com.escuelita.www.entity.Matriculas;
+import com.escuelita.www.repository.AsignacionDocenteRepository;
+import com.escuelita.www.repository.MatriculasRepository;
 import com.escuelita.www.service.IAsistenciasService;
 
 @RestController
@@ -28,30 +41,30 @@ public class AsistenciasController {
     public ResponseEntity<?> guardar(@RequestBody AsistenciasDTO dto) {
         Asistencias asis = new Asistencias();
         asis.setFecha(dto.getFecha());
-        asis.setEstado_asistencia(dto.getEstado_asistencia());
+        asis.setEstadoAsistencia(dto.getEstadoAsistencia());
         asis.setObservaciones(dto.getObservaciones());
 
-        asis.setId_asignacion(repoAsignacion.findById(dto.getId_asignacion()).orElse(null));
-        asis.setId_matricula(repoMatriculas.findById(dto.id_matricula()).orElse(null));
+        asis.setIdAsignacion(repoAsignacion.findById(dto.getIdAsignacion()).orElse(null));
+        asis.setIdMatricula(repoMatriculas.findById(dto.getIdMatricula()).orElse(null));
 
         return ResponseEntity.ok(serviceAsistencias.guardar(asis));
     }
 
     @PutMapping("/asistencias")
     public ResponseEntity<?> modificar(@RequestBody AsistenciasDTO dto) {
-        if(dto.getId_asistencia() == null) return ResponseEntity.badRequest().body("ID requerido");
+        if(dto.getIdAsistencia() == null) return ResponseEntity.badRequest().body("ID requerido");
         
         Asistencias asis = new Asistencias();
-        asis.setId_asistencia(dto.getId_asistencia());
+        asis.setIdAsistencia(dto.getIdAsistencia());
         asis.setFecha(dto.getFecha());
-        asis.setEstado_asistencia(dto.getEstado_asistencia());
+        asis.setEstadoAsistencia(dto.getEstadoAsistencia());
         asis.setObservaciones(dto.getObservaciones());
 
-        AsignacionDocente ad = new AsignacionDocente(); ad.setId_asignacion(dto.getId_asignacion());
-        asis.setId_asignacion(ad);
+        AsignacionDocente ad = new AsignacionDocente(); ad.setIdAsignacion(dto.getIdAsignacion());
+        asis.setIdAsignacion(ad);
 
-        Matriculas mat = new Matriculas(); mat.setId_matricula(dto.id_matricula());
-        asis.setId_matricula(mat);
+        Matriculas mat = new Matriculas(); mat.setIdMatricula(dto.getIdMatricula());
+        asis.setIdMatricula(mat);
 
         return ResponseEntity.ok(serviceAsistencias.modificar(asis));
     }

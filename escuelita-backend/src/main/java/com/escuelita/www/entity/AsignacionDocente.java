@@ -2,8 +2,18 @@ package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "asignacion_docente")
@@ -13,7 +23,8 @@ public class AsignacionDocente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_asignacion;
+    @Column(name = "id_asignacion")
+    private Long idAsignacion;
 
     private Integer estado = 1;
 
@@ -40,60 +51,47 @@ public class AsignacionDocente {
     public AsignacionDocente() {
     }
 
-    public AsignacionDocente(Long id_asignacion) {
-        this.id_asignacion = id_asignacion;
+    public AsignacionDocente(Long idAsignacion) {
+        this.idAsignacion = idAsignacion;
     }
-
-    public Long getId_asignacion() {
-        return id_asignacion;
+    public Long getIdAsignacion() {
+        return idAsignacion;
     }
-
-    public void setId_asignacion(Long id_asignacion) {
-        this.id_asignacion = id_asignacion;
+    public void setIdAsignacion(Long idAsignacion) {
+        this.idAsignacion = idAsignacion;
     }
-
     public Integer getEstado() {
         return estado;
     }
-
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-
     public PerfilDocente getDocente() {
         return docente;
     }
-
     public void setDocente(PerfilDocente docente) {
         this.docente = docente;
     }
-
     public Secciones getSeccion() {
         return seccion;
     }
-
     public void setSeccion(Secciones seccion) {
         this.seccion = seccion;
     }
-
     public Cursos getCurso() {
         return curso;
     }
-
     public void setCurso(Cursos curso) {
         this.curso = curso;
     }
-
     public AnioEscolar getAnioEscolar() {
         return anioEscolar;
     }
-
     public void setAnioEscolar(AnioEscolar anioEscolar) {
         this.anioEscolar = anioEscolar;
     }
-
     @Override
     public String toString() {
-        return "AsignacionDocente [id_asignacion=" + id_asignacion + ", estado=" + estado + "]";
+        return "AsignacionDocente [idAsignacion=" + idAsignacion + ", estado=" + estado + "]";
     }
 }

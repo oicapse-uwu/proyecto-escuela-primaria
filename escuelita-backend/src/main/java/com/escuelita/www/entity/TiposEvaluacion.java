@@ -2,21 +2,29 @@ package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tipos_evaluacion")
 @SQLDelete(sql = "UPDATE tipos_evaluacion SET estado=0 WHERE id_tipo_evaluacion=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "id_tipo_evaluacion", "nombre", "estado"
+    "idTipoEvaluacion", "nombre", "estado"
 })
 public class TiposEvaluacion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_tipo_evaluacion;
+    @Column(name = "id_tipo_evaluacion")
+    private Long idTipoEvaluacion;
 
     @Column(length = 100)
     private String nombre;
@@ -25,15 +33,15 @@ public class TiposEvaluacion {
     private Integer estado = 1;
 
     public TiposEvaluacion() {}
-    public TiposEvaluacion(Long id_tipo_evaluacion) {
-        this.id_tipo_evaluacion = id_tipo_evaluacion;
+    public TiposEvaluacion(Long idTipoEvaluacion) {
+        this.idTipoEvaluacion = idTipoEvaluacion;
     }
 
-    public Long getId_tipo_evaluacion() {
-        return id_tipo_evaluacion;
+    public Long getIdTipoEvaluacion() {
+        return idTipoEvaluacion;
     }
-    public void setId_tipo_evaluacion(Long id_tipo_evaluacion) {
-        this.id_tipo_evaluacion = id_tipo_evaluacion;
+    public void setIdTipoEvaluacion(Long idTipoEvaluacion) {
+        this.idTipoEvaluacion = idTipoEvaluacion;
     }
     public String getNombre() {
         return nombre;
@@ -49,6 +57,6 @@ public class TiposEvaluacion {
     }
     @Override
     public String toString() {
-        return "TiposEvaluacion [id_tipo_evaluacion=" + id_tipo_evaluacion + ", nombre=" + nombre + ", estado=" + estado + "]";
+        return "TiposEvaluacion [idTipoEvaluacion=" + idTipoEvaluacion + ", nombre=" + nombre + ", estado=" + estado + "]";
     }
 }

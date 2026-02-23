@@ -1,65 +1,52 @@
 package com.escuelita.www.entity;
 
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "asignacion_docente")
-@SQLDelete(sql = "UPDATE asignacion_docente SET estado=0 WHERE id_asignacion=?")
-@SQLRestriction("estado = 1")
-@JsonPropertyOrder({ "id_asignacion", "estado", "id_docente", "id_seccion", "id_curso", "id_anio" })
 public class AsignacionDocenteDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_asignacion;
-
-    private Long id_docente;
-    private Long id_seccion;
-    private Long id_curso;
-    private Long id_anio;
+    private Long idAsignacion;
+    private Long idDocente;
+    private Long idSeccion;
+    private Long idCurso;
+    private Long idAnio;
     private Integer estado = 1;
 
-    public Long getId_asignacion() {
-        return id_asignacion;
+    public Long getIdAsignacion() {
+        return idAsignacion;
     }
 
-    public void setId_asignacion(Long id_asignacion) {
-        this.id_asignacion = id_asignacion;
+    public void setIdAsignacion(Long idAsignacion) {
+        this.idAsignacion = idAsignacion;
     }
 
-    public Long getId_docente() {
-        return id_docente;
+    public Long getIdDocente() {
+        return idDocente;
     }
 
-    public void setId_docente(Long id_docente) {
-        this.id_docente = id_docente;
+    public void setIdDocente(Long idDocente) {
+        this.idDocente = idDocente;
     }
 
-    public Long getId_seccion() {
-        return id_seccion;
+    public Long getIdSeccion() {
+        return idSeccion;
     }
 
-    public void setId_seccion(Long id_seccion) {
-        this.id_seccion = id_seccion;
+    public void setIdSeccion(Long idSeccion) {
+        this.idSeccion = idSeccion;
     }
 
-    public Long getId_curso() {
-        return id_curso;
+    public Long getIdCurso() {
+        return idCurso;
     }
 
-    public void setId_curso(Long id_curso) {
-        this.id_curso = id_curso;
+    public void setIdCurso(Long idCurso) {
+        this.idCurso = idCurso;
     }
 
-    public Long getId_anio() {
-        return id_anio;
+    public Long getIdAnio() {
+        return idAnio;
     }
 
-    public void setId_anio(Long id_anio) {
-        this.id_anio = id_anio;
+    public void setIdAnio(Long idAnio) {
+        this.idAnio = idAnio;
     }
 
     public Integer getEstado() {
@@ -72,7 +59,7 @@ public class AsignacionDocenteDTO {
 
     @Override
     public String toString() {
-        return "AsignacionDocenteDTO [id_asignacion=" + id_asignacion + ", id_docente=" + id_docente + ", id_seccion="
-                + id_seccion + ", id_curso=" + id_curso + ", id_anio=" + id_anio + ", estado=" + estado + "]";
+        return "AsignacionDocenteDTO [idAsignacion=" + idAsignacion + ", idDocente=" + idDocente + ", idSeccion="
+                + idSeccion + ", idCurso=" + idCurso + ", idAnio=" + idAnio + ", estado=" + estado + "]";
     }
 }

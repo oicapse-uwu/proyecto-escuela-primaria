@@ -8,7 +8,7 @@ import com.escuelita.www.entity.Roles;
 import com.escuelita.www.service.IRolesService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class RolesController {
 
     @Autowired

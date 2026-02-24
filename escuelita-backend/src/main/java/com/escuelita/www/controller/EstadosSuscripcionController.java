@@ -8,7 +8,7 @@ import com.escuelita.www.entity.EstadosSuscripcion;
 import com.escuelita.www.service.IEstadosSuscripcionService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class EstadosSuscripcionController {
 
     @Autowired

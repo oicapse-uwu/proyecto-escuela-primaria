@@ -21,7 +21,7 @@ import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.service.IAreasService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class AreasController {
 
     @Autowired

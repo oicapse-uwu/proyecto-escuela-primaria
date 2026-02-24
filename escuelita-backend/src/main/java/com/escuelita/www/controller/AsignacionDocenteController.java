@@ -27,7 +27,7 @@ import com.escuelita.www.repository.SeccionesRepository;
 import com.escuelita.www.service.IAsignacionDocenteService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class AsignacionDocenteController {
 
     @Autowired

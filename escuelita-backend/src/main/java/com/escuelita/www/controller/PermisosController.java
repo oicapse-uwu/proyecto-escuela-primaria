@@ -8,7 +8,7 @@ import com.escuelita.www.entity.Permisos;
 import com.escuelita.www.service.IPermisosService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class PermisosController {
 
     @Autowired

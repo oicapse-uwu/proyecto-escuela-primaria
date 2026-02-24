@@ -25,7 +25,7 @@ import com.escuelita.www.repository.GradosRepository;
 import com.escuelita.www.service.IMallaCurricularService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class MallaCurricularController {
 
     @Autowired

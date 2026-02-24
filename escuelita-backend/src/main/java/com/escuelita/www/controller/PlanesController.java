@@ -8,7 +8,7 @@ import com.escuelita.www.entity.Planes;
 import com.escuelita.www.service.IPlanesService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class PlanesController {
 
     @Autowired

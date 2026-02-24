@@ -23,7 +23,7 @@ import com.escuelita.www.repository.UsuariosRepository;
 import com.escuelita.www.service.IPerfilDocenteService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class PerfilDocenteController {
 
     @Autowired

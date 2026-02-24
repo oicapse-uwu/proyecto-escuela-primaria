@@ -23,7 +23,7 @@ import com.escuelita.www.repository.AulasRepository;
 import com.escuelita.www.service.IHorariosService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class HorariosController {
 
     @Autowired

@@ -1,10 +1,13 @@
 package com.escuelita.www.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,11 +33,20 @@ import com.escuelita.www.service.ISuscripcionesService;
 @RequestMapping("/restful")
 public class SuscripcionesController {
 
-    @Autowired private ISuscripcionesService serviceSuscripciones;
-    @Autowired private InstitucionRepository repoInst; // Asumiendo que existe
-    @Autowired private PlanesRepository repoPlanes;
-    @Autowired private CiclosFacturacionRepository repoCiclos;
-    @Autowired private EstadosSuscripcionRepository repoEstados;
+    @Autowired 
+    private ISuscripcionesService serviceSuscripciones;
+
+    @Autowired 
+    private InstitucionRepository repoInst;
+
+    @Autowired 
+    private PlanesRepository repoPlanes;
+
+    @Autowired 
+    private CiclosFacturacionRepository repoCiclos;
+
+    @Autowired 
+    private EstadosSuscripcionRepository repoEstados;
 
     @GetMapping("/suscripciones")
     public List<Suscripciones> buscarTodos() {
@@ -50,20 +62,15 @@ public class SuscripcionesController {
         suscripciones.setFechaInicio(dto.getFechaInicio());
         suscripciones.setFechaVencimiento(dto.getFechaVencimiento());
         
-
         Institucion institucion = repoInst
             .findById(dto.getIdInstitucion())
             .orElse(null);
-        
-        
         Planes planes = repoPlanes
             .findById(dto.getIdPlan())
             .orElse(null);
-        
         CiclosFacturacion ciclosfacturacion = repoCiclos
             .findById(dto.getIdCiclo())
             .orElse(null);
-        
         EstadosSuscripcion estadosSuscripcion = repoEstados
             .findById(dto.getIdEstado())
             .orElse(null);
@@ -75,11 +82,12 @@ public class SuscripcionesController {
 
         return ResponseEntity.ok(serviceSuscripciones.guardar(suscripciones));
     }
-
     @PutMapping("/suscripciones")
     public ResponseEntity<?> modificar(@RequestBody SuscripcionesDTO dto) {
-        if(dto.getIdSuscripcion() == null) {return ResponseEntity.badRequest().body("ID requerido");
-       }
+        if(dto.getIdSuscripcion() == null) {
+            return ResponseEntity.badRequest()
+            .body("ID requerido");
+        }
         
         Suscripciones suscripciones = new Suscripciones();
         suscripciones.setIdSuscripcion(dto.getIdSuscripcion());
@@ -96,5 +104,13 @@ public class SuscripcionesController {
 
         return ResponseEntity.ok(serviceSuscripciones.modificar(suscripciones));
     }
-
+    @GetMapping("/suscripciones/{id}")
+    public Optional<Suscripciones> buscarId(@PathVariable("id") Long id){
+        return serviceSuscripciones.buscarId(id);
+    }
+    @DeleteMapping("/suscripciones/{id}")
+    public String eliminar(@PathVariable Long id){
+        serviceSuscripciones.eliminar(id);
+        return "Suscripcion eliminada";
+    }   
 }

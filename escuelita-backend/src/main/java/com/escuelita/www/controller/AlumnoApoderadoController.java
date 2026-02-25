@@ -73,15 +73,8 @@ public class AlumnoApoderadoController {
         alumnoapoderado.setEsRepresentanteFinanciero(dto.getEsRepresentanteFinanciero());
         alumnoapoderado.setViveConEstudiante(dto.getViveConEstudiante());
 
-        // Crear objeto Alumnos con el ID
-        Alumnos alumno = new Alumnos();
-        alumno.setIdAlumno(dto.getIdAlumno());
-        alumnoapoderado.setIdAlumno(alumno);
-
-        // Crear objeto Apoderados con el ID
-        Apoderados apoderado = new Apoderados();
-        apoderado.setIdApoderado(dto.getIdApoderado());
-        alumnoapoderado.setIdApoderado(apoderado);
+        alumnoapoderado.setIdAlumno(new Alumnos(dto.getIdAlumno()));
+        alumnoapoderado.setIdApoderado(new Apoderados(dto.getIdApoderado()));
 
         return ResponseEntity.ok(serviceAlumnoApoderado.modificar(alumnoapoderado));
     }

@@ -51,8 +51,8 @@ public class PerfilDocenteController {
         Usuarios usuario = repoUsuarios.findById(dto.getIdUsuario()).orElse(null);
         Especialidades especialidad = repoEspecialidades.findById(dto.getIdEspecialidad()).orElse(null);
 
-        docente.setUsuario(usuario);
-        docente.setEspecialidad(especialidad);
+        docente.setIdUsuario(usuario);
+        docente.setIdEspecialidad(especialidad);
 
         servicePerfilDocente.guardar(docente);
         return ResponseEntity.ok(docente);
@@ -73,8 +73,8 @@ public class PerfilDocenteController {
 
         // Para que esto funcione, asegúrate de tener el constructor public
         // Usuarios(Long id) en tu entidad
-        docente.setUsuario(repoUsuarios.findById(dto.getIdUsuario()).orElse(null));
-        docente.setEspecialidad(repoEspecialidades.findById(dto.getIdEspecialidad()).orElse(null));
+        docente.setIdUsuario(repoUsuarios.findById(dto.getIdUsuario()).orElse(null));
+        docente.setIdEspecialidad(repoEspecialidades.findById(dto.getIdEspecialidad()).orElse(null));
 
         servicePerfilDocente.modificar(docente);
         return ResponseEntity.ok(docente);

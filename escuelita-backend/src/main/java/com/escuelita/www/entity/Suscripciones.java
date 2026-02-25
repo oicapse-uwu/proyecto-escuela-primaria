@@ -110,10 +110,10 @@ public class Suscripciones {
     public void setFechaVencimiento(LocalDate fechaVencimiento) {
         this.fechaVencimiento = fechaVencimiento;
     }
-    public EstadosSuscripcion getidEstado() {
+    public EstadosSuscripcion getIdEstado() {
         return idEstado;
     }
-    public void setidEstado(EstadosSuscripcion idEstado) {
+    public void setIdEstado(EstadosSuscripcion idEstado) {
         this.idEstado = idEstado;
     }
     public Institucion getIdInstitucion() {

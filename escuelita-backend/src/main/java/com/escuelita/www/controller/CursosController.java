@@ -46,7 +46,7 @@ public class CursosController {
                 .findById(dto.getIdArea())
                 .orElse(null);
 
-        curso.setArea(area);
+        curso.setIdArea(area);
 
         return ResponseEntity.ok(serviceCursos.guardar(curso));
     }
@@ -63,7 +63,7 @@ public class CursosController {
         if (dto.getEstado() != null)
             curso.setEstado(dto.getEstado());
 
-        curso.setArea(new Areas(dto.getIdArea()));
+        curso.setIdArea(new Areas(dto.getIdArea()));
 
         return ResponseEntity.ok(serviceCursos.modificar(curso));
     }

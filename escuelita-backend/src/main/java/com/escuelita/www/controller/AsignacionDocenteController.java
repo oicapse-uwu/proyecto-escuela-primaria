@@ -14,18 +14,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.escuelita.www.entity.AnioEscolar;
 import com.escuelita.www.entity.AsignacionDocente;
 import com.escuelita.www.entity.AsignacionDocenteDTO;
-import com.escuelita.www.entity.AnioEscolar;
 import com.escuelita.www.entity.Cursos;
 import com.escuelita.www.entity.PerfilDocente;
 import com.escuelita.www.entity.Secciones;
-
 import com.escuelita.www.repository.AnioEscolarRepository;
 import com.escuelita.www.repository.CursosRepository;
 import com.escuelita.www.repository.PerfilDocenteRepository;
 import com.escuelita.www.repository.SeccionesRepository;
-
 import com.escuelita.www.service.IAsignacionDocenteService;
 
 @RestController
@@ -53,10 +51,23 @@ public class AsignacionDocenteController {
         if (dto.getEstado() != null)
             asignacion.setEstado(dto.getEstado());
 
-        asignacion.setIdDocente(repoDocente.findById(dto.getIdDocente()).orElse(null));
-        asignacion.setIdSeccion(repoSecciones.findById(dto.getIdSeccion()).orElse(null));
-        asignacion.setIdCurso(repoCursos.findById(dto.getIdCurso()).orElse(null));
-        asignacion.setIdAnioEscolar(repoAnio.findById(dto.getIdAnio()).orElse(null));
+        PerfilDocente docente = repoDocente
+            .findById(dto.getIdDocente())
+            .orElse(null);
+        Secciones seccion = repoSecciones
+            .findById(dto.getIdSeccion())
+            .orElse(null);
+        Cursos curso = repoCursos
+            .findById(dto.getIdCurso())
+            .orElse(null);
+        AnioEscolar anio = repoAnio
+            .findById(dto.getIdAnio())
+            .orElse(null);
+        
+        asignacion.setIdDocente(docente);
+        asignacion.setIdSeccion(seccion);
+        asignacion.setIdCurso(curso);
+        asignacion.setIdAnioEscolar(anio);
 
         serviceAsignacionDocente.guardar(asignacion);
         return ResponseEntity.ok(asignacion);
@@ -64,20 +75,18 @@ public class AsignacionDocenteController {
     @PutMapping("/asignaciondocente")
     public ResponseEntity<?> modificar(@RequestBody AsignacionDocenteDTO dto) {
         if (dto.getIdAsignacion() == null) {
-            return ResponseEntity.badRequest().body("ID de asignación es requerido");
+            return ResponseEntity.badRequest()
+                    .body("ID de asignación es requerido");
         }
         AsignacionDocente asignacion = new AsignacionDocente();
         asignacion.setIdAsignacion(dto.getIdAsignacion());
-        if (dto.getEstado() != null)
-            asignacion.setEstado(dto.getEstado());
+        
+        asignacion.setIdDocente(new PerfilDocente(dto.getIdDocente()));
+        asignacion.setIdSeccion(new Secciones(dto.getIdSeccion()));
+        asignacion.setIdCurso(new Cursos(dto.getIdCurso()));
+        asignacion.setIdAnioEscolar(new AnioEscolar(dto.getIdAnio()));
 
-        asignacion.setIdDocente(repoDocente.findById(dto.getIdDocente()).orElse(null));
-        asignacion.setIdSeccion(repoSecciones.findById(dto.getIdSeccion()).orElse(null));
-        asignacion.setIdCurso(repoCursos.findById(dto.getIdCurso()).orElse(null));
-        asignacion.setIdAnioEscolar(repoAnio.findById(dto.getIdAnio()).orElse(null));
-
-        serviceAsignacionDocente.modificar(asignacion);
-        return ResponseEntity.ok(asignacion);
+        return ResponseEntity.ok(serviceAsignacionDocente.modificar(asignacion));
     }
     @GetMapping("/asignaciondocente/{id}")
     public Optional<AsignacionDocente> buscarId(@PathVariable("id") Long id) {

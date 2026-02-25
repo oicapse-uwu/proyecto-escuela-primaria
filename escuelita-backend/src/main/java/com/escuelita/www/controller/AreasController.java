@@ -48,7 +48,7 @@ public class AreasController {
                 .findById(dto.getIdSede())
                 .orElse(null);
 
-        area.setSede(sede);
+        area.setIdSede(sede);
 
         serviceAreas.guardar(area);
         return ResponseEntity.ok(area);
@@ -68,7 +68,7 @@ public class AreasController {
             area.setEstado(dto.getEstado());
 
         // Instanciando la relación con el constructor de ID
-        area.setSede(new Sedes(dto.getIdSede()));
+        area.setIdSede(new Sedes(dto.getIdSede()));
 
         serviceAreas.modificar(area);
         return ResponseEntity.ok(area);

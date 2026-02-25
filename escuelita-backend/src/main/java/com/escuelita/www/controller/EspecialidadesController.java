@@ -16,7 +16,7 @@ public class EspecialidadesController {
     private IEspecialidadesService serviceEspecialidades;
 
     @GetMapping("/especialidades")
-    public List<Especialidades> buscartodos() {
+    public List<Especialidades> buscarTodos() {
         return serviceEspecialidades.buscarTodos();
     }
 

@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -20,7 +22,6 @@ import jakarta.persistence.Table;
     "idTipoNota", "nombre", "formato", "valorMinimo", "valorMaximo", "estado"
 })
 public class TiposNota {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_tipo_nota")
@@ -28,24 +29,23 @@ public class TiposNota {
 
     @Column(length = 50)
     private String nombre;
-
     @Column(columnDefinition = "ENUM('NUMERO', 'LETRA', 'SIMBOLO')")
     private String formato;
-
     @Column(name = "valor_minimo", length = 10)
     private String valorMinimo;
-
     @Column(name = "valor_maximo", length = 10)
     private String valorMaximo;
 
-    @Column(nullable = false)
     private Integer estado = 1;
 
-    public TiposNota() {}
-    public TiposNota(Long idTipoNota) { this.idTipoNota = idTipoNota; }
+    //Constructor vacio
+    public TiposNota() {
+    }
+    public TiposNota(Long idTipoNota) { 
+        this.idTipoNota = idTipoNota; 
+    }
 
-    // Getters y Setters
-
+    // Getters y Setters / toString
     public Long getIdTipoNota() {
         return idTipoNota;
     }
@@ -84,6 +84,6 @@ public class TiposNota {
     }
     @Override
     public String toString() {
-        return "TiposNota [idTipoNota=" + idTipoNota + ", nombre=" + nombre + ", formato=" + formato + "]";
+        return "TiposNota [idTipoNota=" + idTipoNota + ", nombre=" + nombre + ", formato=" + formato + ", valorMinimo=" + valorMinimo + ", valorMaximo=" + valorMaximo + ", estado=" + estado + "]";
     }
 }

@@ -38,7 +38,7 @@ public class ApoderadosController {
     private SedesRepository repoSedes;
 
     @GetMapping("/apoderados")
-    public List<Apoderados> buscartodos() {
+    public List<Apoderados> buscarTodos() {
         return serviceApoderados.buscarTodos(); 
     }
     @PostMapping("/apoderados")

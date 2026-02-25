@@ -10,31 +10,25 @@ import com.escuelita.www.service.IAsignacionDocenteService;
 
 @Service
 public class AsignacionDocenteService implements IAsignacionDocenteService {
-
     @Autowired
     private AsignacionDocenteRepository repoAsignacionDocente;
 
-    @Override
     public List<AsignacionDocente> buscarTodos() {
         return repoAsignacionDocente.findAll();
     }
 
     @Override
-    public void guardar(AsignacionDocente asignacion) {
-        repoAsignacionDocente.save(asignacion);
+    public AsignacionDocente guardar(AsignacionDocente asignacion) {
+        return repoAsignacionDocente.save(asignacion);
     }
 
     @Override
-    public void modificar(AsignacionDocente asignacion) {
-        repoAsignacionDocente.save(asignacion);
+    public AsignacionDocente modificar(AsignacionDocente asignacion) {
+        return repoAsignacionDocente.save(asignacion);
     }
-
-    @Override
     public Optional<AsignacionDocente> buscarId(Long id) {
         return repoAsignacionDocente.findById(id);
     }
-
-    @Override
     public void eliminar(Long id) {
         repoAsignacionDocente.deleteById(id);
     }

@@ -8,14 +8,14 @@ import com.escuelita.www.entity.Permisos;
 import com.escuelita.www.service.IPermisosService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class PermisosController {
 
     @Autowired
     private IPermisosService servicePermisos;
 
     @GetMapping("/permisos")
-    public List<Permisos> buscartodos() {
+    public List<Permisos> buscarTodos() {
         return servicePermisos.buscarTodos();
     }
 

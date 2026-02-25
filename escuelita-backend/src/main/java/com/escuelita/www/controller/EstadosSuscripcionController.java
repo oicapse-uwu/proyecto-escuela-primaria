@@ -8,14 +8,14 @@ import com.escuelita.www.entity.EstadosSuscripcion;
 import com.escuelita.www.service.IEstadosSuscripcionService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class EstadosSuscripcionController {
 
     @Autowired
     private IEstadosSuscripcionService serviceEstados;
 
     @GetMapping("/estadossuscripcion")
-    public List<EstadosSuscripcion> buscartodos() {
+    public List<EstadosSuscripcion> buscarTodos() {
         return serviceEstados.buscarTodos();
     }
 

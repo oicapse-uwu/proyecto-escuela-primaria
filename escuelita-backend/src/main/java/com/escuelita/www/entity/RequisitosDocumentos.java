@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -21,7 +23,6 @@ import jakarta.persistence.Table;
     "esObligatorio", "estado"
 })
 public class RequisitosDocumentos {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_requisito")
@@ -29,15 +30,12 @@ public class RequisitosDocumentos {
 
     @Column(name = "nombre_documento", length = 100)
     private String nombreDocumento;
-
     @Column(length = 255)
     private String descripcion;
-
     @Column(name = "es_obligatorio", nullable = false)
     private Boolean esObligatorio;
 
-    @Column(nullable = false)
-    private Integer estado;
+    private Integer estado = 1;
 
     //Constructor vacio
     public RequisitosDocumentos() {}

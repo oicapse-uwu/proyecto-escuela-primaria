@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -20,56 +22,45 @@ public class CiclosFacturacion {
     private Long idCiclo;
 
     private String nombre;
-
     @Column(name = "meses_duracion")
     private Integer mesesDuracion;
 
     private Integer estado = 1;
 
+//Constructor vacio
     public CiclosFacturacion() {}
-
     public CiclosFacturacion(Long id) {
         this.idCiclo = id;
     }
 
+    //Getters y Setters / ToString
     public Long getIdCiclo() {
         return idCiclo;
     }
-
     public void setIdCiclo(Long idCiclo) {
         this.idCiclo = idCiclo;
     }
-
     public String getNombre() {
         return nombre;
     }
-
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-
     public Integer getMesesDuracion() {
         return mesesDuracion;
     }
-
     public void setMesesDuracion(Integer mesesDuracion) {
         this.mesesDuracion = mesesDuracion;
     }
-
     public Integer getEstado() {
         return estado;
     }
-
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-
     @Override
     public String toString() {
         return "CiclosFacturacion [idCiclo=" + idCiclo + ", nombre=" + nombre + ", mesesDuracion=" + mesesDuracion
                 + ", estado=" + estado + "]";
     }
-
-
-
 }

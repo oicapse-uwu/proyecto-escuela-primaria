@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import java.time.LocalDate;
@@ -29,37 +31,28 @@ public class Institucion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_institucion")
     private Long idInstitucion;
-    
+
     @Column(length = 150)
     private String nombre;
-    
     @Column(name = "cod_modular", length = 10)
     private String codModular;
-    
     @Column(name = "tipo_gestion", length = 50)
     private String tipoGestion;
-    
     @Column(name = "resolucion_creacion", length = 50)
     private String resolucionCreacion;
-    
     @Column(name = "nombre_director", length = 100)
     private String nombreDirector;
-    
     @Column(name = "logo_path", length = 255)
     private String logoPath;
-    
     @Column(name = "estado_suscripcion", length = 50)
     private String estadoSuscripcion = "DEMO";
-    
     @Column(name = "fecha_inicio_suscripcion")
     private LocalDate fechaInicioSuscripcion;
-    
     @Column(name = "fecha_vencimiento_licencia")
     private LocalDate fechaVencimientoLicencia;
-    
     @Column(name = "plan_contratado", length = 50)
     private String planContratado = "Plan Básico";
-    
+
     private Integer estado = 1;
 
     //Constructor vacio

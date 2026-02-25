@@ -39,7 +39,7 @@ public class DocumentosAlumnoController {
     private RequisitosDocumentosRepository repoRequisitosDocumentos;
 
     @GetMapping("/documentosalumno")
-    public List<DocumentosAlumno> buscartodos() {
+    public List<DocumentosAlumno> buscarTodos() {
         return serviceDocumentosAlumno.buscarTodos(); 
     }
     @PostMapping("/documentosalumno")

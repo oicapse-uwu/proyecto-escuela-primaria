@@ -8,14 +8,14 @@ import com.escuelita.www.entity.CiclosFacturacion;
 import com.escuelita.www.service.ICiclosFacturacionService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class CiclosFacturacionController {
 
     @Autowired
     private ICiclosFacturacionService serviceCiclos;
 
     @GetMapping("/ciclosfacturacion")
-    public List<CiclosFacturacion> buscartodos() {
+    public List<CiclosFacturacion> buscarTodos() {
         return serviceCiclos.buscarTodos();
     }
 

@@ -2,11 +2,13 @@ package com.escuelita.www.service.jpa;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.escuelita.www.entity.PagosCajaDTO;
-import com.escuelita.www.entity.PagosCaja;
+
 import com.escuelita.www.entity.MetodosPago;
+import com.escuelita.www.entity.PagosCaja;
+import com.escuelita.www.entity.PagosCajaDTO;
 import com.escuelita.www.entity.Usuarios;
 import com.escuelita.www.repository.PagosCajaRepository;
 import com.escuelita.www.service.IPagosCajaService;
@@ -63,13 +65,13 @@ public class PagosCajaService implements IPagosCajaService {
         if (dto.getIdMetodo() != null) {
             MetodosPago metodo = new MetodosPago();
             metodo.setIdMetodo(dto.getIdMetodo()); 
-            entidad.setMetodo(metodo);
+            entidad.setIdMetodo(metodo);
         }
         
         if (dto.getIdUsuario() != null) {
             Usuarios usuario = new Usuarios();
             usuario.setIdUsuario(dto.getIdUsuario()); 
-            entidad.setUsuario(usuario);
+            entidad.setIdUsuario(usuario);
         }
         return entidad;
     }
@@ -83,11 +85,11 @@ public class PagosCajaService implements IPagosCajaService {
         dto.setObservacionPago(entidad.getObservacionPago());
         dto.setEstado(entidad.getEstado());
         
-        if (entidad.getMetodo() != null) {
-            dto.setIdMetodo(entidad.getMetodo().getIdMetodo());
+        if (entidad.getIdMetodo() != null) {
+            dto.setIdMetodo(entidad.getIdMetodo().getIdMetodo());
         }
-        if (entidad.getUsuario() != null) {
-            dto.setIdUsuario(entidad.getUsuario().getIdUsuario());
+        if (entidad.getIdUsuario() != null) {
+            dto.setIdUsuario(entidad.getIdUsuario().getIdUsuario());
         }
         return dto;
     }

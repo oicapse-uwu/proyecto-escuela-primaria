@@ -38,7 +38,7 @@ public class RegistrosController {
     private BCryptPasswordEncoder passwordEncoder;
 
     @GetMapping("/registros")
-    public List<Registros> buscartodos() {
+    public List<Registros> buscarTodos() {
         return serviceRegistros.buscarTodos(); 
     }
     @PostMapping("/registros")

@@ -33,40 +33,40 @@ public class AsistenciasController {
     private MatriculasRepository repoMatriculas;
 
     @GetMapping("/asistencias")
-    public List<Asistencias> buscartodos() {
+    public List<Asistencias> buscarTodos() {
         return serviceAsistencias.buscarTodos();
     }
 
     @PostMapping("/asistencias")
     public ResponseEntity<?> guardar(@RequestBody AsistenciasDTO dto) {
-        Asistencias asis = new Asistencias();
-        asis.setFecha(dto.getFecha());
-        asis.setEstadoAsistencia(dto.getEstadoAsistencia());
-        asis.setObservaciones(dto.getObservaciones());
+        Asistencias asistencia = new Asistencias();
+        asistencia.setFecha(dto.getFecha());
+        asistencia.setEstadoAsistencia(dto.getEstadoAsistencia());
+        asistencia.setObservaciones(dto.getObservaciones());
 
-        asis.setIdAsignacion(repoAsignacion.findById(dto.getIdAsignacion()).orElse(null));
-        asis.setIdMatricula(repoMatriculas.findById(dto.getIdMatricula()).orElse(null));
+        asistencia.setIdAsignacion(repoAsignacion.findById(dto.getIdAsignacion()).orElse(null));
+        asistencia.setIdMatricula(repoMatriculas.findById(dto.getIdMatricula()).orElse(null));
 
-        return ResponseEntity.ok(serviceAsistencias.guardar(asis));
+        return ResponseEntity.ok(serviceAsistencias.guardar(asistencia));
     }
 
     @PutMapping("/asistencias")
     public ResponseEntity<?> modificar(@RequestBody AsistenciasDTO dto) {
         if(dto.getIdAsistencia() == null) return ResponseEntity.badRequest().body("ID requerido");
         
-        Asistencias asis = new Asistencias();
-        asis.setIdAsistencia(dto.getIdAsistencia());
-        asis.setFecha(dto.getFecha());
-        asis.setEstadoAsistencia(dto.getEstadoAsistencia());
-        asis.setObservaciones(dto.getObservaciones());
+        Asistencias asistencia = new Asistencias();
+        asistencia.setIdAsistencia(dto.getIdAsistencia());
+        asistencia.setFecha(dto.getFecha());
+        asistencia.setEstadoAsistencia(dto.getEstadoAsistencia());
+        asistencia.setObservaciones(dto.getObservaciones());
 
         AsignacionDocente ad = new AsignacionDocente(); ad.setIdAsignacion(dto.getIdAsignacion());
-        asis.setIdAsignacion(ad);
+        asistencia.setIdAsignacion(ad);
 
         Matriculas mat = new Matriculas(); mat.setIdMatricula(dto.getIdMatricula());
-        asis.setIdMatricula(mat);
+        asistencia.setIdMatricula(mat);
 
-        return ResponseEntity.ok(serviceAsistencias.modificar(asis));
+        return ResponseEntity.ok(serviceAsistencias.modificar(asistencia));
     }
 
     @GetMapping("/asistencias/{id}")

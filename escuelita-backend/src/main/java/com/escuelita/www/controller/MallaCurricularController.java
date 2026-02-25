@@ -25,7 +25,7 @@ import com.escuelita.www.repository.GradosRepository;
 import com.escuelita.www.service.IMallaCurricularService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class MallaCurricularController {
 
     @Autowired
@@ -38,7 +38,7 @@ public class MallaCurricularController {
     private CursosRepository repoCursos;
 
     @GetMapping("/mallacurricular")
-    public List<MallaCurricular> buscartodos() {
+    public List<MallaCurricular> buscarTodos() {
         return serviceMallaCurricular.buscarTodos();
     }
 

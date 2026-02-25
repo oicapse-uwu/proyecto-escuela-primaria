@@ -17,14 +17,14 @@ import com.escuelita.www.entity.SuperAdmins;
 import com.escuelita.www.service.ISuperAdminsService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class SuperAdminsController {
 
     @Autowired
     private ISuperAdminsService serviceSuperAdmins;
 
     @GetMapping("/superadmins")
-    public List<SuperAdmins> buscartodos() {
+    public List<SuperAdmins> buscarTodos() {
         return serviceSuperAdmins.buscarTodos(); 
     }
 

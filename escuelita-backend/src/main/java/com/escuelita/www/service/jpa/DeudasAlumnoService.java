@@ -66,7 +66,7 @@ public class DeudasAlumnoService implements IDeudasAlumnoService {
         if (dto.getIdMatricula() != null) {
             Matriculas mat = new Matriculas();
             mat.setIdMatricula(dto.getIdMatricula()); 
-            entidad.setMatricula(mat);
+            entidad.setIdMatricula(mat);
         }
         
         if (dto.getIdConcepto() != null) {
@@ -87,8 +87,8 @@ public class DeudasAlumnoService implements IDeudasAlumnoService {
         dto.setEstadoDeuda(entidad.getEstadoDeuda());
         dto.setFechaPagoTotal(entidad.getFechaPagoTotal());
         
-        if (entidad.getMatricula() != null) {
-            dto.setIdMatricula(entidad.getMatricula().getIdMatricula());
+        if (entidad.getIdMatricula() != null) {
+            dto.setIdMatricula(entidad.getIdMatricula().getIdMatricula());
         }
         if (entidad.getConcepto() != null) {
             dto.setIdConcepto(entidad.getConcepto().getIdConcepto());

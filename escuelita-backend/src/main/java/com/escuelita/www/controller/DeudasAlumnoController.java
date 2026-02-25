@@ -14,7 +14,7 @@ public class DeudasAlumnoController {
     private IDeudasAlumnoService serviceDeudas;
 
     @GetMapping("/deudas-alumno")
-    public List<DeudasAlumnoDTO> buscartodos() {
+    public List<DeudasAlumnoDTO> buscarTodos() {
         return serviceDeudas.buscarTodos(); 
     }
     

@@ -25,7 +25,7 @@ public class RequisitosDocumentosController {
     private IRequisitosDocumentosService serviceRequisitosDocumentos;
 
     @GetMapping("/requisitosdocumentos")
-    public List<RequisitosDocumentos> buscartodos() {
+    public List<RequisitosDocumentos> buscarTodos() {
         return serviceRequisitosDocumentos.buscarTodos(); 
     }
     @PostMapping("/requisitosdocumentos")

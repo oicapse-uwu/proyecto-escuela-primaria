@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -21,10 +23,9 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE grados SET estado=0 WHERE id_grado=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idGrado", "nombreGrado", "estado", "idSede"
+    "idGrado", "nombreGrado", "idSede", "estado"
 })
 public class Grados {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_grado")
@@ -33,12 +34,12 @@ public class Grados {
     @Column(name = "nombre_grado", length = 50)
     private String nombreGrado;
     
-    private Integer estado = 1;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_sede", nullable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Sedes idSede;
+    
+    private Integer estado = 1;
 
     //Constructor vacio
     public Grados() {}
@@ -53,17 +54,17 @@ public class Grados {
     public void setIdGrado(Long idGrado) {
         this.idGrado = idGrado;
     }
-    public Sedes getIdSede() {
-        return idSede;
-    }
-    public void setIdSede(Sedes idSede) {
-        this.idSede = idSede;
-    }
     public String getNombreGrado() {
         return nombreGrado;
     }
     public void setNombreGrado(String nombreGrado) {
         this.nombreGrado = nombreGrado;
+    }
+    public Sedes getIdSede() {
+        return idSede;
+    }
+    public void setIdSede(Sedes idSede) {
+        this.idSede = idSede;
     }
     public Integer getEstado() {
         return estado;
@@ -73,7 +74,7 @@ public class Grados {
     }
     @Override
     public String toString() {
-        return "Grados [idGrado=" + idGrado + ", idSede=" + idSede + ", nombreGrado=" + nombreGrado
-                + ", estado=" + estado + "]";
+        return "Grados [idGrado=" + idGrado + ", nombreGrado=" + nombreGrado
+                + ", idSede=" + idSede + ", estado=" + estado + "]";
     }
 }

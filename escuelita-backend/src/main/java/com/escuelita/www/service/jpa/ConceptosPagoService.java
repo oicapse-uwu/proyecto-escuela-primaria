@@ -2,10 +2,12 @@ package com.escuelita.www.service.jpa;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.escuelita.www.entity.ConceptosPagoDTO;
+
 import com.escuelita.www.entity.ConceptosPago;
+import com.escuelita.www.entity.ConceptosPagoDTO;
 import com.escuelita.www.entity.Grados;
 import com.escuelita.www.entity.Institucion;
 import com.escuelita.www.repository.ConceptosPagoRepository;
@@ -62,13 +64,13 @@ public class ConceptosPagoService implements IConceptosPagoService {
         if (dto.getIdInstitucion() != null) {
             Institucion inst = new Institucion();
             inst.setIdInstitucion(dto.getIdInstitucion()); 
-            entidad.setInstitucion(inst);
+            entidad.setIdInstitucion(inst);
         }
         
         if (dto.getIdGrado() != null) {
             Grados grado = new Grados();
             grado.setIdGrado(dto.getIdGrado()); 
-            entidad.setGrado(grado);
+            entidad.setidGrados(grado);
         }
         
         return entidad;
@@ -81,11 +83,11 @@ public class ConceptosPagoService implements IConceptosPagoService {
         dto.setMonto(entidad.getMonto());
         dto.setEstadoConcepto(entidad.getEstadoConcepto());
         
-        if (entidad.getInstitucion() != null) {
-            dto.setIdInstitucion(entidad.getInstitucion().getIdInstitucion());
+        if (entidad.getIdInstitucion() != null) {
+            dto.setIdInstitucion(entidad.getIdInstitucion().getIdInstitucion());
         }
-        if (entidad.getGrado() != null) {
-            dto.setIdGrado(entidad.getGrado().getIdGrado());
+        if (entidad.getidGrados() != null) {
+            dto.setIdGrado(entidad.getidGrados().getIdGrado());
         }
         
         return dto;

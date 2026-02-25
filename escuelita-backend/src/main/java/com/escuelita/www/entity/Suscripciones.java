@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import java.math.BigDecimal;
@@ -24,12 +26,11 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE suscripciones SET estado=0 WHERE id_suscripcion=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idSuscripcion", "idInstitucion", "idPlan", "idCiclo", "idEstado",
-    "limiteAlumnosContratado", "limiteSedesContratadas", "precioAcordado",
-    "fechaInicio", "fechaVencimiento", "estado"
+    "idSuscripcion", "limiteAlumnosContratado", "limiteSedesContratadas", 
+    "precioAcordado", "fechaInicio", "fechaVencimiento",
+    "idInstitucion", "idPlan", "idCiclo", "idEstado", "estado"
 })
 public class Suscripciones {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_suscripcion")
@@ -37,20 +38,14 @@ public class Suscripciones {
 
     @Column(name = "limite_alumnos_contratado")
     private Integer limiteAlumnosContratado;
-
     @Column(name = "limite_sedes_contratadas")
     private Integer limiteSedesContratadas;
-
     @Column(name = "precio_acordado")
     private BigDecimal precioAcordado;
-
     @Column(name = "fecha_inicio")
     private LocalDate fechaInicio;
-
     @Column(name = "fecha_vencimiento")
     private LocalDate fechaVencimiento;
-
-    private Integer estado = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_institucion")
@@ -69,6 +64,16 @@ public class Suscripciones {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private EstadosSuscripcion idEstado;
 
+    private Integer estado = 1;
+
+    // Constructor vacio
+    public Suscripciones() {
+    }
+    public Suscripciones(Long idSuscripcion) {
+        this.idSuscripcion = idSuscripcion;
+    }
+
+    // Getters y Setters / toString
     public Long getIdSuscripcion() {
         return idSuscripcion;
     }
@@ -105,11 +110,11 @@ public class Suscripciones {
     public void setFechaVencimiento(LocalDate fechaVencimiento) {
         this.fechaVencimiento = fechaVencimiento;
     }
-    public Integer getEstado() {
-        return estado;
+    public EstadosSuscripcion getIdEstado() {
+        return idEstado;
     }
-    public void setEstado(Integer estado) {
-        this.estado = estado;
+    public void setIdEstado(EstadosSuscripcion idEstado) {
+        this.idEstado = idEstado;
     }
     public Institucion getIdInstitucion() {
         return idInstitucion;
@@ -129,18 +134,18 @@ public class Suscripciones {
     public void setIdCiclo(CiclosFacturacion idCiclo) {
         this.idCiclo = idCiclo;
     }
-    public EstadosSuscripcion getIdEstado() {
-        return idEstado;
+        public Integer getEstado() {
+        return estado;
     }
-    public void setIdEstado(EstadosSuscripcion idEstado) {
-        this.idEstado = idEstado;
+    public void setEstado(Integer estado) {
+        this.estado = estado;
     }
     @Override
     public String toString() {
         return "Suscripciones [idSuscripcion=" + idSuscripcion + ", limiteAlumnosContratado=" + limiteAlumnosContratado
                 + ", limiteSedesContratadas=" + limiteSedesContratadas + ", precioAcordado=" + precioAcordado
-                + ", fechaInicio=" + fechaInicio + ", fechaVencimiento=" + fechaVencimiento + ", estado=" + estado
-                + ", idInstitucion=" + idInstitucion + ", idPlan=" + idPlan + ", idCiclo=" + idCiclo + ", idEstado="
-                + idEstado + "]";
+                + ", fechaInicio=" + fechaInicio + ", fechaVencimiento=" + fechaVencimiento 
+                + ", idInstitucion=" + idInstitucion + ", idPlan=" + idPlan + ", idCiclo=" 
+                + idCiclo + ", idEstado=" + idEstado + ", estado=" + estado + "]";
     }
 }

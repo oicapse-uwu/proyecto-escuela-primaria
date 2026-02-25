@@ -1,13 +1,21 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "especialidades")
 @SQLDelete(sql = "UPDATE especialidades SET estado=0 WHERE id_especialidad=?")
 @SQLRestriction("estado = 1")
+@JsonPropertyOrder({
+    "idEspecialidad", "nombreEspecialidad", "descripcion", "estado"
+})
 public class Especialidades {
 
     @Id
@@ -18,14 +26,17 @@ public class Especialidades {
     @Column(name = "nombre_especialidad")
     private String nombreEspecialidad;
     private String descripcion;
+
     private Integer estado = 1;
 
+    //Constructor vacio
     public Especialidades() {
     }
-
     public Especialidades(Long idEspecialidad) {
         this.idEspecialidad = idEspecialidad;
     }
+
+    //Getters y Setters / toString
     public Long getIdEspecialidad() {
         return idEspecialidad;
     }

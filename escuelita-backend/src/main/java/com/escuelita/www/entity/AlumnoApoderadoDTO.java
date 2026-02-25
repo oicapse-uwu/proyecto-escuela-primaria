@@ -1,41 +1,20 @@
 package com.escuelita.www.entity;
 
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
-@Entity
-@Table(name = "alumno_apoderado")
-@SQLDelete(sql = "UPDATE alumno_apoderado SET estado=0 WHERE id_alum_apod=?")
-@SQLRestriction("estado = 1")
 @JsonPropertyOrder({
     "idAlumnoApoderado", "parentesco", "esRepresentanteFinanciero", 
-    "viveConEstudiante", "estado", "idAlumno", "idApoderado"
+    "viveConEstudiante", "idAlumno", "idApoderado", "estado"
 })
+
 public class AlumnoApoderadoDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_alum_apod")
+    
     private Long idAlumnoApoderado; 
-    
-    @Column(length = 50)
     private String parentesco;
-    
-    @Column(name = "es_representante_financiero")
     private Boolean esRepresentanteFinanciero;
-    @Column(name = "vive_con_estudiante")
     private Boolean viveConEstudiante;
-    @Column(name = "id_alumno")
+    
     private Long idAlumno;
-    @Column(name = "id_apoderado")
     private Long idApoderado;
     private Integer estado = 1;
 

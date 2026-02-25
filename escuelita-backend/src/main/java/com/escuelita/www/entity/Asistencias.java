@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import java.time.LocalDate;
@@ -23,33 +25,29 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE asistencias SET estado=0 WHERE id_asistencia=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idAsistencia", "idAsignacion", "idMatricula", 
-    "fecha", "estadoAsistencia", "observaciones", "estado"
+    "idAsistencia", "fecha", "estadoAsistencia", "observaciones",
+    "idAsignacion", "idMatricula", "estado"
 })
 public class Asistencias {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_asistencia")
     private Long idAsistencia;
 
+    private LocalDate fecha;
+    @Column(name = "estado_asistencia", columnDefinition = "ENUM('Presente', 'Falta', 'Tardanza', 'Justificado')")
+    private String estadoAsistencia;
+    @Column(length = 255)
+    private String observaciones;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_asignacion")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private AsignacionDocente idAsignacion;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_matricula")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Matriculas idMatricula;
-
-    private LocalDate fecha;
-
-    @Column(name = "estado_asistencia", columnDefinition = "ENUM('Presente', 'Falta', 'Tardanza', 'Justificado')")
-    private String estadoAsistencia;
-
-    @Column(length = 255)
-    private String observaciones;
 
     private Integer estado = 1;
 
@@ -65,18 +63,6 @@ public class Asistencias {
     }
     public void setIdAsistencia(Long idAsistencia) {
         this.idAsistencia = idAsistencia;
-    }
-    public AsignacionDocente getIdAsignacion() {
-        return idAsignacion;
-    }
-    public void setIdAsignacion(AsignacionDocente idAsignacion) {
-        this.idAsignacion = idAsignacion;
-    }
-    public Matriculas getIdMatricula() {
-        return idMatricula;
-    }
-    public void setIdMatricula(Matriculas idMatricula) {
-        this.idMatricula = idMatricula;
     }
     public LocalDate getFecha() {
         return fecha;
@@ -96,6 +82,18 @@ public class Asistencias {
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
     }
+    public AsignacionDocente getIdAsignacion() {
+        return idAsignacion;
+    }
+    public void setIdAsignacion(AsignacionDocente idAsignacion) {
+        this.idAsignacion = idAsignacion;
+    }
+    public Matriculas getIdMatricula() {
+        return idMatricula;
+    }
+    public void setIdMatricula(Matriculas idMatricula) {
+        this.idMatricula = idMatricula;
+    }
     public Integer getEstado() {
         return estado;
     }
@@ -104,8 +102,8 @@ public class Asistencias {
     }
     @Override
     public String toString() {
-        return "Asistencias [idAsistencia=" + idAsistencia + ", idAsignacion=" + idAsignacion + ", idMatricula="
-                + idMatricula + ", fecha=" + fecha + ", estadoAsistencia=" + estadoAsistencia + ", observaciones="
-                + observaciones + ", estado=" + estado + "]";
+        return "Asistencias [idAsistencia=" + idAsistencia + ", fecha=" + fecha + ", estadoAsistencia="
+                + estadoAsistencia + ", observaciones=" + observaciones + ", idAsignacion=" + idAsignacion
+                + ", idMatricula=" + idMatricula + ", estado=" + estado + "]";
     }
 }

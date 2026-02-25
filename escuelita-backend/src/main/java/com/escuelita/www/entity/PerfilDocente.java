@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import java.time.LocalDate;
@@ -6,6 +8,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,9 +23,11 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "perfil_docente")
 @SQLDelete(sql = "UPDATE perfil_docente SET estado=0 WHERE id_docente=?")
-@SQLRestriction("estado = 1")
+@SQLRestriction("estado = 1")@JsonPropertyOrder({
+    "idDocente", "gradoAcademico", "fechaContratacion", 
+    "estadoLaboral", "idUsuario", "idEspecialidad", "estado"
+})
 public class PerfilDocente {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_docente")
@@ -30,28 +35,25 @@ public class PerfilDocente {
 
     @Column(name = "grado_academico")
     private String gradoAcademico;
-    
     @Column(name = "fecha_contratacion")
     private LocalDate fechaContratacion;
-    
     @Column(name = "estado_laboral")
     private String estadoLaboral;
-    private Integer estado = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_usuario")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private Usuarios usuario;
-
+    private Usuarios idUsuario;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_especialidad")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private Especialidades especialidad;
+    private Especialidades idEspecialidad;
+
+    private Integer estado = 1;
 
     //Constructor vacio
     public PerfilDocente() {
     }
-
     public PerfilDocente(Long idDocente) {
         this.idDocente = idDocente;
     }
@@ -81,28 +83,30 @@ public class PerfilDocente {
     public void setEstadoLaboral(String estadoLaboral) {
         this.estadoLaboral = estadoLaboral;
     }
+    
+    public Usuarios getIdUsuario() {
+        return idUsuario;
+    }
+    public void setIdUsuario(Usuarios idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+    public Especialidades getIdEspecialidad() {
+        return idEspecialidad;
+    }
+    public void setIdEspecialidad(Especialidades idEspecialidad) {
+        this.idEspecialidad = idEspecialidad;
+    }
+    
     public Integer getEstado() {
         return estado;
     }
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-    public Usuarios getUsuario() {
-        return usuario;
-    }
-    public void setUsuario(Usuarios usuario) {
-        this.usuario = usuario;
-    }
-    public Especialidades getEspecialidad() {
-        return especialidad;
-    }
-    public void setEspecialidad(Especialidades especialidad) {
-        this.especialidad = especialidad;
-    }
     @Override
     public String toString() {
-        return "PerfilDocente [idDocente=" + idDocente + ", gradoAcademico=" + gradoAcademico
-                + ", fechaContratacion=" + fechaContratacion + ", estadoLaboral=" + estadoLaboral + ", estado="
-                + estado + "]";
+        return "PerfilDocente [idDocente=" + idDocente + ", gradoAcademico=" + gradoAcademico + ", fechaContratacion="
+                + fechaContratacion + ", estadoLaboral=" + estadoLaboral + ", idUsuario=" + idUsuario
+                + ", idEspecialidad=" + idEspecialidad + ", estado=" + estado + "]";
     }
 }

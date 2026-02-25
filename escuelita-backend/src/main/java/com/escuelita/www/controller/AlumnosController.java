@@ -1,4 +1,4 @@
-    // Revisado
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -38,7 +38,7 @@ public class AlumnosController {
     private SedesRepository repoSedes;
 
     @GetMapping("/alumnos")
-    public List<Alumnos> buscartodos() {
+    public List<Alumnos> buscarTodos() {
         return serviceAlumnos.buscarTodos(); 
     }
     @PostMapping("/alumnos")
@@ -86,6 +86,7 @@ public class AlumnosController {
         alumno.setFotoUrl(dto.getFotoUrl());
         alumno.setObservacionesSalud(dto.getObservacionesSalud());
         alumno.setTipoIngreso(dto.getTipoIngreso());
+        alumno.setEstadoAlumno(dto.getEstadoAlumno());
 
         alumno.setIdSede(new Sedes(dto.getIdSede()));
         alumno.setIdTipoDoc(new TipoDocumentos(dto.getIdTipoDoc()));

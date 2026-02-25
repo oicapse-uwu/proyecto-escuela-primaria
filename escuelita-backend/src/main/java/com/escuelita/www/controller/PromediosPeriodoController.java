@@ -37,44 +37,44 @@ public class PromediosPeriodoController {
     private PeriodosRepository repoPeriodos;
 
     @GetMapping("/promediosperiodo")
-    public List<PromediosPeriodo> buscartodos() {
+    public List<PromediosPeriodo> buscarTodos() {
         return servicePromedios.buscarTodos();
     }
 
     @PostMapping("/promediosperiodo")
     public ResponseEntity<?> guardar(@RequestBody PromediosPeriodoDTO dto) {
-        PromediosPeriodo prom = new PromediosPeriodo();
-        prom.setNotaFinalArea(dto.getNotaFinalArea());
-        prom.setComentarioLibreta(dto.getComentarioLibreta());
-        prom.setEstadoCierre(dto.getEstadoCierre());
+        PromediosPeriodo promedio = new PromediosPeriodo();
+        promedio.setNotaFinalArea(dto.getNotaFinalArea());
+        promedio.setComentarioLibreta(dto.getComentarioLibreta());
+        promedio.setEstadoCierre(dto.getEstadoCierre());
 
-        prom.setIdAsignacion(repoAsignacion.findById(dto.getIdAsignacion()).orElse(null));
-        prom.setIdMatricula(repoMatriculas.findById(dto.getIdMatricula()).orElse(null));
-        prom.setIdPeriodo(repoPeriodos.findById(dto.getIdPeriodo()).orElse(null));
+        promedio.setIdAsignacion(repoAsignacion.findById(dto.getIdAsignacion()).orElse(null));
+        promedio.setIdMatricula(repoMatriculas.findById(dto.getIdMatricula()).orElse(null));
+        promedio.setIdPeriodo(repoPeriodos.findById(dto.getIdPeriodo()).orElse(null));
 
-        return ResponseEntity.ok(servicePromedios.guardar(prom));
+        return ResponseEntity.ok(servicePromedios.guardar(promedio));
     }
 
     @PutMapping("/promediosperiodo")
     public ResponseEntity<?> modificar(@RequestBody PromediosPeriodoDTO dto) {
         if(dto.getIdPromedio() == null) return ResponseEntity.badRequest().body("ID requerido");
         
-        PromediosPeriodo prom = new PromediosPeriodo();
-        prom.setIdPromedio(dto.getIdPromedio());
-        prom.setNotaFinalArea(dto.getNotaFinalArea());
-        prom.setComentarioLibreta(dto.getComentarioLibreta());
-        prom.setEstadoCierre(dto.getEstadoCierre());
+        PromediosPeriodo promedio = new PromediosPeriodo();
+        promedio.setIdPromedio(dto.getIdPromedio());
+        promedio.setNotaFinalArea(dto.getNotaFinalArea());
+        promedio.setComentarioLibreta(dto.getComentarioLibreta());
+        promedio.setEstadoCierre(dto.getEstadoCierre());
 
-        AsignacionDocente ad = new AsignacionDocente(); ad.setIdAsignacion(dto.getIdAsignacion());
-        prom.setIdAsignacion(ad);
+        AsignacionDocente asignacion = new AsignacionDocente(); asignacion.setIdAsignacion(dto.getIdAsignacion());
+        promedio.setIdAsignacion(asignacion);
 
-        Matriculas mat = new Matriculas(); mat.setIdMatricula(dto.getIdMatricula());
-        prom.setIdMatricula(mat);
+        Matriculas matricula = new Matriculas(); matricula.setIdMatricula(dto.getIdMatricula());
+        promedio.setIdMatricula(matricula);
 
-        Periodos per = new Periodos(); per.setIdPeriodo(dto.getIdPeriodo());
-        prom.setIdPeriodo(per);
+        Periodos periodo = new Periodos(); periodo.setIdPeriodo(dto.getIdPeriodo());
+        promedio.setIdPeriodo(periodo);
 
-        return ResponseEntity.ok(servicePromedios.modificar(prom));
+        return ResponseEntity.ok(servicePromedios.modificar(promedio));
     }
 
     @GetMapping("/promediosperiodo/{id}")

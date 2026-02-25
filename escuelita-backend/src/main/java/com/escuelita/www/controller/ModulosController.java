@@ -8,14 +8,14 @@ import com.escuelita.www.entity.Modulos;
 import com.escuelita.www.service.IModulosService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class ModulosController {
 
     @Autowired
     private IModulosService serviceModulos;
 
     @GetMapping("/modulos")
-    public List<Modulos> buscartodos() {
+    public List<Modulos> buscarTodos() {
         return serviceModulos.buscarTodos();
     }
 

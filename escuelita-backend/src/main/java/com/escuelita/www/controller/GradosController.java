@@ -31,7 +31,7 @@ public class GradosController {
     private SedesRepository repoSedes;
 
     @GetMapping("/grados")
-    public List<Grados> buscartodos() {
+    public List<Grados> buscarTodos() {
         return serviceGrados.buscarTodos(); 
     }
     @PostMapping("/grados")

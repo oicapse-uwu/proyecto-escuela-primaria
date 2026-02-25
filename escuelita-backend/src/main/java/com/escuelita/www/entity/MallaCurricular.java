@@ -4,6 +4,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,8 +20,10 @@ import jakarta.persistence.Table;
 @Table(name = "malla_curricular")
 @SQLDelete(sql = "UPDATE malla_curricular SET estado=0 WHERE id_malla=?")
 @SQLRestriction("estado = 1")
+@JsonPropertyOrder({
+    "idMalla", "anioEscolar", "grado", "curso", "estado"
+})
 public class MallaCurricular {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_malla")
@@ -31,17 +34,17 @@ public class MallaCurricular {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_anio")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private AnioEscolar anioEscolar;
+    private AnioEscolar idAnioEscolar;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_grado")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private Grados grado;
+    private Grados idGrado;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_curso")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private Cursos curso;
+    private Cursos idCurso;
 
     public MallaCurricular() {
     }
@@ -62,22 +65,22 @@ public class MallaCurricular {
         this.estado = estado;
     }
     public AnioEscolar getAnioEscolar() {
-        return anioEscolar;
+        return idAnioEscolar;
     }
     public void setAnioEscolar(AnioEscolar anioEscolar) {
-        this.anioEscolar = anioEscolar;
+        this.idAnioEscolar = anioEscolar;
     }
     public Grados getGrado() {
-        return grado;
+        return idGrado;
     }
     public void setGrado(Grados grado) {
-        this.grado = grado;
+        this.idGrado = grado;
     }
     public Cursos getCurso() {
-        return curso;
+        return idCurso;
     }
     public void setCurso(Cursos curso) {
-        this.curso = curso;
+        this.idCurso = curso;
     }
     @Override
     public String toString() {

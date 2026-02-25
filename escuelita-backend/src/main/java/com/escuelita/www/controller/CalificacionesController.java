@@ -33,40 +33,40 @@ public class CalificacionesController {
     private MatriculasRepository repoMatriculas;
 
     @GetMapping("/calificaciones")
-    public List<Calificaciones> buscartodos() {
+    public List<Calificaciones> buscarTodos() {
         return serviceCalificaciones.buscarTodos();
     }
 
     @PostMapping("/calificaciones")
     public ResponseEntity<?> guardar(@RequestBody CalificacionesDTO dto) {
-        Calificaciones cal = new Calificaciones();
-        cal.setNotaObtenida(dto.getNotaObtenida());
-        cal.setObservaciones(dto.getObservaciones());
-        cal.setFechaCalificacion(dto.getFechaCalificacion());
+        Calificaciones calificacion = new Calificaciones();
+        calificacion.setNotaObtenida(dto.getNotaObtenida());
+        calificacion.setObservaciones(dto.getObservaciones());
+        calificacion.setFechaCalificacion(dto.getFechaCalificacion());
 
-        cal.setIdEvaluacion(repoEvaluaciones.findById(dto.getIdEvaluacion()).orElse(null));
-        cal.setIdMatricula(repoMatriculas.findById(dto.getIdMatricula()).orElse(null));
+        calificacion.setIdEvaluacion(repoEvaluaciones.findById(dto.getIdEvaluacion()).orElse(null));
+        calificacion.setIdMatricula(repoMatriculas.findById(dto.getIdMatricula()).orElse(null));
 
-        return ResponseEntity.ok(serviceCalificaciones.guardar(cal));
+        return ResponseEntity.ok(serviceCalificaciones.guardar(calificacion));
     }
 
     @PutMapping("/calificaciones")
     public ResponseEntity<?> modificar(@RequestBody CalificacionesDTO dto) {
         if(dto.getIdCalificacion() == null) return ResponseEntity.badRequest().body("ID requerido");
         
-        Calificaciones cal = new Calificaciones();
-        cal.setIdCalificacion(dto.getIdCalificacion());
-        cal.setNotaObtenida(dto.getNotaObtenida());
-        cal.setObservaciones(dto.getObservaciones());
-        cal.setFechaCalificacion(dto.getFechaCalificacion());
+        Calificaciones calificacion = new Calificaciones();
+        calificacion.setIdCalificacion(dto.getIdCalificacion());
+        calificacion.setNotaObtenida(dto.getNotaObtenida());
+        calificacion.setObservaciones(dto.getObservaciones());
+        calificacion.setFechaCalificacion(dto.getFechaCalificacion());
 
-        Evaluaciones ev = new Evaluaciones(); ev.setIdEvaluacion(dto.getIdEvaluacion());
-        cal.setIdEvaluacion(ev);
+        Evaluaciones evaluacion = new Evaluaciones(); evaluacion.setIdEvaluacion(dto.getIdEvaluacion());
+        calificacion.setIdEvaluacion(evaluacion);
 
-        Matriculas mat = new Matriculas(); mat.setIdMatricula(dto.getIdMatricula());
-        cal.setIdMatricula(mat);
+        Matriculas matricula = new Matriculas(); matricula.setIdMatricula(dto.getIdMatricula());
+        calificacion.setIdMatricula(matricula);
 
-        return ResponseEntity.ok(serviceCalificaciones.modificar(cal));
+        return ResponseEntity.ok(serviceCalificaciones.modificar(calificacion));
     }
 
     @GetMapping("/calificaciones/{id}")

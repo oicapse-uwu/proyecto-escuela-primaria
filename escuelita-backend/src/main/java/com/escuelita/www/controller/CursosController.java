@@ -21,7 +21,7 @@ import com.escuelita.www.repository.AreasRepository;
 import com.escuelita.www.service.ICursosService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class CursosController {
 
     @Autowired
@@ -31,7 +31,7 @@ public class CursosController {
     private AreasRepository repoAreas;
 
     @GetMapping("/cursos")
-    public List<Cursos> buscartodos() {
+    public List<Cursos> buscarTodos() {
         return serviceCursos.buscarTodos();
     }
 
@@ -46,7 +46,7 @@ public class CursosController {
                 .findById(dto.getIdArea())
                 .orElse(null);
 
-        curso.setArea(area);
+        curso.setIdArea(area);
 
         return ResponseEntity.ok(serviceCursos.guardar(curso));
     }
@@ -63,7 +63,7 @@ public class CursosController {
         if (dto.getEstado() != null)
             curso.setEstado(dto.getEstado());
 
-        curso.setArea(new Areas(dto.getIdArea()));
+        curso.setIdArea(new Areas(dto.getIdArea()));
 
         return ResponseEntity.ok(serviceCursos.modificar(curso));
     }

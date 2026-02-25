@@ -8,14 +8,14 @@ import com.escuelita.www.entity.Roles;
 import com.escuelita.www.service.IRolesService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class RolesController {
 
     @Autowired
     private IRolesService serviceRoles;
 
     @GetMapping("/roles")
-    public List<Roles> buscartodos() {
+    public List<Roles> buscarTodos() {
         return serviceRoles.buscarTodos();
     }
 

@@ -8,14 +8,14 @@ import com.escuelita.www.entity.Planes;
 import com.escuelita.www.service.IPlanesService;
 
 @RestController
-@RequestMapping("/primaria_bd_real")
+@RequestMapping("/restful")
 public class PlanesController {
 
     @Autowired
     private IPlanesService servicePlanes;
 
     @GetMapping("/planes")
-    public List<Planes> buscartodos() {
+    public List<Planes> buscarTodos() {
         return servicePlanes.buscarTodos();
     }
 

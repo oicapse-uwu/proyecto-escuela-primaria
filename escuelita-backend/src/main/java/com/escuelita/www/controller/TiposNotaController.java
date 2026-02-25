@@ -14,7 +14,9 @@ public class TiposNotaController {
     private ITiposNotaService serviceTiposNota;
 
     @GetMapping("/tiposnota")
-    public List<TiposNota> buscartodos() { return serviceTiposNota.buscarTodos(); }
+    public List<TiposNota> buscarTodos() { 
+        return serviceTiposNota.buscarTodos(); 
+    }
 
     @PostMapping("/tiposnota")
     public TiposNota guardar(@RequestBody TiposNota tiposNota) {

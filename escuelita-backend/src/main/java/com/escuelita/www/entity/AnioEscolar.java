@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -21,32 +23,33 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE anio_escolar SET estado=0 WHERE id_anio_escolar=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idAnioEscolar", "nombreAnio", "activo", "estado", "idSede"
+    "idAnioEscolar", "nombreAnio", "activo", "idSede", "estado"
 })
-
 public class AnioEscolar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_anio_escolar")
     private Long idAnioEscolar;
-    
+
     @Column(name = "nombre_anio", length = 50)
     private String nombreAnio;
-    
     private Integer activo = 1;
-    private Integer estado = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_sede")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Sedes idSede;
 
+    private Integer estado = 1;
+
     //Constructor vacio
-    public AnioEscolar() {}
+    public AnioEscolar() {
+    }
     public AnioEscolar(Long idAnioEscolar) {
         this.idAnioEscolar = idAnioEscolar;
     }
 
+    //Getters y Setters / ToString
     public Long getIdAnioEscolar() {
         return idAnioEscolar;
     }
@@ -65,21 +68,21 @@ public class AnioEscolar {
     public void setActivo(Integer activo) {
         this.activo = activo;
     }
-    public Integer getEstado() {
-        return estado;
-    }
-    public void setEstado(Integer estado) {
-        this.estado = estado;
-    }
     public Sedes getIdSede() {
         return idSede;
     }
     public void setIdSede(Sedes idSede) {
         this.idSede = idSede;
     }
+    public Integer getEstado() {
+        return estado;
+    }
+    public void setEstado(Integer estado) {
+        this.estado = estado;
+    }
     @Override
     public String toString() {
         return "AnioEscolar [idAnioEscolar=" + idAnioEscolar + ", nombreAnio=" + nombreAnio + ", activo=" + activo
-                + ", estado=" + estado + ", idSede=" + idSede + "]";
+                + ", idSede=" + idSede + ", estado=" + estado + "]";
     }
 }

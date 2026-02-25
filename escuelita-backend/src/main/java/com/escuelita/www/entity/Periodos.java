@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import java.time.LocalDate;
@@ -26,7 +28,6 @@ import jakarta.persistence.Table;
     "idPeriodo", "nombrePeriodo", "fechaInicio", "fechaFin", "estado", "idAnio"
 })
 public class Periodos {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_periodo")
@@ -34,19 +35,17 @@ public class Periodos {
 
     @Column(name = "nombre_periodo", length = 50)
     private String nombrePeriodo;
-    
     @Column(name = "fecha_inicio")
     private LocalDate fechaInicio;
-    
     @Column(name = "fecha_fin")
     private LocalDate fechaFin;
-    
-    private Integer estado = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_anio", nullable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private AnioEscolar idAnio;
+
+    private Integer estado = 1;
 
     //Constructor vacio
     public Periodos() {}
@@ -60,12 +59,6 @@ public class Periodos {
     }
     public void setIdPeriodo(Long idPeriodo) {
         this.idPeriodo = idPeriodo;
-    }
-    public AnioEscolar getIdAnio() {
-        return idAnio;
-    }
-    public void setIdAnio(AnioEscolar idAnio) {
-        this.idAnio = idAnio;
     }
     public String getNombrePeriodo() {
         return nombrePeriodo;
@@ -85,6 +78,12 @@ public class Periodos {
     public void setFechaFin(LocalDate fechaFin) {
         this.fechaFin = fechaFin;
     }
+    public AnioEscolar getIdAnio() {
+        return idAnio;
+    }
+    public void setIdAnio(AnioEscolar idAnio) {
+        this.idAnio = idAnio;
+    }
     public Integer getEstado() {
         return estado;
     }
@@ -93,7 +92,7 @@ public class Periodos {
     }
     @Override
     public String toString() {
-        return "Periodos [idPeriodo=" + idPeriodo + ", idAnio=" + idAnio + ", nombrePeriodo=" + nombrePeriodo
-                + ", fechaInicio=" + fechaInicio + ", fechaFin=" + fechaFin + ", estado=" + estado + "]";
+        return "Periodos [idPeriodo=" + idPeriodo + ", nombrePeriodo=" + nombrePeriodo
+                + ", fechaInicio=" + fechaInicio + ", fechaFin=" + fechaFin + ", idAnio=" + idAnio + " estado=" + estado + "]";
     }
 }

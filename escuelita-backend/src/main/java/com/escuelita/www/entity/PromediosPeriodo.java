@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -21,39 +23,34 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE promedios_periodo SET estado=0 WHERE id_promedio=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idPromedio", "idAsignacion", "idMatricula", "idPeriodo", 
-    "notaFinalArea", "comentarioLibreta", "estadoCierre", "estado"
+    "idPromedio", "notaFinalArea", "comentarioLibreta", "estadoCierre", 
+    "idAsignacion", "idMatricula", "idPeriodo","estado"
 })
 public class PromediosPeriodo {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_promedio")
     private Long idPromedio;
 
+    @Column(name = "nota_final_area", length = 10)
+    private String notaFinalArea;
+    @Column(name = "comentario_libreta", length = 255)
+    private String comentarioLibreta;
+    @Column(name = "estado_cierre", columnDefinition = "ENUM('Abierto', 'Cerrado_Enviado')")
+    private String estadoCierre;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_asignacion")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private AsignacionDocente idAsignacion;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_matricula")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Matriculas idMatricula;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_periodo")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Periodos idPeriodo;
-
-    @Column(name = "nota_final_area", length = 10)
-    private String notaFinalArea;
-
-    @Column(name = "comentario_libreta", length = 255)
-    private String comentarioLibreta;
-
-    @Column(name = "estado_cierre", columnDefinition = "ENUM('Abierto', 'Cerrado_Enviado')")
-    private String estadoCierre;
 
     private Integer estado = 1;
 
@@ -69,24 +66,6 @@ public class PromediosPeriodo {
     }
     public void setIdPromedio(Long idPromedio) {
         this.idPromedio = idPromedio;
-    }
-    public AsignacionDocente getIdAsignacion() {
-        return idAsignacion;
-    }
-    public void setIdAsignacion(AsignacionDocente idAsignacion) {
-        this.idAsignacion = idAsignacion;
-    }
-    public Matriculas getIdMatricula() {
-        return idMatricula;
-    }
-    public void setIdMatricula(Matriculas idMatricula) {
-        this.idMatricula = idMatricula;
-    }
-    public Periodos getIdPeriodo() {
-        return idPeriodo;
-    }
-    public void setIdPeriodo(Periodos idPeriodo) {
-        this.idPeriodo = idPeriodo;
     }
     public String getNotaFinalArea() {
         return notaFinalArea;
@@ -106,6 +85,24 @@ public class PromediosPeriodo {
     public void setEstadoCierre(String estadoCierre) {
         this.estadoCierre = estadoCierre;
     }
+    public AsignacionDocente getIdAsignacion() {
+        return idAsignacion;
+    }
+    public void setIdAsignacion(AsignacionDocente idAsignacion) {
+        this.idAsignacion = idAsignacion;
+    }
+    public Matriculas getIdMatricula() {
+        return idMatricula;
+    }
+    public void setIdMatricula(Matriculas idMatricula) {
+        this.idMatricula = idMatricula;
+    }
+    public Periodos getIdPeriodo() {
+        return idPeriodo;
+    }
+    public void setIdPeriodo(Periodos idPeriodo) {
+        this.idPeriodo = idPeriodo;
+    }
     public Integer getEstado() {
         return estado;
     }
@@ -114,9 +111,9 @@ public class PromediosPeriodo {
     }
     @Override
     public String toString() {
-        return "PromediosPeriodo [idPromedio=" + idPromedio + ", idAsignacion=" + idAsignacion + ", idMatricula="
-                + idMatricula + ", idPeriodo=" + idPeriodo + ", notaFinalArea=" + notaFinalArea
-                + ", comentarioLibreta=" + comentarioLibreta + ", estadoCierre=" + estadoCierre + ", estado="
-                + estado + "]";
+        return "PromediosPeriodo [idPromedio=" + idPromedio + ", notaFinalArea=" + notaFinalArea
+                + ", comentarioLibreta=" + comentarioLibreta + ", estadoCierre=" + estadoCierre + ", idAsignacion="
+                + idAsignacion + ", idMatricula=" + idMatricula + ", idPeriodo=" + idPeriodo + ", estado=" + estado
+                + "]";
     }
 }

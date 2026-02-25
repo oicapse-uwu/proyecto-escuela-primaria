@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import java.time.LocalDate;
@@ -33,6 +35,7 @@ public class Alumnos {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_alumno")
     private Long idAlumno;
+
     @Column(name = "numero_documento", length = 20)
     private String numeroDocumento;
     @Column(length = 100)

@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -36,7 +38,7 @@ public class Areas {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_sede")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private Sedes sede;
+    private Sedes idSede;
 
     private Integer estado = 1;
 
@@ -66,11 +68,11 @@ public class Areas {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-    public Sedes getSede() {
-        return sede;
+    public Sedes getIdSede() {
+        return idSede;
     }
-    public void setSede(Sedes sede) {
-        this.sede = sede;
+    public void setIdSede(Sedes idSede) {
+        this.idSede = idSede;
     }
     public Integer getEstado() {
         return estado;
@@ -81,6 +83,6 @@ public class Areas {
     @Override
     public String toString() {
         return "Areas [idArea=" + idArea + ", nombreArea=" + nombreArea + ", descripcion=" + descripcion
-                + ", sede=" + sede + ", estado=" + estado + "]";
+                + ", idSede=" + idSede + ", estado=" + estado + "]";
     }
 }

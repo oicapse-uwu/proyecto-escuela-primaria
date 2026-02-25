@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -28,6 +30,7 @@ public class Aulas {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_aula")
     private Long idAula;
+
     @Column(name = "nombre_aula", length = 50)
     private String nombreAula;
     private Integer capacidad;
@@ -53,12 +56,7 @@ public class Aulas {
     public void setIdAula(Long idAula) {
         this.idAula = idAula;
     }
-    public Sedes getIdSede() {
-        return idSede;
-    }
-    public void setIdSede(Sedes idSede) {
-        this.idSede = idSede;
-    }
+
     public String getNombreAula() {
         return nombreAula;
     }
@@ -71,6 +69,12 @@ public class Aulas {
     public void setCapacidad(Integer capacidad) {
         this.capacidad = capacidad;
     }
+    public Sedes getIdSede() {
+        return idSede;
+    }
+    public void setIdSede(Sedes idSede) {
+        this.idSede = idSede;
+    }
     public Integer getEstado() {
         return estado;
     }
@@ -79,7 +83,7 @@ public class Aulas {
     }
     @Override
     public String toString() {
-        return "Aulas [idAula=" + idAula + ", idSede=" + idSede + ", nombreAula=" + nombreAula
-                + ", capacidad=" + capacidad + ", estado=" + estado + "]";
+        return "Aulas [idAula=" + idAula + ", nombreAula=" + nombreAula + ", capacidad=" + capacidad + 
+        ", idSede=" + idSede + ", estado=" + estado + "]";
     }
 }

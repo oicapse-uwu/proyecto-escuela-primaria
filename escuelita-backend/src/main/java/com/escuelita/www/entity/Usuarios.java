@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -11,11 +13,10 @@ import jakarta.persistence.*;
 @SQLDelete(sql = "UPDATE usuarios SET estado=0 WHERE id_usuario=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idUsuario", "idSede", "idRol", "idTipoDoc", "numeroDocumento", 
-    "apellidos", "nombres", "correo", "usuario", "contrasena", "fotoPerfil", "estado"
+    "idUsuario", "numeroDocumento", "apellidos", "nombres", "correo", "usuario", 
+    "contrasena", "fotoPerfil", "idSede", "idRol", "idTipoDoc", "estado"
 })
 public class Usuarios {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_usuario")
@@ -23,33 +24,37 @@ public class Usuarios {
 
     @Column(name = "numero_documento")
     private String numeroDocumento;
-
     private String apellidos;
     private String nombres;
     private String correo;
     private String usuario;
     private String contrasena;
-
     @Column(name = "foto_perfil")
     private String fotoPerfil;
-
-    private Integer estado = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_sede")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Sedes idSede;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_rol")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Roles idRol;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_tipo_doc")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private TipoDocumentos idTipoDoc;
 
+    private Integer estado = 1;
+
+    //Constructor vacio
+    public Usuarios() {
+    }
+    public Usuarios(Long idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    //Getters y Setters / toString
     public Long getIdUsuario() {
         return idUsuario;
     }
@@ -98,12 +103,6 @@ public class Usuarios {
     public void setFotoPerfil(String fotoPerfil) {
         this.fotoPerfil = fotoPerfil;
     }
-    public Integer getEstado() {
-        return estado;
-    }
-    public void setEstado(Integer estado) {
-        this.estado = estado;
-    }
     public Sedes getIdSede() {
         return idSede;
     }
@@ -122,11 +121,17 @@ public class Usuarios {
     public void setIdTipoDoc(TipoDocumentos idTipoDoc) {
         this.idTipoDoc = idTipoDoc;
     }
+    public Integer getEstado() {
+        return estado;
+    }
+    public void setEstado(Integer estado) {
+        this.estado = estado;
+    }
     @Override
     public String toString() {
         return "Usuarios [idUsuario=" + idUsuario + ", numeroDocumento=" + numeroDocumento + ", apellidos=" + apellidos
                 + ", nombres=" + nombres + ", correo=" + correo + ", usuario=" + usuario + ", contrasena=" + contrasena
-                + ", fotoPerfil=" + fotoPerfil + ", estado=" + estado + ", idSede=" + idSede + ", idRol=" + idRol
-                + ", idTipoDoc=" + idTipoDoc + "]";
+                + ", fotoPerfil=" + fotoPerfil + ", idSede=" + idSede + ", idRol=" + idRol
+                + ", idTipoDoc=" + idTipoDoc + ", estado=" + estado + "]";
     }
 }

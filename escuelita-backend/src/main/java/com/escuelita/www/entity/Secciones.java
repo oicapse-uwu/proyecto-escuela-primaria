@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -21,7 +23,7 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE secciones SET estado=0 WHERE id_seccion=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idSeccion", "nombreSeccion", "vacantes", "estado", "idGrado", "idSede"
+    "idSeccion", "nombreSeccion", "vacantes", "idGrado", "idSede", "estado"
 })
 public class Secciones {
     @Id
@@ -31,9 +33,7 @@ public class Secciones {
 
     @Column(name = "nombre_seccion", length = 10)
     private String nombreSeccion;
-    
     private Integer vacantes;
-    private Integer estado = 1;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_grado", nullable = false)
@@ -43,6 +43,8 @@ public class Secciones {
     @JoinColumn(name = "id_sede", nullable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Sedes idSede;
+
+    private Integer estado = 1;
 
     //Constructor vacio
     public Secciones() {}
@@ -57,18 +59,6 @@ public class Secciones {
     public void setIdSeccion(Long idSeccion) {
         this.idSeccion = idSeccion;
     }
-    public Grados getIdGrado() {
-        return idGrado;
-    }
-    public void setIdGrado(Grados idGrado) {
-        this.idGrado = idGrado;
-    }
-    public Sedes getIdSede() {
-        return idSede;
-    }
-    public void setIdSede(Sedes idSede) {
-        this.idSede = idSede;
-    }
     public String getNombreSeccion() {
         return nombreSeccion;
     }
@@ -81,6 +71,18 @@ public class Secciones {
     public void setVacantes(Integer vacantes) {
         this.vacantes = vacantes;
     }
+        public Grados getIdGrado() {
+        return idGrado;
+    }
+    public void setIdGrado(Grados idGrado) {
+        this.idGrado = idGrado;
+    }
+    public Sedes getIdSede() {
+        return idSede;
+    }
+    public void setIdSede(Sedes idSede) {
+        this.idSede = idSede;
+    }
     public Integer getEstado() {
         return estado;
     }
@@ -89,7 +91,7 @@ public class Secciones {
     }
     @Override
     public String toString() {
-        return "Secciones [idSeccion=" + idSeccion + ", idGrado=" + idGrado + ", idSede=" + idSede
-                + ", nombreSeccion=" + nombreSeccion + ", vacantes=" + vacantes + ", estado=" + estado + "]";
+        return "Secciones [idSeccion=" + idSeccion + ", nombreSeccion=" + nombreSeccion + ", vacantes=" + vacantes
+                + ", idGrado=" + idGrado + ", idSede=" + idSede + ", estado=" + estado + "]";
     }
 }

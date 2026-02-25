@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -29,7 +31,7 @@ public class AlumnoApoderado {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_alum_apod")
     private Long idAlumnoApoderado;
-    
+
     @Column(length = 50)
     private String parentesco;
     @Column(name = "es_representante_financiero")

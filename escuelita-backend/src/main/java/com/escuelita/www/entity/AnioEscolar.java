@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -28,6 +30,7 @@ public class AnioEscolar {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_anio_escolar")
     private Long idAnioEscolar;
+
     @Column(name = "nombre_anio", length = 50)
     private String nombreAnio;
     private Integer activo = 1;

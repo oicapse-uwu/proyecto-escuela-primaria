@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -13,7 +15,6 @@ import jakarta.persistence.*;
     "idRol", "nombre", "estado"
 })
 public class Roles {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_rol")
@@ -23,40 +24,33 @@ public class Roles {
 
     private Integer estado = 1;
 
+    // Constructor vacio
     public Roles() {}
-
     public Roles(Long id) {
         this.idRol = id;
     }
 
+    // Getters y Setters / toString
     public Long getIdRol() {
         return idRol;
     }
-
     public void setIdRol(Long idRol) {
         this.idRol = idRol;
     }
-
     public String getNombre() {
         return nombre;
     }
-
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-
     public Integer getEstado() {
         return estado;
     }
-
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-
     @Override
     public String toString() {
         return "Roles [idRol=" + idRol + ", nombre=" + nombre + ", estado=" + estado + "]";
     }
-
- 
 }

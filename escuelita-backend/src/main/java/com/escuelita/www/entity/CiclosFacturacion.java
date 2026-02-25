@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -18,6 +20,7 @@ public class CiclosFacturacion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_ciclo")
     private Long idCiclo;
+
     private String nombre;
     @Column(name = "meses_duracion")
     private Integer mesesDuracion;

@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import java.time.LocalDateTime;
@@ -24,7 +26,7 @@ import jakarta.persistence.Table;
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
     "idDocumentoAlumno", "rutaArchivo", "fechaSubida", "estadoRevision",
-    "observaciones", "estado", "idAlumno", "idRequisito"
+    "observaciones", "idAlumno", "idRequisito", "estado"
 })
 public class DocumentosAlumno {
     @Id
@@ -34,26 +36,23 @@ public class DocumentosAlumno {
     
     @Column(name = "ruta_archivo", length = 255)
     private String rutaArchivo;
-    
     @Column(name = "fecha_subida")
     private LocalDateTime fechaSubida;
     @Column(name = "estado_revision", length = 50)
     private String estadoRevision;
-    
     @Column(columnDefinition = "TEXT")
     private String observaciones;
-    
-    private Integer estado = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_alumno")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Alumnos idAlumno;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_requisito")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private RequisitosDocumentos idRequisito;
+
+    private Integer estado = 1;
 
     //Constructor vacio
     public DocumentosAlumno() {}
@@ -92,12 +91,6 @@ public class DocumentosAlumno {
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
     }
-    public Integer getEstado() {
-        return estado;
-    }
-    public void setEstado(Integer estado) {
-        this.estado = estado;
-    }
     public Alumnos getIdAlumno() {
         return idAlumno;
     }
@@ -110,11 +103,17 @@ public class DocumentosAlumno {
     public void setIdRequisito(RequisitosDocumentos idRequisito) {
         this.idRequisito = idRequisito;
     }
+    public Integer getEstado() {
+        return estado;
+    }
+    public void setEstado(Integer estado) {
+        this.estado = estado;
+    }
     @Override
     public String toString() {
         return "DocumentosAlumno [idDocumentoAlumno=" + idDocumentoAlumno + ", rutaArchivo=" + rutaArchivo
                 + ", fechaSubida=" + fechaSubida + ", estadoRevision=" + estadoRevision + ", observaciones="
-                + observaciones + ", estado=" + estado + ", idAlumno=" + idAlumno + ", idRequisito=" + idRequisito
-                + "]";
+                + observaciones + ", idAlumno=" + idAlumno + ", idRequisito=" + idRequisito
+                + ", estado=" + estado + "]";
     }
 }

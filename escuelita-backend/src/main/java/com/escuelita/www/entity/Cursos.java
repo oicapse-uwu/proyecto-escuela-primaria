@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -12,7 +14,7 @@ import jakarta.persistence.*;
 @SQLDelete(sql = "UPDATE cursos SET estado=0 WHERE id_curso=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idCurso", "nombreCurso", "area", "estado"
+    "idCurso", "nombreCurso", "idArea", "estado"
 })
 public class Cursos {
 
@@ -20,6 +22,7 @@ public class Cursos {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_curso")
     private Long idCurso;
+
     @Column(name = "nombre_curso")
     private String nombreCurso;
 
@@ -64,7 +67,7 @@ public class Cursos {
     }
     @Override
     public String toString() {
-        return "Cursos [idCurso=" + idCurso + ", nombreCurso=" + nombreCurso + ", idArea=" + idArea + ", estado="
-                + estado + "]";
+        return "Cursos [idCurso=" + idCurso + ", nombreCurso=" + nombreCurso + 
+        ", idArea=" + idArea + ", estado=" + estado + "]";
     }
 }

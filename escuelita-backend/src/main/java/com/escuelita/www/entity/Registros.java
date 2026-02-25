@@ -87,7 +87,6 @@ public class Registros {
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-   
     public String getAccess_token() {
         return access_token;
     }
@@ -100,7 +99,5 @@ public class Registros {
                 + email + ", cliente_id=" + cliente_id + ", llave_secreta=" + llave_secreta + ", access_token="
                 + access_token + ", estado=" + estado + "]";
     }
-    
-    
 }
 

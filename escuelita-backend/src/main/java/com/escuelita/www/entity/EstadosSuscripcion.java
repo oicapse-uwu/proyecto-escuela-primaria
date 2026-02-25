@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -23,40 +25,34 @@ public class EstadosSuscripcion {
 
     private Integer estado = 1;
 
-    public EstadosSuscripcion() {}
-
+    //Constructor vacio
+    public EstadosSuscripcion() {
+    }
     public EstadosSuscripcion(Long id) {
         this.idEstado = id;
     }
 
+    //Getters y Setters / toString
     public Long getIdEstado() {
         return idEstado;
     }
-
     public void setIdEstado(Long idEstado) {
         this.idEstado = idEstado;
     }
-
     public String getNombre() {
         return nombre;
     }
-
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-
     public Integer getEstado() {
         return estado;
     }
-
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-
     @Override
     public String toString() {
         return "EstadosSuscripcion [idEstado=" + idEstado + ", nombre=" + nombre + ", estado=" + estado + "]";
     }
-
-
 }

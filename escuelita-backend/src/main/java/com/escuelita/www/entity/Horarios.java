@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import java.time.LocalTime;
@@ -34,10 +36,8 @@ public class Horarios {
 
     @Column(name = "dia_semana")
     private String diaSemana;
-    
     @Column(name = "hora_inicio")
     private LocalTime horaInicio;
-    
     @Column(name = "hora_fin")
     private LocalTime horaFin;
 

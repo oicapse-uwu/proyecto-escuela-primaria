@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -20,7 +22,6 @@ import jakarta.persistence.Table;
     "idTipoEvaluacion", "nombre", "estado"
 })
 public class TiposEvaluacion {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_tipo_evaluacion")

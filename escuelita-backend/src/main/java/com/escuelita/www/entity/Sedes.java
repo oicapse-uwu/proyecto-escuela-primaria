@@ -1,3 +1,5 @@
+//CORRECTO
+
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -22,44 +24,36 @@ import jakarta.persistence.Table;
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
     "idSede", "nombreSede", "direccion", "distrito", "provincia", 
-    "departamento", "ugel", "telefono", "correoInstitucional", "estado", "idInstitucion"
+    "departamento", "ugel", "telefono", "correoInstitucional", "idInstitucion", "estado"
 })
 public class Sedes {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_sede")
     private Long idSede;
+    
+    @Column(name = "nombre_sede", length = 100)
+    private String nombreSede;
+    @Column(length = 255)
+    private String direccion;
+    @Column(length = 100)
+    private String distrito;
+    @Column(length = 100)
+    private String provincia;
+    @Column(length = 100)
+    private String departamento;
+    @Column(length = 100)
+    private String ugel;
+    @Column(length = 20)
+    private String telefono;
+    @Column(name = "correo_institucional", length = 100)
+    private String correoInstitucional;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_institucion", nullable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Institucion idInstitucion;
-    
-    @Column(name = "nombre_sede", length = 100)
-    private String nombreSede;
-    
-    @Column(length = 255)
-    private String direccion;
-    
-    @Column(length = 100)
-    private String distrito;
-    
-    @Column(length = 100)
-    private String provincia;
-    
-    @Column(length = 100)
-    private String departamento;
-    
-    @Column(length = 100)
-    private String ugel;
-    
-    @Column(length = 20)
-    private String telefono;
-    
-    @Column(name = "correo_institucional", length = 100)
-    private String correoInstitucional;
-    
+
     private Integer estado = 1;
 
     //Constructor vacio
@@ -74,12 +68,6 @@ public class Sedes {
     }
     public void setIdSede(Long idSede) {
         this.idSede = idSede;
-    }
-    public Institucion getIdInstitucion() {
-        return idInstitucion;
-    }
-    public void setIdInstitucion(Institucion idInstitucion) {
-        this.idInstitucion = idInstitucion;
     }
     public String getNombreSede() {
         return nombreSede;
@@ -129,6 +117,12 @@ public class Sedes {
     public void setCorreoInstitucional(String correoInstitucional) {
         this.correoInstitucional = correoInstitucional;
     }
+    public Institucion getIdInstitucion() {
+        return idInstitucion;
+    }
+    public void setIdInstitucion(Institucion idInstitucion) {
+        this.idInstitucion = idInstitucion;
+    }
     public Integer getEstado() {
         return estado;
     }
@@ -137,9 +131,10 @@ public class Sedes {
     }
     @Override
     public String toString() {
-        return "Sedes [idSede=" + idSede + ", idInstitucion=" + idInstitucion + ", nombreSede=" + nombreSede
-                + ", direccion=" + direccion + ", distrito=" + distrito + ", provincia=" + provincia
+        return "Sedes [idSede=" + idSede + ", nombreSede=" + nombreSede + ", direccion=" 
+                + direccion + ", distrito=" + distrito + ", provincia=" + provincia
                 + ", departamento=" + departamento + ", ugel=" + ugel + ", telefono=" + telefono
-                + ", correoInstitucional=" + correoInstitucional + ", estado=" + estado + "]";
+                + ", correoInstitucional=" + correoInstitucional 
+                + ", idInstitucion=" + idInstitucion + ", estado=" + estado + "]";
     }
 }

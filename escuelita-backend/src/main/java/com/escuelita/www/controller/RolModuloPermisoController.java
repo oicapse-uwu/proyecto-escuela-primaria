@@ -2,12 +2,26 @@ package com.escuelita.www.controller;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.escuelita.www.entity.*;
-import com.escuelita.www.repository.*;
+import com.escuelita.www.entity.Modulos;
+import com.escuelita.www.entity.Permisos;
+import com.escuelita.www.entity.RolModuloPermiso;
+import com.escuelita.www.entity.RolModuloPermisoDTO;
+import com.escuelita.www.entity.Roles;
+import com.escuelita.www.repository.ModulosRepository;
+import com.escuelita.www.repository.PermisosRepository;
+import com.escuelita.www.repository.RolesRepository;
 import com.escuelita.www.service.IRolModuloPermisoService;
 
 @RestController
@@ -30,15 +44,14 @@ public class RolModuloPermisoController {
     public List<RolModuloPermiso> buscarTodos() {
         return serviceRmp.buscarTodos();
     }
-
     @PostMapping("/rolmodulopermiso")
     public ResponseEntity<?> guardar(@RequestBody RolModuloPermisoDTO dto) {
         
-        RolModuloPermiso rmp = new RolModuloPermiso();
+        RolModuloPermiso rolModuloPermiso = new RolModuloPermiso();
         
-        rmp.setIdRol(repoRoles.findById(dto.getIdRol()).orElse(null));
-        rmp.setIdModulo(repoModulos.findById(dto.getIdModulo()).orElse(null));
-        rmp.setIdPermiso(repoPermisos.findById(dto.getIdPermiso()).orElse(null));
+        rolModuloPermiso.setIdRol(repoRoles.findById(dto.getIdRol()).orElse(null));
+        rolModuloPermiso.setIdModulo(repoModulos.findById(dto.getIdModulo()).orElse(null));
+        rolModuloPermiso.setIdPermiso(repoPermisos.findById(dto.getIdPermiso()).orElse(null));
 
         Modulos modulos = repoModulos
                    .findById(dto.getIdModulo())
@@ -51,25 +64,25 @@ public class RolModuloPermisoController {
                    .findById(dto.getIdPermiso())
                    .orElse(null);
         
-        rmp.setIdRol(roles);
-        rmp.setIdModulo(modulos);
-        rmp.setIdPermiso(permisos);
+        rolModuloPermiso.setIdRol(roles);
+        rolModuloPermiso.setIdModulo(modulos);
+        rolModuloPermiso.setIdPermiso(permisos);
 
-        return ResponseEntity.ok(serviceRmp.guardar(rmp));
+        return ResponseEntity.ok(serviceRmp.guardar(rolModuloPermiso));
     }
 
     @PutMapping("/rolmodulopermiso")
     public ResponseEntity<?> modificar(@RequestBody RolModuloPermisoDTO dto) {
         if(dto.getIdRmp() == null) return ResponseEntity.badRequest().body("ID RMP requerido");
         
-        RolModuloPermiso rmp = new RolModuloPermiso();
-        rmp.setIdRmp(dto.getIdRmp());
+        RolModuloPermiso rolModuloPermiso = new RolModuloPermiso();
+        rolModuloPermiso.setIdRmp(dto.getIdRmp());
         
-        rmp.setIdRol(new Roles(dto.getIdRol()));
-        rmp.setIdModulo(new Modulos(dto.getIdModulo()));
-        rmp.setIdPermiso(new Permisos(dto.getIdPermiso()));
+        rolModuloPermiso.setIdRol(new Roles(dto.getIdRol()));
+        rolModuloPermiso.setIdModulo(new Modulos(dto.getIdModulo()));
+        rolModuloPermiso.setIdPermiso(new Permisos(dto.getIdPermiso()));
 
-        return ResponseEntity.ok(serviceRmp.modificar(rmp));
+        return ResponseEntity.ok(serviceRmp.modificar(rolModuloPermiso));
     }
 
     @GetMapping("/rolmodulopermiso/{id}")

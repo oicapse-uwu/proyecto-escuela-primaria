@@ -37,7 +37,6 @@ public class PerfilDocenteController {
     public List<PerfilDocente> buscarTodos() {
         return servicePerfilDocente.buscarTodos();
     }
-
     @PostMapping("/perfildocente")
     public ResponseEntity<?> guardar(@RequestBody PerfilDocenteDTO dto) {
         PerfilDocente docente = new PerfilDocente();
@@ -57,7 +56,6 @@ public class PerfilDocenteController {
         servicePerfilDocente.guardar(docente);
         return ResponseEntity.ok(docente);
     }
-
     @PutMapping("/perfildocente")
     public ResponseEntity<?> modificar(@RequestBody PerfilDocenteDTO dto) {
         if (dto.getIdDocente() == null) {
@@ -79,12 +77,10 @@ public class PerfilDocenteController {
         servicePerfilDocente.modificar(docente);
         return ResponseEntity.ok(docente);
     }
-
     @GetMapping("/perfildocente/{id}")
     public Optional<PerfilDocente> buscarId(@PathVariable("id") Long id) {
         return servicePerfilDocente.buscarId(id);
     }
-
     @DeleteMapping("/perfildocente/{id}")
     public String eliminar(@PathVariable Long id) {
         servicePerfilDocente.eliminar(id);

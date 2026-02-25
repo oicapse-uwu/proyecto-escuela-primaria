@@ -34,7 +34,6 @@ public class AreasController {
     public List<Areas> buscarTodos() {
         return serviceAreas.buscarTodos();
     }
-
     @PostMapping("/areas")
     public ResponseEntity<?> guardar(@RequestBody AreasDTO dto) {
         Areas area = new Areas();
@@ -53,7 +52,6 @@ public class AreasController {
         serviceAreas.guardar(area);
         return ResponseEntity.ok(area);
     }
-
     @PutMapping("/areas")
     public ResponseEntity<?> modificar(@RequestBody AreasDTO dto) {
         if (dto.getIdArea() == null) {
@@ -73,12 +71,10 @@ public class AreasController {
         serviceAreas.modificar(area);
         return ResponseEntity.ok(area);
     }
-
     @GetMapping("/areas/{id}")
     public Optional<Areas> buscarId(@PathVariable("id") Long id) {
         return serviceAreas.buscarId(id);
     }
-
     @DeleteMapping("/areas/{id}")
     public String eliminar(@PathVariable Long id) {
         serviceAreas.eliminar(id);

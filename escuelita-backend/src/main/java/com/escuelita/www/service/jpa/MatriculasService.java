@@ -17,11 +17,13 @@ public class MatriculasService implements IMatriculasService{
     public List<Matriculas> buscarTodos(){
         return repoMatriculas.findAll();
     }
-    public Matriculas guardar(Matriculas matricula){
-        return repoMatriculas.save(matricula);
+    @Override
+    public Matriculas guardar(Matriculas matriculas){
+        return repoMatriculas.save(matriculas);
     }
-    public Matriculas modificar(Matriculas matricula){
-        return repoMatriculas.save(matricula);
+    @Override
+    public Matriculas modificar(Matriculas matriculas){
+        return repoMatriculas.save(matriculas);
     }
     public Optional<Matriculas> buscarId(Long id){
         return repoMatriculas.findById(id);

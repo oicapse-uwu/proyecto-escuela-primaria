@@ -19,12 +19,12 @@ public class PeriodosService implements IPeriodosService{
         return repoPeriodos.findAll();
     }
     @Override
-    public Periodos guardar(Periodos periodo){
-        return repoPeriodos.save(periodo);
+    public Periodos guardar(Periodos periodos){
+        return repoPeriodos.save(periodos);
     }
     @Override
-    public Periodos modificar(Periodos periodo){
-        return repoPeriodos.save(periodo);
+    public Periodos modificar(Periodos periodos){
+        return repoPeriodos.save(periodos);
     }
     public Optional<Periodos> buscarId(Long id){
         return repoPeriodos.findById(id);

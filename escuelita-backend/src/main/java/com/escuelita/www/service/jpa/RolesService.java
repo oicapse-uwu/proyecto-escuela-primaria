@@ -10,31 +10,23 @@ import com.escuelita.www.service.IRolesService;
 
 @Service
 public class RolesService implements IRolesService {
-
     @Autowired
     private RolesRepository repoRoles;
 
-    @Override
     public List<Roles> buscarTodos() {
         return repoRoles.findAll();
     }
-
     @Override
-    public void guardar(Roles rol) {
-        repoRoles.save(rol);
+    public void guardar(Roles roles) {
+        repoRoles.save(roles);
     }
-
     @Override
-    public void modificar(Roles rol) {
-        repoRoles.save(rol);
+    public void modificar(Roles roles) {
+        repoRoles.save(roles);
     }
-
-    @Override
     public Optional<Roles> buscarId(Long id) {
         return repoRoles.findById(id);
     }
-
-    @Override
     public void eliminar(Long id) {
         repoRoles.deleteById(id);
     }

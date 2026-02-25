@@ -11,10 +11,22 @@ import com.escuelita.www.service.IAsistenciasService;
 public class AsistenciasService implements IAsistenciasService {
     @Autowired
     private AsistenciasRepository repoAsistencias;
-
-    public List<Asistencias> buscarTodos() { return repoAsistencias.findAll(); }
-    public Asistencias guardar(Asistencias asistencias) { return repoAsistencias.save(asistencias); }
-    public Asistencias modificar(Asistencias asistencias) { return repoAsistencias.save(asistencias); }
-    public Optional<Asistencias> buscarId(Long id) { return repoAsistencias.findById(id); }
-    public void eliminar(Long id) { repoAsistencias.deleteById(id); }
+    
+    public List<Asistencias> buscarTodos() { 
+        return repoAsistencias.findAll(); 
+    }
+    @Override
+    public Asistencias guardar(Asistencias asistencias) { 
+        return repoAsistencias.save(asistencias); 
+    }
+    @Override
+    public Asistencias modificar(Asistencias asistencias) { 
+        return repoAsistencias.save(asistencias); 
+    }
+    public Optional<Asistencias> buscarId(Long id) { 
+        return repoAsistencias.findById(id); 
+    }
+    public void eliminar(Long id) { 
+        repoAsistencias.deleteById(id); 
+    }
 }

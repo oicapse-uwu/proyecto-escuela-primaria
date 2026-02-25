@@ -10,31 +10,23 @@ import com.escuelita.www.service.ICiclosFacturacionService;
 
 @Service
 public class CiclosFacturacionService implements ICiclosFacturacionService {
-
     @Autowired
     private CiclosFacturacionRepository repoCiclos;
 
-    @Override
     public List<CiclosFacturacion> buscarTodos() {
         return repoCiclos.findAll();
     }
-
     @Override
-    public void guardar(CiclosFacturacion ciclo) {
-        repoCiclos.save(ciclo);
+    public void guardar(CiclosFacturacion ciclosFacturacion) {
+        repoCiclos.save(ciclosFacturacion);
     }
-
     @Override
-    public void modificar(CiclosFacturacion ciclo) {
-        repoCiclos.save(ciclo);
+    public void modificar(CiclosFacturacion ciclosFacturacion) {
+        repoCiclos.save(ciclosFacturacion);
     }
-
-    @Override
     public Optional<CiclosFacturacion> buscarId(Long id) {
         return repoCiclos.findById(id);
     }
-
-    @Override
     public void eliminar(Long id) {
         repoCiclos.deleteById(id);
     }

@@ -12,16 +12,17 @@ import com.escuelita.www.service.IInstitucionService;
 
 @Service
 public class InstitucionService implements IInstitucionService {
-    
     @Autowired
     private InstitucionRepository repoInstitucion;
     
     public List<Institucion> buscarTodos(){
         return repoInstitucion.findAll();
     }
+    @Override
     public void guardar(Institucion institucion){
         repoInstitucion.save(institucion);
     }
+    @Override
     public void modificar(Institucion institucion){
         repoInstitucion.save(institucion);
     }

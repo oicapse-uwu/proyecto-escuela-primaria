@@ -12,9 +12,22 @@ import com.escuelita.www.service.ISuscripcionesService;
 public class SuscripcionesService implements ISuscripcionesService {
     @Autowired
     private SuscripcionesRepository repo;
-    @Override public List<Suscripciones> buscarTodos() { return repo.findAll(); }
-    @Override public Suscripciones guardar(Suscripciones s) { return repo.save(s); }
-    @Override public Suscripciones modificar(Suscripciones s) { return repo.save(s); }
-    @Override public Optional<Suscripciones> buscarId(Long id) { return repo.findById(id); }
-    @Override public void eliminar(Long id) { repo.deleteById(id); }
+    
+    public List<Suscripciones> buscarTodos() { 
+        return repo.findAll(); 
+    }
+    @Override 
+    public Suscripciones guardar(Suscripciones suscripciones) { 
+        return repo.save(suscripciones); 
+    }
+    @Override 
+    public Suscripciones modificar(Suscripciones suscripciones) { 
+        return repo.save(suscripciones); 
+    }
+    public Optional<Suscripciones> buscarId(Long id) { 
+        return repo.findById(id); 
+    }
+    public void eliminar(Long id) { 
+        repo.deleteById(id); 
+    }
 }

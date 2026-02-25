@@ -19,12 +19,12 @@ public class AulasService implements IAulasService{
         return repoAulas.findAll();
     }
     @Override
-    public Aulas guardar(Aulas aula){
-        return repoAulas.save(aula);
+    public Aulas guardar(Aulas aulas){
+        return repoAulas.save(aulas);
     }
     @Override
-    public Aulas modificar(Aulas aula){
-        return repoAulas.save(aula);
+    public Aulas modificar(Aulas aulas){
+        return repoAulas.save(aulas);
     }
     public Optional<Aulas> buscarId(Long id){
         return repoAulas.findById(id);

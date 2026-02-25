@@ -12,32 +12,23 @@ import com.escuelita.www.service.IUsuariosService;
 
 @Service
 public class UsuariosService implements IUsuariosService {
-
     @Autowired
     private UsuariosRepository repoUsuarios;
-
-    @Override
+    
     public List<Usuarios> buscarTodos() {
         return repoUsuarios.findAll();
     }
-
     @Override
-    public Usuarios guardar(Usuarios usuario) {
-        return repoUsuarios.save(usuario);
+    public Usuarios guardar(Usuarios usuarios) {
+        return repoUsuarios.save(usuarios);
     }
-
     @Override
-    public Usuarios modificar(Usuarios usuario) {
-        // En el estilo de tu profesor, save() se usa tanto para crear como para actualizar
-        return repoUsuarios.save(usuario);
+    public Usuarios modificar(Usuarios usuarios) {
+        return repoUsuarios.save(usuarios);
     }
-
-    @Override
     public Optional<Usuarios> buscarId(Long id) {
         return repoUsuarios.findById(id);
     }
-
-    @Override
     public void eliminar(Long id) {
         repoUsuarios.deleteById(id);
     }

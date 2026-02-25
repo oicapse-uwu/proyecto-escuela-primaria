@@ -10,31 +10,23 @@ import com.escuelita.www.service.ICursosService;
 
 @Service
 public class CursosService implements ICursosService {
-
     @Autowired
     private CursosRepository repoCursos;
 
-    @Override
     public List<Cursos> buscarTodos() {
         return repoCursos.findAll();
     }
-
     @Override
-    public Cursos guardar(Cursos curso) {
-        return repoCursos.save(curso);
+    public Cursos guardar(Cursos cursos) {
+        return repoCursos.save(cursos);
     }
-
     @Override
-    public Cursos modificar(Cursos curso) {
-        return repoCursos.save(curso);
+    public Cursos modificar(Cursos cursos) {
+        return repoCursos.save(cursos);
     }
-
-    @Override
     public Optional<Cursos> buscarId(Long id) {
         return repoCursos.findById(id);
     }
-
-    @Override
     public void eliminar(Long id) {
         repoCursos.deleteById(id);
     }

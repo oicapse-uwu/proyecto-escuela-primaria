@@ -16,15 +16,13 @@ public class AsignacionDocenteService implements IAsignacionDocenteService {
     public List<AsignacionDocente> buscarTodos() {
         return repoAsignacionDocente.findAll();
     }
-
     @Override
-    public AsignacionDocente guardar(AsignacionDocente asignacion) {
-        return repoAsignacionDocente.save(asignacion);
+    public AsignacionDocente guardar(AsignacionDocente asignacionDocente) {
+        return repoAsignacionDocente.save(asignacionDocente);
     }
-
     @Override
-    public AsignacionDocente modificar(AsignacionDocente asignacion) {
-        return repoAsignacionDocente.save(asignacion);
+    public AsignacionDocente modificar(AsignacionDocente asignacionDocente) {
+        return repoAsignacionDocente.save(asignacionDocente);
     }
     public Optional<AsignacionDocente> buscarId(Long id) {
         return repoAsignacionDocente.findById(id);

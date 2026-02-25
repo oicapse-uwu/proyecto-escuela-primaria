@@ -13,9 +13,21 @@ public class TiposNotaService implements ITiposNotaService {
     @Autowired
     private TiposNotaRepository repoTiposNota;
 
-    public List<TiposNota> buscarTodos() { return repoTiposNota.findAll(); }
-    public TiposNota guardar(TiposNota tiposNota) { return repoTiposNota.save(tiposNota); }
-    public TiposNota modificar(TiposNota tiposNota) { return repoTiposNota.save(tiposNota); }
-    public Optional<TiposNota> buscarId(Long id) { return repoTiposNota.findById(id); }
-    public void eliminar(Long id) { repoTiposNota.deleteById(id); }
+    public List<TiposNota> buscarTodos() { 
+        return repoTiposNota.findAll(); 
+    }
+    @Override
+    public TiposNota guardar(TiposNota tiposNota) { 
+        return repoTiposNota.save(tiposNota); 
+    }
+    @Override
+    public TiposNota modificar(TiposNota tiposNota) { 
+        return repoTiposNota.save(tiposNota); 
+    }
+    public Optional<TiposNota> buscarId(Long id) { 
+        return repoTiposNota.findById(id); 
+    }
+    public void eliminar(Long id) { 
+        repoTiposNota.deleteById(id); 
+    }
 }

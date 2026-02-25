@@ -2,8 +2,10 @@ package com.escuelita.www.service.jpa;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.escuelita.www.entity.TiposEvaluacion;
 import com.escuelita.www.repository.TiposEvaluacionRepository;
 import com.escuelita.www.service.ITiposEvaluacionService;
@@ -16,11 +18,13 @@ public class TiposEvaluacionService implements ITiposEvaluacionService {
     public List<TiposEvaluacion> buscarTodos() {
         return repoTiposEvaluacion.findAll();
     }
-    public TiposEvaluacion guardar(TiposEvaluacion tiposevaluacion) {
-        return repoTiposEvaluacion.save(tiposevaluacion);
+    @Override
+    public TiposEvaluacion guardar(TiposEvaluacion tiposEvaluacion) {
+        return repoTiposEvaluacion.save(tiposEvaluacion);
     }
-    public TiposEvaluacion modificar(TiposEvaluacion tiposevaluacion) {
-        return repoTiposEvaluacion.save(tiposevaluacion);
+    @Override
+    public TiposEvaluacion modificar(TiposEvaluacion tiposEvaluacion) {
+        return repoTiposEvaluacion.save(tiposEvaluacion);
     }
     public Optional<TiposEvaluacion> buscarId(Long id) {
         return repoTiposEvaluacion.findById(id);

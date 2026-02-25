@@ -19,12 +19,12 @@ public class GradosService implements IGradosService{
         return repoGrados.findAll();
     }
     @Override
-    public Grados guardar(Grados grado){
-        return repoGrados.save(grado);
+    public Grados guardar(Grados grados){
+        return repoGrados.save(grados);
     }
     @Override
-    public Grados modificar(Grados grado){
-        return repoGrados.save(grado);
+    public Grados modificar(Grados grados){
+        return repoGrados.save(grados);
     }
     public Optional<Grados> buscarId(Long id){
         return repoGrados.findById(id);

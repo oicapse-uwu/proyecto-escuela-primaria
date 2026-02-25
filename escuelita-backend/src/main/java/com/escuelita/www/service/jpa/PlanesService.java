@@ -10,31 +10,23 @@ import com.escuelita.www.service.IPlanesService;
 
 @Service
 public class PlanesService implements IPlanesService {
-
     @Autowired
     private PlanesRepository repoPlanes;
 
-    @Override
     public List<Planes> buscarTodos() {
         return repoPlanes.findAll();
     }
-
     @Override
-    public void guardar(Planes plan) {
-        repoPlanes.save(plan);
+    public void guardar(Planes planes) {
+        repoPlanes.save(planes);
     }
-
     @Override
-    public void modificar(Planes plan) {
-        repoPlanes.save(plan);
+    public void modificar(Planes planes) {
+        repoPlanes.save(planes);
     }
-
-    @Override
     public Optional<Planes> buscarId(Long id) {
         return repoPlanes.findById(id);
     }
-
-    @Override
     public void eliminar(Long id) {
         repoPlanes.deleteById(id);
     }

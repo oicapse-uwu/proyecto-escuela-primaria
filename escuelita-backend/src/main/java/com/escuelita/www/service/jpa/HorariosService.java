@@ -17,12 +17,12 @@ public class HorariosService implements IHorariosService {
         return repoHorarios.findAll();
     }
     @Override
-    public Horarios guardar(Horarios horario) {
-        return repoHorarios.save(horario);
+    public Horarios guardar(Horarios horarios) {
+        return repoHorarios.save(horarios);
     }
     @Override
-    public Horarios modificar(Horarios horario) {
-        return repoHorarios.save(horario);
+    public Horarios modificar(Horarios horarios) {
+        return repoHorarios.save(horarios);
     }
     public Optional<Horarios> buscarId(Long id) {
         return repoHorarios.findById(id);

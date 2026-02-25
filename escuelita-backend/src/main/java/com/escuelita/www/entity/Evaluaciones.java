@@ -42,19 +42,19 @@ public class Evaluaciones {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_asignacion")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Long idAsignacion;
+    private AsignacionDocente idAsignacion;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_periodo")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Long idPeriodo;
+    private Periodos idPeriodo;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_tipo_nota")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Long idTipoNota;
+    private TiposNota idTipoNota;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_tipo_evaluacion")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
-    private Long idTipoEvaluacion;
+    private TiposEvaluacion idTipoEvaluacion;
 
     private Integer estado = 1;
 
@@ -84,28 +84,28 @@ public class Evaluaciones {
     public void setFechaEvaluacion(LocalDate fechaEvaluacion) {
         this.fechaEvaluacion = fechaEvaluacion;
     }
-    public Long getIdAsignacion() {
+    public AsignacionDocente getIdAsignacion() {
         return idAsignacion;
     }
-    public void setIdAsignacion(Long idAsignacion) {
+    public void setIdAsignacion(AsignacionDocente idAsignacion) {
         this.idAsignacion = idAsignacion;
     }
-    public Long getIdPeriodo() {
+    public Periodos getIdPeriodo() {
         return idPeriodo;
     }
-    public void setIdPeriodo(Long idPeriodo) {
+    public void setIdPeriodo(Periodos idPeriodo) {
         this.idPeriodo = idPeriodo;
     }
-    public Long getIdTipoNota() {
+    public TiposNota getIdTipoNota() {
         return idTipoNota;
     }
-    public void setIdTipoNota(Long idTipoNota) {
+    public void setIdTipoNota(TiposNota idTipoNota) {
         this.idTipoNota = idTipoNota;
     }
-    public Long getIdTipoEvaluacion() {
+    public TiposEvaluacion getIdTipoEvaluacion() {
         return idTipoEvaluacion;
     }
-    public void setIdTipoEvaluacion(Long idTipoEvaluacion) {
+    public void setIdTipoEvaluacion(TiposEvaluacion idTipoEvaluacion) {
         this.idTipoEvaluacion = idTipoEvaluacion;
     }
     public Integer getEstado() {

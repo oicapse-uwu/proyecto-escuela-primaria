@@ -2,12 +2,14 @@ package com.escuelita.www.service.jpa;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.escuelita.www.entity.PagoDetalleDTO;
-import com.escuelita.www.entity.PagoDetalle;
-import com.escuelita.www.entity.PagosCaja;
+
 import com.escuelita.www.entity.DeudasAlumno;
+import com.escuelita.www.entity.PagoDetalle;
+import com.escuelita.www.entity.PagoDetalleDTO;
+import com.escuelita.www.entity.PagosCaja;
 import com.escuelita.www.repository.PagoDetalleRepository;
 import com.escuelita.www.service.IPagoDetalleService;
 
@@ -60,13 +62,13 @@ public class PagoDetalleService implements IPagoDetalleService {
         if (dto.getIdPago() != null) {
             PagosCaja pago = new PagosCaja();
             pago.setIdPago(dto.getIdPago()); 
-            entidad.setPago(pago);
+            entidad.setIdPago(pago);
         }
         
         if (dto.getIdDeuda() != null) {
             DeudasAlumno deuda = new DeudasAlumno();
             deuda.setIdDeuda(dto.getIdDeuda()); 
-            entidad.setDeuda(deuda);
+            entidad.setIdDeuda(deuda);
         }
         
         return entidad;
@@ -78,11 +80,11 @@ public class PagoDetalleService implements IPagoDetalleService {
         dto.setMontoAplicado(entidad.getMontoAplicado());
         dto.setEstado(entidad.getEstado());
         
-        if (entidad.getPago() != null) {
-            dto.setIdPago(entidad.getPago().getIdPago());
+        if (entidad.getIdPago() != null) {
+            dto.setIdPago(entidad.getIdPago().getIdPago());
         }
-        if (entidad.getDeuda() != null) {
-            dto.setIdDeuda(entidad.getDeuda().getIdDeuda());
+        if (entidad.getIdDeuda() != null) {
+            dto.setIdDeuda(entidad.getIdDeuda().getIdDeuda());
         }
         
         return dto;

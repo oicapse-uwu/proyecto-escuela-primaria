@@ -27,7 +27,6 @@ import jakarta.persistence.Table;
     "idConcepto", "nombreConcepto", "monto", "estadoConcepto", "idInstitucion", "idGrado", "estado"
 })
 public class ConceptosPago {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_concepto")
@@ -47,7 +46,7 @@ public class ConceptosPago {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_grado")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private Grados iGrados; 
+    private Grados idGrados; 
 
     private Integer estado = 1;
 
@@ -89,11 +88,11 @@ public class ConceptosPago {
     public void setIdInstitucion(Institucion idInstitucion) {
         this.idInstitucion = idInstitucion;
     }
-    public Grados getiGrados() {
-        return iGrados;
+    public Grados getidGrados() {
+        return idGrados;
     }
-    public void setiGrados(Grados iGrados) {
-        this.iGrados = iGrados;
+    public void setidGrados(Grados idGrados) {
+        this.idGrados = idGrados;
     }
     public Integer getEstado() {
         return estado;
@@ -104,7 +103,7 @@ public class ConceptosPago {
     @Override
     public String toString() {
         return "ConceptosPago [idConcepto=" + idConcepto + ", nombreConcepto=" + nombreConcepto + ", monto=" + monto
-                + ", estadoConcepto=" + estadoConcepto + ", idInstitucion=" + idInstitucion + ", iGrados=" + iGrados
+                + ", estadoConcepto=" + estadoConcepto + ", idInstitucion=" + idInstitucion + ", idGrados=" + idGrados
                 + ", estado=" + estado + "]";
     }
 }

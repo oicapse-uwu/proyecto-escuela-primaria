@@ -15,7 +15,7 @@ public class CiclosFacturacionController {
     private ICiclosFacturacionService serviceCiclos;
 
     @GetMapping("/ciclosfacturacion")
-    public List<CiclosFacturacion> buscartodos() {
+    public List<CiclosFacturacion> buscarTodos() {
         return serviceCiclos.buscarTodos();
     }
 

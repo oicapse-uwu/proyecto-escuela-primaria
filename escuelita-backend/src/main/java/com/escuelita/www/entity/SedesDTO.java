@@ -1,41 +1,25 @@
 package com.escuelita.www.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({
+    "idSede", "nombreSede", "direccion", "distrito", "provincia", 
+    "departamento", "ugel", "telefono", "correoInstitucional", 
+    "idInstitucion", "estado"
+})
 
 public class SedesDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_sede")
+
     private Long idSede;
-    
-    @Column(name = "nombre_sede", length = 100)
     private String nombreSede;
-    
-    @Column(length = 255)
     private String direccion;
-    
-    @Column(length = 100)
     private String distrito;
-    
-    @Column(length = 100)
     private String provincia;
-    
-    @Column(length = 100)
     private String departamento;
-    
-    @Column(length = 100)
     private String ugel;
-    
-    @Column(length = 20)
     private String telefono;
-    
-    @Column(name = "correo_institucional", length = 100)
     private String correoInstitucional;
 
-    @Column(name = "id_institucion")
     private Long idInstitucion;
     
     private Integer estado = 1;

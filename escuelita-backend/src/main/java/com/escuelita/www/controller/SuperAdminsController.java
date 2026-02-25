@@ -24,7 +24,7 @@ public class SuperAdminsController {
     private ISuperAdminsService serviceSuperAdmins;
 
     @GetMapping("/superadmins")
-    public List<SuperAdmins> buscartodos() {
+    public List<SuperAdmins> buscarTodos() {
         return serviceSuperAdmins.buscarTodos(); 
     }
 

@@ -38,7 +38,7 @@ public class MallaCurricularController {
     private CursosRepository repoCursos;
 
     @GetMapping("/mallacurricular")
-    public List<MallaCurricular> buscartodos() {
+    public List<MallaCurricular> buscarTodos() {
         return serviceMallaCurricular.buscarTodos();
     }
 

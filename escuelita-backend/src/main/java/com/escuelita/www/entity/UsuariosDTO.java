@@ -1,17 +1,16 @@
 package com.escuelita.www.entity;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@Entity
-@Table(name = "usuarios")
+@JsonPropertyOrder({
+    "idUsuario", "numeroDocumento", "apellidos", "nombres",
+    "correo", "usuario", "contrasena", "fotoPerfil",
+    "idSede", "idRol", "idTipoDoc", "estado"
+})
 public class UsuariosDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idUsuario;
-    private Long idSede;
-    private Long idRol;
-    private Long idTipoDoc;
+
     private String numeroDocumento;
     private String apellidos;
     private String nombres;
@@ -19,30 +18,18 @@ public class UsuariosDTO {
     private String usuario;
     private String contrasena;
     private String fotoPerfil;
+
+    private Long idSede;
+    private Long idRol;
+    private Long idTipoDoc;
+
     private Integer estado = 1;
+
     public Long getIdUsuario() {
         return idUsuario;
     }
     public void setIdUsuario(Long idUsuario) {
         this.idUsuario = idUsuario;
-    }
-    public Long getIdSede() {
-        return idSede;
-    }
-    public void setIdSede(Long idSede) {
-        this.idSede = idSede;
-    }
-    public Long getIdRol() {
-        return idRol;
-    }
-    public void setIdRol(Long idRol) {
-        this.idRol = idRol;
-    }
-    public Long getIdTipoDoc() {
-        return idTipoDoc;
-    }
-    public void setIdTipoDoc(Long idTipoDoc) {
-        this.idTipoDoc = idTipoDoc;
     }
     public String getNumeroDocumento() {
         return numeroDocumento;
@@ -86,6 +73,24 @@ public class UsuariosDTO {
     public void setFotoPerfil(String fotoPerfil) {
         this.fotoPerfil = fotoPerfil;
     }
+    public Long getIdSede() {
+        return idSede;
+    }
+    public void setIdSede(Long idSede) {
+        this.idSede = idSede;
+    }
+    public Long getIdRol() {
+        return idRol;
+    }
+    public void setIdRol(Long idRol) {
+        this.idRol = idRol;
+    }
+    public Long getIdTipoDoc() {
+        return idTipoDoc;
+    }
+    public void setIdTipoDoc(Long idTipoDoc) {
+        this.idTipoDoc = idTipoDoc;
+    }
     public Integer getEstado() {
         return estado;
     }
@@ -94,11 +99,9 @@ public class UsuariosDTO {
     }
     @Override
     public String toString() {
-        return "UsuariosDTO [idUsuario=" + idUsuario + ", idSede=" + idSede + ", idRol=" + idRol + ", idTipoDoc="
-                + idTipoDoc + ", numeroDocumento=" + numeroDocumento + ", apellidos=" + apellidos + ", nombres="
-                + nombres + ", correo=" + correo + ", usuario=" + usuario + ", contrasena=" + contrasena
-                + ", fotoPerfil=" + fotoPerfil + ", estado=" + estado + "]";
+        return "UsuariosDTO [idUsuario=" + idUsuario + ", numeroDocumento=" + numeroDocumento + ", apellidos="
+                + apellidos + ", nombres=" + nombres + ", correo=" + correo + ", usuario=" + usuario + ", contrasena="
+                + contrasena + ", fotoPerfil=" + fotoPerfil + ", idSede=" + idSede + ", idRol=" + idRol + ", idTipoDoc="
+                + idTipoDoc + ", estado=" + estado + "]";
     }
-
-
 }

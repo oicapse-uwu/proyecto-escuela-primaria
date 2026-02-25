@@ -20,7 +20,7 @@ public class RegistrosApiController {
     private SuperAdminsRepository repoAdmin;
 
     @GetMapping("/registrosapi")
-    public List<RegistrosApi> buscartodos() {
+    public List<RegistrosApi> buscarTodos() {
         return serviceApi.buscarTodos();
     }
 

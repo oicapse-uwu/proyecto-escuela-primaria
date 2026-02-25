@@ -3,58 +3,33 @@ package com.escuelita.www.entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@Entity
-@Table(name = "suscripciones")
+@JsonPropertyOrder({
+    "idSuscripcion", "limiteAlumnosContratado", "limiteSedesContratadas", "precioAcordado",
+    "fechaInicio", "fechaVencimiento", "idInstitucion", "idPlan", "idCiclo", "idEstado", "estado"
+})
 public class SuscripcionesDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idSuscripcion;
-    private Long idInstitucion;
-    private Long idPlan;
-    private Long idCiclo;
-    private Long idEstado;
     private Integer limiteAlumnosContratado;
     private Integer limiteSedesContratadas;
     private BigDecimal precioAcordado;
     private LocalDate fechaInicio;
     private LocalDate fechaVencimiento;
+
+    private Long idInstitucion;
+    private Long idPlan;
+    private Long idCiclo;
+    private Long idEstado;
+
     private Integer estado = 1;
+
     public Long getIdSuscripcion() {
         return idSuscripcion;
     }
     public void setIdSuscripcion(Long idSuscripcion) {
         this.idSuscripcion = idSuscripcion;
-    }
-    public Long getIdInstitucion() {
-        return idInstitucion;
-    }
-    public void setIdInstitucion(Long idInstitucion) {
-        this.idInstitucion = idInstitucion;
-    }
-    public Long getIdPlan() {
-        return idPlan;
-    }
-    public void setIdPlan(Long idPlan) {
-        this.idPlan = idPlan;
-    }
-    public Long getIdCiclo() {
-        return idCiclo;
-    }
-    public void setIdCiclo(Long idCiclo) {
-        this.idCiclo = idCiclo;
-    }
-    public Long getIdEstado() {
-        return idEstado;
-    }
-    public void setIdEstado(Long idEstado) {
-        this.idEstado = idEstado;
     }
     public Integer getLimiteAlumnosContratado() {
         return limiteAlumnosContratado;
@@ -86,21 +61,42 @@ public class SuscripcionesDTO {
     public void setFechaVencimiento(LocalDate fechaVencimiento) {
         this.fechaVencimiento = fechaVencimiento;
     }
+    public Long getIdInstitucion() {
+        return idInstitucion;
+    }
+    public void setIdInstitucion(Long idInstitucion) {
+        this.idInstitucion = idInstitucion;
+    }
+    public Long getIdPlan() {
+        return idPlan;
+    }
+    public void setIdPlan(Long idPlan) {
+        this.idPlan = idPlan;
+    }
+    public Long getIdCiclo() {
+        return idCiclo;
+    }
+    public void setIdCiclo(Long idCiclo) {
+        this.idCiclo = idCiclo;
+    }
+    public Long getIdEstado() {
+        return idEstado;
+    }
+    public void setIdEstado(Long idEstado) {
+        this.idEstado = idEstado;
+    }
     public Integer getEstado() {
         return estado;
     }
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-    
     @Override
     public String toString() {
-        return "SuscripcionesDTO [idSuscripcion=" + idSuscripcion + ", idInstitucion=" + idInstitucion + ", idPlan="
-                + idPlan + ", idCiclo=" + idCiclo + ", idEstado=" + idEstado + ", limiteAlumnosContratado="
+        return "SuscripcionesDTO [idSuscripcion=" + idSuscripcion + ", limiteAlumnosContratado="
                 + limiteAlumnosContratado + ", limiteSedesContratadas=" + limiteSedesContratadas + ", precioAcordado="
                 + precioAcordado + ", fechaInicio=" + fechaInicio + ", fechaVencimiento=" + fechaVencimiento
-                + ", estado=" + estado + "]";
+                + ", idInstitucion=" + idInstitucion + ", idPlan=" + idPlan + ", idCiclo=" + idCiclo + ", idEstado="
+                + idEstado + ", estado=" + estado + "]";
     }
-
-
 }

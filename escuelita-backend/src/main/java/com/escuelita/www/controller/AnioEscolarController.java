@@ -35,18 +35,18 @@ public class AnioEscolarController {
     private SedesRepository repoSedes;
 
     @GetMapping("/anioescolar")
-    public List<AnioEscolar> buscartodos() {
+    public List<AnioEscolar> buscarTodos() {
         return serviceAnioEscolar.buscarTodos(); 
     }
 
     @PostMapping("/anioescolar")
     public ResponseEntity<?> guardar(@RequestBody AnioEscolarDTO dto) {
         AnioEscolar anioescolar = new AnioEscolar();
-        anioescolar.setNombreAnio(dto.getNombre_anio());
+        anioescolar.setNombreAnio(dto.getNombreAnio());
         anioescolar.setActivo(dto.getActivo());
 
         Sedes sede = repoSedes
-            .findById(dto.getId_sede())
+            .findById(dto.getIdSede())
             .orElse(null);
         
         anioescolar.setIdSede(sede);
@@ -56,16 +56,16 @@ public class AnioEscolarController {
 
     @PutMapping("/anioescolar")
     public ResponseEntity<?> modificar(@RequestBody AnioEscolarDTO dto) {
-        if(dto.getId_anio_escolar() == null){
+        if(dto.getIdAnioEscolar() == null){
             return ResponseEntity.badRequest()
             .body("ID de año escolar es requerido");
         }
         AnioEscolar anioescolar = new AnioEscolar();
-        anioescolar.setIdAnioEscolar(dto.getId_anio_escolar());
-        anioescolar.setNombreAnio(dto.getNombre_anio());
+        anioescolar.setIdAnioEscolar(dto.getIdAnioEscolar());
+        anioescolar.setNombreAnio(dto.getNombreAnio());
         anioescolar.setActivo(dto.getActivo());
 
-        anioescolar.setIdSede(new Sedes(dto.getId_sede()));
+        anioescolar.setIdSede(new Sedes(dto.getIdSede()));
 
         return ResponseEntity.ok(serviceAnioEscolar.modificar(anioescolar));
     }

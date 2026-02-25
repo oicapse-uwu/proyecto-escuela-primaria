@@ -27,17 +27,14 @@ import jakarta.persistence.Table;
     "fecha", "estadoAsistencia", "observaciones", "estado"
 })
 public class Asistencias {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_asistencia")
     private Long idAsistencia;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_asignacion")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private AsignacionDocente idAsignacion;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_matricula")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

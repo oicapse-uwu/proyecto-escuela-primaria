@@ -34,7 +34,7 @@ public class PerfilDocenteController {
     private EspecialidadesRepository repoEspecialidades;
 
     @GetMapping("/perfildocente")
-    public List<PerfilDocente> buscartodos() {
+    public List<PerfilDocente> buscarTodos() {
         return servicePerfilDocente.buscarTodos();
     }
 

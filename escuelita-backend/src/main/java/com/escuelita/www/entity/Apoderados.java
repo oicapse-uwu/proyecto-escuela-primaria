@@ -22,47 +22,41 @@ import jakarta.persistence.Table;
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
     "idApoderado", "numeroDocumento", "nombres", "apellidos", 
-    "telefonoPrincipal", "correo", "lugarTrabajo", "estado",
-    "idSede", "idTipoDoc"
+    "telefonoPrincipal", "correo", "lugarTrabajo",
+    "idSede", "idTipoDoc", "estado"
 })
 public class Apoderados {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_apoderado")
     private Long idApoderado;    
-    
     @Column(name = "numero_documento", length = 20)
     private String numeroDocumento;
-    
     @Column(length = 100)
     private String nombres;
-    
     @Column(length = 100)
     private String apellidos;
-    
     @Column(name = "telefono_principal", length = 20)
     private String telefonoPrincipal;
-    
     @Column(length = 100)
     private String correo;
-    
     @Column(name = "lugar_trabajo", length = 100)
     private String lugarTrabajo;
-    
-    private Integer estado = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_sede")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Sedes idSede;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_tipo_doc")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private TipoDocumentos idTipoDoc;
 
+    private Integer estado = 1;
+
     //Constructor vacio
-    public Apoderados() {}
+    public Apoderados() {
+    }
     public Apoderados(Long idApoderado) {
         this.idApoderado = idApoderado;
     }
@@ -110,12 +104,6 @@ public class Apoderados {
     public void setLugarTrabajo(String lugarTrabajo) {
         this.lugarTrabajo = lugarTrabajo;
     }
-    public Integer getEstado() {
-        return estado;
-    }
-    public void setEstado(Integer estado) {
-        this.estado = estado;
-    }
     public Sedes getIdSede() {
         return idSede;
     }
@@ -128,11 +116,17 @@ public class Apoderados {
     public void setIdTipoDoc(TipoDocumentos idTipoDoc) {
         this.idTipoDoc = idTipoDoc;
     }
+    public Integer getEstado() {
+        return estado;
+    }
+    public void setEstado(Integer estado) {
+        this.estado = estado;
+    }
     @Override
     public String toString() {
         return "Apoderados [idApoderado=" + idApoderado + ", numeroDocumento=" + numeroDocumento + ", nombres="
                 + nombres + ", apellidos=" + apellidos + ", telefonoPrincipal=" + telefonoPrincipal + ", correo="
-                + correo + ", lugarTrabajo=" + lugarTrabajo + ", estado=" + estado + ", idSede=" + idSede
-                + ", idTipoDoc=" + idTipoDoc + "]";
+                + correo + ", lugarTrabajo=" + lugarTrabajo + ", idSede=" + idSede
+                + ", idTipoDoc=" + idTipoDoc + ", estado=" + estado + "]";
     }
 }

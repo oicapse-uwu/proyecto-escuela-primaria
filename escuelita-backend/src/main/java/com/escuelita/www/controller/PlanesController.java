@@ -15,7 +15,7 @@ public class PlanesController {
     private IPlanesService servicePlanes;
 
     @GetMapping("/planes")
-    public List<Planes> buscartodos() {
+    public List<Planes> buscarTodos() {
         return servicePlanes.buscarTodos();
     }
 

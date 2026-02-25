@@ -6,6 +6,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,6 +22,9 @@ import jakarta.persistence.Table;
 @Table(name = "horarios")
 @SQLDelete(sql = "UPDATE horarios SET estado=0 WHERE id_horario=?")
 @SQLRestriction("estado = 1")
+@JsonPropertyOrder({
+    "idHorario", "diaSemana", "horaInicio", "horaFin", "idAsignacion", "idAula", "estado" 
+})
 public class Horarios {
 
     @Id
@@ -36,25 +40,26 @@ public class Horarios {
     
     @Column(name = "hora_fin")
     private LocalTime horaFin;
-    
-    private Integer estado = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_asignacion")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private AsignacionDocente asignacion;
-
+    private AsignacionDocente idAsignacion;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_aula")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private Aulas aula;
+    private Aulas idAula;
 
+    private Integer estado = 1;
+
+    //Constructor vacio
     public Horarios() {
     }
-
     public Horarios(Long idHorario) {
         this.idHorario = idHorario;
     }
+
+    //Getters y Setters / ToString
     public Long getIdHorario() {
         return idHorario;
     }
@@ -79,27 +84,27 @@ public class Horarios {
     public void setHoraFin(LocalTime horaFin) {
         this.horaFin = horaFin;
     }
+    public AsignacionDocente getIdAsignacion() {
+        return idAsignacion;
+    }
+    public void setIdAsignacion(AsignacionDocente idAsignacion) {
+        this.idAsignacion = idAsignacion;
+    }
+    public Aulas getIdAula() {
+        return idAula;
+    }
+    public void setIdAula(Aulas idAula) {
+        this.idAula = idAula;
+    }
     public Integer getEstado() {
         return estado;
     }
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-    public AsignacionDocente getAsignacion() {
-        return asignacion;
-    }
-    public void setAsignacion(AsignacionDocente asignacion) {
-        this.asignacion = asignacion;
-    }
-    public Aulas getAula() {
-        return aula;
-    }
-    public void setAula(Aulas aula) {
-        this.aula = aula;
-    }
     @Override
     public String toString() {
         return "Horarios [idHorario=" + idHorario + ", diaSemana=" + diaSemana + ", horaInicio=" + horaInicio
-                + ", horaFin=" + horaFin + ", estado=" + estado + "]";
+                + ", horaFin=" + horaFin + ", idAsignacion=" + idAsignacion + ", idAula=" + idAula + ", estado=" + estado + "]";
     }
 }

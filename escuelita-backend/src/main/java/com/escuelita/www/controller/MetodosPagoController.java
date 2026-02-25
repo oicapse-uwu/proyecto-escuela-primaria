@@ -14,7 +14,7 @@ public class MetodosPagoController {
     private IMetodosPagoService serviceMetodos;
 
     @GetMapping("/metodos-pago")
-    public List<MetodosPagoDTO> buscartodos() {
+    public List<MetodosPagoDTO> buscarTodos() {
         return serviceMetodos.buscarTodos(); 
     }
     

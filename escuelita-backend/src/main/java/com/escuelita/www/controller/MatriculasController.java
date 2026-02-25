@@ -43,7 +43,7 @@ public class MatriculasController {
     private AnioEscolarRepository repoAnioEscolar;
 
     @GetMapping("/matriculas")
-    public List<Matriculas> buscartodos() {
+    public List<Matriculas> buscarTodos() {
         return serviceMatriculas.buscarTodos(); 
     }
     @PostMapping("/matriculas")

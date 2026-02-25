@@ -15,7 +15,7 @@ public class RolesController {
     private IRolesService serviceRoles;
 
     @GetMapping("/roles")
-    public List<Roles> buscartodos() {
+    public List<Roles> buscarTodos() {
         return serviceRoles.buscarTodos();
     }
 

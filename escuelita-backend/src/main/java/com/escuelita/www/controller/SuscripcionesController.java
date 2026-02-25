@@ -37,7 +37,7 @@ public class SuscripcionesController {
     @Autowired private EstadosSuscripcionRepository repoEstados;
 
     @GetMapping("/suscripciones")
-    public List<Suscripciones> buscartodos() {
+    public List<Suscripciones> buscarTodos() {
         return serviceSuscripciones.buscarTodos();
     }
 

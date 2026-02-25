@@ -15,7 +15,7 @@ public class EstadosSuscripcionController {
     private IEstadosSuscripcionService serviceEstados;
 
     @GetMapping("/estadossuscripcion")
-    public List<EstadosSuscripcion> buscartodos() {
+    public List<EstadosSuscripcion> buscarTodos() {
         return serviceEstados.buscarTodos();
     }
 

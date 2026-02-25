@@ -10,31 +10,23 @@ import com.escuelita.www.service.IHorariosService;
 
 @Service
 public class HorariosService implements IHorariosService {
-
     @Autowired
     private HorariosRepository repoHorarios;
-
-    @Override
+    
     public List<Horarios> buscarTodos() {
         return repoHorarios.findAll();
     }
-
     @Override
-    public void guardar(Horarios horario) {
-        repoHorarios.save(horario);
+    public Horarios guardar(Horarios horario) {
+        return repoHorarios.save(horario);
     }
-
     @Override
-    public void modificar(Horarios horario) {
-        repoHorarios.save(horario);
+    public Horarios modificar(Horarios horario) {
+        return repoHorarios.save(horario);
     }
-
-    @Override
     public Optional<Horarios> buscarId(Long id) {
         return repoHorarios.findById(id);
     }
-
-    @Override
     public void eliminar(Long id) {
         repoHorarios.deleteById(id);
     }

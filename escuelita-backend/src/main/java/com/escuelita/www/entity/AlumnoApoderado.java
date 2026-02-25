@@ -22,7 +22,7 @@ import jakarta.persistence.Table;
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
     "idAlumnoApoderado", "parentesco", "esRepresentanteFinanciero", 
-    "viveConEstudiante", "estado", "idAlumno", "idApoderado"
+    "viveConEstudiante", "idAlumno", "idApoderado", "estado"
 })
 public class AlumnoApoderado {
     @Id
@@ -32,12 +32,10 @@ public class AlumnoApoderado {
     
     @Column(length = 50)
     private String parentesco;
-    
     @Column(name = "es_representante_financiero")
     private Boolean esRepresentanteFinanciero;
     @Column(name = "vive_con_estudiante")
     private Boolean viveConEstudiante;
-    private Integer estado = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_alumno")
@@ -48,8 +46,11 @@ public class AlumnoApoderado {
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Apoderados idApoderado;
 
+    private Integer estado = 1;
+
     //Constructor vacio
-    public AlumnoApoderado() {}
+    public AlumnoApoderado() {
+    }
     public AlumnoApoderado(Long idAlumnoApoderado) {
         this.idAlumnoApoderado = idAlumnoApoderado;
     }
@@ -79,12 +80,6 @@ public class AlumnoApoderado {
     public void setViveConEstudiante(Boolean viveConEstudiante) {
         this.viveConEstudiante = viveConEstudiante;
     }
-    public Integer getEstado() {
-        return estado;
-    }
-    public void setEstado(Integer estado) {
-        this.estado = estado;
-    }
     public Alumnos getIdAlumno() {
         return idAlumno;
     }
@@ -97,11 +92,17 @@ public class AlumnoApoderado {
     public void setIdApoderado(Apoderados idApoderado) {
         this.idApoderado = idApoderado;
     }
+    public Integer getEstado() {
+        return estado;
+    }
+    public void setEstado(Integer estado) {
+        this.estado = estado;
+    }
     @Override
     public String toString() {
         return "AlumnoApoderado [idAlumnoApoderado=" + idAlumnoApoderado + ", parentesco=" + parentesco
                 + ", esRepresentanteFinanciero=" + esRepresentanteFinanciero + ", viveConEstudiante="
-                + viveConEstudiante + ", estado=" + estado + ", idAlumno=" + idAlumno + ", idApoderado=" + idApoderado
-                + "]";
+                + viveConEstudiante + ", idAlumno=" + idAlumno + ", idApoderado=" + idApoderado
+                + ", estado=" + estado + "]";
     }
 }

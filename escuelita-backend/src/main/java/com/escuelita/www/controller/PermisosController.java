@@ -15,7 +15,7 @@ public class PermisosController {
     private IPermisosService servicePermisos;
 
     @GetMapping("/permisos")
-    public List<Permisos> buscartodos() {
+    public List<Permisos> buscarTodos() {
         return servicePermisos.buscarTodos();
     }
 

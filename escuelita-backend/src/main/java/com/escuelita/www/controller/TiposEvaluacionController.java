@@ -14,7 +14,7 @@ public class TiposEvaluacionController {
     private ITiposEvaluacionService serviceTiposEvaluacion;
 
     @GetMapping("/tiposevaluacion")
-    public List<TiposEvaluacion> buscartodos() {
+    public List<TiposEvaluacion> buscarTodos() {
         return serviceTiposEvaluacion.buscarTodos();
     }
 

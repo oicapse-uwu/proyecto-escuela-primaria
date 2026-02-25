@@ -23,33 +23,30 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE calificaciones SET estado=0 WHERE id_calificacion=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idCalificacion", "idEvaluacion", "idMatricula", 
-    "notaObtenida", "observaciones", "fechaCalificacion", "estado"
+    "idCalificacion", "notaObtenida", "observaciones", "fechaCalificacion", 
+    "idEvaluacion", "idMatricula", "estado"
 })
 public class Calificaciones {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_calificacion")
     private Long idCalificacion;
+    @Column(name = "nota_obtenida", length = 10)
+    private String notaObtenida;
+    @Column(length = 255)
+    private String observaciones;
+    @Column(name = "fecha_calificacion")
+    private LocalDateTime fechaCalificacion;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_evaluacion")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Evaluaciones idEvaluacion;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_matricula")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Matriculas idMatricula;
 
-    @Column(name = "nota_obtenida", length = 10)
-    private String notaObtenida;
-
-    @Column(length = 255)
-    private String observaciones;
-
-    @Column(name = "fecha_calificacion")
-    private LocalDateTime fechaCalificacion;
     private Integer estado = 1;
 
     //Constructor vacio
@@ -64,18 +61,6 @@ public class Calificaciones {
     }
     public void setIdCalificacion(Long idCalificacion) {
         this.idCalificacion = idCalificacion;
-    }
-    public Evaluaciones getIdEvaluacion() {
-        return idEvaluacion;
-    }
-    public void setIdEvaluacion(Evaluaciones idEvaluacion) {
-        this.idEvaluacion = idEvaluacion;
-    }
-    public Matriculas getIdMatricula() {
-        return idMatricula;
-    }
-    public void setIdMatricula(Matriculas idMatricula) {
-        this.idMatricula = idMatricula;
     }
     public String getNotaObtenida() {
         return notaObtenida;
@@ -95,6 +80,18 @@ public class Calificaciones {
     public void setFechaCalificacion(LocalDateTime fechaCalificacion) {
         this.fechaCalificacion = fechaCalificacion;
     }
+    public Evaluaciones getIdEvaluacion() {
+        return idEvaluacion;
+    }
+    public void setIdEvaluacion(Evaluaciones idEvaluacion) {
+        this.idEvaluacion = idEvaluacion;
+    }
+    public Matriculas getIdMatricula() {
+        return idMatricula;
+    }
+    public void setIdMatricula(Matriculas idMatricula) {
+        this.idMatricula = idMatricula;
+    }
     public Integer getEstado() {
         return estado;
     }
@@ -103,8 +100,9 @@ public class Calificaciones {
     }
     @Override
     public String toString() {
-        return "Calificaciones [idCalificacion=" + idCalificacion + ", idEvaluacion=" + idEvaluacion
-                + ", idMatricula=" + idMatricula + ", notaObtenida=" + notaObtenida + ", observaciones="
-                + observaciones + ", fechaCalificacion=" + fechaCalificacion + ", estado=" + estado + "]";
+        return "Calificaciones [idCalificacion=" + idCalificacion + ", notaObtenida=" + notaObtenida + 
+                ", observaciones=" + observaciones + ", fechaCalificacion=" + fechaCalificacion + 
+                ", idEvaluacion=" + idEvaluacion + ", idMatricula=" + idMatricula + 
+                ", estado=" + estado + "]";
     }
 }

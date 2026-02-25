@@ -35,7 +35,7 @@ public class SeccionesController {
     private SedesRepository repoSedes;
 
     @GetMapping("/secciones")
-    public List<Secciones> buscartodos() {
+    public List<Secciones> buscarTodos() {
         return serviceSecciones.buscarTodos(); 
     }
     @PostMapping("/secciones")

@@ -39,7 +39,7 @@ public class AlumnoApoderadoController {
     private ApoderadosRepository repoApoderados;
 
     @GetMapping("/alumnoapoderado")
-    public List<AlumnoApoderado> buscartodos() {
+    public List<AlumnoApoderado> buscarTodos() {
         return serviceAlumnoApoderado.buscarTodos(); 
     }
     @PostMapping("/alumnoapoderado")

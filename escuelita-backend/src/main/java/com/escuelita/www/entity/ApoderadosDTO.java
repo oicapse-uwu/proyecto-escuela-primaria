@@ -1,54 +1,25 @@
 package com.escuelita.www.entity;
 
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
-@Entity
-@Table(name = "apoderados")
-@SQLDelete(sql = "UPDATE apoderados SET estado=0 WHERE id_apoderado=?")
-@SQLRestriction("estado = 1")
 @JsonPropertyOrder({
     "idApoderado", "numeroDocumento", "nombres", "apellidos", 
-    "telefonoPrincipal", "correo", "lugarTrabajo", "estado",
-    "idSede", "idTipoDoc"
+    "telefonoPrincipal", "correo", "lugarTrabajo",
+    "idSede", "idTipoDoc", "estado"
 })
 public class ApoderadosDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_apoderado")
+
     private Long idApoderado;    
-    
-    @Column(name = "numero_documento", length = 20)
     private String numeroDocumento;
-    
-    @Column(length = 100)
     private String nombres;
-    
-    @Column(length = 100)
     private String apellidos;
-    
-    @Column(name = "telefono_principal", length = 20)
     private String telefonoPrincipal;
-    
-    @Column(length = 100)
     private String correo;
-    
-    @Column(length = 100)
     private String lugarTrabajo;
-    
-    @Column(name = "id_sede")
+
     private Long idSede;
-    @Column(name = "id_tipo_doc")
     private Long idTipoDoc;
+
     private Integer estado = 1;
 
     public Long getIdApoderado() {

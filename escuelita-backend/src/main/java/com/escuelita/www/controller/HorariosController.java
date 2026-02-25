@@ -18,8 +18,10 @@ import com.escuelita.www.entity.AsignacionDocente;
 import com.escuelita.www.entity.Aulas;
 import com.escuelita.www.entity.Horarios;
 import com.escuelita.www.entity.HorariosDTO;
+
 import com.escuelita.www.repository.AsignacionDocenteRepository;
 import com.escuelita.www.repository.AulasRepository;
+
 import com.escuelita.www.service.IHorariosService;
 
 @RestController
@@ -34,51 +36,49 @@ public class HorariosController {
     private AulasRepository repoAulas;
 
     @GetMapping("/horarios")
-    public List<Horarios> buscartodos() {
+    public List<Horarios> buscarTodos() {
         return serviceHorarios.buscarTodos();
     }
-
     @PostMapping("/horarios")
     public ResponseEntity<?> guardar(@RequestBody HorariosDTO dto) {
         Horarios horario = new Horarios();
         horario.setDiaSemana(dto.getDiaSemana());
         horario.setHoraInicio(dto.getHoraInicio());
         horario.setHoraFin(dto.getHoraFin());
-        if (dto.getEstado() != null)
-            horario.setEstado(dto.getEstado());
 
-        horario.setAsignacion(repoAsignacion.findById(dto.getIdAsignacion()).orElse(null));
-        horario.setAula(repoAulas.findById(dto.getIdAula()).orElse(null));
+        AsignacionDocente asignaciondocente = repoAsignacion
+            .findById(dto.getIdAsignacion())
+            .orElse(null);
+        Aulas aula = repoAulas
+            .findById(dto.getIdAula())
+            .orElse(null);
+        
+        horario.setIdAsignacion(asignaciondocente);
+        horario.setIdAula(aula);
 
-        serviceHorarios.guardar(horario);
-        return ResponseEntity.ok(horario);
+        return ResponseEntity.ok(serviceHorarios.guardar(horario));
     }
-
     @PutMapping("/horarios")
     public ResponseEntity<?> modificar(@RequestBody HorariosDTO dto) {
         if (dto.getIdHorario() == null) {
-            return ResponseEntity.badRequest().body("ID de horario es requerido");
+            return ResponseEntity.badRequest()
+                    .body("ID de horario es requerido");
         }
         Horarios horario = new Horarios();
         horario.setIdHorario(dto.getIdHorario());
         horario.setDiaSemana(dto.getDiaSemana());
         horario.setHoraInicio(dto.getHoraInicio());
         horario.setHoraFin(dto.getHoraFin());
-        if (dto.getEstado() != null)
-            horario.setEstado(dto.getEstado());
 
-        horario.setAsignacion(new AsignacionDocente(dto.getIdAsignacion()));
-        horario.setAula(new Aulas(dto.getIdAula()));
+        horario.setIdAsignacion(new AsignacionDocente(dto.getIdAsignacion()));
+        horario.setIdAula(new Aulas(dto.getIdAula()));
 
-        serviceHorarios.modificar(horario);
-        return ResponseEntity.ok(horario);
+        return ResponseEntity.ok(serviceHorarios.modificar(horario));
     }
-
     @GetMapping("/horarios/{id}")
     public Optional<Horarios> buscarId(@PathVariable("id") Long id) {
         return serviceHorarios.buscarId(id);
     }
-
     @DeleteMapping("/horarios/{id}")
     public String eliminar(@PathVariable Long id) {
         serviceHorarios.eliminar(id);

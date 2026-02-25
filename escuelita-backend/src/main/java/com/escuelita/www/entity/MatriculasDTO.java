@@ -3,22 +3,8 @@ package com.escuelita.www.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
-@Entity
-@Table(name = "matriculas")
-@SQLDelete(sql = "UPDATE matriculas SET estado=0 WHERE id_matricula=?")
-@SQLRestriction("estado = 1")
 @JsonPropertyOrder({
     "idMatricula", "codigoMatricula", "fechaMatricula", 
     "situacionAcademicaPrevia", "estadoMatricula", 
@@ -26,43 +12,21 @@ import jakarta.persistence.Table;
     "colegioDestino", "estado", "idAlumno", "idSeccion", "idAnio"
 })
 public class MatriculasDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_matricula")
+
     private Long idMatricula;
-    
-    @Column(name = "codigo_matricula", length = 30, unique = true)
     private String codigoMatricula;
-
-    @Column(name = "fecha_matricula", nullable = false)
     private LocalDateTime fechaMatricula;
-
-    @Column(name = "situacion_academica_previa", 
-            columnDefinition = "ENUM('Promovido', 'Repitente', 'Ingresante')", nullable = false)
     private String situacionAcademicaPrevia;
-
-    @Column(name = "estado_matricula", 
-            columnDefinition = "ENUM('Activa', 'Retirada', 'Trasladado_Saliente')", nullable = false)
     private String estadoMatricula;
-
-    @Column(name = "observaciones_matricula", columnDefinition = "TEXT")
     private String observacionesMatricula;
-
-    @Column(name = "fecha_retiro")
     private LocalDate fechaRetiro;
-
-    @Column(name = "motivo_retiro", columnDefinition = "TEXT")
     private String motivoRetiro;
-
-    @Column(name = "colegio_destino", length = 150)
     private String colegioDestino;
 
-    @Column(name = "id_alumno")
     private Long idAlumno;
-    @Column(name = "id_seccion")
     private Long idSeccion;
-    @Column(name = "id_anio")
     private Long idAnio;
+
     private Integer estado = 1;
 
     public Long getIdMatricula() {

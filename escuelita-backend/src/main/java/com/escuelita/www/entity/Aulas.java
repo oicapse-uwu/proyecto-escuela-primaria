@@ -21,28 +21,27 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE aulas SET estado=0 WHERE id_aula=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idAula", "nombreAula", "capacidad", "estado", "idSede"
+    "idAula", "nombreAula", "capacidad", "idSede", "estado"
 })
 public class Aulas {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_aula")
     private Long idAula;
-
     @Column(name = "nombre_aula", length = 50)
     private String nombreAula;
-    
     private Integer capacidad;
-    private Integer estado = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_sede", nullable = false)
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Sedes idSede;
 
+    private Integer estado = 1;
+
     //Constructor vacio
-    public Aulas() {}
+    public Aulas() {
+    }
     public Aulas(Long idAula) {
         this.idAula = idAula;
     }

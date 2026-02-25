@@ -2,14 +2,21 @@ package com.escuelita.www.entity;
 
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({
+    "idHorario", "diaSemana", "horaInicio", "horaFin", "idAsignacion", "idAula", "estado" 
+})
 public class HorariosDTO {
 
     private Long idHorario;
     private String diaSemana;
     private LocalTime horaInicio;
     private LocalTime horaFin;
+
     private Long idAsignacion;
     private Long idAula;
+
     private Integer estado = 1;
 
     public Long getIdHorario() {

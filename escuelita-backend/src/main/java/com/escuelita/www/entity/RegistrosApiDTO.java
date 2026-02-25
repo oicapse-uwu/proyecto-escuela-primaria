@@ -2,38 +2,32 @@ package com.escuelita.www.entity;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@Entity
-@Table(name = "registros_api")
+@JsonPropertyOrder({
+    "idRegistro", "tokenGenerado", "claveSecreta", "descripcion", "fechaEmision",
+    "fechaExpiracion", "estadoToken", "idAdmin", "estado"
+})
 public class RegistrosApiDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idRegistro;
-    private Long idAdmin;
+
     private String tokenGenerado;
     private String claveSecreta;
     private String descripcion;
     private LocalDateTime fechaEmision;
     private LocalDateTime fechaExpiracion;
     private String estadoToken;
+
+    private Long idAdmin;
+    
     private Integer estado = 1;
+
     public Long getIdRegistro() {
         return idRegistro;
     }
     public void setIdRegistro(Long idRegistro) {
         this.idRegistro = idRegistro;
-    }
-    public Long getIdAdmin() {
-        return idAdmin;
-    }
-    public void setIdAdmin(Long idAdmin) {
-        this.idAdmin = idAdmin;
     }
     public String getTokenGenerado() {
         return tokenGenerado;
@@ -71,6 +65,12 @@ public class RegistrosApiDTO {
     public void setEstadoToken(String estadoToken) {
         this.estadoToken = estadoToken;
     }
+    public Long getIdAdmin() {
+        return idAdmin;
+    }
+    public void setIdAdmin(Long idAdmin) {
+        this.idAdmin = idAdmin;
+    }
     public Integer getEstado() {
         return estado;
     }
@@ -79,8 +79,9 @@ public class RegistrosApiDTO {
     }
     @Override
     public String toString() {
-        return "RegistrosApiDTO [idRegistro=" + idRegistro + ", idAdmin=" + idAdmin + ", tokenGenerado=" + tokenGenerado
-                + ", claveSecreta=" + claveSecreta + ", descripcion=" + descripcion + ", fechaEmision=" + fechaEmision
-                + ", fechaExpiracion=" + fechaExpiracion + ", estadoToken=" + estadoToken + ", estado=" + estado + "]";
+        return "RegistrosApiDTO [idRegistro=" + idRegistro + ", tokenGenerado=" + tokenGenerado + ", claveSecreta="
+                + claveSecreta + ", descripcion=" + descripcion + ", fechaEmision=" + fechaEmision
+                + ", fechaExpiracion=" + fechaExpiracion + ", estadoToken=" + estadoToken + ", idAdmin=" + idAdmin
+                + ", estado=" + estado + "]";
     }
 }

@@ -31,7 +31,7 @@ public class AreasController {
     private SedesRepository repoSedes; // Repositorio inyectado para el POST
 
     @GetMapping("/areas")
-    public List<Areas> buscartodos() {
+    public List<Areas> buscarTodos() {
         return serviceAreas.buscarTodos();
     }
 

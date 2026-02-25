@@ -2,68 +2,32 @@ package com.escuelita.www.entity;
 
 import java.time.LocalDate;
 
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
-@Entity
-@Table(name = "alumnos")
-@SQLDelete(sql = "UPDATE alumnos SET estado=0 WHERE id_alumno=?")
-@SQLRestriction("estado = 1")
 @JsonPropertyOrder({
     "idAlumno", "numeroDocumento", "nombres", "apellidos", 
     "fechaNacimiento", "genero", "direccion", "telefonoContacto", 
-    "fotoUrl", "observacionesSalud", "tipoIngreso", "estadoAlumno", "estado",
-    "idSede", "idTipoDoc"
+    "fotoUrl", "observacionesSalud", "tipoIngreso", "estadoAlumno",
+    "idSede", "idTipoDoc", "estado"
 })
 public class AlumnosDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_alumno")
+
     private Long idAlumno;
-    
-    @Column(name = "numero_documento", length = 20)
     private String numeroDocumento;
-    
-    @Column(length = 100)
     private String nombres;
-    
-    @Column(length = 100)
     private String apellidos;
-    
-    @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
-    
-    @Column(length = 1)
     private String genero;
-    
-    @Column(length = 255)
     private String direccion;
-    
-    @Column(name = "telefono_contacto", length = 20)
     private String telefonoContacto;
-    
-    @Column(name = "foto_url", length = 255)
     private String fotoUrl;
-    
-    @Column(name = "observaciones_salud", columnDefinition = "TEXT")
     private String observacionesSalud;
-    @Column(name = "tipo_ingreso")
     private String tipoIngreso;
-    @Column(name = "estado_alumno")
     private String estadoAlumno;
-    @Column(name = "id_sede")
+
     private Long idSede;
-    @Column(name = "id_tipo_doc")
     private Long idTipoDoc;
+
     private Integer estado = 1;
 
     public Long getIdAlumno() {

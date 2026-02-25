@@ -2,20 +2,27 @@ package com.escuelita.www.entity;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({
+    "idDocente", "gradoAcademico", "fechaContratacion", "estadoLaboral", 
+    "idUsuario", "idEspecialidad", "estado"
+})
 public class PerfilDocenteDTO {
 
     private Long idDocente;
     private String gradoAcademico;
     private LocalDate fechaContratacion;
     private String estadoLaboral;
+
     private Long idUsuario;
     private Long idEspecialidad;
+    
     private Integer estado = 1;
 
     public Long getIdDocente() {
         return idDocente;
     }
-
     public void setIdDocente(Long idDocente) {
         this.idDocente = idDocente;
     }

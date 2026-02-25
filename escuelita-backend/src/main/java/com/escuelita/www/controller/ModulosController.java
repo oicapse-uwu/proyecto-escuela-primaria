@@ -15,7 +15,7 @@ public class ModulosController {
     private IModulosService serviceModulos;
 
     @GetMapping("/modulos")
-    public List<Modulos> buscartodos() {
+    public List<Modulos> buscarTodos() {
         return serviceModulos.buscarTodos();
     }
 

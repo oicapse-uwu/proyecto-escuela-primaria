@@ -23,12 +23,11 @@ public class UsuariosController {
     @Autowired
     private TipoDocumentosRepository repoTipoDocs;
 
-   
     @Autowired
     private SedesRepository repoSedes; 
 
     @GetMapping("/usuarios")
-    public List<Usuarios> buscartodos() {
+    public List<Usuarios> buscarTodos() {
         return serviceUsuarios.buscarTodos();
     }
 

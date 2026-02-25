@@ -27,7 +27,7 @@ public class RolModuloPermisoController {
     private PermisosRepository repoPermisos;
 
     @GetMapping("/rolmodulopermiso")
-    public List<RolModuloPermiso> buscartodos() {
+    public List<RolModuloPermiso> buscarTodos() {
         return serviceRmp.buscarTodos();
     }
 

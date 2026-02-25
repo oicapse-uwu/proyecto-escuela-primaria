@@ -37,7 +37,7 @@ public class PromediosPeriodoController {
     private PeriodosRepository repoPeriodos;
 
     @GetMapping("/promediosperiodo")
-    public List<PromediosPeriodo> buscartodos() {
+    public List<PromediosPeriodo> buscarTodos() {
         return servicePromedios.buscarTodos();
     }
 

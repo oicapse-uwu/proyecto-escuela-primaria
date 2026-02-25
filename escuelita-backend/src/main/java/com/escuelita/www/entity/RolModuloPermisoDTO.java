@@ -1,22 +1,21 @@
 package com.escuelita.www.entity;
 
-import jakarta.persistence.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@Entity
-@Table(name = "rol_modulo_permiso")
-@SQLDelete(sql = "UPDATE rol_modulo_permiso SET estado=0 WHERE id_rmp=?")
-@SQLRestriction("estado = 1")
+@JsonPropertyOrder({
+    "idDocente", "gradoAcademico", "fechaContratacion", "estadoLaboral", 
+    "idUsuario", "idEspecialidad", "estado"
+})
 public class RolModuloPermisoDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idRmp;
+
     private Long idRol;
     private Long idModulo;
     private Long idPermiso;
+
     private Integer estado = 1;
+
     public Long getIdRmp() {
         return idRmp;
     }

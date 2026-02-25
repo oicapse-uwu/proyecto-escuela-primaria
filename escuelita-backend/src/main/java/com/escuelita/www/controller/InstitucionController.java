@@ -25,7 +25,7 @@ public class InstitucionController {
     private IInstitucionService serviceInstitucion;
 
     @GetMapping("/institucion")
-    public List<Institucion> buscartodos() {
+    public List<Institucion> buscarTodos() {
         return serviceInstitucion.buscarTodos(); 
     }
     @PostMapping("/institucion")

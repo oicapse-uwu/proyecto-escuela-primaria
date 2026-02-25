@@ -31,7 +31,7 @@ public class PeriodosController {
     private AnioEscolarRepository repoAnioEscolar;
 
     @GetMapping("/periodos")
-    public List<Periodos> buscartodos() {
+    public List<Periodos> buscarTodos() {
         return servicePeriodos.buscarTodos(); 
     }
     @PostMapping("/periodos")

@@ -7,9 +7,9 @@ import com.escuelita.www.entity.AsignacionDocente;
 public interface IAsignacionDocenteService {
     List<AsignacionDocente> buscarTodos();
 
-    void guardar(AsignacionDocente asignacion);
+    AsignacionDocente guardar(AsignacionDocente asignacion);
 
-    void modificar(AsignacionDocente asignacion);
+    AsignacionDocente modificar(AsignacionDocente asignacion);
 
     Optional<AsignacionDocente> buscarId(Long id);
 

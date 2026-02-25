@@ -14,7 +14,7 @@ public class PagosCajaController {
     private IPagosCajaService servicePagosCaja;
 
     @GetMapping("/pagos-caja")
-    public List<PagosCajaDTO> buscartodos() {
+    public List<PagosCajaDTO> buscarTodos() {
         return servicePagosCaja.buscarTodos(); 
     }
     

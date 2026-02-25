@@ -3,6 +3,9 @@ package com.escuelita.www.entity;
 import java.math.BigDecimal;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,6 +20,9 @@ import jakarta.persistence.Table;
 @Table(name = "conceptos_pago")
 @SQLDelete(sql = "UPDATE conceptos_pago SET estado=0 WHERE id_concepto=?")
 @SQLRestriction("estado = 1")
+@JsonPropertyOrder({
+    "idConcepto", "institucion", "grado", "nombreConcepto", "monto", "estadoConcepto", "estado"
+})
 public class ConceptosPago {
     
     @Id

@@ -113,8 +113,4 @@ public class SuperAdmins {
                 + correo + ", usuario=" + usuario + ", password=" + password + ", rolPlataforma=" + rolPlataforma
                 + ", estado=" + estado + "]";
     }
-
- 
-
-    
 }

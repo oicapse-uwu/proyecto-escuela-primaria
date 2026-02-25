@@ -25,39 +25,30 @@ import jakarta.persistence.Table;
 @JsonPropertyOrder({
     "idAlumno", "numeroDocumento", "nombres", "apellidos", 
     "fechaNacimiento", "genero", "direccion", "telefonoContacto", 
-    "fotoUrl", "observacionesSalud", "tipoIngreso", "estadoAlumno", "estado",
-    "idSede", "idTipoDoc"
+    "fotoUrl", "observacionesSalud", "tipoIngreso", "estadoAlumno",
+    "idSede", "idTipoDoc", "estado"
 })
 public class Alumnos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_alumno")
     private Long idAlumno;
-
     @Column(name = "numero_documento", length = 20)
     private String numeroDocumento;
-    
     @Column(length = 100)
     private String nombres;
-    
     @Column(length = 100)
     private String apellidos;
-    
     @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
-    
     @Column(length = 1)
     private String genero;
-    
     @Column(length = 255)
     private String direccion;
-    
     @Column(name = "telefono_contacto", length = 20)
     private String telefonoContacto;
-    
     @Column(name = "foto_url", length = 255)
     private String fotoUrl;
-    
     @Column(name = "observaciones_salud", columnDefinition = "TEXT")
     private String observacionesSalud;
     @Column(name = "tipo_ingreso", length = 50)
@@ -65,20 +56,20 @@ public class Alumnos {
     @Column(name = "estado_alumno")
     private String estadoAlumno;
 
-    private Integer estado = 1;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_sede")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Sedes idSede;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_tipo_doc")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private TipoDocumentos idTipoDoc;
-    
+
+    private Integer estado = 1;
+
     //Constructor vacio
-    public Alumnos() {}
+    public Alumnos() {
+    }
     public Alumnos(Long idAlumno) {
         this.idAlumno = idAlumno;
     }
@@ -156,12 +147,6 @@ public class Alumnos {
     public void setEstadoAlumno(String estadoAlumno) {
         this.estadoAlumno = estadoAlumno;
     }
-    public Integer getEstado() {
-        return estado;
-    }
-    public void setEstado(Integer estado) {
-        this.estado = estado;
-    }
     public Sedes getIdSede() {
         return idSede;
     }
@@ -174,12 +159,18 @@ public class Alumnos {
     public void setIdTipoDoc(TipoDocumentos idTipoDoc) {
         this.idTipoDoc = idTipoDoc;
     }
+    public Integer getEstado() {
+        return estado;
+    }
+    public void setEstado(Integer estado) {
+        this.estado = estado;
+    }
     @Override
     public String toString() {
         return "Alumnos [idAlumno=" + idAlumno + ", numeroDocumento=" + numeroDocumento + ", nombres=" + nombres
                 + ", apellidos=" + apellidos + ", fechaNacimiento=" + fechaNacimiento + ", genero=" + genero
                 + ", direccion=" + direccion + ", telefonoContacto=" + telefonoContacto + ", fotoUrl=" + fotoUrl
                 + ", observacionesSalud=" + observacionesSalud + ", tipoIngreso=" + tipoIngreso + ", estadoAlumno="
-                + estadoAlumno + ", estado=" + estado + ", idSede=" + idSede + ", idTipoDoc=" + idTipoDoc + "]";
+                + estadoAlumno + ", idSede=" + idSede + ", idTipoDoc=" + idTipoDoc + ", estado=" + estado + "]";
     }
 }

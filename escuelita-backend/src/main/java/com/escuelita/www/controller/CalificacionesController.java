@@ -33,7 +33,7 @@ public class CalificacionesController {
     private MatriculasRepository repoMatriculas;
 
     @GetMapping("/calificaciones")
-    public List<Calificaciones> buscartodos() {
+    public List<Calificaciones> buscarTodos() {
         return serviceCalificaciones.buscarTodos();
     }
 

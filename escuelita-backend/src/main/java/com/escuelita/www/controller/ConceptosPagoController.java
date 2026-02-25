@@ -14,7 +14,7 @@ public class ConceptosPagoController {
     private IConceptosPagoService serviceConceptos;
 
     @GetMapping("/conceptos-pago")
-    public List<ConceptosPagoDTO> buscartodos() {
+    public List<ConceptosPagoDTO> buscarTodos() {
         return serviceConceptos.buscarTodos(); 
     }
     

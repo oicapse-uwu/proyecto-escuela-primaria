@@ -31,7 +31,7 @@ public class CursosController {
     private AreasRepository repoAreas;
 
     @GetMapping("/cursos")
-    public List<Cursos> buscartodos() {
+    public List<Cursos> buscarTodos() {
         return serviceCursos.buscarTodos();
     }
 

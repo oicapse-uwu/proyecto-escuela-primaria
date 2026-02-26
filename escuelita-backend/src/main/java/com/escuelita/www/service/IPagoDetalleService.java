@@ -1,12 +1,13 @@
 package com.escuelita.www.service;
 
 import java.util.List;
-import com.escuelita.www.entity.PagoDetalleDTO;
+import java.util.Optional;
+import com.escuelita.www.entity.PagoDetalle;
 
 public interface IPagoDetalleService {
-    List<PagoDetalleDTO> buscarTodos();
-    PagoDetalleDTO guardar(PagoDetalleDTO dto);
-    PagoDetalleDTO modificar(PagoDetalleDTO dto);
-    PagoDetalleDTO buscarId(Long id);
-    void eliminar(Long id);
+    List<PagoDetalle> buscarTodos();
+    PagoDetalle guardar(PagoDetalle matricula);
+    PagoDetalle modificar(PagoDetalle matricula);
+    Optional<PagoDetalle> buscarId(Long id);
+    void eliminar(Long id); 
 }

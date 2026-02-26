@@ -47,7 +47,7 @@ public class MallaCurricularController {
         MallaCurricular mallaCurricular = new MallaCurricular();
 
         AnioEscolar anioEscolar = repoAnio
-            .findById(dto.getIdAnio())
+            .findById(dto.getIdAnioEscolar())
             .orElse(null);
         Grados grados = repoGrados
             .findById(dto.getIdGrado())
@@ -56,9 +56,9 @@ public class MallaCurricularController {
             .findById(dto.getIdCurso())
             .orElse(null);
 
-        mallaCurricular.setAnioEscolar(anioEscolar);
-        mallaCurricular.setGrado(grados);
-        mallaCurricular.setCurso(cursos);
+        mallaCurricular.setIdAnioEscolar(anioEscolar);
+        mallaCurricular.setIdGrado(grados);
+        mallaCurricular.setIdCurso(cursos);
 
         return ResponseEntity.ok(serviceMallaCurricular.guardar(mallaCurricular));
     }
@@ -72,7 +72,7 @@ public class MallaCurricularController {
         mallaCurricular.setIdMalla(dto.getIdMalla());
 
         AnioEscolar anioEscolar = repoAnio
-            .findById(dto.getIdAnio())
+            .findById(dto.getIdAnioEscolar())
             .orElse(null);
         Grados grados = repoGrados
             .findById(dto.getIdGrado())
@@ -81,9 +81,9 @@ public class MallaCurricularController {
             .findById(dto.getIdCurso())
             .orElse(null);
 
-        mallaCurricular.setAnioEscolar(anioEscolar);
-        mallaCurricular.setGrado(grados);
-        mallaCurricular.setCurso(cursos);
+        mallaCurricular.setIdAnioEscolar(anioEscolar);
+        mallaCurricular.setIdGrado(grados);
+        mallaCurricular.setIdCurso(cursos);
 
         return ResponseEntity.ok(serviceMallaCurricular.modificar(mallaCurricular));
     }

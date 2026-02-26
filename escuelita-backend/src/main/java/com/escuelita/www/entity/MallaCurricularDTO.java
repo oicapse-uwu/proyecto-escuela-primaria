@@ -9,7 +9,7 @@ public class MallaCurricularDTO {
 
     private Long idMalla;
 
-    private Long idAnio;
+    private Long idAnioEscolar;
     private Long idGrado;
     private Long idCurso;
 
@@ -21,11 +21,11 @@ public class MallaCurricularDTO {
     public void setIdMalla(Long idMalla) {
         this.idMalla = idMalla;
     }
-    public Long getIdAnio() {
-        return idAnio;
+    public Long getIdAnioEscolar() {
+        return idAnioEscolar;
     }
-    public void setIdAnio(Long idAnio) {
-        this.idAnio = idAnio;
+    public void setIdAnioEscolar(Long idAnioEscolar) {
+        this.idAnioEscolar = idAnioEscolar;
     }
     public Long getIdGrado() {
         return idGrado;
@@ -47,7 +47,7 @@ public class MallaCurricularDTO {
     }
     @Override
     public String toString() {
-        return "MallaCurricularDTO [idMalla=" + idMalla + ", idAnio=" + idAnio + ", idGrado=" + idGrado
+        return "MallaCurricularDTO [idMalla=" + idMalla + ", idAnioEscolar=" + idAnioEscolar + ", idGrado=" + idGrado
                 + ", idCurso=" + idCurso + ", estado=" + estado + "]";
     }
 }

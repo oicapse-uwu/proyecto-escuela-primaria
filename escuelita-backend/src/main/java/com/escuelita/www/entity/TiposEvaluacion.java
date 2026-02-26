@@ -30,14 +30,16 @@ public class TiposEvaluacion {
     @Column(length = 100)
     private String nombre;
 
-    @Column(nullable = false)
     private Integer estado = 1;
 
-    public TiposEvaluacion() {}
+    //Constructor vacio
+    public TiposEvaluacion() {
+    }
     public TiposEvaluacion(Long idTipoEvaluacion) {
         this.idTipoEvaluacion = idTipoEvaluacion;
     }
 
+    // Getters y Setters / toString
     public Long getIdTipoEvaluacion() {
         return idTipoEvaluacion;
     }

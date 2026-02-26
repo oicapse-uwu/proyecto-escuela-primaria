@@ -56,7 +56,6 @@ public class Aulas {
     public void setIdAula(Long idAula) {
         this.idAula = idAula;
     }
-
     public String getNombreAula() {
         return nombreAula;
     }

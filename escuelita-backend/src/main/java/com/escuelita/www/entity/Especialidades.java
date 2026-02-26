@@ -17,7 +17,6 @@ import jakarta.persistence.*;
     "idEspecialidad", "nombreEspecialidad", "descripcion", "estado"
 })
 public class Especialidades {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_especialidad")

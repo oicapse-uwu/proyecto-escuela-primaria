@@ -1,5 +1,6 @@
 :root {
   /* Paleta de Colores Principal */
+  --optional-color: #041557;    /* Color Opcional */
   --primary-color: #15297c;       /* Azul Institucional */
   --primary-dark: #0f1c4d;        /* Azul Oscuro (Hover/Fondos) */
   --primary-light: #3d5afe;       /* Azul Claro (Acentos) */

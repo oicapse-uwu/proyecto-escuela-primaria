@@ -1,95 +1,38 @@
 package com.escuelita.www.service.jpa;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.escuelita.www.entity.ConceptosPago;
-import com.escuelita.www.entity.ConceptosPagoDTO;
-import com.escuelita.www.entity.Grados;
-import com.escuelita.www.entity.Institucion;
 import com.escuelita.www.repository.ConceptosPagoRepository;
 import com.escuelita.www.service.IConceptosPagoService;
 
 @Service
 public class ConceptosPagoService implements IConceptosPagoService {
-    
+
     @Autowired
-    private ConceptosPagoRepository repoConceptos;
+    private ConceptosPagoRepository repoConceptosPago;
     
-    @Override
-    public List<ConceptosPagoDTO> buscarTodos() {
-        return repoConceptos.findAll().stream()
-                .map(this::convertirADTO)
-                .collect(Collectors.toList());
-    }
-    
-    @Override
-    public ConceptosPagoDTO guardar(ConceptosPagoDTO dto) {
-        ConceptosPago entidad = convertirAEntidad(dto);
-        ConceptosPago guardado = repoConceptos.save(entidad);
-        return convertirADTO(guardado);
-    }
-    
-    @Override
-    public ConceptosPagoDTO modificar(ConceptosPagoDTO dto) {
-        ConceptosPago entidad = convertirAEntidad(dto);
-        entidad.setIdConcepto(dto.getIdConcepto()); 
-        ConceptosPago actualizado = repoConceptos.save(entidad);
-        return convertirADTO(actualizado);
-    }
-    
-    @Override
-    public ConceptosPagoDTO buscarId(Long id) {
-        return repoConceptos.findById(id)
-                .map(this::convertirADTO)
-                .orElse(null); 
-    }
-    
-    @Override
-    public void eliminar(Long id) {
-        repoConceptos.deleteById(id);
+    public List<ConceptosPago> buscarTodos(){
+        return repoConceptosPago.findAll();
     }
 
-    // --- MAPPERS ---
-
-    private ConceptosPago convertirAEntidad(ConceptosPagoDTO dto) {
-        ConceptosPago entidad = new ConceptosPago();
-        entidad.setNombreConcepto(dto.getNombreConcepto());
-        entidad.setMonto(dto.getMonto());
-        if (dto.getEstadoConcepto() != null) entidad.setEstadoConcepto(dto.getEstadoConcepto());
-        
-        if (dto.getIdInstitucion() != null) {
-            Institucion inst = new Institucion();
-            inst.setIdInstitucion(dto.getIdInstitucion()); 
-            entidad.setIdInstitucion(inst);
-        }
-        
-        if (dto.getIdGrado() != null) {
-            Grados grado = new Grados();
-            grado.setIdGrado(dto.getIdGrado()); 
-            entidad.setidGrados(grado);
-        }
-        
-        return entidad;
+    @Override
+    public ConceptosPago guardar(ConceptosPago conceptospago){
+       return repoConceptosPago.save(conceptospago);
     }
 
-    private ConceptosPagoDTO convertirADTO(ConceptosPago entidad) {
-        ConceptosPagoDTO dto = new ConceptosPagoDTO();
-        dto.setIdConcepto(entidad.getIdConcepto());
-        dto.setNombreConcepto(entidad.getNombreConcepto());
-        dto.setMonto(entidad.getMonto());
-        dto.setEstadoConcepto(entidad.getEstadoConcepto());
-        
-        if (entidad.getIdInstitucion() != null) {
-            dto.setIdInstitucion(entidad.getIdInstitucion().getIdInstitucion());
-        }
-        if (entidad.getidGrados() != null) {
-            dto.setIdGrado(entidad.getidGrados().getIdGrado());
-        }
-        
-        return dto;
+    @Override
+    public ConceptosPago modificar(ConceptosPago conceptospago){
+        return repoConceptosPago.save(conceptospago);
+    }
+
+    public Optional<ConceptosPago> buscarId(Long id){
+        return repoConceptosPago.findById(id);
+    }
+
+    public void eliminar(Long id){
+        repoConceptosPago.deleteById(id);
     }
 }

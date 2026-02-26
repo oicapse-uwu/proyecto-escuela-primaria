@@ -26,9 +26,7 @@ public class DeudasAlumno {
     @Column(name = "id_deuda")
     private Long idDeuda;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_concepto")
-    private ConceptosPago concepto;
+
     @Column(name = "descripcion_cuota")
     private String descripcionCuota;
     @Column(name = "monto_total")
@@ -41,7 +39,10 @@ public class DeudasAlumno {
     private String estadoDeuda = "Pendiente";
     @Column(name = "fecha_pago_total")
     private LocalDateTime fechaPagoTotal;
-    
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_concepto")
+    private ConceptosPago idConcepto;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_matricula")
     private Matriculas idMatricula;
@@ -62,11 +63,11 @@ public class DeudasAlumno {
     public void setIdDeuda(Long idDeuda) {
         this.idDeuda = idDeuda;
     }
-    public ConceptosPago getConcepto() {
-        return concepto;
+    public ConceptosPago getIdConcepto() {
+        return idConcepto;
     }
-    public void setConcepto(ConceptosPago concepto) {
-        this.concepto = concepto;
+    public void setIdConcepto(ConceptosPago idConcepto) {
+        this.idConcepto = idConcepto;
     }
     public String getDescripcionCuota() {
         return descripcionCuota;
@@ -118,7 +119,7 @@ public class DeudasAlumno {
     }
     @Override
     public String toString() {
-        return "DeudasAlumno [idDeuda=" + idDeuda + ", concepto=" + concepto + ", descripcionCuota=" + descripcionCuota
+        return "DeudasAlumno [idDeuda=" + idDeuda + ", idConcepto=" + idConcepto + ", descripcionCuota=" + descripcionCuota
                 + ", montoTotal=" + montoTotal + ", fechaEmision=" + fechaEmision + ", fechaVencimiento="
                 + fechaVencimiento + ", estadoDeuda=" + estadoDeuda + ", fechaPagoTotal=" + fechaPagoTotal
                 + ", idMatricula=" + idMatricula + ", estado=" + estado + "]";

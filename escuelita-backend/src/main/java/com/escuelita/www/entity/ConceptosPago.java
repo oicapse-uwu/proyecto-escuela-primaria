@@ -46,7 +46,7 @@ public class ConceptosPago {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_grado")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
-    private Grados idGrados; 
+    private Grados idGrado; 
 
     private Integer estado = 1;
 
@@ -88,11 +88,11 @@ public class ConceptosPago {
     public void setIdInstitucion(Institucion idInstitucion) {
         this.idInstitucion = idInstitucion;
     }
-    public Grados getidGrados() {
-        return idGrados;
+    public Grados getIdGrado() {
+        return idGrado;
     }
-    public void setidGrados(Grados idGrados) {
-        this.idGrados = idGrados;
+    public void setIdGrado(Grados idGrado) {
+        this.idGrado = idGrado;
     }
     public Integer getEstado() {
         return estado;
@@ -103,7 +103,7 @@ public class ConceptosPago {
     @Override
     public String toString() {
         return "ConceptosPago [idConcepto=" + idConcepto + ", nombreConcepto=" + nombreConcepto + ", monto=" + monto
-                + ", estadoConcepto=" + estadoConcepto + ", idInstitucion=" + idInstitucion + ", idGrados=" + idGrados
+                + ", estadoConcepto=" + estadoConcepto + ", idInstitucion=" + idInstitucion + ", idGrado=" + idGrado
                 + ", estado=" + estado + "]";
     }
 }

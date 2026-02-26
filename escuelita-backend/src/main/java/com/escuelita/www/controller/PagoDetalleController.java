@@ -1,9 +1,26 @@
 package com.escuelita.www.controller;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.escuelita.www.entity.PagoDetalle;
 import com.escuelita.www.entity.PagoDetalleDTO;
+import com.escuelita.www.entity.PagosCaja;
+import com.escuelita.www.entity.DeudasAlumno;
+import com.escuelita.www.repository.PagosCajaRepository;
+import com.escuelita.www.repository.DeudasAlumnoRepository;
+
 import com.escuelita.www.service.IPagoDetalleService;
 
 @RestController
@@ -13,27 +30,58 @@ public class PagoDetalleController {
     @Autowired
     private IPagoDetalleService servicePagoDetalle;
 
-    @GetMapping("/pago-detalle")
-    public List<PagoDetalleDTO> buscarTodos() {
+    @Autowired
+    private PagosCajaRepository repoPagosCaja;
+
+    @Autowired
+    private DeudasAlumnoRepository repoDeudasAlumno;
+
+    @GetMapping("/pagodetalle")
+    public List<PagoDetalle> buscarTodos() {
         return servicePagoDetalle.buscarTodos(); 
     }
     
-    @PostMapping("/pago-detalle")
-    public PagoDetalleDTO guardar(@RequestBody PagoDetalleDTO dto) {
-        return servicePagoDetalle.guardar(dto);
+    @PostMapping("/pagodetalle")
+    public ResponseEntity<?> guardar(@RequestBody PagoDetalleDTO dto) {
+       PagoDetalle pagoDetalle = new PagoDetalle();
+        pagoDetalle.setMontoAplicado(dto.getMontoAplicado());
+
+        PagosCaja pagosCaja = repoPagosCaja
+            .findById(dto.getIdPago())
+            .orElse(null);
+
+        DeudasAlumno deudasAlumno = repoDeudasAlumno
+            .findById(dto.getIdDeuda())
+            .orElse(null);
+
+        pagoDetalle.setIdPago(pagosCaja);
+        pagoDetalle.setIdDeuda(deudasAlumno);
+
+        return ResponseEntity.ok(servicePagoDetalle.guardar(pagoDetalle));
     }
     
-    @PutMapping("/pago-detalle")
-    public PagoDetalleDTO modificar(@RequestBody PagoDetalleDTO dto) {
-        return servicePagoDetalle.modificar(dto);
+    @PutMapping("/pagodetalle")
+    public ResponseEntity<?> modificar(@RequestBody PagoDetalleDTO dto) {
+        if(dto.getIdPagoDetalle() == null){
+            return ResponseEntity.badRequest()
+                    .body("ID de detalle de pago es requerido");
+        }
+        PagoDetalle pagodetalle = new PagoDetalle();
+        pagodetalle.setIdPagoDetalle(dto.getIdPagoDetalle());
+        pagodetalle.setMontoAplicado(dto.getMontoAplicado());
+
+        pagodetalle.setIdPago(new PagosCaja(dto.getIdPago()));
+        pagodetalle.setIdDeuda(new DeudasAlumno(dto.getIdDeuda()));
+
+        return ResponseEntity.ok(servicePagoDetalle.modificar(pagodetalle));    
     }
     
-    @GetMapping("/pago-detalle/{id}")
-    public PagoDetalleDTO buscarId(@PathVariable("id") Long id) {
-        return servicePagoDetalle.buscarId(id);
+    @GetMapping("/pagodetalle/{id}")
+    public Optional<PagoDetalle> buscarId(@PathVariable("id") Long id){
+    return servicePagoDetalle.buscarId(id);
     }
-    
-    @DeleteMapping("/pago-detalle/{id}")
+
+    @DeleteMapping("/pagodetalle/{id}")
     public String eliminar(@PathVariable Long id) {
         servicePagoDetalle.eliminar(id);
         return "Detalle de pago eliminado correctamente";

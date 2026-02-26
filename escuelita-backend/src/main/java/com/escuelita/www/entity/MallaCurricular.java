@@ -29,8 +29,6 @@ public class MallaCurricular {
     @Column(name = "id_malla")
     private Long idMalla;
 
-    private Integer estado = 1;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_anio")
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
@@ -46,12 +44,16 @@ public class MallaCurricular {
     @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private Cursos idCurso;
 
+    private Integer estado = 1;
+
+    // Constructor vacio
     public MallaCurricular() {
     }
-
     public MallaCurricular(Long idMalla) {
         this.idMalla = idMalla;
     }
+
+    // Getters and Setters / toString
     public Long getIdMalla() {
         return idMalla;
     }

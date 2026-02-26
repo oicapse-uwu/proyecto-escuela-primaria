@@ -15,7 +15,6 @@ import jakarta.persistence.*;
     "idModulo", "nombre", "urlBase", "estado"
 })
 public class Modulos {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_modulo")

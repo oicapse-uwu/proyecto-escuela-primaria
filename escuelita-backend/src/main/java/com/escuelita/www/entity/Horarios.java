@@ -28,7 +28,6 @@ import jakarta.persistence.Table;
     "idHorario", "diaSemana", "horaInicio", "horaFin", "idAsignacion", "idAula", "estado" 
 })
 public class Horarios {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_horario")

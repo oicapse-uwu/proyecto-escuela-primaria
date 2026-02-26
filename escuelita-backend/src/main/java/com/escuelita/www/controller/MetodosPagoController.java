@@ -14,12 +14,12 @@ public class MetodosPagoController {
     @Autowired
     private IMetodosPagoService serviceMetodosPago;
 
-    @GetMapping("/metodos-pago")
+    @GetMapping("/metodospago")
     public List<MetodosPago> buscarTodos() {
         return serviceMetodosPago.buscarTodos();
     }
 
-    @PostMapping("/metodos-pago")
+    @PostMapping("/metodospago")
     public MetodosPago guardar(@RequestBody MetodosPago metodospago) {
         serviceMetodosPago.guardar(metodospago);
         return metodospago;
@@ -31,12 +31,12 @@ public class MetodosPagoController {
         return metodospago;
     }
 
-    @GetMapping("/metodos-pago/{id}")
+    @GetMapping("/metodospago/{id}")
     public Optional<MetodosPago> buscarId(@PathVariable("id") Long id) {
         return serviceMetodosPago.buscarId(id);
     }
 
-    @DeleteMapping("/metodos-pago/{id}")
+    @DeleteMapping("/metodospago/{id}")
     public String eliminar(@PathVariable Long id) {
         serviceMetodosPago.eliminar(id);
         return "Metodo de pago eliminado correctamente";

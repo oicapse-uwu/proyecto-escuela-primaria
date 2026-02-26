@@ -38,12 +38,12 @@ public class ConceptosPagoController {
     @Autowired
     private GradosRepository repoGrados;
 
-    @GetMapping("/conceptos-pago")
+    @GetMapping("/conceptospago")
     public List<ConceptosPago> buscarTodos() {
         return serviceConceptos.buscarTodos(); 
     }
     
-    @PostMapping("/conceptos-pago")
+    @PostMapping("/conceptospago")
     public ResponseEntity<?> guardar(@RequestBody ConceptosPagoDTO dto) {
         
         ConceptosPago conceptospago = new ConceptosPago();
@@ -64,7 +64,7 @@ public class ConceptosPagoController {
         return ResponseEntity.ok(serviceConceptos.guardar(conceptospago));
     }
     
-    @PutMapping("/conceptos-pago")
+    @PutMapping("/conceptospago")
    public ResponseEntity<?> modificar(@RequestBody ConceptosPagoDTO dto) {
         if(dto.getIdConcepto() == null){
             return ResponseEntity.badRequest()
@@ -82,13 +82,13 @@ public class ConceptosPagoController {
         return ResponseEntity.ok(serviceConceptos.modificar(conceptospago));
     }
     
-    @GetMapping("/conceptos-pago/{id}")
+    @GetMapping("/conceptospago/{id}")
     public Optional<ConceptosPago> buscarId(@PathVariable("id") Long id){
     return serviceConceptos.buscarId(id);
 
     }
     
-    @DeleteMapping("/conceptos-pago/{id}")
+    @DeleteMapping("/conceptospago/{id}")
     public String eliminar(@PathVariable Long id){
         serviceConceptos.eliminar(id);
         return "Concepto de pago eliminado";

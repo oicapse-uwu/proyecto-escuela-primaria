@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.escuelita.www.entity.PagoDetalle;
 import com.escuelita.www.entity.PagoDetalleDTO;
 import com.escuelita.www.entity.PagosCaja;
-import com.escuelita.www.entity.PagosCajaDTO;
 import com.escuelita.www.entity.DeudasAlumno;
 import com.escuelita.www.repository.PagosCajaRepository;
 import com.escuelita.www.repository.DeudasAlumnoRepository;
@@ -37,12 +36,12 @@ public class PagoDetalleController {
     @Autowired
     private DeudasAlumnoRepository repoDeudasAlumno;
 
-    @GetMapping("/pago-detalle")
+    @GetMapping("/pagodetalle")
     public List<PagoDetalle> buscarTodos() {
         return servicePagoDetalle.buscarTodos(); 
     }
     
-    @PostMapping("/pago-detalle")
+    @PostMapping("/pagodetalle")
     public ResponseEntity<?> guardar(@RequestBody PagoDetalleDTO dto) {
        PagoDetalle pagoDetalle = new PagoDetalle();
         pagoDetalle.setMontoAplicado(dto.getMontoAplicado());
@@ -61,7 +60,7 @@ public class PagoDetalleController {
         return ResponseEntity.ok(servicePagoDetalle.guardar(pagoDetalle));
     }
     
-    @PutMapping("/pago-detalle")
+    @PutMapping("/pagodetalle")
     public ResponseEntity<?> modificar(@RequestBody PagoDetalleDTO dto) {
         if(dto.getIdPagoDetalle() == null){
             return ResponseEntity.badRequest()
@@ -77,12 +76,12 @@ public class PagoDetalleController {
         return ResponseEntity.ok(servicePagoDetalle.modificar(pagodetalle));    
     }
     
-    @GetMapping("/pago-detalle/{id}")
+    @GetMapping("/pagodetalle/{id}")
     public Optional<PagoDetalle> buscarId(@PathVariable("id") Long id){
     return servicePagoDetalle.buscarId(id);
     }
 
-    @DeleteMapping("/pago-detalle/{id}")
+    @DeleteMapping("/pagodetalle/{id}")
     public String eliminar(@PathVariable Long id) {
         servicePagoDetalle.eliminar(id);
         return "Detalle de pago eliminado correctamente";

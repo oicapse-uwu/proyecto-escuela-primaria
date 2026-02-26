@@ -36,12 +36,12 @@ public class PagosCajaController {
     @Autowired
     private UsuariosRepository repoUsuarios;
 
-    @GetMapping("/pagos-caja")
+    @GetMapping("/pagoscaja")
     public List<PagosCaja> buscarTodos() {
         return servicePagosCaja.buscarTodos();  
     }
     
-    @PostMapping("/pagos-caja")
+    @PostMapping("/pagoscaja")
     public ResponseEntity<?> guardar(@RequestBody PagosCajaDTO dto) {
        PagosCaja pagoscaja = new PagosCaja();
        pagoscaja.setFechaPago(dto.getFechaPago());
@@ -63,7 +63,7 @@ public class PagosCajaController {
         return ResponseEntity.ok(servicePagosCaja.guardar(pagoscaja));
     }
     
-    @PutMapping("/pagos-caja")
+    @PutMapping("/pagoscaja")
     public ResponseEntity<?> modificar(@RequestBody PagosCajaDTO dto) {
         if(dto.getIdPago() == null){
             return ResponseEntity.badRequest()
@@ -82,13 +82,13 @@ public class PagosCajaController {
         return ResponseEntity.ok(servicePagosCaja.modificar(pagoscaja));
     }
     
-    @GetMapping("/pagos-caja/{id}")
+    @GetMapping("/pagoscaja/{id}")
 
     public Optional<PagosCaja> buscarId(@PathVariable("id") Long id){
     return servicePagosCaja.buscarId(id);
     }
     
-    @DeleteMapping("/pagos-caja/{id}")
+    @DeleteMapping("/pagoscaja/{id}")
     public String eliminar(@PathVariable Long id) {
         servicePagosCaja.eliminar(id);
         return "Pago eliminado correctamente";

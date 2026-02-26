@@ -35,12 +35,12 @@ public class DeudasAlumnoController {
     @Autowired
     private ConceptosPagoRepository repoConceptos;
 
-    @GetMapping("/deudas-alumno")
+    @GetMapping("/deudasalumno")
     public List<DeudasAlumno> buscarTodos() {
         return serviceDeudas.buscarTodos(); 
     }
     
-    @PostMapping("/deudas-alumno")
+    @PostMapping("/deudasalumno")
     public ResponseEntity<?> guardar(@RequestBody DeudasAlumnoDTO dto) {
         DeudasAlumno deuda = new DeudasAlumno();
         deuda.setDescripcionCuota(dto.getDescripcionCuota());
@@ -65,7 +65,7 @@ public class DeudasAlumnoController {
 
     }
     
-    @PutMapping("/deudas-alumno")
+    @PutMapping("/deudasalumno")
     public ResponseEntity<?> modificar(@RequestBody DeudasAlumnoDTO dto) {
         if(dto.getIdDeuda() == null){
             return ResponseEntity.badRequest()
@@ -86,13 +86,13 @@ public class DeudasAlumnoController {
         return ResponseEntity.ok(serviceDeudas.modificar(deuda));
     }
 
-    @GetMapping("/deudas-alumno/{id}")
+    @GetMapping("/deudasalumno/{id}")
     public Optional<DeudasAlumno> buscarId(@PathVariable("id") Long id){
     return serviceDeudas.buscarId(id);
     
     }
     
-    @DeleteMapping("/deudas-alumno/{id}")
+    @DeleteMapping("/deudasalumno/{id}")
     public String eliminar(@PathVariable Long id) {
         serviceDeudas.eliminar(id);
         return "Deuda de alumno eliminada correctamente";

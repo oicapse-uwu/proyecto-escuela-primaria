@@ -29,13 +29,11 @@ import com.escuelita.www.service.IConceptosPagoService;
 @RestController
 @RequestMapping("/restful")
 public class ConceptosPagoController {
-    
-    @Autowired
-    private IConceptosPagoService serviceConceptos;
 
     @Autowired
+    private IConceptosPagoService serviceConceptos;
+    @Autowired
     private InstitucionRepository repoInstitucion;
-    
     @Autowired
     private GradosRepository repoGrados;
 
@@ -43,15 +41,14 @@ public class ConceptosPagoController {
     public List<ConceptosPago> buscarTodos() {
         return serviceConceptos.buscarTodos(); 
     }
-    
     @PostMapping("/conceptospago")
     public ResponseEntity<?> guardar(@RequestBody ConceptosPagoDTO dto) {
         
-        ConceptosPago conceptospago = new ConceptosPago();
-        conceptospago.setNombreConcepto(dto.getNombreConcepto());
-        conceptospago.setMonto(dto.getMonto());
-        conceptospago.setEstadoConcepto(dto.getEstadoConcepto());
-       
+        ConceptosPago conceptosPago = new ConceptosPago();
+        conceptosPago.setNombreConcepto(dto.getNombreConcepto());
+        conceptosPago.setMonto(dto.getMonto());
+        conceptosPago.setEstadoConcepto(dto.getEstadoConcepto());
+
         Institucion institucion = repoInstitucion
             .findById(dto.getIdInstitucion())
             .orElse(null);
@@ -59,36 +56,39 @@ public class ConceptosPagoController {
             .findById(dto.getIdGrado())
             .orElse(null);
         
-        conceptospago.setIdInstitucion(institucion);
-        conceptospago.setIdGrado(grados);
+        conceptosPago.setIdInstitucion(institucion);
+        conceptosPago.setIdGrado(grados);
 
-        return ResponseEntity.ok(serviceConceptos.guardar(conceptospago));
+        return ResponseEntity.ok(serviceConceptos.guardar(conceptosPago));
     }
-    
     @PutMapping("/conceptospago")
-   public ResponseEntity<?> modificar(@RequestBody ConceptosPagoDTO dto) {
+    public ResponseEntity<?> modificar(@RequestBody ConceptosPagoDTO dto) {
         if(dto.getIdConcepto() == null){
             return ResponseEntity.badRequest()
                     .body("ID de concepto de pago es requerido");
         }
-        ConceptosPago conceptospago = new ConceptosPago();
-        conceptospago.setIdConcepto(dto.getIdConcepto());
-        conceptospago.setNombreConcepto(dto.getNombreConcepto());
-        conceptospago.setMonto(dto.getMonto());
-        conceptospago.setEstadoConcepto(dto.getEstadoConcepto());
+        ConceptosPago conceptosPago = new ConceptosPago();
+        conceptosPago.setIdConcepto(dto.getIdConcepto());
+        conceptosPago.setNombreConcepto(dto.getNombreConcepto());
+        conceptosPago.setMonto(dto.getMonto());
+        conceptosPago.setEstadoConcepto(dto.getEstadoConcepto());
 
-        conceptospago.setIdInstitucion(new Institucion(dto.getIdInstitucion()));
-        conceptospago.setIdGrado(new Grados(dto.getIdGrado()));
+        Institucion institucion = repoInstitucion
+            .findById(dto.getIdInstitucion())
+            .orElse(null);
+        Grados grados= repoGrados
+            .findById(dto.getIdGrado())
+            .orElse(null);
+        
+        conceptosPago.setIdInstitucion(institucion);
+        conceptosPago.setIdGrado(grados);
 
-        return ResponseEntity.ok(serviceConceptos.modificar(conceptospago));
+        return ResponseEntity.ok(serviceConceptos.modificar(conceptosPago));
     }
-    
     @GetMapping("/conceptospago/{id}")
     public Optional<ConceptosPago> buscarId(@PathVariable("id") Long id){
     return serviceConceptos.buscarId(id);
-
     }
-    
     @DeleteMapping("/conceptospago/{id}")
     public String eliminar(@PathVariable Long id){
         serviceConceptos.eliminar(id);

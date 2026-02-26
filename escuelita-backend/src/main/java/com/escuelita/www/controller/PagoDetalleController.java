@@ -29,10 +29,8 @@ public class PagoDetalleController {
     
     @Autowired
     private IPagoDetalleService servicePagoDetalle;
-
     @Autowired
     private PagosCajaRepository repoPagosCaja;
-
     @Autowired
     private DeudasAlumnoRepository repoDeudasAlumno;
 
@@ -40,16 +38,14 @@ public class PagoDetalleController {
     public List<PagoDetalle> buscarTodos() {
         return servicePagoDetalle.buscarTodos(); 
     }
-    
     @PostMapping("/pagodetalle")
     public ResponseEntity<?> guardar(@RequestBody PagoDetalleDTO dto) {
-       PagoDetalle pagoDetalle = new PagoDetalle();
+        PagoDetalle pagoDetalle = new PagoDetalle();
         pagoDetalle.setMontoAplicado(dto.getMontoAplicado());
 
         PagosCaja pagosCaja = repoPagosCaja
             .findById(dto.getIdPago())
             .orElse(null);
-
         DeudasAlumno deudasAlumno = repoDeudasAlumno
             .findById(dto.getIdDeuda())
             .orElse(null);
@@ -59,28 +55,32 @@ public class PagoDetalleController {
 
         return ResponseEntity.ok(servicePagoDetalle.guardar(pagoDetalle));
     }
-    
     @PutMapping("/pagodetalle")
     public ResponseEntity<?> modificar(@RequestBody PagoDetalleDTO dto) {
         if(dto.getIdPagoDetalle() == null){
             return ResponseEntity.badRequest()
                     .body("ID de detalle de pago es requerido");
         }
-        PagoDetalle pagodetalle = new PagoDetalle();
-        pagodetalle.setIdPagoDetalle(dto.getIdPagoDetalle());
-        pagodetalle.setMontoAplicado(dto.getMontoAplicado());
+        PagoDetalle pagoDetalle = new PagoDetalle();
+        pagoDetalle.setIdPagoDetalle(dto.getIdPagoDetalle());
+        pagoDetalle.setMontoAplicado(dto.getMontoAplicado());
 
-        pagodetalle.setIdPago(new PagosCaja(dto.getIdPago()));
-        pagodetalle.setIdDeuda(new DeudasAlumno(dto.getIdDeuda()));
+        PagosCaja pagosCaja = repoPagosCaja
+            .findById(dto.getIdPago())
+            .orElse(null);
+        DeudasAlumno deudasAlumno = repoDeudasAlumno
+            .findById(dto.getIdDeuda())
+            .orElse(null);
 
-        return ResponseEntity.ok(servicePagoDetalle.modificar(pagodetalle));    
+        pagoDetalle.setIdPago(pagosCaja);
+        pagoDetalle.setIdDeuda(deudasAlumno);
+
+        return ResponseEntity.ok(servicePagoDetalle.modificar(pagoDetalle   ));    
     }
-    
     @GetMapping("/pagodetalle/{id}")
     public Optional<PagoDetalle> buscarId(@PathVariable("id") Long id){
     return servicePagoDetalle.buscarId(id);
     }
-
     @DeleteMapping("/pagodetalle/{id}")
     public String eliminar(@PathVariable Long id) {
         servicePagoDetalle.eliminar(id);

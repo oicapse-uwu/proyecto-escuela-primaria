@@ -13,10 +13,9 @@ import com.escuelita.www.service.IPagoDetalleService;
 
 @Service
 public class PagoDetalleService implements IPagoDetalleService {
-    
     @Autowired
     private PagoDetalleRepository repoPagoDetalle;
-   
+
     public List<PagoDetalle> buscarTodos(){
         return repoPagoDetalle.findAll();
     }
@@ -33,6 +32,5 @@ public class PagoDetalleService implements IPagoDetalleService {
     }
     public void eliminar(Long id){
         repoPagoDetalle.deleteById(id);
-    }    
-    
+    }
 }

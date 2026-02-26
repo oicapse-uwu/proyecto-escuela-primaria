@@ -64,26 +64,30 @@ public class MallaCurricular {
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-    public AnioEscolar getAnioEscolar() {
+    public AnioEscolar getIdAnioEscolar() {
         return idAnioEscolar;
     }
-    public void setAnioEscolar(AnioEscolar anioEscolar) {
+    public void setIdAnioEscolar(AnioEscolar anioEscolar) {
         this.idAnioEscolar = anioEscolar;
     }
-    public Grados getGrado() {
+    public Grados getIdGrado() {
         return idGrado;
     }
-    public void setGrado(Grados grado) {
+    public void setIdGrado(Grados grado) {
         this.idGrado = grado;
     }
-    public Cursos getCurso() {
+    public Cursos getIdCurso() {
         return idCurso;
     }
-    public void setCurso(Cursos curso) {
+    public void setIdCurso(Cursos curso) {
         this.idCurso = curso;
     }
+
     @Override
     public String toString() {
-        return "MallaCurricular [idMalla=" + idMalla + ", estado=" + estado + "]";
+        return "MallaCurricular [idMalla=" + idMalla + ", estado=" + estado + ", idAnioEscolar=" + idAnioEscolar
+                + ", idGrado=" + idGrado + ", idCurso=" + idCurso + "]";
     }
+    
+
 }

@@ -18,24 +18,20 @@ public class MetodosPagoController {
     public List<MetodosPago> buscarTodos() {
         return serviceMetodosPago.buscarTodos();
     }
-
     @PostMapping("/metodospago")
-    public MetodosPago guardar(@RequestBody MetodosPago metodospago) {
-        serviceMetodosPago.guardar(metodospago);
-        return metodospago;
+    public MetodosPago guardar(@RequestBody MetodosPago metodosPago) {
+        serviceMetodosPago.guardar(metodosPago);
+        return metodosPago;
     }
-
-    @PutMapping("/metodos-pago")
-    public MetodosPago modificar(@RequestBody MetodosPago metodospago) {
-        serviceMetodosPago.modificar(metodospago);
-        return metodospago;
+    @PutMapping("/metodospago")
+    public MetodosPago modificar(@RequestBody MetodosPago metodosPago) {
+        serviceMetodosPago.modificar(metodosPago);
+        return metodosPago;
     }
-
     @GetMapping("/metodospago/{id}")
     public Optional<MetodosPago> buscarId(@PathVariable("id") Long id) {
         return serviceMetodosPago.buscarId(id);
     }
-
     @DeleteMapping("/metodospago/{id}")
     public String eliminar(@PathVariable Long id) {
         serviceMetodosPago.eliminar(id);

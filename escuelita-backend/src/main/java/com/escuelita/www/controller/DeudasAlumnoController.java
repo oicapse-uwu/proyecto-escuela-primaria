@@ -28,10 +28,8 @@ public class DeudasAlumnoController {
     
     @Autowired
     private IDeudasAlumnoService serviceDeudas;
-
     @Autowired
     private MatriculasRepository repoMatriculas;
-
     @Autowired
     private ConceptosPagoRepository repoConceptos;
 
@@ -39,30 +37,27 @@ public class DeudasAlumnoController {
     public List<DeudasAlumno> buscarTodos() {
         return serviceDeudas.buscarTodos(); 
     }
-    
     @PostMapping("/deudasalumno")
     public ResponseEntity<?> guardar(@RequestBody DeudasAlumnoDTO dto) {
-        DeudasAlumno deuda = new DeudasAlumno();
-        deuda.setDescripcionCuota(dto.getDescripcionCuota());
-        deuda.setMontoTotal(dto.getMontoTotal());
-        deuda.setFechaEmision(dto.getFechaEmision());
-        deuda.setFechaVencimiento(dto.getFechaVencimiento());
-        deuda.setEstadoDeuda(dto.getEstadoDeuda());
-        deuda.setFechaPagoTotal(dto.getFechaPagoTotal());
+        DeudasAlumno deudasAlumno = new DeudasAlumno();
+        deudasAlumno.setDescripcionCuota(dto.getDescripcionCuota());
+        deudasAlumno.setMontoTotal(dto.getMontoTotal());
+        deudasAlumno.setFechaEmision(dto.getFechaEmision());
+        deudasAlumno.setFechaVencimiento(dto.getFechaVencimiento());
+        deudasAlumno.setEstadoDeuda(dto.getEstadoDeuda());
+        deudasAlumno.setFechaPagoTotal(dto.getFechaPagoTotal());
 
         Matriculas matriculas = repoMatriculas
             .findById(dto.getIdMatricula())
             .orElse(null);
-
-        ConceptosPago conceptospago = repoConceptos
+        ConceptosPago conceptosPago = repoConceptos
             .findById(dto.getIdConcepto())
             .orElse(null);
 
-        deuda.setIdMatricula(matriculas);
-        deuda.setIdConcepto(conceptospago);
+        deudasAlumno.setIdMatricula(matriculas);
+        deudasAlumno.setIdConcepto(conceptosPago);
 
-        return ResponseEntity.ok(serviceDeudas.guardar(deuda));
-
+        return ResponseEntity.ok(serviceDeudas.guardar(deudasAlumno));
     }
     
     @PutMapping("/deudasalumno")
@@ -71,27 +66,31 @@ public class DeudasAlumnoController {
             return ResponseEntity.badRequest()
                     .body("ID de deuda es requerido");
         }
-        DeudasAlumno deuda = new DeudasAlumno();
-        deuda.setIdDeuda(dto.getIdDeuda());
-        deuda.setDescripcionCuota(dto.getDescripcionCuota());
-        deuda.setMontoTotal(dto.getMontoTotal());
-        deuda.setFechaEmision(dto.getFechaEmision());
-        deuda.setFechaVencimiento(dto.getFechaVencimiento());
-        deuda.setEstadoDeuda(dto.getEstadoDeuda());
-        deuda.setFechaPagoTotal(dto.getFechaPagoTotal());
+        DeudasAlumno deudasAlumno = new DeudasAlumno();
+        deudasAlumno.setIdDeuda(dto.getIdDeuda());
+        deudasAlumno.setDescripcionCuota(dto.getDescripcionCuota());
+        deudasAlumno.setMontoTotal(dto.getMontoTotal());
+        deudasAlumno.setFechaEmision(dto.getFechaEmision());
+        deudasAlumno.setFechaVencimiento(dto.getFechaVencimiento());
+        deudasAlumno.setEstadoDeuda(dto.getEstadoDeuda());
+        deudasAlumno.setFechaPagoTotal(dto.getFechaPagoTotal());
 
-        deuda.setIdMatricula(new Matriculas(dto.getIdMatricula()));
-        deuda.setIdConcepto(new ConceptosPago(dto.getIdConcepto()));
+        Matriculas matriculas = repoMatriculas
+            .findById(dto.getIdMatricula())
+            .orElse(null);
+        ConceptosPago conceptosPago = repoConceptos
+            .findById(dto.getIdConcepto())
+            .orElse(null);
 
-        return ResponseEntity.ok(serviceDeudas.modificar(deuda));
+        deudasAlumno.setIdMatricula(matriculas);
+        deudasAlumno.setIdConcepto(conceptosPago);
+
+        return ResponseEntity.ok(serviceDeudas.modificar(deudasAlumno));
     }
-
     @GetMapping("/deudasalumno/{id}")
     public Optional<DeudasAlumno> buscarId(@PathVariable("id") Long id){
     return serviceDeudas.buscarId(id);
-    
     }
-    
     @DeleteMapping("/deudasalumno/{id}")
     public String eliminar(@PathVariable Long id) {
         serviceDeudas.eliminar(id);

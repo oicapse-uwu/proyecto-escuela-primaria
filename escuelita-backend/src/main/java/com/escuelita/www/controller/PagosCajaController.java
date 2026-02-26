@@ -29,10 +29,8 @@ public class PagosCajaController {
     
     @Autowired
     private IPagosCajaService servicePagosCaja;
-
     @Autowired
     private MetodosPagoRepository repoMetodosPago;
-
     @Autowired
     private UsuariosRepository repoUsuarios;
 
@@ -40,54 +38,55 @@ public class PagosCajaController {
     public List<PagosCaja> buscarTodos() {
         return servicePagosCaja.buscarTodos();  
     }
-    
     @PostMapping("/pagoscaja")
     public ResponseEntity<?> guardar(@RequestBody PagosCajaDTO dto) {
-       PagosCaja pagoscaja = new PagosCaja();
-       pagoscaja.setFechaPago(dto.getFechaPago());
-       pagoscaja.setMontoTotalPagado(dto.getMontoTotalPagado());
-       pagoscaja.setComprobanteNumero(dto.getComprobanteNumero());
-       pagoscaja.setObservacionPago(dto.getObservacionPago());
+        PagosCaja pagosCaja = new PagosCaja();
+        pagosCaja.setFechaPago(dto.getFechaPago());
+        pagosCaja.setMontoTotalPagado(dto.getMontoTotalPagado());
+        pagosCaja.setComprobanteNumero(dto.getComprobanteNumero());
+        pagosCaja.setObservacionPago(dto.getObservacionPago());
 
         MetodosPago metodosPago = repoMetodosPago
             .findById(dto.getIdMetodo())
             .orElse(null);
-
         Usuarios usuarios = repoUsuarios
             .findById(dto.getIdUsuario())
             .orElse(null);
 
-        pagoscaja.setIdMetodo(metodosPago);
-        pagoscaja.setIdUsuario(usuarios);
+        pagosCaja.setIdMetodo(metodosPago);
+        pagosCaja.setIdUsuario(usuarios);
         
-        return ResponseEntity.ok(servicePagosCaja.guardar(pagoscaja));
+        return ResponseEntity.ok(servicePagosCaja.guardar(pagosCaja));
     }
-    
     @PutMapping("/pagoscaja")
     public ResponseEntity<?> modificar(@RequestBody PagosCajaDTO dto) {
         if(dto.getIdPago() == null){
             return ResponseEntity.badRequest()
                     .body("ID de pago es requerido");
         }
-        PagosCaja pagoscaja = new PagosCaja();
-        pagoscaja.setIdPago(dto.getIdPago());
-        pagoscaja.setFechaPago(dto.getFechaPago());
-        pagoscaja.setMontoTotalPagado(dto.getMontoTotalPagado());
-        pagoscaja.setComprobanteNumero(dto.getComprobanteNumero());
-        pagoscaja.setObservacionPago(dto.getObservacionPago());
+        PagosCaja pagosCaja = new PagosCaja();
+        pagosCaja.setIdPago(dto.getIdPago());
+        pagosCaja.setFechaPago(dto.getFechaPago());
+        pagosCaja.setMontoTotalPagado(dto.getMontoTotalPagado());
+        pagosCaja.setComprobanteNumero(dto.getComprobanteNumero());
+        pagosCaja.setObservacionPago(dto.getObservacionPago());
 
-        pagoscaja.setIdMetodo(new MetodosPago(dto.getIdMetodo()));
-        pagoscaja.setIdUsuario(new Usuarios(dto.getIdUsuario()));
+        MetodosPago metodosPago = repoMetodosPago
+            .findById(dto.getIdMetodo())
+            .orElse(null);
+        Usuarios usuarios = repoUsuarios
+            .findById(dto.getIdUsuario())
+            .orElse(null);
 
-        return ResponseEntity.ok(servicePagosCaja.modificar(pagoscaja));
+        pagosCaja.setIdMetodo(metodosPago);
+        pagosCaja.setIdUsuario(usuarios);
+
+        return ResponseEntity.ok(servicePagosCaja.modificar(pagosCaja));
     }
-    
     @GetMapping("/pagoscaja/{id}")
-
     public Optional<PagosCaja> buscarId(@PathVariable("id") Long id){
     return servicePagosCaja.buscarId(id);
     }
-    
     @DeleteMapping("/pagoscaja/{id}")
     public String eliminar(@PathVariable Long id) {
         servicePagosCaja.eliminar(id);

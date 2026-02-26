@@ -12,30 +12,23 @@ import com.escuelita.www.service.IPagosCajaService;
 
 @Service
 public class PagosCajaService implements IPagosCajaService {
-    
     @Autowired
     private PagosCajaRepository repoPagosCaja;
-    @Override
+
     public List<PagosCaja> buscarTodos() {
         return repoPagosCaja.findAll();
     }
-
     @Override
     public PagosCaja guardar(PagosCaja usuario) {
         return repoPagosCaja.save(usuario);
     }
-
     @Override
     public PagosCaja modificar(PagosCaja usuario) {
         return repoPagosCaja.save(usuario);
     }
-
-    @Override
     public Optional<PagosCaja> buscarId(Long id) {
         return repoPagosCaja.findById(id);
     }
-
-    @Override
     public void eliminar(Long id) {
         repoPagosCaja.deleteById(id);
     }

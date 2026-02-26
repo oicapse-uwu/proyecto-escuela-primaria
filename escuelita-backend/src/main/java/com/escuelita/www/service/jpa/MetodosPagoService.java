@@ -10,33 +10,24 @@ import com.escuelita.www.service.IMetodosPagoService;
 
 @Service
 public class MetodosPagoService implements IMetodosPagoService {
-    
     @Autowired
     private MetodosPagoRepository repoMetodosPago;
- 
-    @Override
+
     public List<MetodosPago> buscarTodos() {
         return repoMetodosPago.findAll();
     }
-
     @Override
     public void guardar(MetodosPago rol) {
         repoMetodosPago.save(rol);
     }
-
     @Override
     public void modificar(MetodosPago rol) {
         repoMetodosPago.save(rol);
     }
-
-    @Override
     public Optional<MetodosPago> buscarId(Long id) {
         return repoMetodosPago.findById(id);
     }
-
-    @Override
     public void eliminar(Long id) {
         repoMetodosPago.deleteById(id);
     }
-
 }

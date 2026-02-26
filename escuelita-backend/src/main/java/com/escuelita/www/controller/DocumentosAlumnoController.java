@@ -26,10 +26,9 @@ import com.escuelita.www.service.IDocumentosAlumnoService;
 @RestController
 @RequestMapping("/restful")
 public class DocumentosAlumnoController {
-    
+
     @Autowired
     private IDocumentosAlumnoService serviceDocumentosAlumno;
-
     @Autowired
     private AlumnosRepository repoAlumnos;
     @Autowired
@@ -72,8 +71,15 @@ public class DocumentosAlumnoController {
         documentosAlumno.setEstadoRevision(dto.getEstadoRevision());
         documentosAlumno.setObservaciones(dto.getObservaciones());
 
-        documentosAlumno.setIdAlumno(new Alumnos(dto.getIdAlumno()));
-        documentosAlumno.setIdRequisito(new RequisitosDocumentos(dto.getIdRequisito()));
+        Alumnos alumno = repoAlumnos
+            .findById(dto.getIdAlumno())
+            .orElse(null);
+        RequisitosDocumentos requisito = repoRequisitosDocumentos
+            .findById(dto.getIdRequisito())
+            .orElse(null);
+
+        documentosAlumno.setIdAlumno(alumno);
+        documentosAlumno.setIdRequisito(requisito);
         
         return ResponseEntity.ok(serviceDocumentosAlumno.modificar(documentosAlumno));
     }
@@ -84,6 +90,6 @@ public class DocumentosAlumnoController {
     @DeleteMapping("/documentosalumno/{id}")
     public String eliminar(@PathVariable Long id){
         serviceDocumentosAlumno.eliminar(id);
-        return "Documento del Alumno eliminado";
+        return "Documento del Alumno eliminado correctamente";
     }   
 }

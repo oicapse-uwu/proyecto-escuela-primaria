@@ -19,12 +19,12 @@ public class PerfilDocenteService implements IPerfilDocenteService {
         return repoPerfilDocente.findAll();
     }
     @Override
-    public void guardar(PerfilDocente perfilDocente) {
-        repoPerfilDocente.save(perfilDocente);
+    public PerfilDocente guardar(PerfilDocente perfilDocente) {
+        return repoPerfilDocente.save(perfilDocente);
     }
     @Override
-    public void modificar(PerfilDocente perfilDocente) {
-        repoPerfilDocente.save(perfilDocente);
+    public PerfilDocente modificar(PerfilDocente perfilDocente) {
+        return repoPerfilDocente.save(perfilDocente);
     }
     public Optional<PerfilDocente> buscarId(Long id) {
         return repoPerfilDocente.findById(id);

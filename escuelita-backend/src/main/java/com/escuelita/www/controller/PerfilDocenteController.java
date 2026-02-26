@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -39,51 +40,54 @@ public class PerfilDocenteController {
     }
     @PostMapping("/perfildocente")
     public ResponseEntity<?> guardar(@RequestBody PerfilDocenteDTO dto) {
-        PerfilDocente docente = new PerfilDocente();
-        docente.setGradoAcademico(dto.getGradoAcademico());
-        docente.setFechaContratacion(dto.getFechaContratacion());
-        docente.setEstadoLaboral(dto.getEstadoLaboral());
-        if (dto.getEstado() != null)
-            docente.setEstado(dto.getEstado());
+        PerfilDocente perfilDocente = new PerfilDocente();
+        perfilDocente.setGradoAcademico(dto.getGradoAcademico());
+        perfilDocente.setFechaContratacion(dto.getFechaContratacion());
+        perfilDocente.setEstadoLaboral(dto.getEstadoLaboral());
 
-        // Buscando relaciones
-        Usuarios usuario = repoUsuarios.findById(dto.getIdUsuario()).orElse(null);
-        Especialidades especialidad = repoEspecialidades.findById(dto.getIdEspecialidad()).orElse(null);
+        Usuarios usuarios = repoUsuarios
+            .findById(dto.getIdUsuario())
+            .orElse(null);
+        Especialidades especialidades = repoEspecialidades
+            .findById(dto.getIdEspecialidad())
+            .orElse(null);
 
-        docente.setIdUsuario(usuario);
-        docente.setIdEspecialidad(especialidad);
+        perfilDocente.setIdUsuario(usuarios);
+        perfilDocente.setIdEspecialidad(especialidades);
 
-        servicePerfilDocente.guardar(docente);
-        return ResponseEntity.ok(docente);
+        return ResponseEntity.ok(servicePerfilDocente.guardar(perfilDocente));
     }
     @PutMapping("/perfildocente")
     public ResponseEntity<?> modificar(@RequestBody PerfilDocenteDTO dto) {
         if (dto.getIdDocente() == null) {
-            return ResponseEntity.badRequest().body("ID de docente es requerido");
+            return ResponseEntity.badRequest()
+                    .body("ID de docente es requerido");
         }
-        PerfilDocente docente = new PerfilDocente();
-        docente.setIdDocente(dto.getIdDocente());
-        docente.setGradoAcademico(dto.getGradoAcademico());
-        docente.setFechaContratacion(dto.getFechaContratacion());
-        docente.setEstadoLaboral(dto.getEstadoLaboral());
-        if (dto.getEstado() != null)
-            docente.setEstado(dto.getEstado());
+        PerfilDocente perfilDocente = new PerfilDocente();
+        perfilDocente.setIdDocente(dto.getIdDocente());
+        perfilDocente.setGradoAcademico(dto.getGradoAcademico());
+        perfilDocente.setFechaContratacion(dto.getFechaContratacion());
+        perfilDocente.setEstadoLaboral(dto.getEstadoLaboral());
 
-        // Para que esto funcione, asegúrate de tener el constructor public
-        // Usuarios(Long id) en tu entidad
-        docente.setIdUsuario(repoUsuarios.findById(dto.getIdUsuario()).orElse(null));
-        docente.setIdEspecialidad(repoEspecialidades.findById(dto.getIdEspecialidad()).orElse(null));
+        Usuarios usuarios = repoUsuarios
+            .findById(dto.getIdUsuario())
+            .orElse(null);
+        Especialidades especialidades = repoEspecialidades
+            .findById(dto.getIdEspecialidad())
+            .orElse(null);
 
-        servicePerfilDocente.modificar(docente);
-        return ResponseEntity.ok(docente);
+        perfilDocente.setIdUsuario(usuarios);
+        perfilDocente.setIdEspecialidad(especialidades);
+
+        return ResponseEntity.ok(servicePerfilDocente.modificar(perfilDocente));
     }
     @GetMapping("/perfildocente/{id}")
     public Optional<PerfilDocente> buscarId(@PathVariable("id") Long id) {
         return servicePerfilDocente.buscarId(id);
     }
     @DeleteMapping("/perfildocente/{id}")
-    public String eliminar(@PathVariable Long id) {
+    public String eliminar(@PathVariable Long id){
         servicePerfilDocente.eliminar(id);
-        return "Perfil docente eliminado";
+        return "Perfil docente eliminado correctamente";
     }
 }

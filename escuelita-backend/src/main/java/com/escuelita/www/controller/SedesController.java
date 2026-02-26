@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -23,10 +24,9 @@ import com.escuelita.www.service.ISedesService;
 @RestController
 @RequestMapping("/restful")
 public class SedesController {
-    
+
     @Autowired
     private ISedesService serviceSedes;
-
     @Autowired
     private InstitucionRepository repoInstitucion;
 
@@ -36,23 +36,23 @@ public class SedesController {
     }
     @PostMapping("/sedes")
     public ResponseEntity<?> guardar(@RequestBody SedesDTO dto) {
-        Sedes sede = new Sedes();
-        sede.setNombreSede(dto.getNombreSede());
-        sede.setDireccion(dto.getDireccion());
-        sede.setDistrito(dto.getDistrito());
-        sede.setProvincia(dto.getProvincia());
-        sede.setDepartamento(dto.getDepartamento());
-        sede.setUgel(dto.getUgel());
-        sede.setTelefono(dto.getTelefono());
-        sede.setCorreoInstitucional(dto.getCorreoInstitucional());
+        Sedes sedes = new Sedes();
+        sedes.setNombreSede(dto.getNombreSede());
+        sedes.setDireccion(dto.getDireccion());
+        sedes.setDistrito(dto.getDistrito());
+        sedes.setProvincia(dto.getProvincia());
+        sedes.setDepartamento(dto.getDepartamento());
+        sedes.setUgel(dto.getUgel());
+        sedes.setTelefono(dto.getTelefono());
+        sedes.setCorreoInstitucional(dto.getCorreoInstitucional());
         
         Institucion institucion = repoInstitucion
             .findById(dto.getIdInstitucion())
             .orElse(null);
 
-        sede.setIdInstitucion(institucion);
+        sedes.setIdInstitucion(institucion);
 
-        return ResponseEntity.ok(serviceSedes.guardar(sede));
+        return ResponseEntity.ok(serviceSedes.guardar(sedes));
     }
     @PutMapping("/sedes")
     public ResponseEntity<?> modificar(@RequestBody SedesDTO dto) {
@@ -60,33 +60,32 @@ public class SedesController {
             return ResponseEntity.badRequest()
                     .body("ID de sede es requerido");
         }
-        Sedes sede = new Sedes();
-        sede.setIdSede(dto.getIdSede());
-        sede.setNombreSede(dto.getNombreSede());
-        sede.setDireccion(dto.getDireccion());
-        sede.setDistrito(dto.getDistrito());
-        sede.setProvincia(dto.getProvincia());
-        sede.setDepartamento(dto.getDepartamento());
-        sede.setUgel(dto.getUgel());
-        sede.setTelefono(dto.getTelefono());
-        sede.setCorreoInstitucional(dto.getCorreoInstitucional());
+        Sedes sedes = new Sedes();
+        sedes.setIdSede(dto.getIdSede());
+        sedes.setNombreSede(dto.getNombreSede());
+        sedes.setDireccion(dto.getDireccion());
+        sedes.setDistrito(dto.getDistrito());
+        sedes.setProvincia(dto.getProvincia());
+        sedes.setDepartamento(dto.getDepartamento());
+        sedes.setUgel(dto.getUgel());
+        sedes.setTelefono(dto.getTelefono());
+        sedes.setCorreoInstitucional(dto.getCorreoInstitucional());
 
         Institucion institucion = repoInstitucion
             .findById(dto.getIdInstitucion())
             .orElse(null);
 
-        sede.setIdInstitucion(institucion);
+        sedes.setIdInstitucion(institucion);
 
-        return ResponseEntity.ok(serviceSedes.modificar(sede));
+        return ResponseEntity.ok(serviceSedes.modificar(sedes));
     }
     @GetMapping("/sedes/{id}")
     public Optional<Sedes> buscarId(@PathVariable("id") Long id){ 
         return serviceSedes.buscarId(id); 
     }
-    
     @DeleteMapping("/sedes/{id}")
     public String eliminar(@PathVariable Long id){
         serviceSedes.eliminar(id);
-        return "Sede eliminada";
+        return "Sede eliminada correctamente";
     }   
 }

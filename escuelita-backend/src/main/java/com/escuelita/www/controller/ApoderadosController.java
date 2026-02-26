@@ -19,10 +19,8 @@ import com.escuelita.www.entity.Apoderados;
 import com.escuelita.www.entity.ApoderadosDTO;
 import com.escuelita.www.entity.Sedes;
 import com.escuelita.www.entity.TipoDocumentos;
-
 import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.repository.TipoDocumentosRepository;
-
 import com.escuelita.www.service.IApoderadosService;
 
 @RestController
@@ -31,7 +29,6 @@ public class ApoderadosController {
 
     @Autowired
     private IApoderadosService serviceApoderados;
-
     @Autowired
     private TipoDocumentosRepository repoTipoDocumentos;
     @Autowired
@@ -43,25 +40,25 @@ public class ApoderadosController {
     }
     @PostMapping("/apoderados")
     public ResponseEntity<?> guardar(@RequestBody ApoderadosDTO dto) {
-        Apoderados apoderado = new Apoderados();
-        apoderado.setNombres(dto.getNombres());
-        apoderado.setApellidos(dto.getApellidos());
-        apoderado.setNumeroDocumento(dto.getNumeroDocumento());
-        apoderado.setTelefonoPrincipal(dto.getTelefonoPrincipal());
-        apoderado.setCorreo(dto.getCorreo());
-        apoderado.setLugarTrabajo(dto.getLugarTrabajo());
+        Apoderados apoderados = new Apoderados();
+        apoderados.setNombres(dto.getNombres());
+        apoderados.setApellidos(dto.getApellidos());
+        apoderados.setNumeroDocumento(dto.getNumeroDocumento());
+        apoderados.setTelefonoPrincipal(dto.getTelefonoPrincipal());
+        apoderados.setCorreo(dto.getCorreo());
+        apoderados.setLugarTrabajo(dto.getLugarTrabajo());
 
-        Sedes sede = repoSedes
+        Sedes sedes = repoSedes
             .findById(dto.getIdSede())
             .orElse(null);
-        TipoDocumentos tipo = repoTipoDocumentos
+        TipoDocumentos tipoDocumentos = repoTipoDocumentos
             .findById(dto.getIdTipoDoc())
             .orElse(null);
         
-        apoderado.setIdSede(sede);
-        apoderado.setIdTipoDoc(tipo);
+        apoderados.setIdSede(sedes);
+        apoderados.setIdTipoDoc(tipoDocumentos);
 
-        return ResponseEntity.ok(serviceApoderados.guardar(apoderado));
+        return ResponseEntity.ok(serviceApoderados.guardar(apoderados));
     }
     @PutMapping("/apoderados")
     public ResponseEntity<?> modificar(@RequestBody ApoderadosDTO dto) {
@@ -69,19 +66,26 @@ public class ApoderadosController {
             return ResponseEntity.badRequest()
                     .body("ID de apoderado es requerido");
         }
-        Apoderados apoderado = new Apoderados();
-        apoderado.setIdApoderado(dto.getIdApoderado());
-        apoderado.setNombres(dto.getNombres());
-        apoderado.setApellidos(dto.getApellidos());
-        apoderado.setNumeroDocumento(dto.getNumeroDocumento());
-        apoderado.setTelefonoPrincipal(dto.getTelefonoPrincipal());
-        apoderado.setCorreo(dto.getCorreo());
-        apoderado.setLugarTrabajo(dto.getLugarTrabajo());
+        Apoderados apoderados = new Apoderados();
+        apoderados.setIdApoderado(dto.getIdApoderado());
+        apoderados.setNombres(dto.getNombres());
+        apoderados.setApellidos(dto.getApellidos());
+        apoderados.setNumeroDocumento(dto.getNumeroDocumento());
+        apoderados.setTelefonoPrincipal(dto.getTelefonoPrincipal());
+        apoderados.setCorreo(dto.getCorreo());
+        apoderados.setLugarTrabajo(dto.getLugarTrabajo());
 
-        apoderado.setIdSede(new Sedes(dto.getIdSede()));
-        apoderado.setIdTipoDoc(new TipoDocumentos(dto.getIdTipoDoc()));
+        Sedes sedes = repoSedes
+            .findById(dto.getIdSede())
+            .orElse(null);
+        TipoDocumentos tipoDocumentos = repoTipoDocumentos
+            .findById(dto.getIdTipoDoc())
+            .orElse(null);
 
-        return ResponseEntity.ok(serviceApoderados.modificar(apoderado));
+        apoderados.setIdSede(sedes);
+        apoderados.setIdTipoDoc(tipoDocumentos);
+
+        return ResponseEntity.ok(serviceApoderados.modificar(apoderados));
     }
     @GetMapping("/apoderados/{id}")
     public Optional<Apoderados> buscarId(@PathVariable("id") Long id){
@@ -90,6 +94,6 @@ public class ApoderadosController {
     @DeleteMapping("/apoderados/{id}")
     public String eliminar(@PathVariable Long id){
         serviceApoderados.eliminar(id);
-        return "Apoderado eliminado";
+        return "Apoderado eliminado correctamente";
     }   
 }

@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -14,24 +15,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.escuelita.www.entity.AsignacionDocente;
 import com.escuelita.www.entity.Evaluaciones;
 import com.escuelita.www.entity.EvaluacionesDTO;
-
-import com.escuelita.www.entity.AsignacionDocente;
 import com.escuelita.www.entity.Periodos;
 import com.escuelita.www.entity.TiposEvaluacion;
 import com.escuelita.www.entity.TiposNota;
-
 import com.escuelita.www.repository.AsignacionDocenteRepository;
 import com.escuelita.www.repository.PeriodosRepository;
 import com.escuelita.www.repository.TiposEvaluacionRepository;
 import com.escuelita.www.repository.TiposNotaRepository;
-
 import com.escuelita.www.service.IEvaluacionesService;
 
 @RestController
 @RequestMapping("/restful")
 public class EvaluacionesController {
+
     @Autowired
     private IEvaluacionesService serviceEvaluaciones;
     @Autowired
@@ -49,29 +48,29 @@ public class EvaluacionesController {
     }
     @PostMapping("/evaluaciones")
     public ResponseEntity<?> guardar(@RequestBody EvaluacionesDTO dto) {
-        Evaluaciones evaluacion = new Evaluaciones();
-        evaluacion.setTemaEspecifico(dto.getTemaEspecifico());
-        evaluacion.setFechaEvaluacion(dto.getFechaEvaluacion());
+        Evaluaciones evaluaciones = new Evaluaciones();
+        evaluaciones.setTemaEspecifico(dto.getTemaEspecifico());
+        evaluaciones.setFechaEvaluacion(dto.getFechaEvaluacion());
 
-        AsignacionDocente asignacion = repoAsignacion
+        AsignacionDocente asignacionDocente = repoAsignacion
             .findById(dto.getIdAsignacion())
             .orElse(null);
-        Periodos periodo = repoPeriodos
+        Periodos periodos = repoPeriodos
             .findById(dto.getIdPeriodo())
             .orElse(null);
-        TiposNota tipoNota = repoTiposNota
+        TiposNota tiposNota = repoTiposNota
             .findById(dto.getIdTipoNota())
             .orElse(null);
-        TiposEvaluacion tipoEvaluacion = repoTiposEvaluacion
+        TiposEvaluacion tiposEvaluacion = repoTiposEvaluacion
             .findById(dto.getIdTipoEvaluacion())
             .orElse(null);
 
-        evaluacion.setIdAsignacion(asignacion);
-        evaluacion.setIdPeriodo(periodo);
-        evaluacion.setIdTipoNota(tipoNota);
-        evaluacion.setIdTipoEvaluacion(tipoEvaluacion);
+        evaluaciones.setIdAsignacion(asignacionDocente);
+        evaluaciones.setIdPeriodo(periodos);
+        evaluaciones.setIdTipoNota(tiposNota);
+        evaluaciones.setIdTipoEvaluacion(tiposEvaluacion);
 
-        return ResponseEntity.ok(serviceEvaluaciones.guardar(evaluacion));
+        return ResponseEntity.ok(serviceEvaluaciones.guardar(evaluaciones));
     }
     @PutMapping("/evaluaciones")
     public ResponseEntity<?> modificar(@RequestBody EvaluacionesDTO dto) {
@@ -79,20 +78,33 @@ public class EvaluacionesController {
             return ResponseEntity.badRequest()
                 .body("ID de evaluación es requerido");
         }
-        Evaluaciones evaluacion = new Evaluaciones();
-        evaluacion.setIdEvaluacion(dto.getIdEvaluacion());
-        evaluacion.setTemaEspecifico(dto.getTemaEspecifico());
-        evaluacion.setFechaEvaluacion(dto.getFechaEvaluacion());
+        Evaluaciones evaluaciones = new Evaluaciones();
+        evaluaciones.setIdEvaluacion(dto.getIdEvaluacion());
+        evaluaciones.setTemaEspecifico(dto.getTemaEspecifico());
+        evaluaciones.setFechaEvaluacion(dto.getFechaEvaluacion());
 
-        evaluacion.setIdAsignacion(new AsignacionDocente(dto.getIdAsignacion()));
-        evaluacion.setIdPeriodo(new Periodos(dto.getIdPeriodo()));
-        evaluacion.setIdTipoNota(new TiposNota(dto.getIdTipoNota()));
-        evaluacion.setIdTipoEvaluacion(new TiposEvaluacion(dto.getIdTipoEvaluacion()));
+        AsignacionDocente asignacionDocente = repoAsignacion
+            .findById(dto.getIdAsignacion())
+            .orElse(null);
+        Periodos periodos = repoPeriodos
+            .findById(dto.getIdPeriodo())
+            .orElse(null);
+        TiposNota tiposNota = repoTiposNota
+            .findById(dto.getIdTipoNota())
+            .orElse(null);
+        TiposEvaluacion tiposEvaluacion = repoTiposEvaluacion
+            .findById(dto.getIdTipoEvaluacion())
+            .orElse(null);
 
-        return ResponseEntity.ok(serviceEvaluaciones.modificar(evaluacion));
+        evaluaciones.setIdAsignacion(asignacionDocente);
+        evaluaciones.setIdPeriodo(periodos);
+        evaluaciones.setIdTipoNota(tiposNota);
+        evaluaciones.setIdTipoEvaluacion(tiposEvaluacion);
+
+        return ResponseEntity.ok(serviceEvaluaciones.modificar(evaluaciones));
     }
     @GetMapping("/evaluaciones/{id}")
-    public Optional<Evaluaciones> buscarId(@PathVariable Long id) {
+    public Optional<Evaluaciones> buscarId(@PathVariable("id") Long id) {
         return serviceEvaluaciones.buscarId(id);
     }
     @DeleteMapping("/evaluaciones/{id}")

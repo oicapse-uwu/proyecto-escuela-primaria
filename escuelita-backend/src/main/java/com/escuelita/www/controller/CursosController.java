@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -26,7 +27,6 @@ public class CursosController {
 
     @Autowired
     private ICursosService serviceCursos;
-
     @Autowired
     private AreasRepository repoAreas;
 
@@ -34,45 +34,41 @@ public class CursosController {
     public List<Cursos> buscarTodos() {
         return serviceCursos.buscarTodos();
     }
-
     @PostMapping("/cursos")
     public ResponseEntity<?> guardar(@RequestBody CursosDTO dto) {
-        Cursos curso = new Cursos();
-        curso.setNombreCurso(dto.getNombreCurso());
-        if (dto.getEstado() != null)
-            curso.setEstado(dto.getEstado());
+        Cursos cursos = new Cursos();
+        cursos.setNombreCurso(dto.getNombreCurso());
 
-        Areas area = repoAreas
+        Areas areas = repoAreas
                 .findById(dto.getIdArea())
                 .orElse(null);
 
-        curso.setIdArea(area);
+        cursos.setIdArea(areas);
 
-        return ResponseEntity.ok(serviceCursos.guardar(curso));
+        return ResponseEntity.ok(serviceCursos.guardar(cursos));
     }
-
     @PutMapping("/cursos")
     public ResponseEntity<?> modificar(@RequestBody CursosDTO dto) {
         if (dto.getIdCurso() == null) {
             return ResponseEntity.badRequest()
                     .body("ID de curso es requerido");
         }
-        Cursos curso = new Cursos();
-        curso.setIdCurso(dto.getIdCurso());
-        curso.setNombreCurso(dto.getNombreCurso());
-        if (dto.getEstado() != null)
-            curso.setEstado(dto.getEstado());
+        Cursos cursos = new Cursos();
+        cursos.setIdCurso(dto.getIdCurso());
+        cursos.setNombreCurso(dto.getNombreCurso());
 
-        curso.setIdArea(new Areas(dto.getIdArea()));
+        Areas areas = repoAreas
+            .findById(dto.getIdArea())
+            .orElse(null);
 
-        return ResponseEntity.ok(serviceCursos.modificar(curso));
+        cursos.setIdArea(areas);
+
+        return ResponseEntity.ok(serviceCursos.modificar(cursos));
     }
-
     @GetMapping("/cursos/{id}")
     public Optional<Cursos> buscarId(@PathVariable("id") Long id) {
         return serviceCursos.buscarId(id);
     }
-
     @DeleteMapping("/cursos/{id}")
     public String eliminar(@PathVariable Long id) {
         serviceCursos.eliminar(id);

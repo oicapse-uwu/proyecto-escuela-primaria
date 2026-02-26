@@ -7,9 +7,9 @@ import com.escuelita.www.entity.Areas;
 public interface IAreasService {
     List<Areas> buscarTodos();
 
-    void guardar(Areas area);
-
-    void modificar(Areas area);
+    Areas guardar(Areas area);
+    
+    Areas modificar(Areas area);
 
     Optional<Areas> buscarId(Long id);
 

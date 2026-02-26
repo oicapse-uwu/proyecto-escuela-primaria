@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -28,7 +29,6 @@ public class SeccionesController {
 
     @Autowired
     private ISeccionesService serviceSecciones;
-
     @Autowired
     private GradosRepository repoGrados;
     @Autowired
@@ -40,21 +40,21 @@ public class SeccionesController {
     }
     @PostMapping("/secciones")
     public ResponseEntity<?> guardar(@RequestBody SeccionesDTO dto) {
-        Secciones seccion = new Secciones();
-        seccion.setNombreSeccion(dto.getNombreSeccion());
-        seccion.setVacantes(dto.getVacantes());
+        Secciones secciones = new Secciones();
+        secciones.setNombreSeccion(dto.getNombreSeccion());
+        secciones.setVacantes(dto.getVacantes());
 
-        Grados grado = repoGrados
+        Grados grados = repoGrados
             .findById(dto.getIdGrado())
             .orElse(null);
-        Sedes sede = repoSedes
+        Sedes sedes = repoSedes
             .findById(dto.getIdSede())
             .orElse(null);
         
-        seccion.setIdGrado(grado);
-        seccion.setIdSede(sede);
+        secciones.setIdGrado(grados);
+        secciones.setIdSede(sedes);
 
-        return ResponseEntity.ok(serviceSecciones.guardar(seccion));
+        return ResponseEntity.ok(serviceSecciones.guardar(secciones));
     }
     @PutMapping("/secciones")
     public ResponseEntity<?> modificar(@RequestBody SeccionesDTO dto) {
@@ -62,15 +62,22 @@ public class SeccionesController {
             return ResponseEntity.badRequest()
                     .body("ID de seccion es requerido");
         }
-        Secciones seccion = new Secciones();
-        seccion.setIdSeccion(dto.getIdSeccion());
-        seccion.setNombreSeccion(dto.getNombreSeccion());
-        seccion.setVacantes(dto.getVacantes());
+        Secciones secciones = new Secciones();
+        secciones.setIdSeccion(dto.getIdSeccion());
+        secciones.setNombreSeccion(dto.getNombreSeccion());
+        secciones.setVacantes(dto.getVacantes());
 
-        seccion.setIdGrado(new Grados(dto.getIdGrado()));
-        seccion.setIdSede(new Sedes(dto.getIdSede()));
+        Grados grados = repoGrados
+            .findById(dto.getIdGrado())
+            .orElse(null);
+        Sedes sedes = repoSedes
+            .findById(dto.getIdSede())
+            .orElse(null);
 
-        return ResponseEntity.ok(serviceSecciones.modificar(seccion));
+        secciones.setIdGrado(grados);
+        secciones.setIdSede(sedes);
+
+        return ResponseEntity.ok(serviceSecciones.modificar(secciones));
     }
     @GetMapping("/secciones/{id}")
     public Optional<Secciones> buscarId(@PathVariable("id") Long id){
@@ -79,6 +86,6 @@ public class SeccionesController {
     @DeleteMapping("/secciones/{id}")
     public String eliminar(@PathVariable Long id){
         serviceSecciones.eliminar(id);
-        return "Seccion eliminada";
+        return "Sección eliminada correctamente";
     }   
 }

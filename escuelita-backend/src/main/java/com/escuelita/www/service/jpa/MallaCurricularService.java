@@ -17,12 +17,12 @@ public class MallaCurricularService implements IMallaCurricularService {
         return repoMallaCurricular.findAll();
     }
     @Override
-    public void guardar(MallaCurricular mallaCurricular) {
-        repoMallaCurricular.save(mallaCurricular);
+    public MallaCurricular guardar(MallaCurricular mallaCurricular) {
+        return repoMallaCurricular.save(mallaCurricular);
     }
     @Override
-    public void modificar(MallaCurricular mallaCurricular) {
-        repoMallaCurricular.save(mallaCurricular);
+    public MallaCurricular modificar(MallaCurricular mallaCurricular) {
+        return repoMallaCurricular.save(mallaCurricular);
     }
     public Optional<MallaCurricular> buscarId(Long id) {
         return repoMallaCurricular.findById(id);

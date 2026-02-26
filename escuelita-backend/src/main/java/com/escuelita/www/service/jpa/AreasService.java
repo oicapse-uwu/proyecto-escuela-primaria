@@ -17,12 +17,12 @@ public class AreasService implements IAreasService {
         return repoAreas.findAll();
     }
     @Override
-    public void guardar(Areas areas) {
-        repoAreas.save(areas);
+    public Areas guardar(Areas areas) {
+        return repoAreas.save(areas);
     }
     @Override
-    public void modificar(Areas areas) {
-        repoAreas.save(areas);
+    public Areas modificar(Areas areas) {
+        return repoAreas.save(areas);
     }
     public Optional<Areas> buscarId(Long id) {
         return repoAreas.findById(id);

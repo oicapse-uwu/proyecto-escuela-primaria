@@ -27,7 +27,6 @@ public class AnioEscolarController {
     
     @Autowired
     private IAnioEscolarService serviceAnioEscolar;
-
     @Autowired
     private SedesRepository repoSedes;
 
@@ -60,7 +59,11 @@ public class AnioEscolarController {
         anioEscolar.setNombreAnio(dto.getNombreAnio());
         anioEscolar.setActivo(dto.getActivo());
 
-        anioEscolar.setIdSede(new Sedes(dto.getIdSede()));
+        Sedes sede = repoSedes
+            .findById(dto.getIdSede())
+            .orElse(null);
+
+        anioEscolar.setIdSede(sede);
 
         return ResponseEntity.ok(serviceAnioEscolar.modificar(anioEscolar));
     }
@@ -71,6 +74,6 @@ public class AnioEscolarController {
     @DeleteMapping("/anioescolar/{id}")
     public String eliminar(@PathVariable Long id){
         serviceAnioEscolar.eliminar(id);
-        return "Año escolar eliminado";
+        return "Año escolar eliminado correctamente";
     }   
 }

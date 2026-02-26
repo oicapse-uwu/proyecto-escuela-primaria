@@ -26,10 +26,9 @@ import com.escuelita.www.service.IAlumnoApoderadoService;
 @RestController
 @RequestMapping("/restful")
 public class AlumnoApoderadoController {
-    
+
     @Autowired
     private IAlumnoApoderadoService serviceAlumnoApoderado;
-
     @Autowired
     private AlumnosRepository repoAlumnos;
     @Autowired
@@ -70,8 +69,15 @@ public class AlumnoApoderadoController {
         alumnoApoderado.setEsRepresentanteFinanciero(dto.getEsRepresentanteFinanciero());
         alumnoApoderado.setViveConEstudiante(dto.getViveConEstudiante());
 
-        alumnoApoderado.setIdAlumno(new Alumnos(dto.getIdAlumno()));
-        alumnoApoderado.setIdApoderado(new Apoderados(dto.getIdApoderado()));
+        Alumnos alumno = repoAlumnos
+            .findById(dto.getIdAlumno())
+            .orElse(null);
+        Apoderados apoderado = repoApoderados
+            .findById(dto.getIdApoderado())
+            .orElse(null);
+
+        alumnoApoderado.setIdAlumno(alumno);
+        alumnoApoderado.setIdApoderado(apoderado);
 
         return ResponseEntity.ok(serviceAlumnoApoderado.modificar(alumnoApoderado));
     }
@@ -82,6 +88,6 @@ public class AlumnoApoderadoController {
     @DeleteMapping("/alumnoapoderado/{id}")
     public String eliminar(@PathVariable Long id){
         serviceAlumnoApoderado.eliminar(id);
-        return "Relacion entre Alumno y Apoderado eliminado";
+        return "Relación entre Alumno y Apoderado eliminada correctamente";
     }   
 }

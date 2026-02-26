@@ -5,20 +5,30 @@ package com.escuelita.www.entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "deudas_alumno")
 @SQLDelete(sql = "UPDATE deudas_alumno SET estado=0 WHERE id_deuda=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idDeuda", "concepto", "descripcionCuota", "montoTotal", "fechaEmision",
-    "fechaVencimiento", "estadoDeuda", "fechaPagoTotal", "idMatricula", "estado"
+    "idDeuda", "descripcionCuota", "montoTotal", "fechaEmision",
+    "fechaVencimiento", "estadoDeuda", "fechaPagoTotal", 
+    "idConcepto", "idMatricula", "estado"
 })
 public class DeudasAlumno {
     @Id
@@ -63,12 +73,6 @@ public class DeudasAlumno {
     public void setIdDeuda(Long idDeuda) {
         this.idDeuda = idDeuda;
     }
-    public ConceptosPago getIdConcepto() {
-        return idConcepto;
-    }
-    public void setIdConcepto(ConceptosPago idConcepto) {
-        this.idConcepto = idConcepto;
-    }
     public String getDescripcionCuota() {
         return descripcionCuota;
     }
@@ -105,6 +109,12 @@ public class DeudasAlumno {
     public void setFechaPagoTotal(LocalDateTime fechaPagoTotal) {
         this.fechaPagoTotal = fechaPagoTotal;
     }
+    public ConceptosPago getIdConcepto() {
+        return idConcepto;
+    }
+    public void setIdConcepto(ConceptosPago idConcepto) {
+        this.idConcepto = idConcepto;
+    }
     public Matriculas getIdMatricula() {
         return idMatricula;
     }
@@ -119,9 +129,9 @@ public class DeudasAlumno {
     }
     @Override
     public String toString() {
-        return "DeudasAlumno [idDeuda=" + idDeuda + ", idConcepto=" + idConcepto + ", descripcionCuota=" + descripcionCuota
-                + ", montoTotal=" + montoTotal + ", fechaEmision=" + fechaEmision + ", fechaVencimiento="
-                + fechaVencimiento + ", estadoDeuda=" + estadoDeuda + ", fechaPagoTotal=" + fechaPagoTotal
+        return "DeudasAlumno [idDeuda=" + idDeuda + ", descripcionCuota=" + descripcionCuota + ", montoTotal="
+                + montoTotal + ", fechaEmision=" + fechaEmision + ", fechaVencimiento=" + fechaVencimiento
+                + ", estadoDeuda=" + estadoDeuda + ", fechaPagoTotal=" + fechaPagoTotal + ", idConcepto=" + idConcepto
                 + ", idMatricula=" + idMatricula + ", estado=" + estado + "]";
     }
 }

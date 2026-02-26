@@ -1,9 +1,9 @@
-import { api, API_ENDPOINTS } from '../../../config/api.config';
+import { api, API_ENDPOINTS } from '../../../../config/api.config';
 import type { Alumno, AlumnoDTO } from '../types';
 
 const ENDPOINT = API_ENDPOINTS.ALUMNOS;
 
-// Funciones para interactuar con la API de alumnos
+// Funciones para interactuar con la API de Alumnos
 
 // Obtiene todos los alumnos
 export const obtenerTodosAlumnos = async (): Promise<Alumno[]> => {
@@ -11,7 +11,7 @@ export const obtenerTodosAlumnos = async (): Promise<Alumno[]> => {
     return response.data;
 };
 
-// Obtiene un alumno por ID
+// Obtiene alumno por ID
 export const obtenerAlumnoPorId = async (id: number): Promise<Alumno> => {
     const response = await api.get<Alumno>(`${ENDPOINT}/${id}`);
     return response.data;
@@ -28,7 +28,6 @@ export const actualizarAlumno = async (alumno: AlumnoDTO): Promise<Alumno> => {
     if (!alumno.idAlumno) {
         throw new Error('ID de alumno es requerido para actualizar');
     }
-    
     const response = await api.put<Alumno>(ENDPOINT, alumno);
     return response.data;
 };

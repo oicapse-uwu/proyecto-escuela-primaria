@@ -8,14 +8,15 @@ import {
 } from '../api/alumnosApi';
 import type { Alumno, AlumnoDTO } from '../types';
 
-// Estados
-interface UseAlumnosReturn { 
+interface UseAlumnosReturn {
+
+    // Estados
     alumnos: Alumno[];
     alumno: Alumno | null;
     loading: boolean;
     error: string | null;
 
-// Métodos
+    // Métodos
     cargarAlumnos: () => Promise<void>;
     cargarAlumno: (id: number) => Promise<void>;
     guardarAlumno: (alumno: AlumnoDTO) => Promise<void>;
@@ -24,12 +25,12 @@ interface UseAlumnosReturn {
     limpiarError: () => void;
 }
 
-// Hook personalizado para manejar la lógica de alumnos
-    export const useAlumnos = (): UseAlumnosReturn => {
-        const [alumnos, setAlumnos] = useState<Alumno[]>([]);
-        const [alumno, setAlumno] = useState<Alumno | null>(null);
-        const [loading, setLoading] = useState<boolean>(false);
-        const [error, setError] = useState<string | null>(null);
+// Hook personalizado para gestionar alumnos
+export const useAlumnos = (): UseAlumnosReturn => {
+    const [alumnos, setAlumnos] = useState<Alumno[]>([]);
+    const [alumno, setAlumno] = useState<Alumno | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
 
 // Carga todos los alumnos
     const cargarAlumnos = useCallback(async () => {
@@ -81,7 +82,7 @@ interface UseAlumnosReturn {
         }
     }, []);
 
-// Actualiza un alumno existente
+// Modifica un alumno existente
     const modificarAlumno = useCallback(async (alumnoActualizado: AlumnoDTO) => {
         setLoading(true);
         setError(null);
@@ -121,7 +122,7 @@ interface UseAlumnosReturn {
         }
     }, [alumno]);
 
-// Limpieza de mensajes de error
+// Limpieza de errores
     const limpiarError = useCallback(() => {
         setError(null);
     }, []);

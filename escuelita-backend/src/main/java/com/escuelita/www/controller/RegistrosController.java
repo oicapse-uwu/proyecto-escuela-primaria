@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.escuelita.www.entity.Registros;
+
 import com.escuelita.www.security.JwtUtil;
 import com.escuelita.www.service.IRegistrosService;
 
@@ -22,8 +23,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
-
-
 
 @RestController
 @RequestMapping("/restful")
@@ -81,13 +80,11 @@ public class RegistrosController {
                 Registros registro = user.get();
                 registro.setAccess_token(token); // guarda el token
                 serviceRegistros.guardar(registro); // persiste
-                 
+                
                 return ResponseEntity.ok(Collections
                         .singletonMap("token", token));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body("Credenciales incorrectas");
     }
-    
-    
 }

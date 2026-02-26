@@ -1,11 +1,17 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.escuelita.www.entity.TiposNota;
 import com.escuelita.www.service.ITiposNotaService;
+
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/restful")
@@ -17,24 +23,22 @@ public class TiposNotaController {
     public List<TiposNota> buscarTodos() { 
         return serviceTiposNota.buscarTodos(); 
     }
-
     @PostMapping("/tiposnota")
     public TiposNota guardar(@RequestBody TiposNota tiposNota) {
-        return serviceTiposNota.guardar(tiposNota);
+        serviceTiposNota.guardar(tiposNota);
+        return tiposNota;
     }
-
     @PutMapping("/tiposnota")
     public TiposNota modificar(@RequestBody TiposNota tiposNota) {
-        return serviceTiposNota.modificar(tiposNota);
+        serviceTiposNota.modificar(tiposNota);
+        return tiposNota;
     }
-
     @GetMapping("/tiposnota/{id}")
-    public Optional<TiposNota> buscarId(@PathVariable("id") Long id) {
+    public Optional<TiposNota> buscarId(@PathVariable("id") Long id){
         return serviceTiposNota.buscarId(id);
     }
-
     @DeleteMapping("/tiposnota/{id}")
-    public String eliminar(@PathVariable Long id) {
+    public String eliminar(@PathVariable Long id){
         serviceTiposNota.eliminar(id);
         return "Tipo de nota eliminado correctamente";
     }

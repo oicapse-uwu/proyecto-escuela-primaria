@@ -1,25 +1,21 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.escuelita.www.entity.SuperAdmins;
 import com.escuelita.www.service.ISuperAdminsService;
 
+import org.springframework.web.bind.annotation.*;
+
 @RestController
 @RequestMapping("/restful")
 public class SuperAdminsController {
-
     @Autowired
     private ISuperAdminsService serviceSuperAdmins;
 
@@ -27,7 +23,6 @@ public class SuperAdminsController {
     public List<SuperAdmins> buscarTodos() {
         return serviceSuperAdmins.buscarTodos(); 
     }
-
     @PostMapping("/superadmins")
     public SuperAdmins guardar(@RequestBody SuperAdmins superAdmins) {
         serviceSuperAdmins.guardar(superAdmins);

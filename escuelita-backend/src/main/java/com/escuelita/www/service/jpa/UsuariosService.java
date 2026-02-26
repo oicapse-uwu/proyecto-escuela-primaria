@@ -25,8 +25,6 @@ public class UsuariosService implements IUsuariosService {
     @Override
     public Usuarios modificar(Usuarios usuarios) {
         return repoUsuarios.save(usuarios);
-    public Usuarios modificar(Usuarios usuarios) {
-        return repoUsuarios.save(usuarios);
     }
     public Optional<Usuarios> buscarId(Long id) {
         return repoUsuarios.findById(id);

@@ -34,7 +34,7 @@ public class SuscripcionesController {
     @Autowired 
     private ISuscripcionesService serviceSuscripciones;
     @Autowired 
-    private InstitucionRepository repoInst;
+    private InstitucionRepository repoInstitucion;
     @Autowired 
     private PlanesRepository repoPlanes;
     @Autowired 
@@ -55,7 +55,7 @@ public class SuscripcionesController {
         suscripciones.setFechaInicio(dto.getFechaInicio());
         suscripciones.setFechaVencimiento(dto.getFechaVencimiento());
         
-        Institucion institucion = repoInst
+        Institucion institucion = repoInstitucion
             .findById(dto.getIdInstitucion())
             .orElse(null);
         Planes planes = repoPlanes
@@ -89,7 +89,7 @@ public class SuscripcionesController {
         suscripciones.setFechaInicio(dto.getFechaInicio());
         suscripciones.setFechaVencimiento(dto.getFechaVencimiento());
         
-        Institucion institucion = repoInst
+        Institucion institucion = repoInstitucion
             .findById(dto.getIdInstitucion())
             .orElse(null);
         Planes planes = repoPlanes

@@ -71,9 +71,19 @@ public class MallaCurricularController {
         MallaCurricular mallaCurricular = new MallaCurricular();
         mallaCurricular.setIdMalla(dto.getIdMalla());
 
-        mallaCurricular.setIdAnioEscolar(new AnioEscolar(dto.getIdAnioEscolar()));
-        mallaCurricular.setIdGrado(new Grados(dto.getIdGrado()));
-        mallaCurricular.setIdCurso(new Cursos(dto.getIdCurso()));
+        AnioEscolar anioEscolar = repoAnioEscolar
+            .findById(dto.getIdAnioEscolar())
+            .orElse(null);
+        Grados grados = repoGrados
+            .findById(dto.getIdGrado())
+            .orElse(null);
+        Cursos cursos = repoCursos
+            .findById(dto.getIdCurso())
+            .orElse(null);
+
+        mallaCurricular.setIdAnioEscolar(anioEscolar);
+        mallaCurricular.setIdGrado(grados);
+        mallaCurricular.setIdCurso(cursos);
 
         return ResponseEntity.ok(serviceMallaCurricular.modificar(mallaCurricular));
     }

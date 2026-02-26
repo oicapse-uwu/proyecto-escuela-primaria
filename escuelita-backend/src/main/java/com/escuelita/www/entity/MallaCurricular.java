@@ -30,8 +30,8 @@ public class MallaCurricular {
     private Long idMalla;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_anio")
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @JoinColumn(name="id_anio")
+    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private AnioEscolar idAnioEscolar;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -60,36 +60,33 @@ public class MallaCurricular {
     public void setIdMalla(Long idMalla) {
         this.idMalla = idMalla;
     }
+    public AnioEscolar getIdAnioEscolar() {
+        return idAnioEscolar;
+    }
+    public void setIdAnioEscolar(AnioEscolar idAnioEscolar) {
+        this.idAnioEscolar = idAnioEscolar;
+    }
+    public Grados getIdGrado() {
+        return idGrado;
+    }
+    public void setIdGrado(Grados idGrado) {
+        this.idGrado = idGrado;
+    }
+    public Cursos getIdCurso() {
+        return idCurso;
+    }
+    public void setIdCurso(Cursos idCurso) {
+        this.idCurso = idCurso;
+    }
     public Integer getEstado() {
         return estado;
     }
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
-    public AnioEscolar getIdAnioEscolar() {
-        return idAnioEscolar;
-    }
-    public void setIdAnioEscolar(AnioEscolar anioEscolar) {
-        this.idAnioEscolar = anioEscolar;
-    }
-    public Grados getIdGrado() {
-        return idGrado;
-    }
-    public void setIdGrado(Grados grado) {
-        this.idGrado = grado;
-    }
-    public Cursos getIdCurso() {
-        return idCurso;
-    }
-    public void setIdCurso(Cursos curso) {
-        this.idCurso = curso;
-    }
-
     @Override
     public String toString() {
-        return "MallaCurricular [idMalla=" + idMalla + ", estado=" + estado + ", idAnioEscolar=" + idAnioEscolar
-                + ", idGrado=" + idGrado + ", idCurso=" + idCurso + "]";
+        return "MallaCurricular [idMalla=" + idMalla + ", idAnioEscolar=" + idAnioEscolar + ", idGrado=" + idGrado
+                + ", idCurso=" + idCurso + ", estado=" + estado + "]";
     }
-    
-
 }

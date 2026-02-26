@@ -28,7 +28,6 @@ public class UsuariosService implements IUsuariosService {
 
     @Override
     public Usuarios modificar(Usuarios usuario) {
-        // En el estilo de tu profesor, save() se usa tanto para crear como para actualizar
         return repoUsuarios.save(usuario);
     }
 

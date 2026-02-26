@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.escuelita.www.entity.Usuarios;
 
 public interface IUsuariosService {
+    
     List<Usuarios> buscarTodos();
     Usuarios guardar(Usuarios usuario);
     Usuarios modificar(Usuarios usuario);

@@ -1,12 +1,14 @@
 package com.escuelita.www.service;
 
 import java.util.List;
-import com.escuelita.www.entity.PagosCajaDTO;
+import java.util.Optional;
+import com.escuelita.www.entity.PagosCaja;
 
 public interface IPagosCajaService {
-    List<PagosCajaDTO> buscarTodos();
-    PagosCajaDTO guardar(PagosCajaDTO dto);
-    PagosCajaDTO modificar(PagosCajaDTO dto);
-    PagosCajaDTO buscarId(Long id);
+
+    List<PagosCaja> buscarTodos();
+    PagosCaja guardar(PagosCaja pagoscaja);
+    PagosCaja modificar(PagosCaja pagoscaja);
+    Optional<PagosCaja> buscarId(Long id);
     void eliminar(Long id);
 }

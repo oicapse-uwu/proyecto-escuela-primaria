@@ -1,9 +1,26 @@
 package com.escuelita.www.controller;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.escuelita.www.entity.PagosCaja;
 import com.escuelita.www.entity.PagosCajaDTO;
+import com.escuelita.www.entity.MetodosPago;
+import com.escuelita.www.entity.Usuarios;
+import com.escuelita.www.repository.MetodosPagoRepository;
+import com.escuelita.www.repository.UsuariosRepository;
+
 import com.escuelita.www.service.IPagosCajaService;
 
 @RestController
@@ -13,27 +30,65 @@ public class PagosCajaController {
     @Autowired
     private IPagosCajaService servicePagosCaja;
 
-    @GetMapping("/pagos-caja")
-    public List<PagosCajaDTO> buscarTodos() {
-        return servicePagosCaja.buscarTodos(); 
+    @Autowired
+    private MetodosPagoRepository repoMetodosPago;
+
+    @Autowired
+    private UsuariosRepository repoUsuarios;
+
+    @GetMapping("/pagoscaja")
+    public List<PagosCaja> buscarTodos() {
+        return servicePagosCaja.buscarTodos();  
     }
     
-    @PostMapping("/pagos-caja")
-    public PagosCajaDTO guardar(@RequestBody PagosCajaDTO dto) {
-        return servicePagosCaja.guardar(dto);
+    @PostMapping("/pagoscaja")
+    public ResponseEntity<?> guardar(@RequestBody PagosCajaDTO dto) {
+       PagosCaja pagoscaja = new PagosCaja();
+       pagoscaja.setFechaPago(dto.getFechaPago());
+       pagoscaja.setMontoTotalPagado(dto.getMontoTotalPagado());
+       pagoscaja.setComprobanteNumero(dto.getComprobanteNumero());
+       pagoscaja.setObservacionPago(dto.getObservacionPago());
+
+        MetodosPago metodosPago = repoMetodosPago
+            .findById(dto.getIdMetodo())
+            .orElse(null);
+
+        Usuarios usuarios = repoUsuarios
+            .findById(dto.getIdUsuario())
+            .orElse(null);
+
+        pagoscaja.setIdMetodo(metodosPago);
+        pagoscaja.setIdUsuario(usuarios);
+        
+        return ResponseEntity.ok(servicePagosCaja.guardar(pagoscaja));
     }
     
-    @PutMapping("/pagos-caja")
-    public PagosCajaDTO modificar(@RequestBody PagosCajaDTO dto) {
-        return servicePagosCaja.modificar(dto);
+    @PutMapping("/pagoscaja")
+    public ResponseEntity<?> modificar(@RequestBody PagosCajaDTO dto) {
+        if(dto.getIdPago() == null){
+            return ResponseEntity.badRequest()
+                    .body("ID de pago es requerido");
+        }
+        PagosCaja pagoscaja = new PagosCaja();
+        pagoscaja.setIdPago(dto.getIdPago());
+        pagoscaja.setFechaPago(dto.getFechaPago());
+        pagoscaja.setMontoTotalPagado(dto.getMontoTotalPagado());
+        pagoscaja.setComprobanteNumero(dto.getComprobanteNumero());
+        pagoscaja.setObservacionPago(dto.getObservacionPago());
+
+        pagoscaja.setIdMetodo(new MetodosPago(dto.getIdMetodo()));
+        pagoscaja.setIdUsuario(new Usuarios(dto.getIdUsuario()));
+
+        return ResponseEntity.ok(servicePagosCaja.modificar(pagoscaja));
     }
     
-    @GetMapping("/pagos-caja/{id}")
-    public PagosCajaDTO buscarId(@PathVariable("id") Long id) {
-        return servicePagosCaja.buscarId(id);
+    @GetMapping("/pagoscaja/{id}")
+
+    public Optional<PagosCaja> buscarId(@PathVariable("id") Long id){
+    return servicePagosCaja.buscarId(id);
     }
     
-    @DeleteMapping("/pagos-caja/{id}")
+    @DeleteMapping("/pagoscaja/{id}")
     public String eliminar(@PathVariable Long id) {
         servicePagosCaja.eliminar(id);
         return "Pago eliminado correctamente";

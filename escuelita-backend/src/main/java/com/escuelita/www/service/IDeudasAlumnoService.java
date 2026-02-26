@@ -1,12 +1,14 @@
 package com.escuelita.www.service;
 
 import java.util.List;
-import com.escuelita.www.entity.DeudasAlumnoDTO;
+import java.util.Optional;
+import com.escuelita.www.entity.DeudasAlumno;
 
 public interface IDeudasAlumnoService {
-    List<DeudasAlumnoDTO> buscarTodos();
-    DeudasAlumnoDTO guardar(DeudasAlumnoDTO dto);
-    DeudasAlumnoDTO modificar(DeudasAlumnoDTO dto);
-    DeudasAlumnoDTO buscarId(Long id);
+    
+    List<DeudasAlumno> buscarTodos();
+    DeudasAlumno guardar(DeudasAlumno dto);
+    DeudasAlumno modificar(DeudasAlumno dto);
+    Optional<DeudasAlumno> buscarId(Long id);
     void eliminar(Long id);
 }

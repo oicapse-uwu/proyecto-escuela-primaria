@@ -12,7 +12,6 @@ import com.escuelita.www.service.ISedesService;
 
 @Service
 public class SedesService implements ISedesService {
-    
     @Autowired 
     private SedesRepository repoSedes;
     
@@ -20,12 +19,12 @@ public class SedesService implements ISedesService {
         return repoSedes.findAll();
     }
     @Override
-    public Sedes guardar(Sedes sede){
-        return repoSedes.save(sede);
+    public Sedes guardar(Sedes sedes){
+        return repoSedes.save(sedes);
     }
     @Override
-    public Sedes modificar(Sedes sede){
-        return repoSedes.save(sede);
+    public Sedes modificar(Sedes sedes){
+        return repoSedes.save(sedes);
     }
     public Optional<Sedes> buscarId(Long id){
         return repoSedes.findById(id);

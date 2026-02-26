@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -27,6 +28,7 @@ import com.escuelita.www.service.IPromediosPeriodoService;
 @RestController
 @RequestMapping("/restful")
 public class PromediosPeriodoController {
+
     @Autowired
     private IPromediosPeriodoService servicePromedios;
     @Autowired
@@ -40,49 +42,64 @@ public class PromediosPeriodoController {
     public List<PromediosPeriodo> buscarTodos() {
         return servicePromedios.buscarTodos();
     }
-
     @PostMapping("/promediosperiodo")
     public ResponseEntity<?> guardar(@RequestBody PromediosPeriodoDTO dto) {
-        PromediosPeriodo promedio = new PromediosPeriodo();
-        promedio.setNotaFinalArea(dto.getNotaFinalArea());
-        promedio.setComentarioLibreta(dto.getComentarioLibreta());
-        promedio.setEstadoCierre(dto.getEstadoCierre());
+        PromediosPeriodo promediosPeriodo = new PromediosPeriodo();
+        promediosPeriodo.setNotaFinalArea(dto.getNotaFinalArea());
+        promediosPeriodo.setComentarioLibreta(dto.getComentarioLibreta());
+        promediosPeriodo.setEstadoCierre(dto.getEstadoCierre());
 
-        promedio.setIdAsignacion(repoAsignacion.findById(dto.getIdAsignacion()).orElse(null));
-        promedio.setIdMatricula(repoMatriculas.findById(dto.getIdMatricula()).orElse(null));
-        promedio.setIdPeriodo(repoPeriodos.findById(dto.getIdPeriodo()).orElse(null));
+        AsignacionDocente asignacionDocente = repoAsignacion
+            .findById(dto.getIdAsignacion())
+            .orElse(null);
+        Matriculas matriculas = repoMatriculas
+            .findById(dto.getIdMatricula())
+            .orElse(null);
+        Periodos periodos = repoPeriodos
+            .findById(dto.getIdPeriodo())
+            .orElse(null);
 
-        return ResponseEntity.ok(servicePromedios.guardar(promedio));
+        promediosPeriodo.setIdAsignacion(asignacionDocente);
+        promediosPeriodo.setIdMatricula(matriculas);
+        promediosPeriodo.setIdPeriodo(periodos);
+
+        return ResponseEntity.ok(servicePromedios.guardar(promediosPeriodo));
     }
-
     @PutMapping("/promediosperiodo")
     public ResponseEntity<?> modificar(@RequestBody PromediosPeriodoDTO dto) {
-        if(dto.getIdPromedio() == null) return ResponseEntity.badRequest().body("ID requerido");
-        
-        PromediosPeriodo promedio = new PromediosPeriodo();
-        promedio.setIdPromedio(dto.getIdPromedio());
-        promedio.setNotaFinalArea(dto.getNotaFinalArea());
-        promedio.setComentarioLibreta(dto.getComentarioLibreta());
-        promedio.setEstadoCierre(dto.getEstadoCierre());
+        if(dto.getIdPromedio() == null) {
+            return ResponseEntity.badRequest()
+                    .body("ID requerido");
+        }
+        PromediosPeriodo promediosPeriodo = new PromediosPeriodo();
+        promediosPeriodo.setIdPromedio(dto.getIdPromedio());
+        promediosPeriodo.setNotaFinalArea(dto.getNotaFinalArea());
+        promediosPeriodo.setComentarioLibreta(dto.getComentarioLibreta());
+        promediosPeriodo.setEstadoCierre(dto.getEstadoCierre());
 
-        AsignacionDocente asignacion = new AsignacionDocente(); asignacion.setIdAsignacion(dto.getIdAsignacion());
-        promedio.setIdAsignacion(asignacion);
+        AsignacionDocente asignacionDocente = repoAsignacion
+            .findById(dto.getIdAsignacion())
+            .orElse(null);
+        Matriculas matriculas = repoMatriculas
+            .findById(dto.getIdMatricula())
+            .orElse(null);
+        Periodos periodos = repoPeriodos
+            .findById(dto.getIdPeriodo())
+            .orElse(null);
 
-        Matriculas matricula = new Matriculas(); matricula.setIdMatricula(dto.getIdMatricula());
-        promedio.setIdMatricula(matricula);
+        promediosPeriodo.setIdAsignacion(asignacionDocente);
+        promediosPeriodo.setIdMatricula(matriculas);
+        promediosPeriodo.setIdPeriodo(periodos);
 
-        Periodos periodo = new Periodos(); periodo.setIdPeriodo(dto.getIdPeriodo());
-        promedio.setIdPeriodo(periodo);
-
-        return ResponseEntity.ok(servicePromedios.modificar(promedio));
+        return ResponseEntity.ok(servicePromedios.modificar(promediosPeriodo));
     }
-
     @GetMapping("/promediosperiodo/{id}")
-    public Optional<PromediosPeriodo> buscarId(@PathVariable Long id) { return servicePromedios.buscarId(id); }
-
+    public Optional<PromediosPeriodo> buscarId(@PathVariable("id") Long id) { 
+        return servicePromedios.buscarId(id); 
+    }
     @DeleteMapping("/promediosperiodo/{id}")
     public String eliminar(@PathVariable Long id) {
         servicePromedios.eliminar(id);
-        return "Promedio de periodo eliminado";
+        return "Promedio de periodo eliminado correctamente";
     }
 }

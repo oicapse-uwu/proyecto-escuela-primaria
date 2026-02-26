@@ -19,12 +19,12 @@ public class EvaluacionesService implements IEvaluacionesService {
         return repoEvaluaciones.findAll();
     }
     @Override
-    public Evaluaciones guardar(Evaluaciones evaluacion) {
-        return repoEvaluaciones.save(evaluacion);
+    public Evaluaciones guardar(Evaluaciones evaluaciones) {
+        return repoEvaluaciones.save(evaluaciones);
     }
     @Override
-    public Evaluaciones modificar(Evaluaciones evaluacion) {
-        return repoEvaluaciones.save(evaluacion);
+    public Evaluaciones modificar(Evaluaciones evaluaciones) {
+        return repoEvaluaciones.save(evaluaciones);
     }
     public Optional<Evaluaciones> buscarId(Long id) {
         return repoEvaluaciones.findById(id);

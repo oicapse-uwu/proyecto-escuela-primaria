@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -41,47 +42,58 @@ public class MallaCurricularController {
     public List<MallaCurricular> buscarTodos() {
         return serviceMallaCurricular.buscarTodos();
     }
-
     @PostMapping("/mallacurricular")
     public ResponseEntity<?> guardar(@RequestBody MallaCurricularDTO dto) {
-        MallaCurricular malla = new MallaCurricular();
-        if (dto.getEstado() != null)
-            malla.setEstado(dto.getEstado());
+        MallaCurricular mallaCurricular = new MallaCurricular();
 
-        malla.setAnioEscolar(repoAnio.findById(dto.getIdAnio()).orElse(null));
-        malla.setGrado(repoGrados.findById(dto.getIdGrado()).orElse(null));
-        malla.setCurso(repoCursos.findById(dto.getIdCurso()).orElse(null));
+        AnioEscolar anioEscolar = repoAnio
+            .findById(dto.getIdAnio())
+            .orElse(null);
+        Grados grados = repoGrados
+            .findById(dto.getIdGrado())
+            .orElse(null);
+        Cursos cursos = repoCursos
+            .findById(dto.getIdCurso())
+            .orElse(null);
 
-        serviceMallaCurricular.guardar(malla);
-        return ResponseEntity.ok(malla);
+        mallaCurricular.setAnioEscolar(anioEscolar);
+        mallaCurricular.setGrado(grados);
+        mallaCurricular.setCurso(cursos);
+
+        return ResponseEntity.ok(serviceMallaCurricular.guardar(mallaCurricular));
     }
-
     @PutMapping("/mallacurricular")
     public ResponseEntity<?> modificar(@RequestBody MallaCurricularDTO dto) {
         if (dto.getIdMalla() == null) {
-            return ResponseEntity.badRequest().body("ID de malla es requerido");
+            return ResponseEntity.badRequest()
+                    .body("ID de malla es requerido");
         }
-        MallaCurricular malla = new MallaCurricular();
-        malla.setIdMalla(dto.getIdMalla());
-        if (dto.getEstado() != null)
-            malla.setEstado(dto.getEstado());
+        MallaCurricular mallaCurricular = new MallaCurricular();
+        mallaCurricular.setIdMalla(dto.getIdMalla());
 
-        malla.setAnioEscolar(new AnioEscolar(dto.getIdAnio()));
-        malla.setGrado(new Grados(dto.getIdGrado()));
-        malla.setCurso(new Cursos(dto.getIdCurso()));
+        AnioEscolar anioEscolar = repoAnio
+            .findById(dto.getIdAnio())
+            .orElse(null);
+        Grados grados = repoGrados
+            .findById(dto.getIdGrado())
+            .orElse(null);
+        Cursos cursos = repoCursos
+            .findById(dto.getIdCurso())
+            .orElse(null);
 
-        serviceMallaCurricular.modificar(malla);
-        return ResponseEntity.ok(malla);
+        mallaCurricular.setAnioEscolar(anioEscolar);
+        mallaCurricular.setGrado(grados);
+        mallaCurricular.setCurso(cursos);
+
+        return ResponseEntity.ok(serviceMallaCurricular.modificar(mallaCurricular));
     }
-
     @GetMapping("/mallacurricular/{id}")
     public Optional<MallaCurricular> buscarId(@PathVariable("id") Long id) {
         return serviceMallaCurricular.buscarId(id);
     }
-
     @DeleteMapping("/mallacurricular/{id}")
-    public String eliminar(@PathVariable Long id) {
+    public String eliminar(@PathVariable Long id){
         serviceMallaCurricular.eliminar(id);
-        return "Malla curricular eliminada";
+        return "Malla curricular eliminada correctamente";
     }
 }

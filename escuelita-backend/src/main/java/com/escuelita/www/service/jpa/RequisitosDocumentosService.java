@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.escuelita.www.entity.RequisitosDocumentos;
 import com.escuelita.www.repository.RequisitosDocumentosRepository;
 import com.escuelita.www.service.IRequisitosDocumentosService;
@@ -17,11 +18,13 @@ public class RequisitosDocumentosService implements IRequisitosDocumentosService
     public List<RequisitosDocumentos> buscarTodos(){
         return repoRequisitosDocumentos.findAll();
     }
-    public void guardar(RequisitosDocumentos requisitodocumento){
-        repoRequisitosDocumentos.save(requisitodocumento);
+    @Override
+    public void guardar(RequisitosDocumentos requisitosDocumentos){
+        repoRequisitosDocumentos.save(requisitosDocumentos);
     }
-    public void modificar(RequisitosDocumentos requisitodocumento){
-        repoRequisitosDocumentos.save(requisitodocumento);
+    @Override
+    public void modificar(RequisitosDocumentos requisitosDocumentos){
+        repoRequisitosDocumentos.save(requisitosDocumentos);
     }
     public Optional<RequisitosDocumentos> buscarId(Long id){
         return repoRequisitosDocumentos.findById(id);

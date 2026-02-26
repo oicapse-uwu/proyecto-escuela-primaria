@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.escuelita.www.entity.DocumentosAlumno;
 import com.escuelita.www.repository.DocumentosAlumnoRepository;
 import com.escuelita.www.service.IDocumentosAlumnoService;
@@ -17,11 +18,13 @@ public class DocumentosAlumnoService implements IDocumentosAlumnoService{
     public List<DocumentosAlumno> buscarTodos(){
         return repoDocumentosAlumno.findAll();
     }
-    public DocumentosAlumno guardar(DocumentosAlumno documentoalumno){
-        return repoDocumentosAlumno.save(documentoalumno);
+    @Override
+    public DocumentosAlumno guardar(DocumentosAlumno documentosAlumno){
+        return repoDocumentosAlumno.save(documentosAlumno);
     }
-    public DocumentosAlumno modificar(DocumentosAlumno documentoalumno){
-        return repoDocumentosAlumno.save(documentoalumno);
+    @Override
+    public DocumentosAlumno modificar(DocumentosAlumno documentosAlumno){
+        return repoDocumentosAlumno.save(documentosAlumno);
     }
     public Optional<DocumentosAlumno> buscarId(Long id){
         return repoDocumentosAlumno.findById(id);

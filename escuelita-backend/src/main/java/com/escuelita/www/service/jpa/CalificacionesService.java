@@ -11,10 +11,22 @@ import com.escuelita.www.service.ICalificacionesService;
 public class CalificacionesService implements ICalificacionesService {
     @Autowired
     private CalificacionesRepository repoCalificaciones;
-
-    public List<Calificaciones> buscarTodos() { return repoCalificaciones.findAll(); }
-    public Calificaciones guardar(Calificaciones calificaciones) { return repoCalificaciones.save(calificaciones); }
-    public Calificaciones modificar(Calificaciones calificaciones) { return repoCalificaciones.save(calificaciones); }
-    public Optional<Calificaciones> buscarId(Long id) { return repoCalificaciones.findById(id); }
-    public void eliminar(Long id) { repoCalificaciones.deleteById(id); }
+    
+    public List<Calificaciones> buscarTodos() { 
+        return repoCalificaciones.findAll(); 
+    }
+    @Override
+    public Calificaciones guardar(Calificaciones calificaciones) { 
+        return repoCalificaciones.save(calificaciones); 
+    }
+    @Override
+    public Calificaciones modificar(Calificaciones calificaciones) { 
+        return repoCalificaciones.save(calificaciones); 
+    }
+    public Optional<Calificaciones> buscarId(Long id) { 
+        return repoCalificaciones.findById(id); 
+    }
+    public void eliminar(Long id) { 
+        repoCalificaciones.deleteById(id); 
+    }
 }

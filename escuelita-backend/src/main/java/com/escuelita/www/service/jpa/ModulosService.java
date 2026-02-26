@@ -10,31 +10,23 @@ import com.escuelita.www.service.IModulosService;
 
 @Service
 public class ModulosService implements IModulosService {
-
     @Autowired
     private ModulosRepository repoModulos;
-
-    @Override
+    
     public List<Modulos> buscarTodos() {
         return repoModulos.findAll();
     }
-
     @Override
-    public void guardar(Modulos modulo) {
-        repoModulos.save(modulo);
+    public void guardar(Modulos modulos) {
+        repoModulos.save(modulos);
     }
-
     @Override
-    public void modificar(Modulos modulo) {
-        repoModulos.save(modulo);
+    public void modificar(Modulos modulos) {
+        repoModulos.save(modulos);
     }
-
-    @Override
     public Optional<Modulos> buscarId(Long id) {
         return repoModulos.findById(id);
     }
-
-    @Override
     public void eliminar(Long id) {
         repoModulos.deleteById(id);
     }

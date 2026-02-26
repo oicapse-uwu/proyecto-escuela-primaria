@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.escuelita.www.entity.AlumnoApoderado;
 import com.escuelita.www.repository.AlumnoApoderadoRepository;
 import com.escuelita.www.service.IAlumnoApoderadoService;
@@ -17,11 +18,13 @@ public class AlumnoApoderadoService implements IAlumnoApoderadoService{
     public List<AlumnoApoderado> buscarTodos(){
         return repoAlumnoApoderado.findAll();
     }
-    public AlumnoApoderado guardar(AlumnoApoderado alumnoapoderado){
-        return repoAlumnoApoderado.save(alumnoapoderado);
+    @Override
+    public AlumnoApoderado guardar(AlumnoApoderado alumnoApoderado){
+        return repoAlumnoApoderado.save(alumnoApoderado);
     }
-    public AlumnoApoderado modificar(AlumnoApoderado alumnoapoderado){
-        return repoAlumnoApoderado.save(alumnoapoderado);
+    @Override
+    public AlumnoApoderado modificar(AlumnoApoderado alumnoApoderado){
+        return repoAlumnoApoderado.save(alumnoApoderado);
     }
     public Optional<AlumnoApoderado> buscarId(Long id){
         return repoAlumnoApoderado.findById(id);

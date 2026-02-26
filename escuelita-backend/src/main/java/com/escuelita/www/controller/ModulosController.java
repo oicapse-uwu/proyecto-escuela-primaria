@@ -1,43 +1,48 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.escuelita.www.entity.Modulos;
 import com.escuelita.www.service.IModulosService;
 
 @RestController
 @RequestMapping("/restful")
 public class ModulosController {
-
     @Autowired
     private IModulosService serviceModulos;
 
     @GetMapping("/modulos")
     public List<Modulos> buscarTodos() {
-        return serviceModulos.buscarTodos();
+        return serviceModulos.buscarTodos(); 
     }
-
     @PostMapping("/modulos")
-    public Modulos guardar(@RequestBody Modulos modulo) {
-        serviceModulos.guardar(modulo);
-        return modulo;
+    public Modulos guardar(@RequestBody Modulos modulos) {
+        serviceModulos.guardar(modulos);
+        return modulos;
     }
-
     @PutMapping("/modulos")
-    public Modulos modificar(@RequestBody Modulos modulo) {
-        serviceModulos.modificar(modulo);
-        return modulo;
+    public Modulos modificar(@RequestBody Modulos modulos) {
+        serviceModulos.modificar(modulos);
+        return modulos;
     }
-
     @GetMapping("/modulos/{id}")
-    public Optional<Modulos> buscarId(@PathVariable("id") Long id) {
+    public Optional<Modulos> buscarId(@PathVariable("id") Long id){
         return serviceModulos.buscarId(id);
     }
-
     @DeleteMapping("/modulos/{id}")
-    public String eliminar(@PathVariable Long id) {
+    public String eliminar(@PathVariable Long id){
         serviceModulos.eliminar(id);
         return "Módulo eliminado correctamente";
     }

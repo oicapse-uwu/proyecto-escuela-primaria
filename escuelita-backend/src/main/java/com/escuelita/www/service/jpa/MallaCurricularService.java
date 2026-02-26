@@ -10,31 +10,23 @@ import com.escuelita.www.service.IMallaCurricularService;
 
 @Service
 public class MallaCurricularService implements IMallaCurricularService {
-
     @Autowired
     private MallaCurricularRepository repoMallaCurricular;
-
-    @Override
+    
     public List<MallaCurricular> buscarTodos() {
         return repoMallaCurricular.findAll();
     }
-
     @Override
-    public void guardar(MallaCurricular malla) {
-        repoMallaCurricular.save(malla);
+    public MallaCurricular guardar(MallaCurricular mallaCurricular) {
+        return repoMallaCurricular.save(mallaCurricular);
     }
-
     @Override
-    public void modificar(MallaCurricular malla) {
-        repoMallaCurricular.save(malla);
+    public MallaCurricular modificar(MallaCurricular mallaCurricular) {
+        return repoMallaCurricular.save(mallaCurricular);
     }
-
-    @Override
     public Optional<MallaCurricular> buscarId(Long id) {
         return repoMallaCurricular.findById(id);
     }
-
-    @Override
     public void eliminar(Long id) {
         repoMallaCurricular.deleteById(id);
     }

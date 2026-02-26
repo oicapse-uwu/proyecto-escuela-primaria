@@ -7,9 +7,9 @@ import com.escuelita.www.entity.PerfilDocente;
 public interface IPerfilDocenteService {
     List<PerfilDocente> buscarTodos();
 
-    void guardar(PerfilDocente docente);
+    PerfilDocente guardar(PerfilDocente docente);
 
-    void modificar(PerfilDocente docente);
+    PerfilDocente modificar(PerfilDocente docente);
 
     Optional<PerfilDocente> buscarId(Long id);
 

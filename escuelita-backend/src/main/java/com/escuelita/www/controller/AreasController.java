@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -26,59 +27,50 @@ public class AreasController {
 
     @Autowired
     private IAreasService serviceAreas;
-
     @Autowired
-    private SedesRepository repoSedes; // Repositorio inyectado para el POST
+    private SedesRepository repoSedes;
 
     @GetMapping("/areas")
     public List<Areas> buscarTodos() {
         return serviceAreas.buscarTodos();
     }
-
     @PostMapping("/areas")
     public ResponseEntity<?> guardar(@RequestBody AreasDTO dto) {
-        Areas area = new Areas();
-        area.setNombreArea(dto.getNombreArea());
-        area.setDescripcion(dto.getDescripcion());
-        if (dto.getEstado() != null)
-            area.setEstado(dto.getEstado());
+        Areas areas = new Areas();
+        areas.setNombreArea(dto.getNombreArea());
+        areas.setDescripcion(dto.getDescripcion());
 
-        // Buscando la relación
-        Sedes sede = repoSedes
+        Sedes sedes = repoSedes
                 .findById(dto.getIdSede())
                 .orElse(null);
 
-        area.setIdSede(sede);
+        areas.setIdSede(sedes);
 
-        serviceAreas.guardar(area);
-        return ResponseEntity.ok(area);
+        return ResponseEntity.ok(serviceAreas.guardar(areas));
     }
-
     @PutMapping("/areas")
     public ResponseEntity<?> modificar(@RequestBody AreasDTO dto) {
         if (dto.getIdArea() == null) {
             return ResponseEntity.badRequest()
                     .body("ID de área es requerido");
         }
-        Areas area = new Areas();
-        area.setIdArea(dto.getIdArea());
-        area.setNombreArea(dto.getNombreArea());
-        area.setDescripcion(dto.getDescripcion());
-        if (dto.getEstado() != null)
-            area.setEstado(dto.getEstado());
+        Areas areas = new Areas();
+        areas.setIdArea(dto.getIdArea());
+        areas.setNombreArea(dto.getNombreArea());
+        areas.setDescripcion(dto.getDescripcion());
 
-        // Instanciando la relación con el constructor de ID
-        area.setIdSede(new Sedes(dto.getIdSede()));
+        Sedes sedes = repoSedes
+            .findById(dto.getIdSede())
+            .orElse(null);
 
-        serviceAreas.modificar(area);
-        return ResponseEntity.ok(area);
+        areas.setIdSede(sedes);
+
+        return ResponseEntity.ok(serviceAreas.modificar(areas));
     }
-
     @GetMapping("/areas/{id}")
     public Optional<Areas> buscarId(@PathVariable("id") Long id) {
         return serviceAreas.buscarId(id);
     }
-
     @DeleteMapping("/areas/{id}")
     public String eliminar(@PathVariable Long id) {
         serviceAreas.eliminar(id);

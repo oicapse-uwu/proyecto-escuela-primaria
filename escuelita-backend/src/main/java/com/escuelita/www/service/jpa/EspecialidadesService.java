@@ -10,31 +10,23 @@ import com.escuelita.www.service.IEspecialidadesService;
 
 @Service
 public class EspecialidadesService implements IEspecialidadesService {
-
     @Autowired
     private EspecialidadesRepository repoEspecialidades;
 
-    @Override
     public List<Especialidades> buscarTodos() {
         return repoEspecialidades.findAll();
     }
-
     @Override
-    public void guardar(Especialidades especialidad) {
-        repoEspecialidades.save(especialidad);
+    public void guardar(Especialidades especialidades) {
+        repoEspecialidades.save(especialidades); 
     }
-
     @Override
-    public void modificar(Especialidades especialidad) {
-        repoEspecialidades.save(especialidad);
+    public void modificar(Especialidades especialidades) {
+        repoEspecialidades.save(especialidades);
     }
-
-    @Override
     public Optional<Especialidades> buscarId(Long id) {
         return repoEspecialidades.findById(id);
     }
-
-    @Override
     public void eliminar(Long id) {
         repoEspecialidades.deleteById(id);
     }

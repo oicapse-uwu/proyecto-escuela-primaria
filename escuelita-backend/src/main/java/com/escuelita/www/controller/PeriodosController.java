@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -26,7 +27,6 @@ public class PeriodosController {
 
     @Autowired
     private IPeriodosService servicePeriodos;
-
     @Autowired
     private AnioEscolarRepository repoAnioEscolar;
 
@@ -36,18 +36,18 @@ public class PeriodosController {
     }
     @PostMapping("/periodos")
     public ResponseEntity<?> guardar(@RequestBody PeriodosDTO dto) {
-        Periodos periodo = new Periodos();
-        periodo.setNombrePeriodo(dto.getNombrePeriodo());
-        periodo.setFechaInicio(dto.getFechaInicio());
-        periodo.setFechaFin(dto.getFechaFin());
+        Periodos periodos = new Periodos();
+        periodos.setNombrePeriodo(dto.getNombrePeriodo());
+        periodos.setFechaInicio(dto.getFechaInicio());
+        periodos.setFechaFin(dto.getFechaFin());
 
         AnioEscolar anioEscolar = repoAnioEscolar
             .findById(dto.getIdAnio())
             .orElse(null);
         
-        periodo.setIdAnio(anioEscolar);
+        periodos.setIdAnio(anioEscolar);
 
-        return ResponseEntity.ok(servicePeriodos.guardar(periodo));
+        return ResponseEntity.ok(servicePeriodos.guardar(periodos));
     }
     @PutMapping("/periodos")
     public ResponseEntity<?> modificar(@RequestBody PeriodosDTO dto) {
@@ -55,15 +55,19 @@ public class PeriodosController {
             return ResponseEntity.badRequest()
                     .body("ID de periodo es requerido");
         }
-        Periodos periodo = new Periodos();
-        periodo.setIdPeriodo(dto.getIdPeriodo());
-        periodo.setNombrePeriodo(dto.getNombrePeriodo());
-        periodo.setFechaInicio(dto.getFechaInicio());
-        periodo.setFechaFin(dto.getFechaFin());
+        Periodos periodos = new Periodos();
+        periodos.setIdPeriodo(dto.getIdPeriodo());
+        periodos.setNombrePeriodo(dto.getNombrePeriodo());
+        periodos.setFechaInicio(dto.getFechaInicio());
+        periodos.setFechaFin(dto.getFechaFin());
 
-        periodo.setIdAnio(new AnioEscolar(dto.getIdAnio()));
+        AnioEscolar anioEscolar = repoAnioEscolar
+            .findById(dto.getIdAnio())
+            .orElse(null);
 
-        return ResponseEntity.ok(servicePeriodos.modificar(periodo));
+        periodos.setIdAnio(anioEscolar);
+
+        return ResponseEntity.ok(servicePeriodos.modificar(periodos));
     }
     @GetMapping("/periodos/{id}")
     public Optional<Periodos> buscarId(@PathVariable("id") Long id){
@@ -72,6 +76,6 @@ public class PeriodosController {
     @DeleteMapping("/periodos/{id}")
     public String eliminar(@PathVariable Long id){
         servicePeriodos.eliminar(id);
-        return "Periodo eliminado";
+        return "Periodo eliminado correctamente";
     }   
 }

@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -47,9 +48,7 @@ public class AsignacionDocenteController {
     }
     @PostMapping("/asignaciondocente")
     public ResponseEntity<?> guardar(@RequestBody AsignacionDocenteDTO dto) {
-        AsignacionDocente asignacion = new AsignacionDocente();
-        if (dto.getEstado() != null)
-            asignacion.setEstado(dto.getEstado());
+        AsignacionDocente asignacionDocente = new AsignacionDocente();
 
         PerfilDocente docente = repoDocente
             .findById(dto.getIdDocente())
@@ -64,13 +63,12 @@ public class AsignacionDocenteController {
             .findById(dto.getIdAnio())
             .orElse(null);
         
-        asignacion.setIdDocente(docente);
-        asignacion.setIdSeccion(seccion);
-        asignacion.setIdCurso(curso);
-        asignacion.setIdAnioEscolar(anio);
+        asignacionDocente.setIdDocente(docente);
+        asignacionDocente.setIdSeccion(seccion);
+        asignacionDocente.setIdCurso(curso);
+        asignacionDocente.setIdAnioEscolar(anio);
 
-        serviceAsignacionDocente.guardar(asignacion);
-        return ResponseEntity.ok(asignacion);
+        return ResponseEntity.ok(serviceAsignacionDocente.guardar(asignacionDocente));
     }
     @PutMapping("/asignaciondocente")
     public ResponseEntity<?> modificar(@RequestBody AsignacionDocenteDTO dto) {
@@ -78,23 +76,36 @@ public class AsignacionDocenteController {
             return ResponseEntity.badRequest()
                     .body("ID de asignación es requerido");
         }
-        AsignacionDocente asignacion = new AsignacionDocente();
-        asignacion.setIdAsignacion(dto.getIdAsignacion());
+        AsignacionDocente asignacionDocente = new AsignacionDocente();
+        asignacionDocente.setIdAsignacion(dto.getIdAsignacion());
         
-        asignacion.setIdDocente(new PerfilDocente(dto.getIdDocente()));
-        asignacion.setIdSeccion(new Secciones(dto.getIdSeccion()));
-        asignacion.setIdCurso(new Cursos(dto.getIdCurso()));
-        asignacion.setIdAnioEscolar(new AnioEscolar(dto.getIdAnio()));
+        PerfilDocente docente = repoDocente
+            .findById(dto.getIdDocente())
+            .orElse(null);
+        Secciones seccion = repoSecciones
+            .findById(dto.getIdSeccion())
+            .orElse(null);
+        Cursos curso = repoCursos
+            .findById(dto.getIdCurso())
+            .orElse(null);
+        AnioEscolar anio = repoAnio
+            .findById(dto.getIdAnio())
+            .orElse(null);
 
-        return ResponseEntity.ok(serviceAsignacionDocente.modificar(asignacion));
+        asignacionDocente.setIdDocente(docente);
+        asignacionDocente.setIdSeccion(seccion);
+        asignacionDocente.setIdCurso(curso);
+        asignacionDocente.setIdAnioEscolar(anio);
+
+        return ResponseEntity.ok(serviceAsignacionDocente.modificar(asignacionDocente));
     }
     @GetMapping("/asignaciondocente/{id}")
     public Optional<AsignacionDocente> buscarId(@PathVariable("id") Long id) {
         return serviceAsignacionDocente.buscarId(id);
     }
     @DeleteMapping("/asignaciondocente/{id}")
-    public String eliminar(@PathVariable Long id) {
+    public String eliminar(@PathVariable Long id){
         serviceAsignacionDocente.eliminar(id);
-        return "Asignación eliminada";
+        return "Asignación eliminada correctamente";
     }
 }

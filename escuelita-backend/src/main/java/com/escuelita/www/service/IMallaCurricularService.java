@@ -7,9 +7,9 @@ import com.escuelita.www.entity.MallaCurricular;
 public interface IMallaCurricularService {
     List<MallaCurricular> buscarTodos();
 
-    void guardar(MallaCurricular malla);
+    MallaCurricular guardar(MallaCurricular malla);
 
-    void modificar(MallaCurricular malla);
+    MallaCurricular modificar(MallaCurricular malla);
 
     Optional<MallaCurricular> buscarId(Long id);
 

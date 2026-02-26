@@ -17,11 +17,13 @@ public class RegistrosService implements IRegistrosService{
     public List<Registros> buscarTodos(){
         return repoRegistros.findAll();
     }
-    public void guardar(Registros registro){
-        repoRegistros.save(registro);
+    @Override
+    public void guardar(Registros registros){
+        repoRegistros.save(registros);
     }
-    public void modificar(Registros registro){
-        repoRegistros.save(registro);
+    @Override
+    public void modificar(Registros registros){
+        repoRegistros.save(registros);
     }
     public Optional<Registros> buscarId(Integer id){
         return repoRegistros.findById(id);

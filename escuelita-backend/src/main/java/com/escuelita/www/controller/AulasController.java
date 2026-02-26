@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -26,7 +27,6 @@ public class AulasController {
 
     @Autowired
     private IAulasService serviceAulas;
-
     @Autowired
     private SedesRepository repoSedes;
 
@@ -36,17 +36,17 @@ public class AulasController {
     }
     @PostMapping("/aulas")
     public ResponseEntity<?> guardar(@RequestBody AulasDTO dto) {
-        Aulas aula = new Aulas();
-        aula.setNombreAula(dto.getNombreAula());
-        aula.setCapacidad(dto.getCapacidad());
+        Aulas aulas = new Aulas();
+        aulas.setNombreAula(dto.getNombreAula());
+        aulas.setCapacidad(dto.getCapacidad());
 
-        Sedes sede = repoSedes
+        Sedes sedes = repoSedes
             .findById(dto.getIdSede())
             .orElse(null);
         
-        aula.setIdSede(sede);
+        aulas.setIdSede(sedes);
 
-        return ResponseEntity.ok(serviceAulas.guardar(aula));
+        return ResponseEntity.ok(serviceAulas.guardar(aulas));
     }
     @PutMapping("/aulas")
     public ResponseEntity<?> modificar(@RequestBody AulasDTO dto) {
@@ -54,14 +54,18 @@ public class AulasController {
             return ResponseEntity.badRequest()
                     .body("ID de aula es requerido");
         }
-        Aulas aula = new Aulas();
-        aula.setIdAula(dto.getIdAula());
-        aula.setNombreAula(dto.getNombreAula());
-        aula.setCapacidad(dto.getCapacidad());
+        Aulas aulas = new Aulas();
+        aulas.setIdAula(dto.getIdAula());
+        aulas.setNombreAula(dto.getNombreAula());
+        aulas.setCapacidad(dto.getCapacidad());
 
-        aula.setIdSede(new Sedes(dto.getIdSede()));
+        Sedes sedes = repoSedes
+            .findById(dto.getIdSede())
+            .orElse(null);
 
-        return ResponseEntity.ok(serviceAulas.modificar(aula));
+        aulas.setIdSede(sedes);
+
+        return ResponseEntity.ok(serviceAulas.modificar(aulas));
     }
     @GetMapping("/aulas/{id}")
     public Optional<Aulas> buscarId(@PathVariable("id") Long id){
@@ -70,6 +74,6 @@ public class AulasController {
     @DeleteMapping("/aulas/{id}")
     public String eliminar(@PathVariable Long id){
         serviceAulas.eliminar(id);
-        return "Aula eliminada";
+        return "Aula eliminada correctamente";
     }   
 }

@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import com.escuelita.www.service.ICalificacionesService;
 @RestController
 @RequestMapping("/restful")
 public class CalificacionesController {
+
     @Autowired
     private ICalificacionesService serviceCalificaciones;
     @Autowired
@@ -36,42 +38,53 @@ public class CalificacionesController {
     public List<Calificaciones> buscarTodos() {
         return serviceCalificaciones.buscarTodos();
     }
-
     @PostMapping("/calificaciones")
     public ResponseEntity<?> guardar(@RequestBody CalificacionesDTO dto) {
-        Calificaciones calificacion = new Calificaciones();
-        calificacion.setNotaObtenida(dto.getNotaObtenida());
-        calificacion.setObservaciones(dto.getObservaciones());
-        calificacion.setFechaCalificacion(dto.getFechaCalificacion());
+        Calificaciones calificaciones = new Calificaciones();
+        calificaciones.setNotaObtenida(dto.getNotaObtenida());
+        calificaciones.setObservaciones(dto.getObservaciones());
+        calificaciones.setFechaCalificacion(dto.getFechaCalificacion());
 
-        calificacion.setIdEvaluacion(repoEvaluaciones.findById(dto.getIdEvaluacion()).orElse(null));
-        calificacion.setIdMatricula(repoMatriculas.findById(dto.getIdMatricula()).orElse(null));
+        Evaluaciones evaluaciones = repoEvaluaciones
+            .findById(dto.getIdEvaluacion())
+            .orElse(null);
+        Matriculas matriculas = repoMatriculas
+            .findById(dto.getIdMatricula())
+            .orElse(null);
 
-        return ResponseEntity.ok(serviceCalificaciones.guardar(calificacion));
+        calificaciones.setIdEvaluacion(evaluaciones);
+        calificaciones.setIdMatricula(matriculas);
+
+        return ResponseEntity.ok(serviceCalificaciones.guardar(calificaciones));
     }
-
     @PutMapping("/calificaciones")
     public ResponseEntity<?> modificar(@RequestBody CalificacionesDTO dto) {
-        if(dto.getIdCalificacion() == null) return ResponseEntity.badRequest().body("ID requerido");
-        
-        Calificaciones calificacion = new Calificaciones();
-        calificacion.setIdCalificacion(dto.getIdCalificacion());
-        calificacion.setNotaObtenida(dto.getNotaObtenida());
-        calificacion.setObservaciones(dto.getObservaciones());
-        calificacion.setFechaCalificacion(dto.getFechaCalificacion());
+        if(dto.getIdCalificacion() == null) {
+            return ResponseEntity.badRequest()
+                    .body("ID de calificación es requerido");
+        }
+        Calificaciones calificaciones = new Calificaciones();
+        calificaciones.setIdCalificacion(dto.getIdCalificacion());
+        calificaciones.setNotaObtenida(dto.getNotaObtenida());
+        calificaciones.setObservaciones(dto.getObservaciones());
+        calificaciones.setFechaCalificacion(dto.getFechaCalificacion());
 
-        Evaluaciones evaluacion = new Evaluaciones(); evaluacion.setIdEvaluacion(dto.getIdEvaluacion());
-        calificacion.setIdEvaluacion(evaluacion);
+        Evaluaciones evaluaciones = repoEvaluaciones
+            .findById(dto.getIdEvaluacion())
+            .orElse(null);
+        Matriculas matriculas = repoMatriculas
+            .findById(dto.getIdMatricula())
+            .orElse(null);
 
-        Matriculas matricula = new Matriculas(); matricula.setIdMatricula(dto.getIdMatricula());
-        calificacion.setIdMatricula(matricula);
+        calificaciones.setIdEvaluacion(evaluaciones);
+        calificaciones.setIdMatricula(matriculas);
 
-        return ResponseEntity.ok(serviceCalificaciones.modificar(calificacion));
+        return ResponseEntity.ok(serviceCalificaciones.modificar(calificaciones));
     }
-
     @GetMapping("/calificaciones/{id}")
-    public Optional<Calificaciones> buscarId(@PathVariable Long id) { return serviceCalificaciones.buscarId(id); }
-
+    public Optional<Calificaciones> buscarId(@PathVariable("id") Long id) { 
+        return serviceCalificaciones.buscarId(id); 
+    }
     @DeleteMapping("/calificaciones/{id}")
     public String eliminar(@PathVariable Long id) {
         serviceCalificaciones.eliminar(id);

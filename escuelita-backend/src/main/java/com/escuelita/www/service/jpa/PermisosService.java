@@ -10,31 +10,23 @@ import com.escuelita.www.service.IPermisosService;
 
 @Service
 public class PermisosService implements IPermisosService {
-
     @Autowired
     private PermisosRepository repoPermisos;
-
-    @Override
+    
     public List<Permisos> buscarTodos() {
         return repoPermisos.findAll();
     }
-
     @Override
-    public void guardar(Permisos permiso) {
-        repoPermisos.save(permiso);
+    public void guardar(Permisos permisos) {
+        repoPermisos.save(permisos);
     }
-
     @Override
-    public void modificar(Permisos permiso) {
-        repoPermisos.save(permiso);
+    public void modificar(Permisos permisos) {
+        repoPermisos.save(permisos);
     }
-
-    @Override
     public Optional<Permisos> buscarId(Long id) {
         return repoPermisos.findById(id);
     }
-
-    @Override
     public void eliminar(Long id) {
         repoPermisos.deleteById(id);
     }

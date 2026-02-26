@@ -19,12 +19,12 @@ public class AlumnosService implements IAlumnosService{
         return repoAlumnos.findAll();
     }
     @Override
-    public Alumnos guardar(Alumnos alumno){
-        return repoAlumnos.save(alumno);
+    public Alumnos guardar(Alumnos alumnos){
+        return repoAlumnos.save(alumnos);
     }
     @Override
-    public Alumnos modificar(Alumnos alumno){
-        return repoAlumnos.save(alumno);
+    public Alumnos modificar(Alumnos alumnos){
+        return repoAlumnos.save(alumnos);
     }
     public Optional<Alumnos> buscarId(Long id){
         return repoAlumnos.findById(id);

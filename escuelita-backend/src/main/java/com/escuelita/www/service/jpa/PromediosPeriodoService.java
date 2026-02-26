@@ -11,10 +11,22 @@ import com.escuelita.www.service.IPromediosPeriodoService;
 public class PromediosPeriodoService implements IPromediosPeriodoService {
     @Autowired
     private PromediosPeriodoRepository repoPromedios;
-
-    public List<PromediosPeriodo> buscarTodos() { return repoPromedios.findAll(); }
-    public PromediosPeriodo guardar(PromediosPeriodo promediosPeriodo) { return repoPromedios.save(promediosPeriodo); }
-    public PromediosPeriodo modificar(PromediosPeriodo promediosPeriodo) { return repoPromedios.save(promediosPeriodo); }
-    public Optional<PromediosPeriodo> buscarId(Long id) { return repoPromedios.findById(id); }
-    public void eliminar(Long id) { repoPromedios.deleteById(id); }
+    
+    public List<PromediosPeriodo> buscarTodos() { 
+        return repoPromedios.findAll(); 
+    }
+    @Override
+    public PromediosPeriodo guardar(PromediosPeriodo promediosPeriodo) { 
+        return repoPromedios.save(promediosPeriodo); 
+    }
+    @Override
+    public PromediosPeriodo modificar(PromediosPeriodo promediosPeriodo) { 
+        return repoPromedios.save(promediosPeriodo); 
+    }
+    public Optional<PromediosPeriodo> buscarId(Long id) { 
+        return repoPromedios.findById(id); 
+    }
+    public void eliminar(Long id) { 
+        repoPromedios.deleteById(id); 
+    }
 }

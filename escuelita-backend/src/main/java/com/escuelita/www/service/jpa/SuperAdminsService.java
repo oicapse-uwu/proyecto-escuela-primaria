@@ -12,31 +12,23 @@ import com.escuelita.www.service.ISuperAdminsService;
 
 @Service
 public class SuperAdminsService implements ISuperAdminsService {
-
     @Autowired
     private SuperAdminsRepository repoSuperAdmins;
-
-    @Override
+    
     public List<SuperAdmins> buscarTodos() {
         return repoSuperAdmins.findAll();
     }
-
     @Override
-    public void guardar(SuperAdmins superAdmin) {
-        repoSuperAdmins.save(superAdmin);
+    public void guardar(SuperAdmins superAdmins) {
+        repoSuperAdmins.save(superAdmins);
     }
-
     @Override
-    public void modificar(SuperAdmins superAdmin) {
-        repoSuperAdmins.save(superAdmin);
+    public void modificar(SuperAdmins superAdmins) {
+        repoSuperAdmins.save(superAdmins);
     }
-
-    @Override
     public Optional<SuperAdmins> buscarId(Long id) {
         return repoSuperAdmins.findById(id);
     }
-
-    @Override
     public void eliminar(Long id) {
         repoSuperAdmins.deleteById(id);
     }

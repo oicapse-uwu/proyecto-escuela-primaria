@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -26,26 +27,24 @@ public class GradosController {
 
     @Autowired
     private IGradosService serviceGrados;
-
     @Autowired
     private SedesRepository repoSedes;
-
     @GetMapping("/grados")
     public List<Grados> buscarTodos() {
         return serviceGrados.buscarTodos(); 
     }
     @PostMapping("/grados")
     public ResponseEntity<?> guardar(@RequestBody GradosDTO dto) {
-        Grados grado = new Grados();
-        grado.setNombreGrado(dto.getNombreGrado());
+        Grados grados = new Grados();
+        grados.setNombreGrado(dto.getNombreGrado());
 
-        Sedes sede = repoSedes
+        Sedes sedes = repoSedes
             .findById(dto.getIdSede())
             .orElse(null);
         
-        grado.setIdSede(sede);
+        grados.setIdSede(sedes);
 
-        return ResponseEntity.ok(serviceGrados.guardar(grado));
+        return ResponseEntity.ok(serviceGrados.guardar(grados));
     }
     @PutMapping("/grados")
     public ResponseEntity<?> modificar(@RequestBody GradosDTO dto) {
@@ -53,13 +52,17 @@ public class GradosController {
             return ResponseEntity.badRequest()
                     .body("ID de grado es requerido");
         }
-        Grados grado = new Grados();
-        grado.setIdGrado(dto.getIdGrado());
-        grado.setNombreGrado(dto.getNombreGrado());
+        Grados grados = new Grados();
+        grados.setIdGrado(dto.getIdGrado());
+        grados.setNombreGrado(dto.getNombreGrado());
 
-        grado.setIdSede(new Sedes(dto.getIdSede()));
+        Sedes sedes = repoSedes
+            .findById(dto.getIdSede())
+            .orElse(null);
 
-        return ResponseEntity.ok(serviceGrados.modificar(grado));
+        grados.setIdSede(sedes);
+
+        return ResponseEntity.ok(serviceGrados.modificar(grados));
     }
     @GetMapping("/grados/{id}")
     public Optional<Grados> buscarId(@PathVariable("id") Long id){
@@ -68,6 +71,6 @@ public class GradosController {
     @DeleteMapping("/grados/{id}")
     public String eliminar(@PathVariable Long id){
         serviceGrados.eliminar(id);
-        return "Grado eliminado";
+        return "Grado eliminado correctamente";
     }   
 }

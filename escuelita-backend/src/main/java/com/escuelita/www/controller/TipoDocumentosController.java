@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -24,26 +25,24 @@ public class TipoDocumentosController {
 
     @GetMapping("/tipodocumentos")
     public List<TipoDocumentos> buscarTodos() {
-        return serviceTipoDocumentos.buscarTodos();
+        return serviceTipoDocumentos.buscarTodos(); 
     }
-
     @PostMapping("/tipodocumentos")
-    public void guardar(@RequestBody TipoDocumentos tipoDocumento) {
-        serviceTipoDocumentos.guardar(tipoDocumento);
+    public TipoDocumentos guardar(@RequestBody TipoDocumentos tipoDocumentos) {
+        serviceTipoDocumentos.guardar(tipoDocumentos);
+        return tipoDocumentos;
     }
-
     @PutMapping("/tipodocumentos")
-    public void modificar(@RequestBody TipoDocumentos tipoDocumento) {
-        serviceTipoDocumentos.modificar(tipoDocumento);
+    public TipoDocumentos modificar(@RequestBody TipoDocumentos tipoDocumentos) {
+        serviceTipoDocumentos.modificar(tipoDocumentos);
+        return tipoDocumentos;
     }
-
     @GetMapping("/tipodocumentos/{id}")
-    public Optional<TipoDocumentos> buscarId(@PathVariable Long id) {
+    public Optional<TipoDocumentos> buscarId(@PathVariable("id") Long id){
         return serviceTipoDocumentos.buscarId(id);
     }
-
     @DeleteMapping("/tipodocumentos/{id}")
-    public String eliminar(@PathVariable Long id) {
+    public String eliminar(@PathVariable Long id){
         serviceTipoDocumentos.eliminar(id);
         return "Tipo de documento eliminado correctamente";
     }

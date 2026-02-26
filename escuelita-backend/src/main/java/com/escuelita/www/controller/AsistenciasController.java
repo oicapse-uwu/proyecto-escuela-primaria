@@ -1,3 +1,4 @@
+// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import com.escuelita.www.service.IAsistenciasService;
 @RestController
 @RequestMapping("/restful")
 public class AsistenciasController {
+
     @Autowired
     private IAsistenciasService serviceAsistencias;
     @Autowired
@@ -36,45 +38,56 @@ public class AsistenciasController {
     public List<Asistencias> buscarTodos() {
         return serviceAsistencias.buscarTodos();
     }
-
     @PostMapping("/asistencias")
     public ResponseEntity<?> guardar(@RequestBody AsistenciasDTO dto) {
-        Asistencias asistencia = new Asistencias();
-        asistencia.setFecha(dto.getFecha());
-        asistencia.setEstadoAsistencia(dto.getEstadoAsistencia());
-        asistencia.setObservaciones(dto.getObservaciones());
+        Asistencias asistencias = new Asistencias();
+        asistencias.setFecha(dto.getFecha());
+        asistencias.setEstadoAsistencia(dto.getEstadoAsistencia());
+        asistencias.setObservaciones(dto.getObservaciones());
 
-        asistencia.setIdAsignacion(repoAsignacion.findById(dto.getIdAsignacion()).orElse(null));
-        asistencia.setIdMatricula(repoMatriculas.findById(dto.getIdMatricula()).orElse(null));
+        AsignacionDocente asignacionDocente = repoAsignacion
+            .findById(dto.getIdAsignacion())
+            .orElse(null);
+        Matriculas matriculas = repoMatriculas
+            .findById(dto.getIdMatricula())
+            .orElse(null);
 
-        return ResponseEntity.ok(serviceAsistencias.guardar(asistencia));
+        asistencias.setIdAsignacion(asignacionDocente);
+        asistencias.setIdMatricula(matriculas);
+
+        return ResponseEntity.ok(serviceAsistencias.guardar(asistencias));
     }
-
     @PutMapping("/asistencias")
     public ResponseEntity<?> modificar(@RequestBody AsistenciasDTO dto) {
-        if(dto.getIdAsistencia() == null) return ResponseEntity.badRequest().body("ID requerido");
-        
-        Asistencias asistencia = new Asistencias();
-        asistencia.setIdAsistencia(dto.getIdAsistencia());
-        asistencia.setFecha(dto.getFecha());
-        asistencia.setEstadoAsistencia(dto.getEstadoAsistencia());
-        asistencia.setObservaciones(dto.getObservaciones());
+        if(dto.getIdAsistencia() == null) {
+            return ResponseEntity.badRequest()
+                    .body("ID de asistencia es requerido");
+        }
+        Asistencias asistencias = new Asistencias();
+        asistencias.setIdAsistencia(dto.getIdAsistencia());
+        asistencias.setFecha(dto.getFecha());
+        asistencias.setEstadoAsistencia(dto.getEstadoAsistencia());
+        asistencias.setObservaciones(dto.getObservaciones());
 
-        AsignacionDocente ad = new AsignacionDocente(); ad.setIdAsignacion(dto.getIdAsignacion());
-        asistencia.setIdAsignacion(ad);
+        AsignacionDocente asignacionDocente = repoAsignacion
+            .findById(dto.getIdAsignacion())
+            .orElse(null);
+        Matriculas matriculas = repoMatriculas
+            .findById(dto.getIdMatricula())
+            .orElse(null);
 
-        Matriculas mat = new Matriculas(); mat.setIdMatricula(dto.getIdMatricula());
-        asistencia.setIdMatricula(mat);
+        asistencias.setIdAsignacion(asignacionDocente);
+        asistencias.setIdMatricula(matriculas);
 
-        return ResponseEntity.ok(serviceAsistencias.modificar(asistencia));
+        return ResponseEntity.ok(serviceAsistencias.modificar(asistencias));
     }
-
     @GetMapping("/asistencias/{id}")
-    public Optional<Asistencias> buscarId(@PathVariable Long id) { return serviceAsistencias.buscarId(id); }
-
+    public Optional<Asistencias> buscarId(@PathVariable("id") Long id) { 
+        return serviceAsistencias.buscarId(id); 
+    }
     @DeleteMapping("/asistencias/{id}")
     public String eliminar(@PathVariable Long id) {
         serviceAsistencias.eliminar(id);
-        return "Registro de asistencia eliminado";
+        return "Registro de asistencia eliminado correctamente";
     }
 }

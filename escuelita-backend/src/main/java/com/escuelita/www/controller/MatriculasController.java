@@ -6,27 +6,24 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.escuelita.www.entity.Matriculas;
-import com.escuelita.www.entity.MatriculasDTO;
-import com.escuelita.www.entity.Alumnos;
-import com.escuelita.www.entity.Secciones;
-import com.escuelita.www.entity.AnioEscolar;
-
-import com.escuelita.www.repository.AlumnosRepository;
-import com.escuelita.www.repository.SeccionesRepository;
-import com.escuelita.www.repository.AnioEscolarRepository;
-
-import com.escuelita.www.service.IMatriculasService;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.escuelita.www.entity.Alumnos;
+import com.escuelita.www.entity.AnioEscolar;
+import com.escuelita.www.entity.Matriculas;
+import com.escuelita.www.entity.MatriculasDTO;
+import com.escuelita.www.entity.Secciones;
+import com.escuelita.www.repository.AlumnosRepository;
+import com.escuelita.www.repository.AnioEscolarRepository;
+import com.escuelita.www.repository.SeccionesRepository;
+import com.escuelita.www.service.IMatriculasService;
 
 @RestController
 @RequestMapping("/restful")
@@ -34,7 +31,6 @@ public class MatriculasController {
 
     @Autowired
     private IMatriculasService serviceMatriculas;
-
     @Autowired
     private AlumnosRepository repoAlumnos;
     @Autowired
@@ -48,31 +44,31 @@ public class MatriculasController {
     }
     @PostMapping("/matriculas")
     public ResponseEntity<?> guardar(@RequestBody MatriculasDTO dto) {
-        Matriculas matricula = new Matriculas();
-        matricula.setCodigoMatricula(dto.getCodigoMatricula());
-        matricula.setFechaMatricula(dto.getFechaMatricula());
-        matricula.setSituacionAcademicaPrevia(dto.getSituacionAcademicaPrevia());
-        matricula.setEstadoMatricula(dto.getEstadoMatricula());
-        matricula.setObservacionesMatricula(dto.getObservacionesMatricula());
-        matricula.setFechaRetiro(dto.getFechaRetiro());
-        matricula.setMotivoRetiro(dto.getMotivoRetiro());
-        matricula.setColegioDestino(dto.getColegioDestino());
+        Matriculas matriculas = new Matriculas();
+        matriculas.setCodigoMatricula(dto.getCodigoMatricula());
+        matriculas.setFechaMatricula(dto.getFechaMatricula());
+        matriculas.setSituacionAcademicaPrevia(dto.getSituacionAcademicaPrevia());
+        matriculas.setEstadoMatricula(dto.getEstadoMatricula());
+        matriculas.setObservacionesMatricula(dto.getObservacionesMatricula());
+        matriculas.setFechaRetiro(dto.getFechaRetiro());
+        matriculas.setMotivoRetiro(dto.getMotivoRetiro());
+        matriculas.setColegioDestino(dto.getColegioDestino());
 
-        Alumnos alumno = repoAlumnos
+        Alumnos alumnos = repoAlumnos
             .findById(dto.getIdAlumno())
             .orElse(null);
-        Secciones seccion = repoSecciones
+        Secciones secciones = repoSecciones
             .findById(dto.getIdSeccion())
             .orElse(null);
         AnioEscolar anioEscolar = repoAnioEscolar
             .findById(dto.getIdAnio())
             .orElse(null);
         
-        matricula.setIdAlumno(alumno);
-        matricula.setIdSeccion(seccion);
-        matricula.setIdAnio(anioEscolar);
+        matriculas.setIdAlumno(alumnos);
+        matriculas.setIdSeccion(secciones);
+        matriculas.setIdAnio(anioEscolar);
 
-        return ResponseEntity.ok(serviceMatriculas.guardar(matricula));
+        return ResponseEntity.ok(serviceMatriculas.guardar(matriculas));
     }
     @PutMapping("/matriculas")
     public ResponseEntity<?> modificar(@RequestBody MatriculasDTO dto) {
@@ -80,22 +76,32 @@ public class MatriculasController {
             return ResponseEntity.badRequest()
                     .body("ID de matricula es requerido");
         }
-        Matriculas matricula = new Matriculas();
-        matricula.setIdMatricula(dto.getIdMatricula());
-        matricula.setCodigoMatricula(dto.getCodigoMatricula());
-        matricula.setFechaMatricula(dto.getFechaMatricula());
-        matricula.setSituacionAcademicaPrevia(dto.getSituacionAcademicaPrevia());
-        matricula.setEstadoMatricula(dto.getEstadoMatricula());
-        matricula.setObservacionesMatricula(dto.getObservacionesMatricula());
-        matricula.setFechaRetiro(dto.getFechaRetiro());
-        matricula.setMotivoRetiro(dto.getMotivoRetiro());
-        matricula.setColegioDestino(dto.getColegioDestino());
+        Matriculas matriculas = new Matriculas();
+        matriculas.setIdMatricula(dto.getIdMatricula());
+        matriculas.setCodigoMatricula(dto.getCodigoMatricula());
+        matriculas.setFechaMatricula(dto.getFechaMatricula());
+        matriculas.setSituacionAcademicaPrevia(dto.getSituacionAcademicaPrevia());
+        matriculas.setEstadoMatricula(dto.getEstadoMatricula());
+        matriculas.setObservacionesMatricula(dto.getObservacionesMatricula());
+        matriculas.setFechaRetiro(dto.getFechaRetiro());
+        matriculas.setMotivoRetiro(dto.getMotivoRetiro());
+        matriculas.setColegioDestino(dto.getColegioDestino());
 
-        matricula.setIdAlumno(new Alumnos(dto.getIdAlumno()));
-        matricula.setIdSeccion(new Secciones(dto.getIdSeccion()));
-        matricula.setIdAnio(new AnioEscolar(dto.getIdAnio()));    
+        Alumnos alumnos = repoAlumnos
+            .findById(dto.getIdAlumno())
+            .orElse(null);
+        Secciones secciones = repoSecciones
+            .findById(dto.getIdSeccion())
+            .orElse(null);
+        AnioEscolar anioEscolar = repoAnioEscolar
+            .findById(dto.getIdAnio())
+            .orElse(null);
+
+        matriculas.setIdAlumno(alumnos);
+        matriculas.setIdSeccion(secciones);
+        matriculas.setIdAnio(anioEscolar);    
         
-        return ResponseEntity.ok(serviceMatriculas.modificar(matricula));
+        return ResponseEntity.ok(serviceMatriculas.modificar(matriculas));
     }
     @GetMapping("/matriculas/{id}")
     public Optional<Matriculas> buscarId(@PathVariable("id") Long id){
@@ -104,6 +110,6 @@ public class MatriculasController {
     @DeleteMapping("/matriculas/{id}")
     public String eliminar(@PathVariable Long id){
         serviceMatriculas.eliminar(id);
-        return "Matricula eliminada";
+        return "Matrícula eliminada correctamente";
     }   
 }

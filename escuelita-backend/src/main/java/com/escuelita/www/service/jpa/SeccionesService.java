@@ -19,12 +19,12 @@ public class SeccionesService implements ISeccionesService{
         return repoSecciones.findAll();
     }
     @Override
-    public Secciones guardar(Secciones seccion){
-        return repoSecciones.save(seccion);
+    public Secciones guardar(Secciones secciones){
+        return repoSecciones.save(secciones);
     }
     @Override
-    public Secciones modificar(Secciones seccion){
-        return repoSecciones.save(seccion);
+    public Secciones modificar(Secciones secciones){
+        return repoSecciones.save(secciones);
     }
     public Optional<Secciones> buscarId(Long id){
         return repoSecciones.findById(id);

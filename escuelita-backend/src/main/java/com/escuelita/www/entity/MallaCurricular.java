@@ -21,7 +21,7 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE malla_curricular SET estado=0 WHERE id_malla=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idMalla", "anioEscolar", "grado", "curso", "estado"
+    "idMalla", "idAnioEscolar", "idGrado", "idCurso", "estado"
 })
 public class MallaCurricular {
     @Id

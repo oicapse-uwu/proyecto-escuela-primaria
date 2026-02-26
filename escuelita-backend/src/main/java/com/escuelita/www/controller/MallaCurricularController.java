@@ -32,7 +32,7 @@ public class MallaCurricularController {
     @Autowired
     private IMallaCurricularService serviceMallaCurricular;
     @Autowired
-    private AnioEscolarRepository repoAnio;
+    private AnioEscolarRepository repoAnioEscolar;
     @Autowired
     private GradosRepository repoGrados;
     @Autowired
@@ -46,7 +46,7 @@ public class MallaCurricularController {
     public ResponseEntity<?> guardar(@RequestBody MallaCurricularDTO dto) {
         MallaCurricular mallaCurricular = new MallaCurricular();
 
-        AnioEscolar anioEscolar = repoAnio
+        AnioEscolar anioEscolar = repoAnioEscolar
             .findById(dto.getIdAnioEscolar())
             .orElse(null);
         Grados grados = repoGrados
@@ -71,19 +71,9 @@ public class MallaCurricularController {
         MallaCurricular mallaCurricular = new MallaCurricular();
         mallaCurricular.setIdMalla(dto.getIdMalla());
 
-        AnioEscolar anioEscolar = repoAnio
-            .findById(dto.getIdAnioEscolar())
-            .orElse(null);
-        Grados grados = repoGrados
-            .findById(dto.getIdGrado())
-            .orElse(null);
-        Cursos cursos = repoCursos
-            .findById(dto.getIdCurso())
-            .orElse(null);
-
-        mallaCurricular.setIdAnioEscolar(anioEscolar);
-        mallaCurricular.setIdGrado(grados);
-        mallaCurricular.setIdCurso(cursos);
+        mallaCurricular.setIdAnioEscolar(new AnioEscolar(dto.getIdAnioEscolar()));
+        mallaCurricular.setIdGrado(new Grados(dto.getIdGrado()));
+        mallaCurricular.setIdCurso(new Cursos(dto.getIdCurso()));
 
         return ResponseEntity.ok(serviceMallaCurricular.modificar(mallaCurricular));
     }

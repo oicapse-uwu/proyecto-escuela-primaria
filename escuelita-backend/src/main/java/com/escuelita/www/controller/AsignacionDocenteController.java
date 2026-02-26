@@ -40,7 +40,7 @@ public class AsignacionDocenteController {
     @Autowired
     private CursosRepository repoCursos;
     @Autowired
-    private AnioEscolarRepository repoAnio;
+    private AnioEscolarRepository repoAnioEscolar;
 
     @GetMapping("/asignaciondocente")
     public List<AsignacionDocente> buscarTodos() {
@@ -59,14 +59,14 @@ public class AsignacionDocenteController {
         Cursos curso = repoCursos
             .findById(dto.getIdCurso())
             .orElse(null);
-        AnioEscolar anio = repoAnio
-            .findById(dto.getIdAnio())
+        AnioEscolar anioEscolar = repoAnioEscolar
+            .findById(dto.getIdAnioEscolar())
             .orElse(null);
         
         asignacionDocente.setIdDocente(docente);
         asignacionDocente.setIdSeccion(seccion);
         asignacionDocente.setIdCurso(curso);
-        asignacionDocente.setIdAnioEscolar(anio);
+        asignacionDocente.setIdAnioEscolar(anioEscolar);
 
         return ResponseEntity.ok(serviceAsignacionDocente.guardar(asignacionDocente));
     }
@@ -88,14 +88,14 @@ public class AsignacionDocenteController {
         Cursos curso = repoCursos
             .findById(dto.getIdCurso())
             .orElse(null);
-        AnioEscolar anio = repoAnio
-            .findById(dto.getIdAnio())
+        AnioEscolar anioEscolar = repoAnioEscolar
+            .findById(dto.getIdAnioEscolar())
             .orElse(null);
 
         asignacionDocente.setIdDocente(docente);
         asignacionDocente.setIdSeccion(seccion);
         asignacionDocente.setIdCurso(curso);
-        asignacionDocente.setIdAnioEscolar(anio);
+        asignacionDocente.setIdAnioEscolar(anioEscolar);
 
         return ResponseEntity.ok(serviceAsignacionDocente.modificar(asignacionDocente));
     }

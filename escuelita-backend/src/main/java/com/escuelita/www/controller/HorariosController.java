@@ -30,7 +30,7 @@ public class HorariosController {
     @Autowired
     private IHorariosService serviceHorarios;
     @Autowired
-    private AsignacionDocenteRepository repoAsignacion;
+    private AsignacionDocenteRepository repoAsignacionDocente;
     @Autowired
     private AulasRepository repoAulas;
 
@@ -45,7 +45,7 @@ public class HorariosController {
         horarios.setHoraInicio(dto.getHoraInicio());
         horarios.setHoraFin(dto.getHoraFin());
 
-        AsignacionDocente asignacionDocente = repoAsignacion
+        AsignacionDocente asignacionDocente = repoAsignacionDocente
             .findById(dto.getIdAsignacion())
             .orElse(null);
         Aulas aulas = repoAulas
@@ -69,7 +69,7 @@ public class HorariosController {
         horarios.setHoraInicio(dto.getHoraInicio());
         horarios.setHoraFin(dto.getHoraFin());
 
-        AsignacionDocente asignacionDocente = repoAsignacion
+        AsignacionDocente asignacionDocente = repoAsignacionDocente
             .findById(dto.getIdAsignacion())
             .orElse(null);
         Aulas aulas = repoAulas

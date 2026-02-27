@@ -5,7 +5,8 @@ import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({
-    "idAsistencia", "fecha", "estadoAsistencia", "observaciones", "idAsignacion", "idMatricula", "estado"
+    "idAsistencia", "fecha", "estadoAsistencia", "observaciones", 
+    "idAsignacion", "idMatricula", "estado"
 })
 
 public class AsistenciasDTO {

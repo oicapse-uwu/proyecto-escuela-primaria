@@ -30,7 +30,7 @@ public class AsistenciasController {
     @Autowired
     private IAsistenciasService serviceAsistencias;
     @Autowired
-    private AsignacionDocenteRepository repoAsignacion;
+    private AsignacionDocenteRepository repoAsignacionDocente;
     @Autowired
     private MatriculasRepository repoMatriculas;
 
@@ -45,7 +45,7 @@ public class AsistenciasController {
         asistencias.setEstadoAsistencia(dto.getEstadoAsistencia());
         asistencias.setObservaciones(dto.getObservaciones());
 
-        AsignacionDocente asignacionDocente = repoAsignacion
+        AsignacionDocente asignacionDocente = repoAsignacionDocente
             .findById(dto.getIdAsignacion())
             .orElse(null);
         Matriculas matriculas = repoMatriculas
@@ -69,7 +69,7 @@ public class AsistenciasController {
         asistencias.setEstadoAsistencia(dto.getEstadoAsistencia());
         asistencias.setObservaciones(dto.getObservaciones());
 
-        AsignacionDocente asignacionDocente = repoAsignacion
+        AsignacionDocente asignacionDocente = repoAsignacionDocente
             .findById(dto.getIdAsignacion())
             .orElse(null);
         Matriculas matriculas = repoMatriculas

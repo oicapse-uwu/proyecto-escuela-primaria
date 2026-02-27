@@ -15,7 +15,8 @@ public class SecurityConfig {
             http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/restful/token"
-                        , "/restful/registros").permitAll()
+                        , "/restful/registros"
+                        , "/auth/login").permitAll()
                     .anyRequest().authenticated()     
                 )
                 .addFilterBefore(jwtFilter, 

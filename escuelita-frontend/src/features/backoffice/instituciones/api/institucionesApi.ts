@@ -18,13 +18,31 @@ export const obtenerInstitucionPorId = async (id: number): Promise<Institucion> 
 
 // Crear nueva institución
 export const crearInstitucion = async (institucion: InstitucionDTO): Promise<Institucion> => {
-    const response = await api.post<Institucion>(BASE_URL, institucion);
+    // Limpiar campos de fecha vacíos
+    const dataToSend = {
+        ...institucion,
+        fechaInicioSuscripcion: institucion.fechaInicioSuscripcion || null,
+        fechaVencimientoLicencia: institucion.fechaVencimientoLicencia || null,
+        logoPath: institucion.logoPath || null,
+        estado: institucion.estado ?? 1
+    };
+    
+    const response = await api.post<Institucion>(BASE_URL, dataToSend);
     return response.data;
 };
 
 // Actualizar institución existente
 export const actualizarInstitucion = async (institucion: InstitucionDTO): Promise<Institucion> => {
-    const response = await api.put<Institucion>(BASE_URL, institucion);
+    // Limpiar campos de fecha vacíos
+    const dataToSend = {
+        ...institucion,
+        fechaInicioSuscripcion: institucion.fechaInicioSuscripcion || null,
+        fechaVencimientoLicencia: institucion.fechaVencimientoLicencia || null,
+        logoPath: institucion.logoPath || null,
+        estado: institucion.estado ?? 1
+    };
+    
+    const response = await api.put<Institucion>(BASE_URL, dataToSend);
     return response.data;
 };
 

@@ -26,6 +26,7 @@ export interface InstitucionFormData {
     fechaInicioSuscripcion?: string;
     fechaVencimientoLicencia?: string;
     planContratado: string;
+    estado?: number;
 }
 
 export interface InstitucionDTO {

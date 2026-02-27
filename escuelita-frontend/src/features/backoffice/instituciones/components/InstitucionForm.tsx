@@ -1,5 +1,7 @@
-import { Building2, Calendar, FileText, Shield, User, X } from 'lucide-react';
+import { Building2, Calendar, FileText, Shield, Upload, User, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { subirArchivo } from '../api/uploadApi';
 import type { Institucion, InstitucionFormData } from '../types';
 
 interface InstitucionFormProps {
@@ -28,6 +30,10 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
         planContratado: 'Plan Básico'
     });
 
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string>('');
+    const [uploadingFile, setUploadingFile] = useState(false);
+
     useEffect(() => {
         if (institucion) {
             setFormData({
@@ -42,6 +48,11 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                 fechaVencimientoLicencia: institucion.fechaVencimientoLicencia || '',
                 planContratado: institucion.planContratado
             });
+            
+            // Si hay logo existente, mostrarlo
+            if (institucion.logoPath) {
+                setImagePreview(institucion.logoPath);
+            }
         }
     }, [institucion]);
 
@@ -50,9 +61,60 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            // Validar tipo de archivo
+            if (!file.type.startsWith('image/')) {
+                toast.error('Solo se permiten archivos de imagen');
+                return;
+            }
+            
+            // Validar tamaño (máximo 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error('El archivo no debe superar los 5MB');
+                return;
+            }
+            
+            setSelectedFile(file);
+            
+            // Generar preview
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        await onSubmit(formData);
+        
+        try {
+            let logoUrl = formData.logoPath;
+            
+            // Si hay un archivo seleccionado, subirlo primero
+            if (selectedFile) {
+                setUploadingFile(true);
+                try {
+                    logoUrl = await subirArchivo(selectedFile);
+                    toast.success('Imagen subida exitosamente');
+                } catch (error) {
+                    toast.error('Error al subir la imagen');
+                    throw error;
+                } finally {
+                    setUploadingFile(false);
+                }
+            }
+            
+            // Enviar datos con la URL de la imagen
+            await onSubmit({
+                ...formData,
+                logoPath: logoUrl
+            });
+        } catch (error) {
+            console.error('Error en handleSubmit:', error);
+        }
     };
 
     return (
@@ -235,16 +297,43 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
 
                         <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                URL del Logo (opcional)
+                                <Upload className="inline w-4 h-4 mr-1" />
+                                Logo de la Institución
                             </label>
-                            <input
-                                type="url"
-                                name="logoPath"
-                                value={formData.logoPath}
+                            <div className="space-y-3">
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-dark"
+                                />
+                                {imagePreview && (
+                                    <div className="mt-3">
+                                        <p className="text-sm text-gray-600 mb-2">Vista previa:</p>
+                                        <img 
+                                            src={imagePreview} 
+                                            alt="Preview" 
+                                            className="h-24 w-auto rounded-lg border-2 border-gray-200 object-contain"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Estado *
+                            </label>
+                            <select
+                                name="estado"
+                                value={formData.estado || 1}
                                 onChange={handleChange}
+                                required
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                placeholder="https://ejemplo.com/logo.png"
-                            />
+                            >
+                                <option value={1}>Activo</option>
+                                <option value={0}>Inactivo</option>
+                            </select>
                         </div>
                     </div>
 
@@ -253,20 +342,20 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                         <button
                             type="button"
                             onClick={onCancel}
-                            disabled={isLoading}
+                            disabled={isLoading || uploadingFile}
                             className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || uploadingFile}
                             className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 flex items-center space-x-2"
                         >
-                            {isLoading ? (
+                            {(isLoading || uploadingFile) ? (
                                 <>
                                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                                    <span>Guardando...</span>
+                                    <span>{uploadingFile ? 'Subiendo imagen...' : 'Guardando...'}</span>
                                 </>
                             ) : (
                                 <span>{institucion ? 'Actualizar' : 'Crear'} Institución</span>

@@ -21,7 +21,6 @@ import {
     Grid3x3,
     Layers,
     LayoutDashboard,
-    LogOut,
     MapPin,
     MessageSquare,
     Receipt,
@@ -35,8 +34,7 @@ import {
     Wallet
 } from 'lucide-react';
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { escuelaAuthService } from '../../services/escuelaAuth.service';
+import { Link } from 'react-router-dom';
 
 interface SidebarProps {
     // Props futuras si se necesitan
@@ -51,13 +49,6 @@ interface MenuItem {
 
 const Sidebar: React.FC<SidebarProps> = () => {
     const [expandedModules, setExpandedModules] = useState<string[]>(['dashboard']);
-    const navigate = useNavigate();
-    const user = escuelaAuthService.getCurrentUser();
-
-    const handleLogout = () => {
-        escuelaAuthService.logout();
-        navigate('/escuela/login');
-    };
 
     const menuModules: MenuItem[] = [
         { 
@@ -235,32 +226,6 @@ const Sidebar: React.FC<SidebarProps> = () => {
                     );
                 })}
             </nav>
-
-            {/* User Info y Logout */}
-            <div className="p-3 border-t border-primary/30 mt-auto">
-                {user && (
-                    <div className="bg-primary/20 rounded-lg p-3 mb-3">
-                        <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                                <User className="w-5 h-5 text-white" />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-semibold text-white truncate">
-                                    {user.nombres} {user.apellidos}
-                                </p>
-                                <p className="text-xs text-white/70 truncate">{user.rol?.nombreRol}</p>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg bg-error/20 hover:bg-error/30 transition-all duration-200 group text-white"
-                >
-                    <LogOut className="w-5 h-5 flex-shrink-0" />
-                    <span className="text-sm font-semibold">Cerrar Sesión</span>
-                </button>
-            </div>
         </aside>
     );
 };

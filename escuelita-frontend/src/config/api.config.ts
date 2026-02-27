@@ -11,8 +11,20 @@ export const api = axios.create({
 // Interceptor de solicitudes para agregar token de autenticación
 api.interceptors.request.use(
     (config) => {
-        // Obtener token del localStorage
-        const token = localStorage.getItem('token');
+        // Detectar el contexto según la ruta actual del navegador
+        const currentPath = window.location.pathname;
+        let token = null;
+        
+        if (currentPath.startsWith('/admin')) {
+            // Si estamos en rutas de admin, usar el token de admin
+            token = localStorage.getItem('admin_token');
+        } else if (currentPath.startsWith('/escuela')) {
+            // Si estamos en rutas de escuela, usar el token de escuela
+            token = localStorage.getItem('escuela_token');
+        } else {
+            // Fallback: usar el que esté disponible
+            token = localStorage.getItem('admin_token') || localStorage.getItem('escuela_token');
+        }
         
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -31,9 +43,22 @@ api.interceptors.response.use(
     (error) => {
         // Si el token es inválido o expiró (401)
         if (error.response?.status === 401) {
-            localStorage.removeItem('token');
-        // Redirigir a página de token (cambiar ruta)
-            window.location.href = '/token';
+            // Limpiar tokens
+            localStorage.removeItem('escuela_token');
+            localStorage.removeItem('escuela_user');
+            localStorage.removeItem('admin_token');
+            localStorage.removeItem('admin_user');
+            
+            // Redirigir al login correspondiente según la ruta actual
+            const currentPath = window.location.pathname;
+            if (currentPath.startsWith('/admin')) {
+                window.location.href = '/login';
+            } else if (currentPath.startsWith('/escuela')) {
+                window.location.href = '/escuela/login';
+            } else {
+                // Por defecto, redirigir al login de escuela
+                window.location.href = '/escuela/login';
+            }
         }
         return Promise.reject(error);
     }

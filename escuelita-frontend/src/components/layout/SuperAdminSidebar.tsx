@@ -37,11 +37,7 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = () => {
         {
             name: 'Instituciones',
             icon: Building2,
-            subItems: [
-                { name: 'Todas las Instituciones', path: '/admin/instituciones/lista', icon: Building2 },
-                { name: 'Nueva Institución', path: '/admin/instituciones/nueva', icon: Building2 },
-                { name: 'Configuración General', path: '/admin/instituciones/config', icon: Settings },
-            ]
+            path: '/admin/instituciones'
         },
         {
             name: 'Suscripciones',

@@ -93,7 +93,7 @@ const InstitucionesPage: React.FC = () => {
     };
 
     return (
-        <div className="p-3 sm:p-4 lg:p-6">
+        <div className="p-3 sm:p-4 lg:p-6 pt-6 sm:pt-8 lg:pt-10">
             <Toaster position="top-right" richColors />
             
             {/* Header */}

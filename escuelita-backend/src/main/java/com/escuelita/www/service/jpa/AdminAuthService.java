@@ -13,7 +13,7 @@ import com.escuelita.www.repository.SuperAdminsRepository;
 import com.escuelita.www.security.JwtUtil;
 
 @Service
-public class AuthService {
+public class AdminAuthService {
     
     @Autowired
     private SuperAdminsRepository superAdminsRepository;
@@ -29,7 +29,12 @@ public class AuthService {
         SuperAdmins admin = superAdminsRepository.findByUsuario(request.getUsuario())
             .orElseThrow(() -> new Exception("Usuario no encontrado"));
         
-        // 2. Validar contraseña
+        // 2. Validar estado activo
+        if (admin.getEstado() != 1) {
+            throw new Exception("Usuario inactivo");
+        }
+        
+        // 3. Validar contraseña
         String passwordBD = admin.getPassword();
         boolean passwordValida = false;
         
@@ -47,7 +52,7 @@ public class AuthService {
                 admin.setPassword(nuevoHash);
                 superAdminsRepository.save(admin);
                 
-                System.out.println("⚠️  Contraseña actualizada a formato hash para usuario: " + admin.getUsuario());
+                System.out.println("⚠️  Contraseña actualizada a formato hash para super admin: " + admin.getUsuario());
             }
         }
         
@@ -55,10 +60,10 @@ public class AuthService {
             throw new Exception("Contraseña incorrecta");
         }
         
-        // 3. Generar token JWT
-        String token = jwtUtil.generarToken(admin.getIdAdmin().toString());
+        // 4. Generar token JWT con tipo de usuario
+        String token = jwtUtil.generarToken("ADMIN_" + admin.getIdAdmin().toString());
         
-        // 4. Convertir a DTO y retornar
+        // 5. Convertir a DTO y retornar
         SuperAdminDTO adminDTO = convertToDTO(admin);
         return new LoginResponse(token, adminDTO);
     }
@@ -72,7 +77,7 @@ public class AuthService {
         dto.setUsuario(admin.getUsuario());
         
         // Crear rol DTO
-        RolDTO rol = new RolDTO(1, admin.getRolPlataforma());
+        RolDTO rol = new RolDTO(1, "SUPER_ADMIN");
         dto.setRol(rol);
         
         return dto;

@@ -1,16 +1,30 @@
 import { Bell, ChevronDown, LogOut, User } from 'lucide-react';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { adminAuthService } from '../../services/adminAuth.service';
+import { escuelaAuthService } from '../../services/escuelaAuth.service';
 
 const TopBar: React.FC = () => {
-    const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [showDropdown, setShowDropdown] = useState(false);
+    
+    // Determinar si es ruta de admin o escuela
+    const isAdminRoute = location.pathname.startsWith('/admin');
+    
+    // Obtener el usuario según la ruta
+    const user = isAdminRoute 
+        ? adminAuthService.getCurrentUser()
+        : escuelaAuthService.getCurrentUser();
 
     const handleLogout = () => {
-        logout();
-        navigate('/login');
+        if (isAdminRoute) {
+            adminAuthService.logout();
+            navigate('/login');
+        } else {
+            escuelaAuthService.logout();
+            navigate('/escuela/login');
+        }
     };
 
     return (

@@ -16,8 +16,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/restful/token"
                         , "/restful/registros"
-                        , "/auth/login"
-                        , "/auth/register-superadmin"
+                        , "/auth/admin/**"  // Autenticación Super Admin
+                        , "/auth/escuela/**"  // Autenticación Escuela
                         , "/utils/**").permitAll()
                     .anyRequest().authenticated()     
                 )

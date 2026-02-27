@@ -1,26 +1,30 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { Navigate, useLocation } from 'react-router-dom';
+import { adminAuthService } from '../../services/adminAuth.service';
+import { escuelaAuthService } from '../../services/escuelaAuth.service';
 
 interface PrivateRouteProps {
     children: React.ReactNode;
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
-    const { isAuthenticated, isLoading } = useAuth();
-
-    if (isLoading) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-bg-primary">
-                <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
-                    <p className="mt-4 text-text-secondary">Cargando...</p>
-                </div>
-            </div>
-        );
+    const location = useLocation();
+    
+    // Determinar si es ruta de admin
+    const isAdminRoute = location.pathname.startsWith('/admin');
+    
+    // Verificar autenticación según la ruta
+    const isAuthenticated = isAdminRoute 
+        ? adminAuthService.isAuthenticated()
+        : escuelaAuthService.isAuthenticated();
+    
+    // Redireccionar al login correspondiente si no está autenticado
+    if (!isAuthenticated) {
+        const loginPath = isAdminRoute ? '/login' : '/escuela/login';
+        return <Navigate to={loginPath} replace />;
     }
 
-    return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+    return <>{children}</>;
 };
 
 export default PrivateRoute;

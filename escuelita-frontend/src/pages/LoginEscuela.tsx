@@ -1,9 +1,9 @@
 import { AlertCircle, Lock, LogIn, User } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { adminAuthService } from '../services/adminAuth.service';
+import { escuelaAuthService } from '../services/escuelaAuth.service';
 
-const Login: React.FC = () => {
+const LoginEscuela: React.FC = () => {
     const [credentials, setCredentials] = useState({ usuario: '', contrasena: '' });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -21,8 +21,9 @@ const Login: React.FC = () => {
         setIsLoading(true);
 
         try {
-            await adminAuthService.login(credentials);
-            navigate('/admin');
+            await escuelaAuthService.login(credentials);
+            // Redirigir al portal de escuela
+            navigate('/escuela');
         } catch (err: any) {
             console.error('Error en login:', err);
             setError(err.response?.data?.mensaje || 'Usuario o contraseña incorrectos');
@@ -35,14 +36,14 @@ const Login: React.FC = () => {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-dark via-primary to-primary-light p-4">
             <div className="w-full max-w-md">
                 {/* Card principal */}
-                <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                <div className="bg-gradient-to-br from-white via-white to-primary-light/10 rounded-2xl shadow-2xl overflow-hidden border border-primary-light/20">
                     {/* Header */}
                     <div className="bg-gradient-to-r from-primary via-primary-light to-primary p-8 text-center relative">
                         <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg p-3">
-                            <img src="https://image2url.com/r2/default/images/1772138737667-40b87bef-d32b-42bc-8e9e-11ef0d404377.png" alt="Logo Escuelita" className="w-full h-full object-contain" />
+                            <img src="/src/assets/logo/Logo_escuelita.svg" alt="Logo Escuelita" className="w-full h-full object-contain" />
                         </div>
-                        <h1 className="text-2xl font-bold text-white mb-2 drop-shadow-md">Portal Super Admin</h1>
-                        <p className="text-white/90 text-sm font-medium">Sistema de Gestión Central</p>
+                        <h1 className="text-2xl font-bold text-white mb-2 drop-shadow-md">Portal Escuela</h1>
+                        <p className="text-white/90 text-sm font-medium">Sistema de Gestión Escolar</p>
                     </div>
 
                     {/* Formulario */}
@@ -149,4 +150,4 @@ const Login: React.FC = () => {
     );
 };
 
-export default Login;
+export default LoginEscuela;

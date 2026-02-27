@@ -17,15 +17,15 @@ import com.escuelita.www.entity.LoginRequest;
 import com.escuelita.www.entity.LoginResponse;
 import com.escuelita.www.entity.SuperAdmins;
 import com.escuelita.www.repository.SuperAdminsRepository;
-import com.escuelita.www.service.jpa.AuthService;
+import com.escuelita.www.service.jpa.AdminAuthService;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/auth/admin")
 @CrossOrigin(origins = "*")
-public class AuthController {
+public class AdminAuthController {
     
     @Autowired
-    private AuthService authService;
+    private AdminAuthService adminAuthService;
     
     @Autowired
     private SuperAdminsRepository superAdminsRepository;
@@ -33,10 +33,14 @@ public class AuthController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
     
+    /**
+     * Login para Super Admins
+     * Endpoint: POST /auth/admin/login
+     */
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
-            LoginResponse response = authService.authenticate(request);
+            LoginResponse response = adminAuthService.authenticate(request);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
@@ -45,11 +49,13 @@ public class AuthController {
         }
     }
     
-    /* Registrar un nuevo usuario en POSTMAN
-        Body: { "nombres": "Juan", "apellidos": "Pérez", "correo": "email@test.com", 
-                "usuario": "admin", "contrasena": "mipassword" }
-    */
-    @PostMapping("/register-superadmin")
+    /**
+     * Registrar un nuevo Super Admin
+     * Endpoint: POST /auth/admin/register
+     * Body: { "nombres": "Juan", "apellidos": "Pérez", "correo": "email@test.com", 
+     *         "usuario": "admin", "contrasena": "mipassword" }
+     */
+    @PostMapping("/register")
     public ResponseEntity<?> registerSuperAdmin(@RequestBody Map<String, String> request) {
         try {
             // Validar que existan los campos requeridos

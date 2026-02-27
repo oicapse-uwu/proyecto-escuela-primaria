@@ -75,7 +75,7 @@ public class PagoDetalleController {
         pagoDetalle.setIdPago(pagosCaja);
         pagoDetalle.setIdDeuda(deudasAlumno);
 
-        return ResponseEntity.ok(servicePagoDetalle.modificar(pagoDetalle   ));    
+        return ResponseEntity.ok(servicePagoDetalle.modificar(pagoDetalle));    
     }
     @GetMapping("/pagodetalle/{id}")
     public Optional<PagoDetalle> buscarId(@PathVariable("id") Long id){

@@ -7,8 +7,8 @@ import com.escuelita.www.entity.PagosCaja;
 public interface IPagosCajaService {
 
     List<PagosCaja> buscarTodos();
-    PagosCaja guardar(PagosCaja pagoscaja);
-    PagosCaja modificar(PagosCaja pagoscaja);
+    PagosCaja guardar(PagosCaja pagosCaja);
+    PagosCaja modificar(PagosCaja pagosCaja);
     Optional<PagosCaja> buscarId(Long id);
     void eliminar(Long id);
 }

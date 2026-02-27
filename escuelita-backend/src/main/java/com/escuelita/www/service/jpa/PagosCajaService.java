@@ -19,12 +19,12 @@ public class PagosCajaService implements IPagosCajaService {
         return repoPagosCaja.findAll();
     }
     @Override
-    public PagosCaja guardar(PagosCaja usuario) {
-        return repoPagosCaja.save(usuario);
+    public PagosCaja guardar(PagosCaja pagosCaja) {
+        return repoPagosCaja.save(pagosCaja);
     }
     @Override
-    public PagosCaja modificar(PagosCaja usuario) {
-        return repoPagosCaja.save(usuario);
+    public PagosCaja modificar(PagosCaja pagosCaja) {
+        return repoPagosCaja.save(pagosCaja);
     }
     public Optional<PagosCaja> buscarId(Long id) {
         return repoPagosCaja.findById(id);

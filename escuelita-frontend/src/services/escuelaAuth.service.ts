@@ -25,7 +25,7 @@ export interface LoginResponse {
     };
 }
 
-export interface Usuario {
+export interface EscuelaUsuario {
     idUsuario: number;
     nombres: string;
     apellidos: string;
@@ -42,13 +42,13 @@ export interface Usuario {
     };
 }
 
-class AuthService {
-    private readonly TOKEN_KEY = 'token';
-    private readonly USER_KEY = 'user';
+class EscuelaAuthService {
+    private readonly TOKEN_KEY = 'escuela_token';
+    private readonly USER_KEY = 'escuela_user';
 
     async login(credentials: LoginRequest): Promise<LoginResponse> {
         try {
-            const response = await api.post<LoginResponse>('/auth/login', credentials);
+            const response = await api.post<LoginResponse>('/auth/escuela/login', credentials);
             
             if (response.data.token) {
                 localStorage.setItem(this.TOKEN_KEY, response.data.token);
@@ -57,7 +57,7 @@ class AuthService {
             
             return response.data;
         } catch (error) {
-            console.error('Error en login:', error);
+            console.error('Error en login escuela:', error);
             throw error;
         }
     }
@@ -71,7 +71,7 @@ class AuthService {
         return localStorage.getItem(this.TOKEN_KEY);
     }
 
-    getCurrentUser(): Usuario | null {
+    getCurrentUser(): EscuelaUsuario | null {
         const userStr = localStorage.getItem(this.USER_KEY);
         if (userStr) {
             try {
@@ -87,17 +87,22 @@ class AuthService {
         return this.getToken() !== null;
     }
 
-    isSuperAdmin(): boolean {
+    isProfesor(): boolean {
         const user = this.getCurrentUser();
-        return user?.rol?.nombreRol?.toUpperCase() === 'SUPER ADMIN' || 
-               user?.rol?.nombreRol?.toUpperCase() === 'SUPERADMIN';
+        return user?.rol?.nombreRol?.toUpperCase() === 'PROFESOR' ||
+               user?.rol?.nombreRol?.toUpperCase() === 'DOCENTE';
     }
 
-    isAdmin(): boolean {
+    isCajero(): boolean {
         const user = this.getCurrentUser();
-        const role = user?.rol?.nombreRol?.toUpperCase();
-        return role === 'ADMIN' || role === 'SUPER ADMIN' || role === 'SUPERADMIN';
+        return user?.rol?.nombreRol?.toUpperCase() === 'CAJERO' ||
+               user?.rol?.nombreRol?.toUpperCase() === 'SECRETARIA';
+    }
+
+    getSedeId(): number | null {
+        const user = this.getCurrentUser();
+        return user?.sede?.idSede || null;
     }
 }
 
-export const authService = new AuthService();
+export const escuelaAuthService = new EscuelaAuthService();

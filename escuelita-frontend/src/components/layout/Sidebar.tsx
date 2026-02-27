@@ -36,7 +36,7 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { escuelaAuthService } from '../../services/escuelaAuth.service';
 
 interface SidebarProps {
     // Props futuras si se necesitan
@@ -51,12 +51,12 @@ interface MenuItem {
 
 const Sidebar: React.FC<SidebarProps> = () => {
     const [expandedModules, setExpandedModules] = useState<string[]>(['dashboard']);
-    const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const user = escuelaAuthService.getCurrentUser();
 
     const handleLogout = () => {
-        logout();
-        navigate('/login');
+        escuelaAuthService.logout();
+        navigate('/escuela/login');
     };
 
     const menuModules: MenuItem[] = [
@@ -162,13 +162,13 @@ const Sidebar: React.FC<SidebarProps> = () => {
             {/* Espacio para Logo y Título del Colegio */}
             <div className="p-6 border-b border-primary/30 bg-gradient-to-br from-primary-dark via-primary to-primary-dark">
                 <div className="flex flex-col items-center">
-                    {/* Placeholder para el logo */}
-                    <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mb-3 border-2 border-white/30 backdrop-blur-sm">
-                        <Building className="w-10 h-10 text-white/90" />
+                    {/* Logo del colegio */}
+                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-3 shadow-lg p-2">
+                        <img src="/src/assets/logo/Logo_escuelita.svg" alt="Logo Escuelita" className="w-full h-full object-contain" />
                     </div>
-                    {/* Placeholder para el nombre del colegio */}
-                    <h2 className="text-lg font-bold text-center text-white">Colegio</h2>
-                    <p className="text-xs text-white/70 text-center mt-1">Sistema de Gestión</p>
+                    {/* Nombre del colegio */}
+                    <h2 className="text-lg font-bold text-center text-white">Sistema Escolar</h2>
+                    <p className="text-xs text-white/70 text-center mt-1">Gestión Integral</p>
                 </div>
             </div>
 

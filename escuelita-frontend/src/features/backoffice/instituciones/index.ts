@@ -19,4 +19,3 @@ export { default as InstitucionesPage } from './pages/InstitucionesPage';
 
 // Routes
 export { default as InstitucionesRoutes } from './routes/InstitucionesRoutes';
-

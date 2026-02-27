@@ -9,13 +9,15 @@ import {
     Settings,
     Shield,
     TrendingUp,
-    Users
+    Users,
+    X
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 interface SuperAdminSidebarProps {
-    // Props futuras si se necesitan
+    isOpen: boolean;
+    onClose: () => void;
 }
 
 interface MenuItem {
@@ -25,7 +27,7 @@ interface MenuItem {
     subItems?: { name: string; path: string; icon?: LucideIcon }[];
 }
 
-const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = () => {
+const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }) => {
     const [expandedModules, setExpandedModules] = useState<string[]>(['dashboard']);
 
     const menuModules: MenuItem[] = [
@@ -79,18 +81,25 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = () => {
 
     return (
         <aside 
-            className="bg-primary-dark text-text-light fixed left-0 top-0 bottom-0 z-30 shadow-xl sidebar-scroll"
+            className={`bg-primary-dark text-text-light fixed left-0 top-0 bottom-0 z-50 shadow-xl sidebar-scroll transition-transform duration-300 w-72 ${
+                isOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
             style={{
-                width: '18rem',
-                minWidth: '18rem',
-                maxWidth: '18rem',
                 overflowY: 'auto',
                 overflowX: 'hidden',
                 scrollbarGutter: 'stable'
             }}
         >
             {/* Logo y Título de Escuelita */}
-            <div className="p-6 border-b border-primary/30 bg-gradient-to-br from-primary-dark via-primary to-primary-dark">
+            <div className="p-6 border-b border-primary/30 bg-gradient-to-br from-primary-dark via-primary to-primary-dark relative">
+                {/* Botón cerrar */}
+                <button
+                    onClick={onClose}
+                    className="absolute top-4 right-4 p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                >
+                    <X className="w-5 h-5" />
+                </button>
+                
                 <div className="flex flex-col items-center">
                     {/* Logo de Escuelita */}
                     <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-3 border-2 border-primary/30 shadow-lg p-3 transition-transform hover:scale-110 cursor-pointer">

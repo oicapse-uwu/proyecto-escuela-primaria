@@ -1,4 +1,4 @@
-import { Building2, Calendar, FileText, Shield, Upload, User, X } from 'lucide-react';
+import { Building2, Calendar, Copy, FileText, Shield, Upload, User, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { subirArchivo } from '../api/uploadApi';
@@ -33,6 +33,15 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string>('');
     const [uploadingFile, setUploadingFile] = useState(false);
+    const [resolucionValida, setResolucionValida] = useState<boolean>(true);
+    const [resolucionTouched, setResolucionTouched] = useState<boolean>(false);
+
+    // Regex para validar resolución con reglas específicas por tipo:
+    // R.D. → solo DRELM
+    // R.D.R. → solo DRE-[REGIÓN]
+    // R.G.R. → solo GRE-[REGIÓN]
+    // R.M. → solo UGEL-[CÓDIGO]
+    const RESOLUCION_REGEX = /^(R\.D\.\s*N°\s*\d{3,6}-\d{4}-DRELM|R\.D\.R\.\s*N°\s*\d{3,6}-\d{4}-DRE-[A-Z]+|R\.G\.R\.\s*N°\s*\d{3,6}-\d{4}-GRE-[A-Z]+|R\.M\.\s*N°\s*\d{3,6}-\d{4}-UGEL-\w+)$/;
 
     useEffect(() => {
         if (institucion) {
@@ -59,6 +68,16 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+        
+        // Validar resolución en tiempo real
+        if (name === 'resolucionCreacion') {
+            setResolucionTouched(true);
+            if (value.trim() === '') {
+                setResolucionValida(true); // Campo vacío es válido (no obligatorio)
+            } else {
+                setResolucionValida(RESOLUCION_REGEX.test(value));
+            }
+        }
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,8 +106,23 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
         }
     };
 
+    const copiarEjemplo = (ejemplo: string) => {
+        setFormData(prev => ({ ...prev, resolucionCreacion: ejemplo }));
+        setResolucionTouched(true);
+        setResolucionValida(true);
+        toast.success('¡Ejemplo copiado! Ahora edita los valores', { duration: 2000 });
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        // Validar resolución antes de enviar
+        if (formData.resolucionCreacion.trim() !== '' && !RESOLUCION_REGEX.test(formData.resolucionCreacion)) {
+            setResolucionTouched(true);
+            setResolucionValida(false);
+            toast.error('El formato de la resolución de creación es incorrecto');
+            return;
+        }
         
         try {
             let logoUrl = formData.logoPath;
@@ -163,14 +197,19 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Código Modular *
+                                Código Modular * (7 dígitos)
                             </label>
                             <input
                                 type="text"
                                 name="codModular"
                                 value={formData.codModular}
-                                onChange={handleChange}
+                                onChange={(e) => {
+                                    const value = e.target.value.replace(/\D/g, '').slice(0, 7);
+                                    setFormData(prev => ({ ...prev, codModular: value }));
+                                }}
                                 required
+                                maxLength={7}
+                                pattern="[0-9]{7}"
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                 placeholder="Ej: 1234567"
                             />
@@ -193,19 +232,125 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                             </select>
                         </div>
 
-                        <div>
+                        <div className="relative">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 <FileText className="inline w-4 h-4 mr-1" />
                                 Resolución de Creación
                             </label>
-                            <input
-                                type="text"
-                                name="resolucionCreacion"
-                                value={formData.resolucionCreacion}
-                                onChange={handleChange}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                placeholder="Ej: R.D. N° 123-2020"
-                            />
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    name="resolucionCreacion"
+                                    value={formData.resolucionCreacion}
+                                    onChange={handleChange}
+                                    onBlur={() => setResolucionTouched(true)}
+                                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 transition-colors ${
+                                        resolucionTouched && !resolucionValida && formData.resolucionCreacion.trim() !== ''
+                                            ? 'border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50'
+                                            : 'border-gray-300 focus:ring-primary focus:border-transparent'
+                                    }`}
+                                    placeholder="Ej: R.D. N° 1234-2024-DRELM"
+                                />
+                                
+                                {/* Tooltip flotante con flecha */}
+                                {resolucionTouched && !resolucionValida && formData.resolucionCreacion.trim() !== '' && (
+                                    <div className="absolute top-full right-0 mt-2 w-80 md:w-96 z-50">
+                                        {/* Flecha */}
+                                        <div className="absolute -top-2 right-4 w-4 h-4 bg-red-50 border-l border-t border-red-200 transform rotate-45"></div>
+                                        
+                                        {/* Contenido del tooltip */}
+                                        <div className="bg-red-50 border border-red-200 rounded-lg shadow-lg p-3">
+                                            <p className="text-sm text-red-700 font-medium mb-2">
+                                                ⚠️ Formato de resolución inválido
+                                            </p>
+                                            <p className="text-xs text-red-600 mb-2">
+                                                Cada tipo de resolución tiene su instancia específica:
+                                            </p>
+                                            <p className="text-xs text-gray-600 mb-3 bg-blue-50 border border-blue-200 rounded p-2">
+                                                👆 <span className="font-semibold">Haz clic en cualquier ejemplo</span> para copiarlo al campo y editarlo
+                                            </p>
+                                            <div className="text-xs space-y-3 max-h-64 overflow-y-auto">
+                                                {/* R.D. */}
+                                                <div 
+                                                    onClick={() => copiarEjemplo('R.D. N° 1234-2024-DRELM')}
+                                                    className="bg-white p-2 rounded border border-gray-200 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group"
+                                                >
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="flex-1">
+                                                            <p className="font-semibold text-gray-700 mb-1">
+                                                                <span className="text-blue-600">R.D.</span> (Resolución Directoral) → Solo <span className="text-green-600 font-bold">DRELM</span>
+                                                            </p>
+                                                            <p className="font-mono text-xs ml-2 text-gray-600">
+                                                                <span className="text-blue-600">R.D.</span> N° <span className="text-blue-600">1234</span>-<span className="text-blue-600">2024</span>-<span className="text-green-600 font-semibold">DRELM</span>
+                                                            </p>
+                                                        </div>
+                                                        <Copy className="w-4 h-4 text-gray-400 group-hover:text-primary flex-shrink-0 ml-2" />
+                                                    </div>
+                                                </div>
+                                                
+                                                {/* R.D.R. */}
+                                                <div 
+                                                    onClick={() => copiarEjemplo('R.D.R. N° 123456-2024-DRE-LIMA')}
+                                                    className="bg-white p-2 rounded border border-gray-200 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group"
+                                                >
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="flex-1">
+                                                            <p className="font-semibold text-gray-700 mb-1">
+                                                                <span className="text-blue-600">R.D.R.</span> (Resolución Directoral Regional) → Solo <span className="text-green-600 font-bold">DRE-[REGIÓN]</span>
+                                                            </p>
+                                                            <p className="font-mono text-xs ml-2 text-gray-600">
+                                                                <span className="text-blue-600">R.D.R.</span> N° <span className="text-blue-600">123456</span>-<span className="text-blue-600">2024</span>-<span className="text-green-600 font-semibold">DRE-LIMA</span>
+                                                            </p>
+                                                        </div>
+                                                        <Copy className="w-4 h-4 text-gray-400 group-hover:text-primary flex-shrink-0 ml-2" />
+                                                    </div>
+                                                </div>
+                                                
+                                                {/* R.G.R. */}
+                                                <div 
+                                                    onClick={() => copiarEjemplo('R.G.R. N° 5678-2024-GRE-CALLAO')}
+                                                    className="bg-white p-2 rounded border border-gray-200 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group"
+                                                >
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="flex-1">
+                                                            <p className="font-semibold text-gray-700 mb-1">
+                                                                <span className="text-blue-600">R.G.R.</span> (Resolución Gerencial Regional) → Solo <span className="text-green-600 font-bold">GRE-[REGIóN]</span>
+                                                            </p>
+                                                            <p className="font-mono text-xs ml-2 text-gray-600">
+                                                                <span className="text-blue-600">R.G.R.</span> N° <span className="text-blue-600">5678</span>-<span className="text-blue-600">2024</span>-<span className="text-green-600 font-semibold">GRE-CALLAO</span>
+                                                            </p>
+                                                        </div>
+                                                        <Copy className="w-4 h-4 text-gray-400 group-hover:text-primary flex-shrink-0 ml-2" />
+                                                    </div>
+                                                </div>
+                                                
+                                                {/* R.M. */}
+                                                <div 
+                                                    onClick={() => copiarEjemplo('R.M. N° 999-2024-UGEL-01')}
+                                                    className="bg-white p-2 rounded border border-gray-200 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group"
+                                                >
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="flex-1">
+                                                            <p className="font-semibold text-gray-700 mb-1">
+                                                                <span className="text-blue-600">R.M.</span> (Resolución Ministerial) → Solo <span className="text-green-600 font-bold">UGEL-[CÓDIGO]</span>
+                                                            </p>
+                                                            <p className="font-mono text-xs ml-2 text-gray-600">
+                                                                <span className="text-blue-600">R.M.</span> N° <span className="text-blue-600">999</span>-<span className="text-blue-600">2024</span>-<span className="text-green-600 font-semibold">UGEL-01</span>
+                                                            </p>
+                                                        </div>
+                                                        <Copy className="w-4 h-4 text-gray-400 group-hover:text-primary flex-shrink-0 ml-2" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            {(!resolucionTouched || resolucionValida || formData.resolucionCreacion.trim() === '') && (
+                                <p className="mt-1 text-xs text-gray-500">
+                                    Ejemplo: R.D. N° 1234-2024-DRELM
+                                </p>
+                            )}
                         </div>
 
                         <div>
@@ -300,40 +445,34 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                 <Upload className="inline w-4 h-4 mr-1" />
                                 Logo de la Institución
                             </label>
-                            <div className="space-y-3">
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleFileChange}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-dark"
-                                />
-                                {imagePreview && (
-                                    <div className="mt-3">
-                                        <p className="text-sm text-gray-600 mb-2">Vista previa:</p>
-                                        <img 
-                                            src={imagePreview} 
-                                            alt="Preview" 
-                                            className="h-24 w-auto rounded-lg border-2 border-gray-200 object-contain"
-                                        />
-                                    </div>
-                                )}
+                            <div className="flex items-center gap-4">
+                                {/* Vista previa en círculo */}
+                                <div className="flex-shrink-0">
+                                    {imagePreview ? (
+                                        <div className="relative">
+                                            <img 
+                                                src={imagePreview} 
+                                                alt="Logo preview" 
+                                                className="h-20 w-20 rounded-full object-cover border-2 border-primary/20"
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center border-2 border-primary/20">
+                                            <Building2 className="w-10 h-10 text-primary" />
+                                        </div>
+                                    )}
+                                </div>
+                                {/* Input de archivo */}
+                                <div className="flex-1">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-dark"
+                                    />
+                                    <p className="text-xs text-gray-500 mt-2">Formatos: JPG, PNG. Máximo 5MB</p>
+                                </div>
                             </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Estado *
-                            </label>
-                            <select
-                                name="estado"
-                                value={formData.estado || 1}
-                                onChange={handleChange}
-                                required
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                            >
-                                <option value={1}>Activo</option>
-                                <option value={0}>Inactivo</option>
-                            </select>
                         </div>
                     </div>
 

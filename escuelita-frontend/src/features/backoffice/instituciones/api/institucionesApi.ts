@@ -18,14 +18,21 @@ export const obtenerInstitucionPorId = async (id: number): Promise<Institucion> 
 
 // Crear nueva institución
 export const crearInstitucion = async (institucion: InstitucionDTO): Promise<Institucion> => {
-    // Limpiar campos de fecha vacíos
+    // Limpiar campos de fecha vacíos y NO enviar idInstitucion
     const dataToSend = {
-        ...institucion,
-        fechaInicioSuscripcion: institucion.fechaInicioSuscripcion || null,
-        fechaVencimientoLicencia: institucion.fechaVencimientoLicencia || null,
+        nombre: institucion.nombre,
+        codModular: institucion.codModular,
+        tipoGestion: institucion.tipoGestion,
+        resolucionCreacion: institucion.resolucionCreacion,
+        nombreDirector: institucion.nombreDirector,
         logoPath: institucion.logoPath || null,
-        estado: institucion.estado ?? 1
+        estadoSuscripcion: institucion.estadoSuscripcion,
+        fechaInicioSuscripcion: institucion.fechaInicioSuscripcion && institucion.fechaInicioSuscripcion.trim() !== '' ? institucion.fechaInicioSuscripcion : null,
+        fechaVencimientoLicencia: institucion.fechaVencimientoLicencia && institucion.fechaVencimientoLicencia.trim() !== '' ? institucion.fechaVencimientoLicencia : null,
+        planContratado: institucion.planContratado
     };
+    
+    console.log('Datos a enviar al crear:', dataToSend);
     
     const response = await api.post<Institucion>(BASE_URL, dataToSend);
     return response.data;
@@ -35,12 +42,20 @@ export const crearInstitucion = async (institucion: InstitucionDTO): Promise<Ins
 export const actualizarInstitucion = async (institucion: InstitucionDTO): Promise<Institucion> => {
     // Limpiar campos de fecha vacíos
     const dataToSend = {
-        ...institucion,
-        fechaInicioSuscripcion: institucion.fechaInicioSuscripcion || null,
-        fechaVencimientoLicencia: institucion.fechaVencimientoLicencia || null,
+        idInstitucion: institucion.idInstitucion,
+        nombre: institucion.nombre,
+        codModular: institucion.codModular,
+        tipoGestion: institucion.tipoGestion,
+        resolucionCreacion: institucion.resolucionCreacion,
+        nombreDirector: institucion.nombreDirector,
         logoPath: institucion.logoPath || null,
-        estado: institucion.estado ?? 1
+        estadoSuscripcion: institucion.estadoSuscripcion,
+        fechaInicioSuscripcion: institucion.fechaInicioSuscripcion && institucion.fechaInicioSuscripcion.trim() !== '' ? institucion.fechaInicioSuscripcion : null,
+        fechaVencimientoLicencia: institucion.fechaVencimientoLicencia && institucion.fechaVencimientoLicencia.trim() !== '' ? institucion.fechaVencimientoLicencia : null,
+        planContratado: institucion.planContratado
     };
+    
+    console.log('Datos a enviar al actualizar:', dataToSend);
     
     const response = await api.put<Institucion>(BASE_URL, dataToSend);
     return response.data;

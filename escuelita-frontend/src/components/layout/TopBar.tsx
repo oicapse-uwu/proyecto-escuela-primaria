@@ -1,10 +1,14 @@
-import { Bell, ChevronDown, LogOut, User } from 'lucide-react';
+import { Bell, ChevronDown, LogOut, Menu, User } from 'lucide-react';
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { adminAuthService } from '../../services/adminAuth.service';
 import { escuelaAuthService } from '../../services/escuelaAuth.service';
 
-const TopBar: React.FC = () => {
+interface TopBarProps {
+    onToggleSidebar: () => void;
+}
+
+const TopBar: React.FC<TopBarProps> = ({ onToggleSidebar }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [showDropdown, setShowDropdown] = useState(false);
@@ -28,18 +32,24 @@ const TopBar: React.FC = () => {
     };
 
     return (
-        <header className="bg-white border-b border-gray-200 fixed top-0 right-0 left-0 z-20 shadow-sm" style={{ marginLeft: '18rem' }}>
-            <div className="px-8 py-4">
+        <header className="bg-white border-b border-gray-200 fixed top-0 right-0 left-0 z-30 shadow-sm transition-all duration-300">
+            <div className="px-4 lg:px-8 py-3 lg:py-4">
                 <div className="flex items-center justify-between">
-                    {/* Título o breadcrumb (vacío por ahora) */}
-                    <div className="flex-1">
+                    {/* Botón menú + Título */}
+                    <div className="flex items-center space-x-3 flex-1">
+                        <button
+                            onClick={onToggleSidebar}
+                            className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                        >
+                            <Menu className="w-6 h-6" />
+                        </button>
                         {/* Aquí podrías agregar breadcrumbs o título de la página actual */}
                     </div>
 
                     {/* Right side - User profile y notificaciones */}
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2 lg:space-x-4">
                         {/* Notificaciones */}
-                        <button className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+                        <button className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors hidden sm:block">
                             <Bell className="w-5 h-5" />
                             {/* Badge de notificaciones pendientes */}
                             <span className="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
@@ -50,18 +60,18 @@ const TopBar: React.FC = () => {
                             <div className="relative">
                                 <button
                                     onClick={() => setShowDropdown(!showDropdown)}
-                                    className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+                                    className="flex items-center space-x-2 lg:space-x-3 px-2 lg:px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
                                 >
-                                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                                        <User className="w-5 h-5 text-primary" />
+                                    <div className="w-8 h-8 lg:w-10 lg:h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                                        <User className="w-4 h-4 lg:w-5 lg:h-5 text-primary" />
                                     </div>
-                                    <div className="text-left">
+                                    <div className="text-left hidden md:block">
                                         <p className="text-sm font-semibold text-gray-900">
                                             {user.nombres} {user.apellidos}
                                         </p>
                                         <p className="text-xs text-gray-500">{user.rol?.nombreRol}</p>
                                     </div>
-                                    <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
+                                    <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform hidden sm:block ${showDropdown ? 'rotate-180' : ''}`} />
                                 </button>
 
                                 {/* Dropdown Menu */}

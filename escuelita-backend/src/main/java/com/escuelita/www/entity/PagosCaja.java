@@ -5,6 +5,8 @@ package com.escuelita.www.entity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -49,10 +51,12 @@ public class PagosCaja {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_metodo")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
+    @NotFound(action = NotFoundAction.IGNORE)
     private MetodosPago idMetodo; 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_usuario")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
+    @NotFound(action = NotFoundAction.IGNORE)
     private Usuarios idUsuario; 
     
     private Integer estado = 1;

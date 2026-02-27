@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.escuelita.www.entity.Registros;
 import com.escuelita.www.repository.RegistrosRepository;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.GenericFilter;
 import jakarta.servlet.ServletException;
@@ -22,6 +23,9 @@ import jakarta.servlet.http.HttpServletRequest;
 public class JwtFilter extends GenericFilter{
     @Autowired
     private RegistrosRepository registrosRepository;
+    
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res,
@@ -32,20 +36,31 @@ public class JwtFilter extends GenericFilter{
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
-
-            Optional<Registros> match = registrosRepository
-                        .findAll().stream()
-                        .filter(r ->token.equals(r.getAccess_token()))
-                        .findFirst();
-
-            if(match.isPresent()){
-                String clienteId = match.get().getCliente_id();
+            
+            // Primero intentar validar como token JWT (para Super Admins)
+            if (jwtUtil.validarToken(token)) {
+                String clienteId = jwtUtil.extraerClienteId(token);
                 UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(clienteId, 
                             null, Collections.emptyList());
                 SecurityContextHolder.getContext()
-                            .setAuthentication(auth);            
-            }    
+                            .setAuthentication(auth);
+            } else {
+                // Si no es JWT válido, buscar en tabla Registros (usuarios de escuela)
+                Optional<Registros> match = registrosRepository
+                            .findAll().stream()
+                            .filter(r ->token.equals(r.getAccess_token()))
+                            .findFirst();
+
+                if(match.isPresent()){
+                    String clienteId = match.get().getCliente_id();
+                    UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(clienteId, 
+                                null, Collections.emptyList());
+                    SecurityContextHolder.getContext()
+                                .setAuthentication(auth);            
+                }
+            }
         }
         chain.doFilter(req, res);
     }

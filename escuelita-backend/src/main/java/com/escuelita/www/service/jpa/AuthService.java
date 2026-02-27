@@ -30,7 +30,28 @@ public class AuthService {
             .orElseThrow(() -> new Exception("Usuario no encontrado"));
         
         // 2. Validar contraseña
-        if (!passwordEncoder.matches(request.getContrasena(), admin.getPassword())) {
+        String passwordBD = admin.getPassword();
+        boolean passwordValida = false;
+        
+        // Detectar si la contraseña en BD está hasheada o en texto plano
+        if (passwordBD.startsWith("$2a$") || passwordBD.startsWith("$2y$") || passwordBD.startsWith("$2b$")) {
+            // Contraseña hasheada - validar con BCrypt
+            passwordValida = passwordEncoder.matches(request.getContrasena(), passwordBD);
+        } else {
+            // Contraseña en texto plano - comparar directamente
+            if (passwordBD.equals(request.getContrasena())) {
+                passwordValida = true;
+                
+                // ACTUALIZAR la contraseña a formato hash automáticamente
+                String nuevoHash = passwordEncoder.encode(request.getContrasena());
+                admin.setPassword(nuevoHash);
+                superAdminsRepository.save(admin);
+                
+                System.out.println("⚠️  Contraseña actualizada a formato hash para usuario: " + admin.getUsuario());
+            }
+        }
+        
+        if (!passwordValida) {
             throw new Exception("Contraseña incorrecta");
         }
         

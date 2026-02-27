@@ -16,7 +16,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/restful/token"
                         , "/restful/registros"
-                        , "/auth/login").permitAll()
+                        , "/auth/login"
+                        , "/auth/register-superadmin"
+                        , "/utils/**").permitAll()
                     .anyRequest().authenticated()     
                 )
                 .addFilterBefore(jwtFilter, 

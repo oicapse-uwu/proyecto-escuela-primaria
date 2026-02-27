@@ -1,13 +1,24 @@
 package com.escuelita.www.entity;
 
 import java.math.BigDecimal;
+
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "pago_detalle")
@@ -28,10 +39,12 @@ public class PagoDetalle {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_pago")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
+    @NotFound(action = NotFoundAction.IGNORE)
     private PagosCaja idPago;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_deuda")
     @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
+    @NotFound(action = NotFoundAction.IGNORE)
     private DeudasAlumno idDeuda;
 
     private Integer estado = 1;

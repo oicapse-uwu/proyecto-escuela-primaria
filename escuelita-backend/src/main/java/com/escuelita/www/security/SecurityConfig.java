@@ -40,7 +40,7 @@ public class SecurityConfig {
                         , "/auth/admin/**"  // Autenticación Super Admin
                         , "/auth/escuela/**"  // Autenticación Escuela
                         , "/utils/**").permitAll()
-                    .anyRequest().authenticated()     
+                    .anyRequest().authenticated()     // Esto requiere autenticación para /restful/**
                 )
                 .addFilterBefore(jwtFilter, 
                     UsernamePasswordAuthenticationFilter.class);

@@ -11,21 +11,19 @@ export const api = axios.create({
 // Interceptor de solicitudes para agregar token de autenticación
 api.interceptors.request.use(
     (config) => {
-        // Buscar token de escuela o admin según el contexto
-        const escuelaToken = localStorage.getItem('escuela_token');
-        const adminToken = localStorage.getItem('admin_token');
-        
-        // Priorizar el token según la URL de la petición
+        // Detectar el contexto según la ruta actual del navegador
+        const currentPath = window.location.pathname;
         let token = null;
-        if (config.url?.includes('/auth/escuela') || escuelaToken) {
-            token = escuelaToken;
-        } else if (config.url?.includes('/auth/admin') || adminToken) {
-            token = adminToken;
-        }
         
-        // Si no hay token específico, usar el que esté disponible
-        if (!token) {
-            token = escuelaToken || adminToken;
+        if (currentPath.startsWith('/admin')) {
+            // Si estamos en rutas de admin, usar el token de admin
+            token = localStorage.getItem('admin_token');
+        } else if (currentPath.startsWith('/escuela')) {
+            // Si estamos en rutas de escuela, usar el token de escuela
+            token = localStorage.getItem('escuela_token');
+        } else {
+            // Fallback: usar el que esté disponible
+            token = localStorage.getItem('admin_token') || localStorage.getItem('escuela_token');
         }
         
         if (token) {

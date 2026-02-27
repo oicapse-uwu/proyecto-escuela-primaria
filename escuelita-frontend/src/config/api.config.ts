@@ -44,6 +44,7 @@ export const API_ENDPOINTS = {
     ALUMNOS: '/restful/alumnos',
     APODERADOS: '/restful/apoderados',
     CURSOS: '/restful/cursos',
+    
     // Agregar otros endpoints aquí según se vaya implementando
 };
 

@@ -1,4 +1,4 @@
-// Feature: Alumnos (Backoffice)
+// Feature: Alumnos (Portal)
 // Exporta todas las utilidades relacionadas con la gestión de alumnos
 
 // Tipos

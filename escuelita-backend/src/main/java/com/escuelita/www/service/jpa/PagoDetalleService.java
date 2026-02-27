@@ -20,12 +20,12 @@ public class PagoDetalleService implements IPagoDetalleService {
         return repoPagoDetalle.findAll();
     }
     @Override
-    public PagoDetalle guardar(PagoDetalle alumno){
-        return repoPagoDetalle.save(alumno);
+    public PagoDetalle guardar(PagoDetalle pagoDetalle){
+        return repoPagoDetalle.save(pagoDetalle);
     }
     @Override
-    public PagoDetalle modificar(PagoDetalle alumno){
-        return repoPagoDetalle.save(alumno);
+    public PagoDetalle modificar(PagoDetalle pagoDetalle){
+        return repoPagoDetalle.save(pagoDetalle);
     }
     public Optional<PagoDetalle> buscarId(Long id){
         return repoPagoDetalle.findById(id);

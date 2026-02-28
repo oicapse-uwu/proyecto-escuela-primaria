@@ -1,5 +1,5 @@
 import { api } from "../../../../config/api.config";
-import type { CicloFacturacion, EstadoSuscripcion, Suscripcion, SuscripcionDTO, SuscripcionFormData } from "../types";
+import type { CicloFacturacion, EstadoSuscripcion, MetodoPago, PagoCajaDTO, Suscripcion, SuscripcionDTO, SuscripcionFormData } from "../types";
 
 // Obtener todas las suscripciones
 export const getSuscripcionesApi = async (): Promise<Suscripcion[]> => {
@@ -67,4 +67,14 @@ export const getEstadosSuscripcionApi = async (): Promise<EstadoSuscripcion[]> =
 export const getCiclosFacturacionApi = async (): Promise<CicloFacturacion[]> => {
     const response = await api.get('/restful/ciclosfacturacion');
     return response.data;
+};
+
+// Obtener todos los métodos de pago
+export const getMetodosPagoApi = async (): Promise<MetodoPago[]> => {
+    const response = await api.get('/restful/metodospago');
+    return response.data;
+};
+
+export const createPagoCajaApi = async (pago: PagoCajaDTO): Promise<void> => {
+    await api.post('/restful/pagoscaja', pago);
 };

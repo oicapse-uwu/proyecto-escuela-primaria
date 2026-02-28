@@ -23,12 +23,23 @@ const InstitucionesPage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
 
+    const normalizeText = (value?: string | number | null) =>
+        String(value ?? '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+
     // Filtrar instituciones por búsqueda
-    const institucionesFiltradas = instituciones.filter(inst =>
-        inst.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        inst.codModular.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        inst.nombreDirector.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const institucionesFiltradas = instituciones.filter(inst => {
+        const search = normalizeText(searchTerm.trim());
+        if (!search) return true;
+
+        return (
+            normalizeText(inst.nombre).includes(search) ||
+            normalizeText(inst.codModular).includes(search) ||
+            normalizeText(inst.nombreDirector).includes(search)
+        );
+    });
 
     // Aplicar paginación
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -118,20 +129,6 @@ const InstitucionesPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Search Bar */}
-            <div className="mb-4 lg:mb-6 bg-white rounded-lg shadow p-3 lg:p-4">
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 lg:w-5 lg:h-5" />
-                    <input
-                        type="text"
-                        placeholder="Buscar por nombre, código modular o director..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-9 lg:pl-10 pr-4 py-2.5 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    />
-                </div>
-            </div>
-
             {/* Stats Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 mb-4 lg:mb-6">
                 <div className="bg-white rounded-lg shadow p-3 sm:p-4 lg:p-6">
@@ -175,6 +172,20 @@ const InstitucionesPage: React.FC = () => {
                         </div>
                         <Shield className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-red-500 opacity-50 flex-shrink-0 ml-2" />
                     </div>
+                </div>
+            </div>
+
+            {/* Search Bar */}
+            <div className="mb-4 lg:mb-6 bg-white rounded-lg shadow p-3 lg:p-4">
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 lg:w-5 lg:h-5" />
+                    <input
+                        type="text"
+                        placeholder="Buscar por nombre, código modular o director..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-9 lg:pl-10 pr-4 py-2.5 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
                 </div>
             </div>
 

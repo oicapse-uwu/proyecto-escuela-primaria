@@ -5,15 +5,17 @@ import {
     deleteSuscripcionApi,
     getCiclosFacturacionApi,
     getEstadosSuscripcionApi,
+    getMetodosPagoApi,
     getSuscripcionesApi,
     updateSuscripcionApi
 } from '../api/suscripcionesApi';
-import type { CicloFacturacion, EstadoSuscripcion, Suscripcion, SuscripcionFormData } from '../types';
+import type { CicloFacturacion, EstadoSuscripcion, MetodoPago, Suscripcion, SuscripcionFormData } from '../types';
 
 export const useSuscripciones = () => {
     const [suscripciones, setSuscripciones] = useState<Suscripcion[]>([]);
     const [estadosSuscripcion, setEstadosSuscripcion] = useState<EstadoSuscripcion[]>([]);
     const [ciclosFacturacion, setCiclosFacturacion] = useState<CicloFacturacion[]>([]);
+    const [metodosPago, setMetodosPago] = useState<MetodoPago[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -59,6 +61,18 @@ export const useSuscripciones = () => {
             toast.error('Error al cargar ciclos de facturación');
             console.error('Error fetching ciclos:', err);
             setCiclosFacturacion([]); // Asegurar array vacío
+        }
+    }, []);
+
+    // Obtener métodos de pago
+    const fetchMetodosPago = useCallback(async () => {
+        try {
+            const data = await getMetodosPagoApi();
+            setMetodosPago(data);
+        } catch (err) {
+            toast.error('Error al cargar métodos de pago');
+            console.error('Error fetching métodos de pago:', err);
+            setMetodosPago([]);
         }
     }, []);
 
@@ -108,12 +122,14 @@ export const useSuscripciones = () => {
         fetchSuscripciones();
         fetchEstadosSuscripcion();
         fetchCiclosFacturacion();
-    }, [fetchSuscripciones, fetchEstadosSuscripcion, fetchCiclosFacturacion]);
+        fetchMetodosPago();
+    }, [fetchSuscripciones, fetchEstadosSuscripcion, fetchCiclosFacturacion, fetchMetodosPago]);
 
     return {
         suscripciones,
         estadosSuscripcion,
         ciclosFacturacion,
+        metodosPago,
         isLoading,
         error,
         crear,

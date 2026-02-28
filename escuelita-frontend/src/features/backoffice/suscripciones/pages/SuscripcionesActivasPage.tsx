@@ -9,7 +9,7 @@ import { useSuscripciones } from '../hooks/useSuscripciones';
 import type { Suscripcion, SuscripcionFormData } from '../types';
 
 const SuscripcionesActivasPage: React.FC = () => {
-    const { suscripciones, estadosSuscripcion, ciclosFacturacion, isLoading, crear, actualizar, eliminar } = useSuscripciones();
+    const { suscripciones, estadosSuscripcion, ciclosFacturacion, metodosPago, isLoading, crear, actualizar, eliminar } = useSuscripciones();
     const { planes } = usePlanes();
     const { instituciones } = useInstituciones();
     
@@ -20,14 +20,24 @@ const SuscripcionesActivasPage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
 
+    const normalizeText = (value?: string | number | null) =>
+        String(value ?? '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+
     // Filtrar suscripciones
     const suscripcionesFiltradas = suscripciones.filter(sus => {
         // Verificar que los objetos anidados existan antes de acceder a sus propiedades
         if (!sus.idInstitucion || !sus.idEstado) return false;
         
-        const matchSearch = sus.idInstitucion.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          sus.idInstitucion.codModular?.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchEstado = filterEstado === 'todos' || sus.idEstado.nombre === filterEstado;
+        const search = normalizeText(searchTerm.trim());
+        const matchSearch =
+            !search ||
+            normalizeText(sus.idInstitucion.nombre).includes(search) ||
+            normalizeText(sus.idInstitucion.codModular).includes(search);
+        const matchEstado =
+            filterEstado === 'todos' || normalizeText(sus.idEstado.nombre) === normalizeText(filterEstado);
         return matchSearch && matchEstado;
     });
 
@@ -159,20 +169,7 @@ const SuscripcionesActivasPage: React.FC = () => {
 
             {/* Filtros */}
             <div className="bg-white rounded-lg shadow p-4 mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Búsqueda */}
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                        <input
-                            type="text"
-                            placeholder="Buscar por institución o código modular..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                        />
-                    </div>
-                    
-                    {/* Filtro de Estado */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
                     <div>
                         <select
                             value={filterEstado}
@@ -187,23 +184,34 @@ const SuscripcionesActivasPage: React.FC = () => {
                             ))}
                         </select>
                     </div>
+
+                    <div className="relative lg:col-span-2">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <input
+                            type="text"
+                            placeholder="Buscar por institución o código modular..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                        />
+                    </div>
                 </div>
             </div>
 
             {/* Tabla de Suscripciones */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-white rounded-lg shadow overflow-hidden min-h-[520px] flex flex-col">
                 {isLoading ? (
-                    <div className="flex justify-center items-center h-64">
+                    <div className="flex-1 flex justify-center items-center h-64">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
                     </div>
                 ) : suscripcionesPaginadas.length === 0 ? (
-                    <div className="text-center py-12">
+                    <div className="flex-1 text-center py-12">
                         <CreditCard className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <p className="text-gray-500 text-lg">No se encontraron suscripciones</p>
                     </div>
                 ) : (
                     <>
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto flex-1">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50">
                                     <tr>
@@ -317,6 +325,7 @@ const SuscripcionesActivasPage: React.FC = () => {
                     planes={planes}
                     estadosSuscripcion={estadosSuscripcion}
                     ciclosFacturacion={ciclosFacturacion}
+                    metodosPago={metodosPago}
                     onSubmit={handleSubmit}
                     onCancel={() => setShowForm(false)}
                 />

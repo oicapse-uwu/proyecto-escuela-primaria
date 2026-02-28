@@ -1,11 +1,42 @@
-import { AlertCircle, Calendar, CheckCircle, Clock, CreditCard, DollarSign, FileText, Phone, Search } from 'lucide-react';
+import { AlertCircle, BookOpen, Calendar, CheckCircle, Clock, CreditCard, DollarSign, Smartphone, Search } from 'lucide-react';
 import React, { useState } from 'react';
+import { toast } from 'sonner';
+import Modal from '../../../../components/common/Modal';
+import Pagination from '../../../../components/common/Pagination';
+import { adminAuthService } from '../../../../services/adminAuth.service';
+import { createPagoCajaApi } from '../api/suscripcionesApi';
 import { useSuscripciones } from '../hooks/useSuscripciones';
 
 const PagosPendientesPage: React.FC = () => {
-    const { suscripciones, isLoading } = useSuscripciones();
+    const { suscripciones, isLoading, metodosPago, estadosSuscripcion, actualizar, refetch } = useSuscripciones();
     const [searchTerm, setSearchTerm] = useState('');
     const [filterUrgencia, setFilterUrgencia] = useState<string>('todos');
+    const [showPagoModal, setShowPagoModal] = useState(false);
+    const [showDetalleModal, setShowDetalleModal] = useState(false);
+    const [selectedSuscripcion, setSelectedSuscripcion] = useState<(typeof suscripciones)[number] | null>(null);
+    const [isSubmittingPago, setIsSubmittingPago] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [formPago, setFormPago] = useState({
+        fechaPago: new Date().toISOString().slice(0, 16),
+        montoTotalPagado: 0,
+        comprobanteNumero: '',
+        observacionPago: '',
+        idMetodo: 0
+    });
+
+    const toLocalDateTime = (value: string) => {
+        if (!value) return '';
+        return value.length === 16 ? `${value}:00` : value;
+    };
+
+    const normalizeText = (value?: string | number | null) =>
+        String(value ?? '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+
+    const normalizarEstado = (estado?: string | null) => (estado || '').toUpperCase();
 
     // Calcular días hasta vencimiento
     const getDiasHastaVencimiento = (fechaVencimiento: string | null) => {
@@ -26,26 +57,34 @@ const PagosPendientesPage: React.FC = () => {
         return 'normal';
     };
 
-    // Filtrar solo pagos pendientes o próximos a vencer
+    // Filtrar solo pagos pendientes
     const pagosPendientes = suscripciones.filter(sus => {
         if (!sus.idInstitucion || !sus.idEstado) return false;
         
         const urgencia = getUrgencia(sus.fechaVencimiento);
-        const esPendiente = sus.idEstado.nombre === 'Vencida' || 
-                           sus.idEstado.nombre === 'Suspendida' ||
-                           urgencia === 'vencida' || 
-                           urgencia === 'urgente' || 
-                           urgencia === 'proxima';
+        const estado = normalizarEstado(sus.idEstado.nombre);
+        const esPendiente = !estado.includes('ACTIV');
         
         if (!esPendiente) return false;
         
-        const matchSearch = sus.idInstitucion.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          sus.idInstitucion.codModular?.includes(searchTerm);
+        const search = normalizeText(searchTerm.trim());
+        const matchSearch =
+            !search ||
+            normalizeText(sus.idInstitucion.nombre).includes(search) ||
+            normalizeText(sus.idInstitucion.codModular).includes(search);
         
         const matchUrgencia = filterUrgencia === 'todos' || urgencia === filterUrgencia;
         
         return matchSearch && matchUrgencia;
     });
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const pagosPendientesPaginados = pagosPendientes.slice(indexOfFirstItem, indexOfLastItem);
+
+    React.useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, filterUrgencia]);
 
     // Calcular totales por urgencia
     const totalVencidas = pagosPendientes.filter(s => getUrgencia(s.fechaVencimiento) === 'vencida');
@@ -97,6 +136,100 @@ const PagosPendientesPage: React.FC = () => {
         if (!fechaInicio) return `FAC-${idSuscripcion.toString().padStart(6, '0')}`;
         const year = new Date(fechaInicio).getFullYear();
         return `FAC-${year}-${idSuscripcion.toString().padStart(6, '0')}`;
+    };
+
+    const abrirModalPago = (suscripcion: (typeof suscripciones)[number]) => {
+        setSelectedSuscripcion(suscripcion);
+        setFormPago({
+            fechaPago: new Date().toISOString().slice(0, 16),
+            montoTotalPagado: Number(suscripcion.precioAcordado) || 0,
+            comprobanteNumero: '',
+            observacionPago: `Pago de suscripción ${generarNumeroFactura(suscripcion.idSuscripcion, suscripcion.fechaInicio)}`,
+            idMetodo: metodosPago[0]?.idMetodo || 0
+        });
+        setShowPagoModal(true);
+    };
+
+    const abrirDetallePago = (suscripcion: (typeof suscripciones)[number]) => {
+        setSelectedSuscripcion(suscripcion);
+        setShowDetalleModal(true);
+    };
+
+    const enviarRecordatorio = (suscripcion: (typeof suscripciones)[number]) => {
+        const telefono = '51944513416';
+        const mensaje = `Hola, la institución ${suscripcion.idInstitucion?.nombre || 'N/A'} tiene pago pendiente de ${formatPrice(suscripcion.precioAcordado)}. Factura: ${generarNumeroFactura(suscripcion.idSuscripcion, suscripcion.fechaInicio)}. Vence: ${formatDate(suscripcion.fechaVencimiento)}.`;
+        window.open(`https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`, '_blank');
+    };
+
+    const registrarPago = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const user = adminAuthService.getCurrentUser();
+        if (!user?.idUsuario) {
+            toast.error('No se encontró usuario autenticado para registrar el pago');
+            return;
+        }
+        if (!formPago.idMetodo) {
+            toast.error('Selecciona un método de pago');
+            return;
+        }
+        if (!formPago.montoTotalPagado || formPago.montoTotalPagado <= 0) {
+            toast.error('Ingresa un monto válido');
+            return;
+        }
+
+        setIsSubmittingPago(true);
+        try {
+            if (!selectedSuscripcion) {
+                toast.error('No se encontró la suscripción seleccionada');
+                return;
+            }
+
+            await createPagoCajaApi({
+                fechaPago: toLocalDateTime(formPago.fechaPago),
+                montoTotalPagado: Number(formPago.montoTotalPagado),
+                comprobanteNumero: formPago.comprobanteNumero,
+                observacionPago: formPago.observacionPago,
+                idMetodo: Number(formPago.idMetodo),
+                idUsuario: Number(user.idUsuario)
+            });
+
+            const estadoActiva = estadosSuscripcion.find(e => normalizarEstado(e.nombre).includes('ACTIV'));
+
+            if (
+                !selectedSuscripcion.idInstitucion?.idInstitucion ||
+                !selectedSuscripcion.idPlan?.idPlan ||
+                !selectedSuscripcion.idCiclo?.idCiclo ||
+                !selectedSuscripcion.idEstado?.idEstado
+            ) {
+                toast.error('No se pudo actualizar estado de suscripción por datos incompletos');
+                return;
+            }
+
+            await actualizar(selectedSuscripcion.idSuscripcion, {
+                limiteAlumnosContratado: selectedSuscripcion.limiteAlumnosContratado || 0,
+                limiteSedesContratadas: selectedSuscripcion.limiteSedesContratadas || 1,
+                precioAcordado: Number(selectedSuscripcion.precioAcordado) || 0,
+                fechaInicio: selectedSuscripcion.fechaInicio || new Date().toISOString().slice(0, 10),
+                fechaVencimiento: selectedSuscripcion.fechaVencimiento || new Date().toISOString().slice(0, 10),
+                idInstitucion: selectedSuscripcion.idInstitucion.idInstitucion,
+                idPlan: selectedSuscripcion.idPlan.idPlan,
+                idCiclo: selectedSuscripcion.idCiclo.idCiclo,
+                idEstado: estadoActiva?.idEstado || selectedSuscripcion.idEstado.idEstado,
+                idMetodoPago: Number(formPago.idMetodo)
+            });
+
+            toast.success('Pago registrado correctamente');
+            setShowPagoModal(false);
+            setSelectedSuscripcion(null);
+            await refetch();
+        } catch (error) {
+            console.error(error);
+            const apiMessage = (error as any)?.response?.data;
+            toast.error(typeof apiMessage === 'string' ? apiMessage : 'No se pudo registrar el pago');
+        } finally {
+            setIsSubmittingPago(false);
+        }
     };
 
     if (isLoading) {
@@ -183,9 +316,8 @@ const PagosPendientesPage: React.FC = () => {
 
             {/* Filters */}
             <div className="bg-white p-4 rounded-xl shadow-md border border-gray-100 mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Search */}
-                    <div className="relative">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                    <div className="relative lg:col-span-2">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                         <input
                             type="text"
@@ -196,7 +328,6 @@ const PagosPendientesPage: React.FC = () => {
                         />
                     </div>
 
-                    {/* Filter by Urgencia */}
                     <div className="relative">
                         <AlertCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                         <select
@@ -214,10 +345,10 @@ const PagosPendientesPage: React.FC = () => {
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
-                <div className="overflow-x-auto">
+            <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden min-h-[520px] flex flex-col">
+                <div className="overflow-x-auto flex-1">
                     <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                        <thead className="bg-gray-50">
                             <tr>
                                 <th className="px-3 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                     Urgencia
@@ -255,7 +386,7 @@ const PagosPendientesPage: React.FC = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                pagosPendientes.map((suscripcion) => {
+                                pagosPendientesPaginados.map((suscripcion) => {
                                     const urgencia = getUrgencia(suscripcion.fechaVencimiento);
                                     const badge = getUrgenciaBadge(urgencia);
                                     const dias = getDiasHastaVencimiento(suscripcion.fechaVencimiento);
@@ -311,22 +442,25 @@ const PagosPendientesPage: React.FC = () => {
                                             <td className="px-2 py-3 whitespace-nowrap text-center">
                                                 <div className="flex items-center justify-center gap-1">
                                                     <button
+                                                        onClick={() => abrirModalPago(suscripcion)}
                                                         className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                                                         title="Registrar pago"
                                                     >
                                                         <DollarSign className="w-4 h-4" />
                                                     </button>
                                                     <button
+                                                        onClick={() => enviarRecordatorio(suscripcion)}
                                                         className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                                         title="Enviar recordatorio"
                                                     >
-                                                        <Phone className="w-4 h-4" />
+                                                        <Smartphone className="w-4 h-4" />
                                                     </button>
                                                     <button
+                                                        onClick={() => abrirDetallePago(suscripcion)}
                                                         className="p-1.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
                                                         title="Ver detalles"
                                                     >
-                                                        <FileText className="w-4 h-4" />
+                                                        <BookOpen className="w-4 h-4" />
                                                     </button>
                                                 </div>
                                             </td>
@@ -337,6 +471,13 @@ const PagosPendientesPage: React.FC = () => {
                         </tbody>
                     </table>
                 </div>
+                <Pagination
+                    currentPage={currentPage}
+                    totalItems={pagosPendientes.length}
+                    itemsPerPage={itemsPerPage}
+                    onPageChange={setCurrentPage}
+                    onItemsPerPageChange={setItemsPerPage}
+                />
             </div>
 
             {/* Summary Footer */}
@@ -358,6 +499,157 @@ const PagosPendientesPage: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            <Modal
+                isOpen={showPagoModal}
+                onClose={() => setShowPagoModal(false)}
+                title="Registrar Pago Pendiente"
+                size="lg"
+            >
+                <form onSubmit={registrarPago} className="p-6 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Institución</label>
+                            <input
+                                type="text"
+                                value={selectedSuscripcion?.idInstitucion?.nombre || ''}
+                                disabled
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">N° Factura</label>
+                            <input
+                                type="text"
+                                value={selectedSuscripcion ? generarNumeroFactura(selectedSuscripcion.idSuscripcion, selectedSuscripcion.fechaInicio) : ''}
+                                disabled
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de pago *</label>
+                            <input
+                                type="datetime-local"
+                                value={formPago.fechaPago}
+                                onChange={(e) => setFormPago(prev => ({ ...prev, fechaPago: e.target.value }))}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Método de pago *</label>
+                            <select
+                                value={formPago.idMetodo}
+                                onChange={(e) => setFormPago(prev => ({ ...prev, idMetodo: Number(e.target.value) }))}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                required
+                            >
+                                <option value={0}>Seleccione método</option>
+                                {metodosPago.map(m => (
+                                    <option key={m.idMetodo} value={m.idMetodo}>{m.nombreMetodo}</option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Monto *</label>
+                            <input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={formPago.montoTotalPagado}
+                                onChange={(e) => setFormPago(prev => ({ ...prev, montoTotalPagado: Number(e.target.value) }))}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">N° Comprobante</label>
+                            <input
+                                type="text"
+                                value={formPago.comprobanteNumero}
+                                onChange={(e) => setFormPago(prev => ({ ...prev, comprobanteNumero: e.target.value }))}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                placeholder="Ej. C-000123"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Observación</label>
+                        <textarea
+                            value={formPago.observacionPago}
+                            onChange={(e) => setFormPago(prev => ({ ...prev, observacionPago: e.target.value }))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                            rows={3}
+                        />
+                    </div>
+
+                    <div className="flex justify-end gap-2 pt-2">
+                        <button
+                            type="button"
+                            onClick={() => setShowPagoModal(false)}
+                            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isSubmittingPago}
+                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                        >
+                            {isSubmittingPago ? 'Registrando...' : 'Registrar Pago'}
+                        </button>
+                    </div>
+                </form>
+            </Modal>
+
+            <Modal
+                isOpen={showDetalleModal}
+                onClose={() => setShowDetalleModal(false)}
+                title="Detalle del Pago Pendiente"
+                size="md"
+            >
+                <div className="p-6 space-y-3 text-sm">
+                    <div className="flex justify-between border-b pb-2">
+                        <span className="text-gray-600">Institución</span>
+                        <span className="font-semibold text-gray-900">{selectedSuscripcion?.idInstitucion?.nombre || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between border-b pb-2">
+                        <span className="text-gray-600">Código modular</span>
+                        <span className="font-semibold text-gray-900">{selectedSuscripcion?.idInstitucion?.codModular || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between border-b pb-2">
+                        <span className="text-gray-600">Factura</span>
+                        <span className="font-semibold text-gray-900">
+                            {selectedSuscripcion ? generarNumeroFactura(selectedSuscripcion.idSuscripcion, selectedSuscripcion.fechaInicio) : 'N/A'}
+                        </span>
+                    </div>
+                    <div className="flex justify-between border-b pb-2">
+                        <span className="text-gray-600">Plan</span>
+                        <span className="font-semibold text-gray-900">{selectedSuscripcion?.idPlan?.nombrePlan || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between border-b pb-2">
+                        <span className="text-gray-600">Monto pendiente</span>
+                        <span className="font-semibold text-red-600">{formatPrice(selectedSuscripcion?.precioAcordado)}</span>
+                    </div>
+                    <div className="flex justify-between border-b pb-2">
+                        <span className="text-gray-600">Vencimiento</span>
+                        <span className="font-semibold text-gray-900">{formatDate(selectedSuscripcion?.fechaVencimiento)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <span className="text-gray-600">Días para vencer</span>
+                        <span className="font-semibold text-gray-900">
+                            {selectedSuscripcion ? getDiasHastaVencimiento(selectedSuscripcion.fechaVencimiento) : 0}
+                        </span>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 };

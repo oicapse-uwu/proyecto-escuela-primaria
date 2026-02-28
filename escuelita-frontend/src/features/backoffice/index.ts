@@ -2,6 +2,8 @@
 
 export * from './dashboard';
 export * from './instituciones';
+export * from './reportes';
 export * from './suscripciones';
+export * from './usuarios';
 
 // Agregar más features aquí según se vayan implementando

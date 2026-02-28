@@ -1,7 +1,7 @@
 import { Building2, Calendar, CreditCard, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import type { Institucion } from '../../instituciones/types';
-import type { CicloFacturacion, EstadoSuscripcion, Plan, Suscripcion, SuscripcionFormData } from '../types';
+import type { CicloFacturacion, EstadoSuscripcion, MetodoPago, Plan, Suscripcion, SuscripcionFormData } from '../types';
 
 interface SuscripcionFormProps {
     suscripcionEditar?: Suscripcion | null;
@@ -9,6 +9,7 @@ interface SuscripcionFormProps {
     planes: Plan[];
     estadosSuscripcion: EstadoSuscripcion[];
     ciclosFacturacion: CicloFacturacion[];
+    metodosPago: MetodoPago[];
     onSubmit: (data: SuscripcionFormData) => Promise<void>;
     onCancel: () => void;
 }
@@ -19,6 +20,7 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
     planes,
     estadosSuscripcion,
     ciclosFacturacion,
+    metodosPago,
     onSubmit, 
     onCancel 
 }) => {
@@ -31,7 +33,8 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
         idInstitucion: 0,
         idPlan: 0,
         idCiclo: 0,
-        idEstado: 1
+        idEstado: 1,
+        idMetodoPago: 0
     });
 
     const [planSeleccionado, setPlanSeleccionado] = useState<Plan | null>(null);
@@ -48,7 +51,8 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
                 idInstitucion: suscripcionEditar.idInstitucion?.idInstitucion || 0,
                 idPlan: suscripcionEditar.idPlan?.idPlan || 0,
                 idCiclo: suscripcionEditar.idCiclo?.idCiclo || 0,
-                idEstado: suscripcionEditar.idEstado?.idEstado || 1
+                idEstado: suscripcionEditar.idEstado?.idEstado || 1,
+                idMetodoPago: 0
             });
             
             const plan = suscripcionEditar.idPlan ? planes.find(p => p.idPlan === suscripcionEditar.idPlan?.idPlan) : null;
@@ -60,7 +64,7 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
         const { name, value } = e.target;
         
         // Para campos numéricos
-        if (['limiteAlumnosContratado', 'limiteSedesContratadas', 'precioAcordado', 'idInstitucion', 'idPlan', 'idCiclo', 'idEstado'].includes(name)) {
+        if (['limiteAlumnosContratado', 'limiteSedesContratadas', 'precioAcordado', 'idInstitucion', 'idPlan', 'idCiclo', 'idEstado', 'idMetodoPago'].includes(name)) {
             const numValue = Number(value);
             setFormData(prev => ({ ...prev, [name]: numValue }));
             
@@ -96,6 +100,10 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
         }
         if (formData.idCiclo === 0) {
             alert('Debe seleccionar un ciclo de facturación');
+            return;
+        }
+        if (formData.idMetodoPago === 0) {
+            alert('Debe seleccionar un método de pago');
             return;
         }
         
@@ -196,6 +204,26 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
                                         {estadosSuscripcion.map(estado => (
                                             <option key={estado.idEstado} value={estado.idEstado}>
                                                 {estado.nombre}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Método de Pago *
+                                    </label>
+                                    <select
+                                        name="idMetodoPago"
+                                        value={formData.idMetodoPago}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    >
+                                        <option value={0}>Seleccione método de pago</option>
+                                        {metodosPago.map(metodo => (
+                                            <option key={metodo.idMetodo} value={metodo.idMetodo}>
+                                                {metodo.nombreMetodo}
                                             </option>
                                         ))}
                                     </select>

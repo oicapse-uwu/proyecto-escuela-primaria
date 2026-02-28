@@ -1,10 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import SuperAdminSidebar from '../components/layout/SuperAdminSidebar';
 import TopBar from '../components/layout/TopBar';
 
 const SuperAdminLayout: React.FC = () => {
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState<boolean>(() => window.innerWidth >= 1024);
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(min-width: 1024px)');
+        const updateSidebar = (event: MediaQueryListEvent | MediaQueryList) => {
+            setSidebarOpen(event.matches);
+        };
+
+        updateSidebar(mediaQuery);
+
+        const handleChange = (event: MediaQueryListEvent) => updateSidebar(event);
+        mediaQuery.addEventListener('change', handleChange);
+
+        return () => {
+            mediaQuery.removeEventListener('change', handleChange);
+        };
+    }, []);
 
     return (
         <div className="flex min-h-screen bg-gray-50">

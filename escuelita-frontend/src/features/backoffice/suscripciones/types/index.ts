@@ -60,6 +60,7 @@ export interface SuscripcionFormData {
     idPlan: number;
     idCiclo: number;
     idEstado: number;
+    idMetodoPago: number;
 }
 
 export interface SuscripcionDTO {
@@ -88,4 +89,19 @@ export interface CicloFacturacion {
     nombre: string;
     mesesDuracion: number;
     estado: number;
+}
+
+export interface MetodoPago {
+    idMetodo: number;
+    nombreMetodo: string;
+    estado: number;
+}
+
+export interface PagoCajaDTO {
+    fechaPago: string;
+    montoTotalPagado: number;
+    comprobanteNumero: string;
+    observacionPago: string;
+    idMetodo: number;
+    idUsuario: number;
 }

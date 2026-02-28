@@ -31,13 +31,15 @@ import {
     UserCog,
     UserPlus,
     Users,
-    Wallet
+    Wallet,
+    X
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 interface SidebarProps {
-    // Props futuras si se necesitan
+    isOpen?: boolean;
+    onClose?: () => void;
 }
 
 interface MenuItem {
@@ -47,7 +49,7 @@ interface MenuItem {
     subItems?: { name: string; path: string; icon?: LucideIcon }[];
 }
 
-const Sidebar: React.FC<SidebarProps> = () => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
     const [expandedModules, setExpandedModules] = useState<string[]>(['dashboard']);
 
     const menuModules: MenuItem[] = [
@@ -140,18 +142,24 @@ const Sidebar: React.FC<SidebarProps> = () => {
 
     return (
         <aside 
-            className="bg-primary-dark text-text-light fixed left-0 top-0 bottom-0 z-30 shadow-xl sidebar-scroll"
+            className={`bg-primary-dark text-text-light fixed left-0 top-0 bottom-0 z-50 shadow-xl sidebar-scroll transition-transform duration-300 w-72 lg:translate-x-0 ${
+                isOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
             style={{
-                width: '18rem',
-                minWidth: '18rem',
-                maxWidth: '18rem',
                 overflowY: 'auto',
                 overflowX: 'hidden',
                 scrollbarGutter: 'stable'
             }}
         >
             {/* Espacio para Logo y Título del Colegio */}
-            <div className="p-6 border-b border-primary/30 bg-gradient-to-br from-primary-dark via-primary to-primary-dark">
+            <div className="p-6 border-b border-primary/30 bg-gradient-to-br from-primary-dark via-primary to-primary-dark relative">
+                <button
+                    onClick={onClose}
+                    className="absolute top-4 right-4 p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors lg:hidden"
+                    aria-label="Cerrar menú"
+                >
+                    <X className="w-5 h-5" />
+                </button>
                 <div className="flex flex-col items-center">
                     {/* Logo del colegio */}
                     <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-3 shadow-lg p-2">

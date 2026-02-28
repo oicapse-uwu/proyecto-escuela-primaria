@@ -9,7 +9,7 @@ import { useSuscripciones } from '../hooks/useSuscripciones';
 import type { Suscripcion, SuscripcionFormData } from '../types';
 
 const SuscripcionesActivasPage: React.FC = () => {
-    const { suscripciones, estadosSuscripcion, ciclosFacturacion, isLoading, crear, actualizar, eliminar } = useSuscripciones();
+    const { suscripciones, estadosSuscripcion, ciclosFacturacion, metodosPago, isLoading, crear, actualizar, eliminar } = useSuscripciones();
     const { planes } = usePlanes();
     const { instituciones } = useInstituciones();
     
@@ -20,14 +20,24 @@ const SuscripcionesActivasPage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
 
+    const normalizeText = (value?: string | number | null) =>
+        String(value ?? '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+
     // Filtrar suscripciones
     const suscripcionesFiltradas = suscripciones.filter(sus => {
         // Verificar que los objetos anidados existan antes de acceder a sus propiedades
         if (!sus.idInstitucion || !sus.idEstado) return false;
         
-        const matchSearch = sus.idInstitucion.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          sus.idInstitucion.codModular?.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchEstado = filterEstado === 'todos' || sus.idEstado.nombre === filterEstado;
+        const search = normalizeText(searchTerm.trim());
+        const matchSearch =
+            !search ||
+            normalizeText(sus.idInstitucion.nombre).includes(search) ||
+            normalizeText(sus.idInstitucion.codModular).includes(search);
+        const matchEstado =
+            filterEstado === 'todos' || normalizeText(sus.idEstado.nombre) === normalizeText(filterEstado);
         return matchSearch && matchEstado;
     });
 
@@ -92,11 +102,11 @@ const SuscripcionesActivasPage: React.FC = () => {
     const statsSuspendidas = suscripciones.filter(s => s.idEstado?.nombre === 'Suspendida').length;
 
     return (
-        <div className="p-3 sm:p-4 lg:p-6 pt-6 sm:pt-8 lg:pt-10">
+        <div className="p-3 sm:p-4 lg:px-6 lg:py-4 overflow-x-hidden">
             <Toaster position="top-right" richColors />
             
             {/* Header */}
-            <div className="mb-6">
+            <div className="mb-3 lg:mb-4">
                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
                     <div>
                         <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 flex items-center space-x-3">
@@ -109,7 +119,7 @@ const SuscripcionesActivasPage: React.FC = () => {
                     </div>
                     <button
                         onClick={handleNueva}
-                        className="bg-primary text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md whitespace-nowrap"
+                        className="bg-primary text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md w-full sm:w-auto"
                     >
                         <Plus className="w-5 h-5" />
                         <span>Nueva Suscripción</span>
@@ -118,61 +128,48 @@ const SuscripcionesActivasPage: React.FC = () => {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
-                <div className="bg-white rounded-lg shadow p-4 lg:p-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-3 mb-3 lg:mb-4">
+                <div className="bg-white rounded-lg shadow p-3 sm:p-4 lg:p-4">
                     <div className="flex items-center justify-between">
                         <div className="min-w-0 flex-1">
                             <p className="text-xs lg:text-sm text-gray-600 truncate">Total</p>
-                            <p className="text-xl lg:text-2xl font-bold text-gray-800">{suscripciones.length}</p>
+                            <p className="text-xl lg:text-xl font-bold text-gray-800">{suscripciones.length}</p>
                         </div>
-                        <CreditCard className="w-8 h-8 lg:w-10 lg:h-10 text-primary opacity-50 flex-shrink-0 ml-2" />
+                        <CreditCard className="w-7 h-7 lg:w-8 lg:h-8 text-primary opacity-50 flex-shrink-0 ml-2" />
                     </div>
                 </div>
-                <div className="bg-white rounded-lg shadow p-4 lg:p-6">
+                <div className="bg-white rounded-lg shadow p-3 sm:p-4 lg:p-4">
                     <div className="flex items-center justify-between">
                         <div className="min-w-0 flex-1">
                             <p className="text-xs lg:text-sm text-gray-600 truncate">Activas</p>
-                            <p className="text-xl lg:text-2xl font-bold text-green-600">{statsActivas}</p>
+                            <p className="text-xl lg:text-xl font-bold text-green-600">{statsActivas}</p>
                         </div>
-                        <CreditCard className="w-8 h-8 lg:w-10 lg:h-10 text-green-500 opacity-50 flex-shrink-0 ml-2" />
+                        <CreditCard className="w-7 h-7 lg:w-8 lg:h-8 text-green-500 opacity-50 flex-shrink-0 ml-2" />
                     </div>
                 </div>
-                <div className="bg-white rounded-lg shadow p-4 lg:p-6">
+                <div className="bg-white rounded-lg shadow p-3 sm:p-4 lg:p-4">
                     <div className="flex items-center justify-between">
                         <div className="min-w-0 flex-1">
                             <p className="text-xs lg:text-sm text-gray-600 truncate">Vencidas</p>
-                            <p className="text-xl lg:text-2xl font-bold text-red-600">{statsVencidas}</p>
+                            <p className="text-xl lg:text-xl font-bold text-red-600">{statsVencidas}</p>
                         </div>
-                        <CreditCard className="w-8 h-8 lg:w-10 lg:h-10 text-red-500 opacity-50 flex-shrink-0 ml-2" />
+                        <CreditCard className="w-7 h-7 lg:w-8 lg:h-8 text-red-500 opacity-50 flex-shrink-0 ml-2" />
                     </div>
                 </div>
-                <div className="bg-white rounded-lg shadow p-4 lg:p-6">
+                <div className="bg-white rounded-lg shadow p-3 sm:p-4 lg:p-4">
                     <div className="flex items-center justify-between">
                         <div className="min-w-0 flex-1">
                             <p className="text-xs lg:text-sm text-gray-600 truncate">Suspendidas</p>
-                            <p className="text-xl lg:text-2xl font-bold text-yellow-600">{statsSuspendidas}</p>
+                            <p className="text-xl lg:text-xl font-bold text-yellow-600">{statsSuspendidas}</p>
                         </div>
-                        <CreditCard className="w-8 h-8 lg:w-10 lg:h-10 text-yellow-500 opacity-50 flex-shrink-0 ml-2" />
+                        <CreditCard className="w-7 h-7 lg:w-8 lg:h-8 text-yellow-500 opacity-50 flex-shrink-0 ml-2" />
                     </div>
                 </div>
             </div>
 
             {/* Filtros */}
-            <div className="bg-white rounded-lg shadow p-4 mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Búsqueda */}
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                        <input
-                            type="text"
-                            placeholder="Buscar por institución o código modular..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                        />
-                    </div>
-                    
-                    {/* Filtro de Estado */}
+            <div className="bg-white rounded-lg shadow p-3 mb-3 lg:mb-4">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
                     <div>
                         <select
                             value={filterEstado}
@@ -187,25 +184,94 @@ const SuscripcionesActivasPage: React.FC = () => {
                             ))}
                         </select>
                     </div>
+
+                    <div className="relative lg:col-span-2">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <input
+                            type="text"
+                            placeholder="Buscar por institución o código modular..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                        />
+                    </div>
                 </div>
             </div>
 
             {/* Tabla de Suscripciones */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-white rounded-lg shadow overflow-hidden flex flex-col">
                 {isLoading ? (
-                    <div className="flex justify-center items-center h-64">
+                    <div className="flex-1 flex justify-center items-center h-64">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
                     </div>
                 ) : suscripcionesPaginadas.length === 0 ? (
-                    <div className="text-center py-12">
+                    <div className="flex-1 text-center py-12">
                         <CreditCard className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <p className="text-gray-500 text-lg">No se encontraron suscripciones</p>
                     </div>
                 ) : (
                     <>
-                        <div className="overflow-x-auto">
+                        <div className="md:hidden space-y-3 p-3">
+                            {suscripcionesPaginadas.map((suscripcion) => (
+                                <div key={suscripcion.idSuscripcion} className="rounded-lg border border-gray-200 p-3">
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div className="min-w-0">
+                                            <h3 className="text-sm font-semibold text-gray-900 line-clamp-1">
+                                                {suscripcion.idInstitucion?.nombre || 'N/A'}
+                                            </h3>
+                                            <p className="text-xs text-gray-500">{suscripcion.idInstitucion?.codModular || 'N/A'}</p>
+                                        </div>
+                                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoBadge(suscripcion.idEstado?.nombre || '')}`}>
+                                            {suscripcion.idEstado?.nombre || 'N/A'}
+                                        </span>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
+                                        <div>
+                                            <p className="text-gray-500">Plan</p>
+                                            <p className="font-medium text-gray-900">{suscripcion.idPlan?.nombrePlan || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-500">Precio</p>
+                                            <p className="font-semibold text-gray-900">{formatPrice(suscripcion.precioAcordado)}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-500">Alumnos</p>
+                                            <p className="font-medium text-gray-900">{suscripcion.limiteAlumnosContratado}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-500">Sedes</p>
+                                            <p className="font-medium text-gray-900">{suscripcion.limiteSedesContratadas}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-500">Vencimiento</p>
+                                            <p className="font-medium text-gray-900">{formatDate(suscripcion.fechaVencimiento)}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-end gap-2 mt-3 pt-3 border-t border-gray-100">
+                                        <button
+                                            onClick={() => handleEditar(suscripcion)}
+                                            className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                                            title="Editar"
+                                        >
+                                            <Edit className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            onClick={() => handleEliminar(suscripcion.idSuscripcion)}
+                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                            title="Eliminar"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="hidden md:block overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
+                                <thead className="bg-gray-50 sticky top-0 z-10">
                                     <tr>
                                         <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
                                             Institución
@@ -317,6 +383,7 @@ const SuscripcionesActivasPage: React.FC = () => {
                     planes={planes}
                     estadosSuscripcion={estadosSuscripcion}
                     ciclosFacturacion={ciclosFacturacion}
+                    metodosPago={metodosPago}
                     onSubmit={handleSubmit}
                     onCancel={() => setShowForm(false)}
                 />

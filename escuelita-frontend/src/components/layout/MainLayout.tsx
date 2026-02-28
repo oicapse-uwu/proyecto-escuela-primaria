@@ -16,17 +16,19 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     showFooter = false,
     showSidebar = true 
 }) => {
+    const sidebarOpen = true;
+
     return (
         <div className="min-h-screen flex flex-col bg-bg-body">
             {showHeader && <Header />}
             
             <div className={`flex flex-1 ${showHeader ? 'pt-16' : ''}`}>
-                {showSidebar && <Sidebar />}
+                {showSidebar && <Sidebar isOpen={sidebarOpen} />}
                 
                 <main 
-                    className={`flex-1 ${showSidebar ? 'ml-72' : ''}`}
+                    className={`flex-1 ${showSidebar && sidebarOpen ? 'lg:ml-72' : ''}`}
                 >
-                    <div className="p-8 min-h-screen">
+                    <div className="p-4 sm:p-6 lg:p-8 min-h-screen">
                         {children}
                     </div>
                 </main>

@@ -2,6 +2,7 @@ import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-d
 import PrivateRoute from './components/common/PrivateRoute';
 import { Dashboard } from './features/backoffice';
 import InstitucionesRoutes from './features/backoffice/instituciones/routes/InstitucionesRoutes';
+import SuscripcionesRoutes from './features/backoffice/suscripciones/routes/SuscripcionesRoutes';
 import AlumnosRoutes from './features/portal/alumnos/routes/AlumnosRoutes';
 import EscuelaLayout from './layouts/EscuelaLayout';
 import SuperAdminLayout from './layouts/SuperAdminLayout';
@@ -32,7 +33,7 @@ function App() {
             
             {/* Módulos del Backoffice */}
             <Route path="instituciones/*" element={<InstitucionesRoutes />} />
-            {/* <Route path="suscripciones/*" element={<SuscripcionesRoutes />} /> */}
+            <Route path="suscripciones/*" element={<SuscripcionesRoutes />} />
             {/* <Route path="usuarios/*" element={<UsuariosRoutes />} /> */}
             {/* etc... */}
           </Route>

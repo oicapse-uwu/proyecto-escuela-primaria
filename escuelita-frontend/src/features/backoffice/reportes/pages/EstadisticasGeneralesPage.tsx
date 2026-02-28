@@ -187,7 +187,7 @@ const EstadisticasGeneralesPage: React.FC = () => {
         if (activeTab === 'instituciones') {
             return (
                 <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 sticky top-0 z-10">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institución</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo Gestión</th>
@@ -212,7 +212,7 @@ const EstadisticasGeneralesPage: React.FC = () => {
         if (activeTab === 'gestion') {
             return (
                 <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 sticky top-0 z-10">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo de Gestión</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
@@ -235,7 +235,7 @@ const EstadisticasGeneralesPage: React.FC = () => {
         if (activeTab === 'estado') {
             return (
                 <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 sticky top-0 z-10">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
@@ -257,7 +257,7 @@ const EstadisticasGeneralesPage: React.FC = () => {
 
         return (
             <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-50 sticky top-0 z-10">
                     <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
@@ -277,9 +277,77 @@ const EstadisticasGeneralesPage: React.FC = () => {
         );
     };
 
+    const renderMobileCards = () => {
+        if (activeTab === 'instituciones') {
+            return (
+                <div className="space-y-3 p-3">
+                    {institucionesPaginadas.map((item) => (
+                        <div key={item.idInstitucion} className="rounded-lg border border-gray-200 p-3">
+                            <h3 className="text-sm font-semibold text-gray-900">{item.nombre}</h3>
+                            <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                                <div>
+                                    <p className="text-gray-500">Gestión</p>
+                                    <p className="font-medium text-gray-900">{item.tipoGestion}</p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-500">Estado</p>
+                                    <p className="font-medium text-gray-900">{item.estadoSuscripcion || '-'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-500">% Uso</p>
+                                    <p className="font-semibold text-primary">{item.porcentajeUso.toFixed(2)}%</p>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        if (activeTab === 'gestion') {
+            return (
+                <div className="space-y-3 p-3">
+                    {gestionPaginada.map((item) => (
+                        <div key={item.tipoGestion} className="rounded-lg border border-gray-200 p-3 text-xs">
+                            <p className="font-semibold text-gray-900">{item.tipoGestion}</p>
+                            <p className="text-gray-600 mt-1">Cantidad: {item.cantidad}</p>
+                            <p className="text-primary font-semibold">{item.porcentaje}</p>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        if (activeTab === 'estado') {
+            return (
+                <div className="space-y-3 p-3">
+                    {estadoPaginado.map((item) => (
+                        <div key={item.estado} className="rounded-lg border border-gray-200 p-3 text-xs">
+                            <p className="font-semibold text-gray-900">{item.estado}</p>
+                            <p className="text-gray-600 mt-1">Cantidad: {item.cantidad}</p>
+                            <p className="text-primary font-semibold">{item.porcentaje}</p>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        return (
+            <div className="space-y-3 p-3">
+                {rolesPaginados.map((item) => (
+                    <div key={item.rol} className="rounded-lg border border-gray-200 p-3 text-xs">
+                        <p className="font-semibold text-gray-900">{item.rol}</p>
+                        <p className="text-gray-600 mt-1">Cantidad: {item.cantidad}</p>
+                        <p className="text-primary font-semibold">{item.porcentaje}</p>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
     return (
-        <div className="p-3 sm:p-4 lg:p-5 pt-5 sm:pt-6 lg:pt-7">
-            <div className="mb-4 flex items-start justify-between gap-2">
+        <div className="p-3 sm:p-4 lg:px-5 lg:py-4 overflow-x-hidden">
+            <div className="mb-4 flex flex-col md:flex-row md:items-start md:justify-between gap-2">
                 <div>
                     <h1 className="text-2xl lg:text-[28px] font-bold text-gray-800 flex items-center gap-2">
                         <BarChart3 className="w-7 h-7 text-primary" />
@@ -303,7 +371,7 @@ const EstadisticasGeneralesPage: React.FC = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
                 <div className="rounded-lg p-2.5 border border-amber-100 bg-amber-50">
                     <p className="text-xs text-amber-700/80">Instituciones</p>
                     <p className="text-lg lg:text-xl font-bold text-amber-800">{resumen.totalInstituciones}</p>
@@ -359,7 +427,7 @@ const EstadisticasGeneralesPage: React.FC = () => {
                 </div>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden min-h-[520px] flex flex-col">
+            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-col">
                 <div className="px-2 pt-2 border-b border-gray-200">
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
                         {tabs.map((tab) => (
@@ -384,14 +452,17 @@ const EstadisticasGeneralesPage: React.FC = () => {
                     </div>
                 ) : (
                     <>
-                        <div className="p-3 overflow-x-auto flex-1">{renderTable()}</div>
-                        <Pagination
-                            currentPage={currentPage}
-                            totalItems={activeRows.length}
-                            itemsPerPage={itemsPerPage}
-                            onPageChange={setCurrentPage}
-                            onItemsPerPageChange={setItemsPerPage}
-                        />
+                        <div className="md:hidden">{renderMobileCards()}</div>
+                        <div className="hidden md:block p-3 overflow-x-auto">{renderTable()}</div>
+                        <div className="border-t border-gray-200">
+                            <Pagination
+                                currentPage={currentPage}
+                                totalItems={activeRows.length}
+                                itemsPerPage={itemsPerPage}
+                                onPageChange={setCurrentPage}
+                                onItemsPerPageChange={setItemsPerPage}
+                            />
+                        </div>
                     </>
                 )}
             </div>

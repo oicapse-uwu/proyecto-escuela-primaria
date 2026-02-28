@@ -226,7 +226,7 @@ const UsoSistemaPage: React.FC = () => {
         if (activeTab === 'instituciones') {
             return (
                 <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 sticky top-0 z-10">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institución</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
@@ -253,7 +253,7 @@ const UsoSistemaPage: React.FC = () => {
         if (activeTab === 'sedes') {
             return (
                 <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 sticky top-0 z-10">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sede</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuarios</th>
@@ -273,7 +273,7 @@ const UsoSistemaPage: React.FC = () => {
 
         return (
             <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 sticky top-0 z-10">
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
@@ -302,9 +302,63 @@ const UsoSistemaPage: React.FC = () => {
         );
     };
 
+    const renderMobileBody = () => {
+        if (activeTab === 'instituciones') {
+            return (
+                <div className="space-y-3 p-3">
+                    {institucionesPaginadas.map((item) => (
+                        <div key={item.idInstitucion} className="rounded-lg border border-gray-200 p-3">
+                            <h3 className="text-sm font-semibold text-gray-900">{item.nombre}</h3>
+                            <p className="text-xs text-gray-500">{item.codModular}</p>
+                            <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                                <div>
+                                    <p className="text-gray-500">Estado</p>
+                                    <p className="font-medium text-gray-900">{item.estadoSuscripcion || '-'}</p>
+                                </div>
+                                <div>
+                                    <p className="text-gray-500">% Uso</p>
+                                    <p className="font-semibold text-primary">{item.porcentajeUso.toFixed(2)}%</p>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        if (activeTab === 'sedes') {
+            return (
+                <div className="space-y-3 p-3">
+                    {sedesPaginadas.map((item) => (
+                        <div key={item.nombre} className="rounded-lg border border-gray-200 p-3">
+                            <h3 className="text-sm font-semibold text-gray-900">{item.nombre}</h3>
+                            <p className="text-xs text-gray-500 mt-1">Usuarios: <span className="font-semibold text-primary">{item.valor}</span></p>
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        return (
+            <div className="space-y-3 p-3">
+                {usuariosPaginados.map((item) => (
+                    <div key={item.idUsuario} className="rounded-lg border border-gray-200 p-3">
+                        <h3 className="text-sm font-semibold text-gray-900">{item.nombres} {item.apellidos}</h3>
+                        <p className="text-xs text-gray-500">{item.usuario}</p>
+                        <div className="mt-2 grid grid-cols-1 gap-1 text-xs">
+                            <p><span className="text-gray-500">Correo:</span> <span className="text-gray-900">{item.correo}</span></p>
+                            <p><span className="text-gray-500">Rol:</span> <span className="text-gray-900">{item.idRol?.nombre || '-'}</span></p>
+                            <p><span className="text-gray-500">Sede:</span> <span className="text-gray-900">{item.idSede?.nombreSede || '-'}</span></p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
     return (
-        <div className="p-3 sm:p-4 lg:p-5 pt-5 sm:pt-6 lg:pt-7">
-            <div className="mb-4 flex items-start justify-between gap-2">
+        <div className="p-3 sm:p-4 lg:px-5 lg:py-4 overflow-x-hidden">
+            <div className="mb-4 flex flex-col md:flex-row md:items-start md:justify-between gap-2">
                 <div>
                     <h1 className="text-2xl lg:text-[28px] font-bold text-gray-800 flex items-center gap-2">
                         <Users className="w-7 h-7 text-primary" />
@@ -324,7 +378,7 @@ const UsoSistemaPage: React.FC = () => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-3">
                 <div className="rounded-lg p-2.5 border border-amber-100 bg-amber-50">
                     <p className="text-xs text-amber-700/80">Total usuarios</p>
                     <p className="text-lg lg:text-xl font-bold text-amber-800">{usuarios.length}</p>
@@ -380,7 +434,7 @@ const UsoSistemaPage: React.FC = () => {
                 </div>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden min-h-[520px] flex flex-col">
+            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-col">
                 <div className="px-2 pt-2 border-b border-gray-200">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                         {tabs.map((tab) => (
@@ -405,14 +459,17 @@ const UsoSistemaPage: React.FC = () => {
                     </div>
                 ) : (
                     <>
-                        <div className="overflow-x-auto flex-1">{renderBody()}</div>
-                        <Pagination
-                            currentPage={currentPage}
-                            totalItems={totalItemsTab}
-                            itemsPerPage={itemsPerPage}
-                            onPageChange={setCurrentPage}
-                            onItemsPerPageChange={setItemsPerPage}
-                        />
+                        <div className="md:hidden">{renderMobileBody()}</div>
+                        <div className="hidden md:block overflow-x-auto">{renderBody()}</div>
+                        <div className="border-t border-gray-200">
+                            <Pagination
+                                currentPage={currentPage}
+                                totalItems={totalItemsTab}
+                                itemsPerPage={itemsPerPage}
+                                onPageChange={setCurrentPage}
+                                onItemsPerPageChange={setItemsPerPage}
+                            />
+                        </div>
                     </>
                 )}
             </div>

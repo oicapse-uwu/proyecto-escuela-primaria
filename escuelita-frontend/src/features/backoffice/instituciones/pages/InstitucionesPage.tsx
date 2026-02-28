@@ -104,24 +104,24 @@ const InstitucionesPage: React.FC = () => {
     };
 
     return (
-        <div className="p-3 sm:p-4 lg:p-6 pt-6 sm:pt-8 lg:pt-10">
+        <div className="p-3 sm:p-4 lg:px-6 lg:py-4 overflow-x-hidden">
             <Toaster position="top-right" richColors />
             
             {/* Header */}
-            <div className="mb-6">
+            <div className="mb-3 lg:mb-4">
                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
                     <div>
                         <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 flex items-center space-x-3">
-                            <Building2 className="w-7 h-7 lg:w-8 lg:h-8 text-primary" />
+                            <Building2 className="w-7 h-7 lg:w-7 lg:h-7 text-primary" />
                             <span>Gestión de Instituciones</span>
                         </h1>
-                        <p className="text-gray-600 mt-2 text-sm lg:text-base">
+                        <p className="text-gray-600 mt-1 text-sm lg:text-base">
                             Administra todas las instituciones educativas registradas en la plataforma
                         </p>
                     </div>
                     <button
                         onClick={handleNueva}
-                        className="bg-primary text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md whitespace-nowrap"
+                        className="bg-primary text-white px-4 lg:px-5 py-2.5 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md whitespace-nowrap"
                     >
                         <Plus className="w-5 h-5" />
                         <span>Nueva Institución</span>
@@ -130,53 +130,53 @@ const InstitucionesPage: React.FC = () => {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 mb-4 lg:mb-6">
-                <div className="bg-white rounded-lg shadow p-3 sm:p-4 lg:p-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-3 mb-2 lg:mb-3">
+                <div className="bg-white rounded-lg shadow p-3 sm:p-3.5 lg:p-3.5">
                     <div className="flex items-center justify-between">
                         <div className="min-w-0 flex-1">
                             <p className="text-[10px] sm:text-xs lg:text-sm text-gray-600 truncate">Total Instituciones</p>
-                            <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800">{instituciones.length}</p>
+                            <p className="text-lg sm:text-xl lg:text-xl font-bold text-gray-800">{instituciones.length}</p>
                         </div>
-                        <Building2 className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-primary opacity-50 flex-shrink-0 ml-2" />
+                        <Building2 className="w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 text-primary opacity-50 flex-shrink-0 ml-2" />
                     </div>
                 </div>
-                <div className="bg-white rounded-lg shadow p-3 sm:p-4 lg:p-6">
+                <div className="bg-white rounded-lg shadow p-3 sm:p-3.5 lg:p-3.5">
                     <div className="flex items-center justify-between">
                         <div className="min-w-0 flex-1">
                             <p className="text-[10px] sm:text-xs lg:text-sm text-gray-600 truncate">Activas</p>
-                            <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-600">
+                            <p className="text-lg sm:text-xl lg:text-xl font-bold text-green-600">
                                 {instituciones.filter(i => i.estadoSuscripcion === 'ACTIVA').length}
                             </p>
                         </div>
-                        <Shield className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-green-500 opacity-50 flex-shrink-0 ml-2" />
+                        <Shield className="w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 text-green-500 opacity-50 flex-shrink-0 ml-2" />
                     </div>
                 </div>
-                <div className="bg-white rounded-lg shadow p-3 sm:p-4 lg:p-6">
+                <div className="bg-white rounded-lg shadow p-3 sm:p-3.5 lg:p-3.5">
                     <div className="flex items-center justify-between">
                         <div className="min-w-0 flex-1">
                             <p className="text-[10px] sm:text-xs lg:text-sm text-gray-600 truncate">En Demo</p>
-                            <p className="text-lg sm:text-xl lg:text-2xl font-bold text-yellow-600">
+                            <p className="text-lg sm:text-xl lg:text-xl font-bold text-yellow-600">
                                 {instituciones.filter(i => i.estadoSuscripcion === 'DEMO').length}
                             </p>
                         </div>
-                        <Shield className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-yellow-500 opacity-50 flex-shrink-0 ml-2" />
+                        <Shield className="w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 text-yellow-500 opacity-50 flex-shrink-0 ml-2" />
                     </div>
                 </div>
-                <div className="bg-white rounded-lg shadow p-3 sm:p-4 lg:p-6">
+                <div className="bg-white rounded-lg shadow p-3 sm:p-3.5 lg:p-3.5">
                     <div className="flex items-center justify-between">
                         <div className="min-w-0 flex-1">
                             <p className="text-[10px] sm:text-xs lg:text-sm text-gray-600 truncate">Suspendidas</p>
-                            <p className="text-lg sm:text-xl lg:text-2xl font-bold text-red-600">
+                            <p className="text-lg sm:text-xl lg:text-xl font-bold text-red-600">
                                 {instituciones.filter(i => i.estadoSuscripcion === 'SUSPENDIDA' || i.estadoSuscripcion === 'VENCIDA').length}
                             </p>
                         </div>
-                        <Shield className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-red-500 opacity-50 flex-shrink-0 ml-2" />
+                        <Shield className="w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 text-red-500 opacity-50 flex-shrink-0 ml-2" />
                     </div>
                 </div>
             </div>
 
             {/* Search Bar */}
-            <div className="mb-4 lg:mb-6 bg-white rounded-lg shadow p-3 lg:p-4">
+            <div className="mb-2 lg:mb-3 bg-white rounded-lg shadow p-3 lg:p-3">
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 lg:w-5 lg:h-5" />
                     <input
@@ -184,7 +184,7 @@ const InstitucionesPage: React.FC = () => {
                         placeholder="Buscar por nombre, código modular o director..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-9 lg:pl-10 pr-4 py-2.5 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                        className="w-full pl-9 lg:pl-10 pr-4 py-2.5 text-sm lg:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     />
                 </div>
             </div>
@@ -295,7 +295,7 @@ const InstitucionesPage: React.FC = () => {
                     <>
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
+                            <thead className="bg-gray-50 sticky top-0 z-10">
                                 <tr>
                                     <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[220px]">
                                         Institución
@@ -381,13 +381,15 @@ const InstitucionesPage: React.FC = () => {
                         </table>
                     </div>                    
                     {/* Paginación para desktop */}
-                    <Pagination
-                        currentPage={currentPage}
-                        totalItems={institucionesFiltradas.length}
-                        itemsPerPage={itemsPerPage}
-                        onPageChange={setCurrentPage}
-                        onItemsPerPageChange={setItemsPerPage}
-                    />
+                    <div className="border-t border-gray-200">
+                        <Pagination
+                            currentPage={currentPage}
+                            totalItems={institucionesFiltradas.length}
+                            itemsPerPage={itemsPerPage}
+                            onPageChange={setCurrentPage}
+                            onItemsPerPageChange={setItemsPerPage}
+                        />
+                    </div>
                     </>                )}
             </div>
 

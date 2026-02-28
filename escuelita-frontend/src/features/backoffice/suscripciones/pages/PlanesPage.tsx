@@ -48,11 +48,11 @@ const PlanesPage: React.FC = () => {
     };
 
     return (
-        <div className="p-3 sm:p-4 lg:p-6 pt-6 sm:pt-8 lg:pt-10">
+        <div className="p-3 sm:p-4 lg:px-6 lg:py-4 overflow-x-hidden">
             <Toaster position="top-right" richColors />
             
             {/* Header */}
-            <div className="mb-6">
+            <div className="mb-3 lg:mb-4">
                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
                     <div>
                         <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 flex items-center space-x-3">
@@ -65,7 +65,7 @@ const PlanesPage: React.FC = () => {
                     </div>
                     <button
                         onClick={handleNuevo}
-                        className="bg-primary text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md whitespace-nowrap"
+                        className="bg-primary text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md w-full sm:w-auto"
                     >
                         <Plus className="w-5 h-5" />
                         <span>Nuevo Plan</span>
@@ -74,43 +74,43 @@ const PlanesPage: React.FC = () => {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-white rounded-lg shadow p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 lg:gap-3 mb-3 lg:mb-4">
+                <div className="bg-white rounded-lg shadow p-3 sm:p-4 lg:p-4">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-600">Total de Planes</p>
-                            <p className="text-2xl font-bold text-gray-800">{planes.length}</p>
+                            <p className="text-xl font-bold text-gray-800">{planes.length}</p>
                         </div>
-                        <Package className="w-10 h-10 text-primary opacity-50" />
+                        <Package className="w-8 h-8 text-primary opacity-50" />
                     </div>
                 </div>
-                <div className="bg-white rounded-lg shadow p-6">
+                <div className="bg-white rounded-lg shadow p-3 sm:p-4 lg:p-4">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-600">Precio Promedio</p>
-                            <p className="text-2xl font-bold text-green-600">
+                            <p className="text-xl font-bold text-green-600">
                                 {planes.length > 0 
                                     ? formatPrice(planes.reduce((acc, p) => acc + p.precioAnual, 0) / planes.length)
                                     : formatPrice(0)
                                 }
                             </p>
                         </div>
-                        <Package className="w-10 h-10 text-green-500 opacity-50" />
+                        <Package className="w-8 h-8 text-green-500 opacity-50" />
                     </div>
                 </div>
-                <div className="bg-white rounded-lg shadow p-6">
+                <div className="bg-white rounded-lg shadow p-3 sm:p-4 lg:p-4">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-600">Planes Activos</p>
-                            <p className="text-2xl font-bold text-blue-600">{planes.filter(p => p.estado === 1).length}</p>
+                            <p className="text-xl font-bold text-blue-600">{planes.filter(p => p.estado === 1).length}</p>
                         </div>
-                        <Package className="w-10 h-10 text-blue-500 opacity-50" />
+                        <Package className="w-8 h-8 text-blue-500 opacity-50" />
                     </div>
                 </div>
             </div>
 
             {/* Tabla de Planes */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-white rounded-lg shadow overflow-hidden flex flex-col">
                 {isLoading ? (
                     <div className="flex justify-center items-center h-64">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
@@ -122,9 +122,59 @@ const PlanesPage: React.FC = () => {
                     </div>
                 ) : (
                     <>
-                        <div className="overflow-x-auto">
+                        <div className="md:hidden space-y-3 p-3">
+                            {planesPaginados.map((plan) => (
+                                <div key={plan.idPlan} className="rounded-lg border border-gray-200 p-3">
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div>
+                                            <h3 className="text-sm font-semibold text-gray-900">{plan.nombrePlan}</h3>
+                                            {plan.descripcion && (
+                                                <p className="text-xs text-gray-500 mt-1 line-clamp-2">{plan.descripcion}</p>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <button
+                                                onClick={() => handleEditar(plan)}
+                                                className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                                                title="Editar"
+                                            >
+                                                <Edit className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleEliminar(plan.idPlan)}
+                                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                title="Eliminar"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
+                                        <div>
+                                            <p className="text-gray-500">Mensual</p>
+                                            <p className="font-semibold text-gray-900">{formatPrice(plan.precioMensual)}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-500">Anual</p>
+                                            <p className="font-semibold text-gray-900">{formatPrice(plan.precioAnual)}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-500">Límite Alumnos</p>
+                                            <p className="font-semibold text-gray-900">{plan.limiteAlumnos ?? 'Ilimitado'}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-500">Límite Sedes</p>
+                                            <p className="font-semibold text-gray-900">{plan.limiteSedes ?? 'Ilimitado'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="hidden md:block overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
+                                <thead className="bg-gray-50 sticky top-0 z-10">
                                     <tr>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Plan

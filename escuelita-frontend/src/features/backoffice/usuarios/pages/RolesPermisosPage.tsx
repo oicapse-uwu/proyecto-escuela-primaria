@@ -45,10 +45,10 @@ const RolesPermisosPage: React.FC = () => {
     };
 
     return (
-        <div className="p-3 sm:p-4 lg:p-6 pt-6 sm:pt-8 lg:pt-10">
+        <div className="p-3 sm:p-4 lg:px-6 lg:py-4 overflow-x-hidden">
             <Toaster position="top-right" richColors />
 
-            <div className="mb-6">
+            <div className="mb-3 lg:mb-4">
                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
                     <div>
                         <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 flex items-center space-x-3">
@@ -64,7 +64,7 @@ const RolesPermisosPage: React.FC = () => {
                             setRolEditar(null);
                             setShowForm(true);
                         }}
-                        className="bg-primary text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md whitespace-nowrap"
+                        className="bg-primary text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md w-full sm:w-auto"
                     >
                         <Plus className="w-5 h-5" />
                         <span>Nuevo Rol</span>
@@ -72,7 +72,7 @@ const RolesPermisosPage: React.FC = () => {
                 </div>
             </div>
 
-            <div className="mb-4 lg:mb-6 bg-white rounded-lg shadow p-3 lg:p-4">
+            <div className="mb-3 lg:mb-4 bg-white rounded-lg shadow p-3 lg:p-3.5">
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 lg:w-5 lg:h-5" />
                     <input
@@ -85,7 +85,7 @@ const RolesPermisosPage: React.FC = () => {
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow overflow-hidden min-h-[520px] flex flex-col">
+            <div className="bg-white rounded-lg shadow overflow-hidden flex flex-col">
                 {isLoading ? (
                     <div className="flex-1 flex justify-center items-center h-64">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
@@ -97,9 +97,45 @@ const RolesPermisosPage: React.FC = () => {
                     </div>
                 ) : (
                     <>
-                        <div className="overflow-x-auto flex-1">
+                        <div className="md:hidden space-y-3 p-3">
+                            {rolesPaginados.map((item) => (
+                                <div key={item.idRol} className="rounded-lg border border-gray-200 p-3">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div>
+                                            <p className="text-xs text-gray-500">ID #{item.idRol}</p>
+                                            <h3 className="text-sm font-semibold text-gray-900">{item.nombre}</h3>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <button
+                                                onClick={() => {
+                                                    setRolEditar(item);
+                                                    setShowForm(true);
+                                                }}
+                                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                title="Editar"
+                                            >
+                                                <Edit className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    if (window.confirm('¿Está seguro de eliminar este rol?')) {
+                                                        eliminar(item.idRol);
+                                                    }
+                                                }}
+                                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                title="Eliminar"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="hidden md:block overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
+                                <thead className="bg-gray-50 sticky top-0 z-10">
                                     <tr>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
@@ -142,13 +178,15 @@ const RolesPermisosPage: React.FC = () => {
                             </table>
                         </div>
 
-                        <Pagination
-                            currentPage={currentPage}
-                            totalItems={rolesFiltrados.length}
-                            itemsPerPage={itemsPerPage}
-                            onPageChange={setCurrentPage}
-                            onItemsPerPageChange={setItemsPerPage}
-                        />
+                        <div className="border-t border-gray-200">
+                            <Pagination
+                                currentPage={currentPage}
+                                totalItems={rolesFiltrados.length}
+                                itemsPerPage={itemsPerPage}
+                                onPageChange={setCurrentPage}
+                                onItemsPerPageChange={setItemsPerPage}
+                            />
+                        </div>
                     </>
                 )}
             </div>

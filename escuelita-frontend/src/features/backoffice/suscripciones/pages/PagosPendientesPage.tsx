@@ -241,57 +241,57 @@ const PagosPendientesPage: React.FC = () => {
     }
 
     return (
-        <div className="p-3 sm:p-4 lg:p-6 pt-6 sm:pt-8 lg:pt-10 bg-gradient-to-br from-orange-50 to-red-50 min-h-screen">
+        <div className="p-3 sm:p-4 lg:px-6 lg:py-4 bg-gradient-to-br from-orange-50 to-red-50 min-h-screen overflow-x-hidden">
             {/* Header */}
-            <div className="mb-6">
+            <div className="mb-3 lg:mb-4">
                 <div className="flex items-center gap-3 mb-2">
-                    <div className="p-3 bg-gradient-to-br from-orange-600 to-red-600 rounded-xl shadow-lg">
-                        <CreditCard className="w-7 h-7 text-white" />
+                    <div className="p-2.5 bg-gradient-to-br from-orange-600 to-red-600 rounded-xl shadow-lg">
+                        <CreditCard className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900">Pagos Pendientes</h1>
+                        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Pagos Pendientes</h1>
                         <p className="text-sm text-gray-600 mt-1">Gestiona suscripciones con pagos pendientes o próximos a vencer</p>
                     </div>
                 </div>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-red-500">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-3 lg:gap-3 mb-3 lg:mb-4">
+                <div className="bg-white p-2.5 sm:p-3 rounded-xl shadow-md border-l-4 border-red-500">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-600 mb-1">Vencidas</p>
-                            <p className="text-2xl font-bold text-red-600">{totalVencidas.length}</p>
+                            <p className="text-xl font-bold text-red-600">{totalVencidas.length}</p>
                             <p className="text-xs text-gray-500 mt-1">{formatPrice(montoVencido)}</p>
                         </div>
-                        <div className="p-3 bg-red-100 rounded-lg">
-                            <AlertCircle className="w-6 h-6 text-red-600" />
+                        <div className="p-2 bg-red-100 rounded-lg">
+                            <AlertCircle className="w-5 h-5 text-red-600" />
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-orange-500">
+                <div className="bg-white p-2.5 sm:p-3 rounded-xl shadow-md border-l-4 border-orange-500">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-600 mb-1">Urgentes (≤7 días)</p>
-                            <p className="text-2xl font-bold text-orange-600">{totalUrgentes.length}</p>
+                            <p className="text-xl font-bold text-orange-600">{totalUrgentes.length}</p>
                             <p className="text-xs text-gray-500 mt-1">{formatPrice(montoUrgente)}</p>
                         </div>
-                        <div className="p-3 bg-orange-100 rounded-lg">
-                            <Clock className="w-6 h-6 text-orange-600" />
+                        <div className="p-2 bg-orange-100 rounded-lg">
+                            <Clock className="w-5 h-5 text-orange-600" />
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-xl shadow-md border-l-4 border-yellow-500">
+                <div className="bg-white p-2.5 sm:p-3 rounded-xl shadow-md border-l-4 border-yellow-500">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-600 mb-1">Próximas (≤15 días)</p>
-                            <p className="text-2xl font-bold text-yellow-600">{totalProximas.length}</p>
+                            <p className="text-xl font-bold text-yellow-600">{totalProximas.length}</p>
                             <p className="text-xs text-gray-500 mt-1">{formatPrice(montoProximo)}</p>
                         </div>
-                        <div className="p-3 bg-yellow-100 rounded-lg">
-                            <Calendar className="w-6 h-6 text-yellow-600" />
+                        <div className="p-2 bg-yellow-100 rounded-lg">
+                            <Calendar className="w-5 h-5 text-yellow-600" />
                         </div>
                     </div>
                 </div>
@@ -299,7 +299,7 @@ const PagosPendientesPage: React.FC = () => {
 
             {/* Alert Summary */}
             {totalVencidas.length > 0 && (
-                <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-lg">
+                <div className="bg-red-50 border-l-4 border-red-500 p-3 mb-3 lg:mb-4 rounded-r-lg">
                     <div className="flex items-start">
                         <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 mr-3" />
                         <div>
@@ -315,7 +315,7 @@ const PagosPendientesPage: React.FC = () => {
             )}
 
             {/* Filters */}
-            <div className="bg-white p-4 rounded-xl shadow-md border border-gray-100 mb-6">
+            <div className="bg-white p-3 rounded-xl shadow-md border border-gray-100 mb-3 lg:mb-4">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
                     <div className="relative lg:col-span-2">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -345,10 +345,92 @@ const PagosPendientesPage: React.FC = () => {
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden min-h-[520px] flex flex-col">
-                <div className="overflow-x-auto flex-1">
+            <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden min-h-[340px] sm:min-h-[420px] flex flex-col">
+                <div className="md:hidden p-3 space-y-3">
+                    {pagosPendientes.length === 0 ? (
+                        <div className="py-8 text-center text-gray-500">
+                            <CheckCircle className="w-10 h-10 mx-auto mb-2 text-green-400" />
+                            <p className="font-medium text-green-600">¡Excelente! No hay pagos pendientes</p>
+                        </div>
+                    ) : (
+                        pagosPendientesPaginados.map((suscripcion) => {
+                            const urgencia = getUrgencia(suscripcion.fechaVencimiento);
+                            const badge = getUrgenciaBadge(urgencia);
+                            const dias = getDiasHastaVencimiento(suscripcion.fechaVencimiento);
+
+                            return (
+                                <div key={suscripcion.idSuscripcion} className="rounded-lg border border-gray-200 p-3">
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div>
+                                            <p className="text-xs font-mono font-semibold text-gray-900">
+                                                {generarNumeroFactura(suscripcion.idSuscripcion, suscripcion.fechaInicio)}
+                                            </p>
+                                            <p className="text-sm font-medium text-gray-900 mt-1">
+                                                {suscripcion.idInstitucion?.nombre || 'N/A'}
+                                            </p>
+                                            <p className="text-xs text-gray-500">{suscripcion.idInstitucion?.codModular || 'N/A'}</p>
+                                        </div>
+                                        <span className={`px-2 py-1 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full ${badge.bg}`}>
+                                            {badge.icon}
+                                            {badge.text}
+                                        </span>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
+                                        <div>
+                                            <p className="text-gray-500">Plan</p>
+                                            <p className="font-medium text-gray-900">{suscripcion.idPlan?.nombrePlan || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-500">Monto</p>
+                                            <p className="font-semibold text-gray-900">{formatPrice(suscripcion.precioAcordado)}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-500">Vencimiento</p>
+                                            <p className="font-medium text-gray-900">{formatDate(suscripcion.fechaVencimiento)}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-gray-500">Días</p>
+                                            <p className={`font-semibold ${
+                                                dias < 0 ? 'text-red-600' : dias <= 7 ? 'text-orange-600' : 'text-yellow-600'
+                                            }`}>
+                                                {dias < 0 ? `${Math.abs(dias)}d` : `${dias}d`}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-end gap-1 mt-3 pt-3 border-t border-gray-100">
+                                        <button
+                                            onClick={() => abrirModalPago(suscripcion)}
+                                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                            title="Registrar pago"
+                                        >
+                                            <DollarSign className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            onClick={() => enviarRecordatorio(suscripcion)}
+                                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                            title="Enviar recordatorio"
+                                        >
+                                            <Smartphone className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            onClick={() => abrirDetallePago(suscripcion)}
+                                            className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                                            title="Ver detalles"
+                                        >
+                                            <BookOpen className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
+
+                <div className="hidden md:block overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-gray-50 sticky top-0 z-10">
                             <tr>
                                 <th className="px-3 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
                                     Urgencia
@@ -471,18 +553,20 @@ const PagosPendientesPage: React.FC = () => {
                         </tbody>
                     </table>
                 </div>
-                <Pagination
-                    currentPage={currentPage}
-                    totalItems={pagosPendientes.length}
-                    itemsPerPage={itemsPerPage}
-                    onPageChange={setCurrentPage}
-                    onItemsPerPageChange={setItemsPerPage}
-                />
+                <div className="border-t border-gray-200">
+                    <Pagination
+                        currentPage={currentPage}
+                        totalItems={pagosPendientes.length}
+                        itemsPerPage={itemsPerPage}
+                        onPageChange={setCurrentPage}
+                        onItemsPerPageChange={setItemsPerPage}
+                    />
+                </div>
             </div>
 
             {/* Summary Footer */}
             {pagosPendientes.length > 0 && (
-                <div className="mt-6 bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <div className="mt-3 bg-white p-3 sm:p-4 rounded-xl shadow-md border border-gray-100">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="text-sm text-gray-600">
                             <p className="mb-1">Mostrando <span className="font-semibold text-gray-900">{pagosPendientes.length}</span> pago(s) pendiente(s)</p>
@@ -490,7 +574,7 @@ const PagosPendientesPage: React.FC = () => {
                                 De {suscripciones.length} suscripciones totales
                             </p>
                         </div>
-                        <div className="text-right">
+                        <div className="text-left md:text-right">
                             <p className="text-sm text-gray-600">Total por cobrar</p>
                             <p className="text-3xl font-bold text-red-600">
                                 {formatPrice(pagosPendientes.reduce((sum, s) => sum + (s.precioAcordado || 0), 0))}

@@ -195,7 +195,7 @@ const InstitucionesPage: React.FC = () => {
                             {/* Header de la card */}
                             <div className="flex items-start justify-between mb-3">
                                 <div className="flex items-center space-x-3 flex-1 min-w-0">
-                                    <div className="flex-shrink-0 h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center overflow-hidden">
+                                    <div className="flex-shrink-0 h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center overflow-hidden">
                                         {institucion.logoPath ? (
                                             <img 
                                                 src={`${API_BASE_URL}${institucion.logoPath}`} 
@@ -203,7 +203,7 @@ const InstitucionesPage: React.FC = () => {
                                                 className="w-full h-full object-cover"
                                             />
                                         ) : (
-                                            <Building2 className="w-5 h-5 text-primary" />
+                                            <Building2 className="w-4 h-4 text-primary" />
                                         )}
                                     </div>
                                     <div className="min-w-0 flex-1">
@@ -221,7 +221,7 @@ const InstitucionesPage: React.FC = () => {
                             {/* Info de la card */}
                             <div className="space-y-2 mb-3 text-sm">
                                 <div className="flex justify-between">
-                                    <span className="text-gray-500 font-medium">Código Modular:</span>
+                                    <span className="text-gray-500 font-medium">Cód. Modular:</span>
                                     <span className="text-gray-900 font-semibold">{institucion.codModular}</span>
                                 </div>
                                 <div className="flex justify-between">
@@ -286,22 +286,22 @@ const InstitucionesPage: React.FC = () => {
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[280px]">
+                                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[220px]">
                                         Institución
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[140px]">
-                                        Código Modular
+                                    <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
+                                        Cód. Modular
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
+                                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
                                         Director
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
+                                    <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
                                         Plan
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[130px]">
+                                    <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
                                         Estado
                                     </th>
-                                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 min-w-[120px]">
+                                    <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 min-w-[90px]">
                                         Acciones
                                     </th>
                                 </tr>
@@ -309,9 +309,9 @@ const InstitucionesPage: React.FC = () => {
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {institucionesPaginadas.map((institucion) => (
                                     <tr key={institucion.idInstitucion} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 min-w-[280px]">
+                                        <td className="px-3 py-3 min-w-[220px]">
                                             <div className="flex items-center">
-                                                <div className="flex-shrink-0 h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center overflow-hidden">
+                                                <div className="flex-shrink-0 h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center overflow-hidden">
                                                     {institucion.logoPath ? (
                                                         <img 
                                                             src={`${API_BASE_URL}${institucion.logoPath}`} 
@@ -319,48 +319,48 @@ const InstitucionesPage: React.FC = () => {
                                                             className="w-full h-full object-cover"
                                                         />
                                                     ) : (
-                                                        <Building2 className="w-5 h-5 text-primary" />
+                                                        <Building2 className="w-4 h-4 text-primary" />
                                                     )}
                                                 </div>
-                                                <div className="ml-4">
-                                                    <div className="text-sm font-medium text-gray-900 line-clamp-1">
+                                                <div className="ml-3">
+                                                    <div className="text-xs font-medium text-gray-900 line-clamp-1">
                                                         {institucion.nombre}
                                                     </div>
-                                                    <div className="text-sm text-gray-500">
+                                                    <div className="text-xs text-gray-500">
                                                         {institucion.tipoGestion}
                                                     </div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 min-w-[140px]">
+                                        <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-900 min-w-[100px]">
                                             {institucion.codModular}
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-gray-900 min-w-[200px]">
+                                        <td className="px-3 py-3 text-xs text-gray-900 min-w-[150px]">
                                             <div className="line-clamp-2">{institucion.nombreDirector}</div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 min-w-[150px]">
+                                        <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-900 min-w-[120px]">
                                             {institucion.planContratado}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap min-w-[130px]">
-                                            <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoBadge(institucion.estadoSuscripcion)}`}>
+                                        <td className="px-2 py-3 whitespace-nowrap min-w-[100px]">
+                                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoBadge(institucion.estadoSuscripcion)}`}>
                                                 {institucion.estadoSuscripcion}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-center sticky right-0 bg-white min-w-[120px]">
-                                            <div className="flex items-center justify-center gap-2">
+                                        <td className="px-2 py-3 whitespace-nowrap text-center sticky right-0 bg-white min-w-[90px]">
+                                            <div className="flex items-center justify-center gap-1">
                                                 <button
                                                     onClick={() => handleEditar(institucion)}
-                                                    className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                                                    className="p-1.5 text-primary hover:bg-primary/10 rounded-lg transition-colors"
                                                     title="Editar"
                                                 >
-                                                    <Edit className="w-5 h-5" />
+                                                    <Edit className="w-4 h-4" />
                                                 </button>
                                                 <button
                                                     onClick={() => handleEliminar(institucion.idInstitucion)}
-                                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                    className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                                     title="Eliminar"
                                                 >
-                                                    <Trash2 className="w-5 h-5" />
+                                                    <Trash2 className="w-4 h-4" />
                                                 </button>
                                             </div>
                                         </td>

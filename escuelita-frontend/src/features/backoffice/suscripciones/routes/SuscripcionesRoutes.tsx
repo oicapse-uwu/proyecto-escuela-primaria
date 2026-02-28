@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 // Páginas del módulo
+import FacturacionPage from '../pages/FacturacionPage';
+import PagosPendientesPage from '../pages/PagosPendientesPage';
 import PlanesPage from '../pages/PlanesPage';
 import SuscripcionesActivasPage from '../pages/SuscripcionesActivasPage';
 
@@ -13,10 +15,8 @@ const SuscripcionesRoutes = () => {
             {/* Rutas del módulo */}
             <Route path="planes" element={<PlanesPage />} />
             <Route path="activas" element={<SuscripcionesActivasPage />} />
-            
-            {/* Rutas futuras */}
-            {/* <Route path="facturacion" element={<FacturacionPage />} /> */}
-            {/* <Route path="pendientes" element={<PagosPendientesPage />} /> */}
+            <Route path="facturacion" element={<FacturacionPage />} />
+            <Route path="pendientes" element={<PagosPendientesPage />} />
             
             {/* Ruta 404 dentro del módulo */}
             <Route path="*" element={<Navigate to="activas" replace />} />

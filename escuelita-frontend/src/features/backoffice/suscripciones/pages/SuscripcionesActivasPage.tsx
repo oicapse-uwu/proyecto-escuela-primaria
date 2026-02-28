@@ -1,4 +1,4 @@
-import { Building2, Calendar, CreditCard, Edit, Plus, Search, Trash2 } from 'lucide-react';
+import { Building2, CreditCard, Edit, Plus, Search, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Toaster } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
@@ -207,28 +207,28 @@ const SuscripcionesActivasPage: React.FC = () => {
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[250px]">
+                                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[200px]">
                                             Institución
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Plan
                                         </th>
-                                        <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Alumnos
                                         </th>
-                                        <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Sedes
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Precio
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Vencimiento
+                                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Venc.
                                         </th>
-                                        <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Estado
                                         </th>
-                                        <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Acciones
                                         </th>
                                     </tr>
@@ -236,57 +236,54 @@ const SuscripcionesActivasPage: React.FC = () => {
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {suscripcionesPaginadas.map((suscripcion) => (
                                         <tr key={suscripcion.idSuscripcion} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4">
+                                            <td className="px-3 py-3">
                                                 <div className="flex items-center">
-                                                    <Building2 className="w-5 h-5 text-primary mr-3 flex-shrink-0" />
+                                                    <Building2 className="w-4 h-4 text-primary mr-2 flex-shrink-0" />
                                                     <div className="min-w-0">
-                                                        <div className="text-sm font-medium text-gray-900 line-clamp-1">
+                                                        <div className="text-xs font-medium text-gray-900 line-clamp-1">
                                                             {suscripcion.idInstitucion?.nombre || 'N/A'}
                                                         </div>
-                                                        <div className="text-sm text-gray-500">
+                                                        <div className="text-xs text-gray-500">
                                                             {suscripcion.idInstitucion?.codModular || 'N/A'}
                                                         </div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <td className="px-3 py-3 text-xs text-gray-900">
                                                 {suscripcion.idPlan?.nombrePlan || 'N/A'}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                                            <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-900 text-center">
                                                 {suscripcion.limiteAlumnosContratado}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                                            <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-900 text-center">
                                                 {suscripcion.limiteSedesContratadas}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                                            <td className="px-3 py-3 whitespace-nowrap text-xs font-semibold text-gray-900">
                                                 {formatPrice(suscripcion.precioAcordado)}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                <div className="flex items-center">
-                                                    <Calendar className="w-4 h-4 text-gray-400 mr-2" />
-                                                    {formatDate(suscripcion.fechaVencimiento)}
-                                                </div>
+                                            <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-900">
+                                                {formatDate(suscripcion.fechaVencimiento)}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-center">
-                                                <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoBadge(suscripcion.idEstado?.nombre || '')}`}>
+                                            <td className="px-2 py-3 whitespace-nowrap text-center">
+                                                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoBadge(suscripcion.idEstado?.nombre || '')}`}>
                                                     {suscripcion.idEstado?.nombre || 'N/A'}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-center">
-                                                <div className="flex items-center justify-center gap-2">
+                                            <td className="px-2 py-3 whitespace-nowrap text-center">
+                                                <div className="flex items-center justify-center gap-1">
                                                     <button
                                                         onClick={() => handleEditar(suscripcion)}
-                                                        className="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                                                        className="p-1.5 text-primary hover:bg-primary/10 rounded-lg transition-colors"
                                                         title="Editar"
                                                     >
-                                                        <Edit className="w-5 h-5" />
+                                                        <Edit className="w-4 h-4" />
                                                     </button>
                                                     <button
                                                         onClick={() => handleEliminar(suscripcion.idSuscripcion)}
-                                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                        className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                                         title="Eliminar"
                                                     >
-                                                        <Trash2 className="w-5 h-5" />
+                                                        <Trash2 className="w-4 h-4" />
                                                     </button>
                                                 </div>
                                             </td>

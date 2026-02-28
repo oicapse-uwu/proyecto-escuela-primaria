@@ -40,5 +40,4 @@ export interface InstitucionDTO {
     fechaInicioSuscripcion?: string;
     fechaVencimientoLicencia?: string;
     planContratado: string;
-    estado?: number;
 }

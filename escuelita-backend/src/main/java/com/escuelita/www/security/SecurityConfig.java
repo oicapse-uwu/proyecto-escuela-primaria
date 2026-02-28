@@ -39,7 +39,8 @@ public class SecurityConfig {
                         , "/restful/registros"
                         , "/auth/admin/**"  // Autenticación Super Admin
                         , "/auth/escuela/**"  // Autenticación Escuela
-                        , "/utils/**").permitAll()
+                        , "/utils/**"
+                        , "/uploads/**").permitAll()  // Permitir acceso a archivos subidos
                     .anyRequest().authenticated()     // Esto requiere autenticación para /restful/**
                 )
                 .addFilterBefore(jwtFilter, 

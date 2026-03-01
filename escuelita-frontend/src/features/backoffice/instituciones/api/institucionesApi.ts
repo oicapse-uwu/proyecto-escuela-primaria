@@ -1,8 +1,8 @@
 // API Client para Instituciones
-import { api } from '../../../../config/api.config';
+import { api, API_ENDPOINTS } from '../../../../config/api.config';
 import type { Institucion, InstitucionDTO } from '../types';
 
-const BASE_URL = '/restful/institucion';
+const BASE_URL = API_ENDPOINTS.INSTITUCIONES;
 
 // Obtener todas las instituciones
 export const obtenerTodasInstituciones = async (): Promise<Institucion[]> => {

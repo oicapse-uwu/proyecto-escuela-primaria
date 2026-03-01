@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import {
+    obtenerAlumnosReporte,
     obtenerInstitucionesReporte,
     obtenerPagosCajaReporte,
+    obtenerPlanesReporte,
     obtenerSuperAdminsReporte,
     obtenerSuscripcionesReporte,
     obtenerUsuariosReporte
@@ -11,6 +13,7 @@ import type {
     ConteoItem,
     IngresoPorMetodoPago,
     IngresoPorPlan,
+    ReporteAlumno,
     ReporteInstitucion,
     ReportePagoCaja,
     ReporteSuperAdmin,
@@ -40,6 +43,8 @@ export const useReportes = () => {
     const [usuarios, setUsuarios] = useState<ReporteUsuarioSistema[]>([]);
     const [superAdmins, setSuperAdmins] = useState<ReporteSuperAdmin[]>([]);
     const [pagosCaja, setPagosCaja] = useState<ReportePagoCaja[]>([]);
+    const [alumnos, setAlumnos] = useState<ReporteAlumno[]>([]);
+    const [planes, setPlanes] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -48,12 +53,14 @@ export const useReportes = () => {
         setError(null);
 
         try {
-            const [institucionesData, suscripcionesData, usuariosData, superAdminsData, pagosCajaData] = await Promise.all([
+            const [institucionesData, suscripcionesData, usuariosData, superAdminsData, pagosCajaData, alumnosData, planesData] = await Promise.all([
                 obtenerInstitucionesReporte(),
                 obtenerSuscripcionesReporte(),
                 obtenerUsuariosReporte(),
                 obtenerSuperAdminsReporte(),
-                obtenerPagosCajaReporte()
+                obtenerPagosCajaReporte(),
+                obtenerAlumnosReporte(),
+                obtenerPlanesReporte()
             ]);
 
             setInstituciones(institucionesData || []);
@@ -61,6 +68,8 @@ export const useReportes = () => {
             setUsuarios(usuariosData || []);
             setSuperAdmins(superAdminsData || []);
             setPagosCaja(pagosCajaData || []);
+            setAlumnos(alumnosData || []);
+            setPlanes(planesData || []);
         } catch (err: any) {
             const mensaje = err.response?.data?.message || 'Error al cargar reportes';
             setError(mensaje);
@@ -213,6 +222,8 @@ export const useReportes = () => {
         usuarios,
         superAdmins,
         pagosCaja,
+        alumnos,
+        planes,
         resumen,
         institucionesPorTipoGestion,
         institucionesPorEstadoSuscripcion,

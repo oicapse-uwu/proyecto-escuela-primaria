@@ -104,7 +104,7 @@ const InstitucionesPage: React.FC = () => {
     };
 
     return (
-        <div className="p-3 sm:p-4 lg:px-6 lg:py-4 overflow-x-hidden">
+        <div className="px-3 pt-6 pb-3 sm:px-4 sm:pt-8 sm:pb-4 lg:px-6 lg:pt-8 lg:pb-6 overflow-x-hidden">
             <Toaster position="top-right" richColors />
             
             {/* Header */}
@@ -293,7 +293,7 @@ const InstitucionesPage: React.FC = () => {
                     </div>
                 ) : (
                     <>
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto max-w-full">
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50 sticky top-0 z-10">
                                 <tr>

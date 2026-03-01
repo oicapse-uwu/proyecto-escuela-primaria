@@ -31,10 +31,18 @@ const AdministradoresPage: React.FC = () => {
             .normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '');
 
+    // Filtrar solo usuarios con rol ADMINISTRADOR
+    const administradores = useMemo(() => {
+        return usuarios.filter(usuario => {
+            const nombreRol = normalizeText(usuario.idRol?.nombre || '');
+            return nombreRol === 'administrador';
+        });
+    }, [usuarios]);
+
     const usuariosFiltrados = useMemo(() => {
         const search = normalizeText(searchTerm.trim());
 
-        return usuarios.filter(item => {
+        return administradores.filter(item => {
             const matchRol = filterRol === 'todos' || String(item.idRol?.idRol || '') === filterRol;
 
             const candidato = [
@@ -56,7 +64,12 @@ const AdministradoresPage: React.FC = () => {
 
             return matchRol && matchSearch;
         });
-    }, [usuarios, searchTerm, filterRol]);
+    }, [administradores, searchTerm, filterRol]);
+
+    // Filtrar solo roles de administrador para el dropdown
+    const rolesAdministrador = useMemo(() => {
+        return roles.filter(rol => normalizeText(rol.nombre).includes('administrador'));
+    }, [roles]);
 
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -106,7 +119,7 @@ const AdministradoresPage: React.FC = () => {
     };
 
     return (
-        <div className="p-3 sm:p-4 lg:px-6 lg:py-4 overflow-x-hidden">
+        <div className="px-3 pt-6 pb-3 sm:px-4 sm:pt-8 sm:pb-4 lg:px-6 lg:pt-8 lg:pb-6 overflow-x-hidden">
             <Toaster position="top-right" richColors />
 
             <div className="mb-3 lg:mb-4">
@@ -148,7 +161,7 @@ const AdministradoresPage: React.FC = () => {
                         className="w-full md:justify-self-end px-4 py-2.5 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     >
                         <option value="todos">Todos los roles</option>
-                        {roles.map((rol) => (
+                        {rolesAdministrador.map((rol) => (
                             <option key={rol.idRol} value={String(rol.idRol)}>
                                 {rol.nombre}
                             </option>
@@ -200,7 +213,15 @@ const AdministradoresPage: React.FC = () => {
                                     <div className="grid grid-cols-1 gap-1 mt-3 text-xs">
                                         <p><span className="text-gray-500">Correo:</span> <span className="text-gray-900">{item.correo}</span></p>
                                         <p><span className="text-gray-500">Rol:</span> <span className="text-gray-900">{item.idRol?.nombre || '-'}</span></p>
-                                        <p><span className="text-gray-500">Sede:</span> <span className="text-gray-900">{item.idSede?.nombreSede || '-'}</span></p>
+                                        {item.idSede?.idInstitucion?.nombre ? (
+                                            <p>
+                                                <span className="text-gray-500">Escuela:</span> <span className="text-gray-900 font-medium">{item.idSede.idInstitucion.nombre}</span>
+                                                <br />
+                                                <span className="text-gray-500">Sede:</span> <span className="text-gray-900">{item.idSede.nombreSede}</span>
+                                            </p>
+                                        ) : (
+                                            <p><span className="text-gray-500">Escuela/Sede:</span> <span className="text-gray-900">-</span></p>
+                                        )}
                                     </div>
                                 </div>
                             ))}
@@ -214,7 +235,7 @@ const AdministradoresPage: React.FC = () => {
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Correo</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sede</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Escuela / Sede</th>
                                         <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                                     </tr>
                                 </thead>
@@ -227,11 +248,20 @@ const AdministradoresPage: React.FC = () => {
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.usuario}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.correo}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.idRol?.nombre || '-'}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                                                <span className="inline-flex items-center gap-1">
-                                                    <Building2 className="w-4 h-4 text-gray-400" />
-                                                    {item.idSede?.nombreSede || '-'}
-                                                </span>
+                                            <td className="px-6 py-4 text-sm text-gray-700">
+                                                <div className="flex items-start gap-1">
+                                                    <Building2 className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
+                                                    <div className="min-w-0">
+                                                        {item.idSede?.idInstitucion?.nombre ? (
+                                                            <div>
+                                                                <div className="font-medium text-gray-900 truncate">{item.idSede.idInstitucion.nombre}</div>
+                                                                <div className="text-xs text-gray-500 truncate">{item.idSede.nombreSede}</div>
+                                                            </div>
+                                                        ) : (
+                                                            <span className="text-gray-500">-</span>
+                                                        )}
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
                                                 <div className="flex items-center justify-center space-x-3">
@@ -273,7 +303,7 @@ const AdministradoresPage: React.FC = () => {
             {showForm && (
                 <AdministradorForm
                     administrador={adminEditar}
-                    roles={roles}
+                    roles={rolesAdministrador}
                     sedes={sedes}
                     tiposDocumento={tiposDocumento}
                     onSubmit={handleSubmit}

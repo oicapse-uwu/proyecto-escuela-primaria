@@ -1,15 +1,15 @@
-import { api } from "../../../../config/api.config";
-import type { CicloFacturacion, EstadoSuscripcion, MetodoPago, PagoCajaDTO, Suscripcion, SuscripcionDTO, SuscripcionFormData } from "../types";
+import { api, API_ENDPOINTS } from '../../../../config/api.config';
+import type { CicloFacturacion, EstadoSuscripcion, MetodoPago, Suscripcion, SuscripcionDTO } from '../types';
 
 // Obtener todas las suscripciones
 export const getSuscripcionesApi = async (): Promise<Suscripcion[]> => {
-    const response = await api.get('/restful/suscripciones');
+    const response = await api.get(API_ENDPOINTS.SUSCRIPCIONES);
     return response.data;
 };
 
 // Obtener una suscripción por ID
 export const getSuscripcionByIdApi = async (id: number): Promise<Suscripcion> => {
-    const response = await api.get(`/restful/suscripciones/${id}`);
+    const response = await api.get(`${API_ENDPOINTS.SUSCRIPCIONES}/${id}`);
     return response.data;
 };
 
@@ -27,7 +27,7 @@ export const createSuscripcionApi = async (suscripcion: SuscripcionFormData): Pr
         idEstado: suscripcion.idEstado
     };
     
-    const response = await api.post('/restful/suscripciones', dto);
+    const response = await api.post(API_ENDPOINTS.SUSCRIPCIONES, dto);
     return response.data;
 };
 
@@ -46,35 +46,35 @@ export const updateSuscripcionApi = async (idSuscripcion: number, suscripcion: S
         idEstado: suscripcion.idEstado
     };
     
-    const response = await api.put('/restful/suscripciones', dto);
+    const response = await api.put(API_ENDPOINTS.SUSCRIPCIONES, dto);
     return response.data;
 };
 
 // Eliminar una suscripción
 export const deleteSuscripcionApi = async (id: number): Promise<void> => {
-    await api.delete(`/restful/suscripciones/${id}`);
+    await api.delete(`${API_ENDPOINTS.SUSCRIPCIONES}/${id}`);
 };
 
 // ============= ENDPOINTS AUXILIARES =============
 
 // Obtener todos los estados de suscripción
 export const getEstadosSuscripcionApi = async (): Promise<EstadoSuscripcion[]> => {
-    const response = await api.get('/restful/estadossuscripcion');
+    const response = await api.get(API_ENDPOINTS.ESTADOS_SUSCRIPCION);
     return response.data;
 };
 
 // Obtener todos los ciclos de facturación
 export const getCiclosFacturacionApi = async (): Promise<CicloFacturacion[]> => {
-    const response = await api.get('/restful/ciclosfacturacion');
+    const response = await api.get(API_ENDPOINTS.CICLOS_FACTURACION);
     return response.data;
 };
 
 // Obtener todos los métodos de pago
 export const getMetodosPagoApi = async (): Promise<MetodoPago[]> => {
-    const response = await api.get('/restful/metodospago');
+    const response = await api.get(API_ENDPOINTS.METODOS_PAGO);
     return response.data;
 };
 
 export const createPagoCajaApi = async (pago: PagoCajaDTO): Promise<void> => {
-    await api.post('/restful/pagoscaja', pago);
+    await api.post(API_ENDPOINTS.PAGOS_CAJA, pago);
 };

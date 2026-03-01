@@ -102,7 +102,7 @@ const SuscripcionesActivasPage: React.FC = () => {
     const statsSuspendidas = suscripciones.filter(s => s.idEstado?.nombre === 'Suspendida').length;
 
     return (
-        <div className="p-3 sm:p-4 lg:px-6 lg:py-4 overflow-x-hidden">
+        <div className="px-3 pt-6 pb-3 sm:px-4 sm:pt-8 sm:pb-4 lg:px-6 lg:pt-8 lg:pb-6 overflow-x-hidden">
             <Toaster position="top-right" richColors />
             
             {/* Header */}

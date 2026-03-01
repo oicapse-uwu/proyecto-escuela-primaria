@@ -1,4 +1,4 @@
-import { api } from '../../../../config/api.config';
+import { api, API_ENDPOINTS } from '../../../../config/api.config';
 import type {
     Rol,
     RolDTO,
@@ -10,11 +10,11 @@ import type {
     UsuarioSistemaDTO
 } from '../types';
 
-const SUPER_ADMINS_BASE_URL = '/restful/superadmins';
-const USUARIOS_BASE_URL = '/restful/usuarios';
-const ROLES_BASE_URL = '/restful/roles';
-const SEDES_BASE_URL = '/restful/sedes';
-const TIPOS_DOCUMENTO_BASE_URL = '/restful/tipodocumentos';
+const SUPER_ADMINS_BASE_URL = API_ENDPOINTS.SUPER_ADMINS;
+const USUARIOS_BASE_URL = API_ENDPOINTS.USUARIOS;
+const ROLES_BASE_URL = API_ENDPOINTS.ROLES;
+const SEDES_BASE_URL = API_ENDPOINTS.SEDES;
+const TIPOS_DOCUMENTO_BASE_URL = API_ENDPOINTS.TIPOS_DOCUMENTO;
 
 export const obtenerSuperAdmins = async (): Promise<SuperAdmin[]> => {
     const response = await api.get<SuperAdmin[]>(SUPER_ADMINS_BASE_URL);

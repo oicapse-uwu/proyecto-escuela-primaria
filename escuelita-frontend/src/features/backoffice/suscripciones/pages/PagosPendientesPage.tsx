@@ -1,4 +1,4 @@
-import { AlertCircle, BookOpen, Calendar, CheckCircle, Clock, CreditCard, DollarSign, Smartphone, Search } from 'lucide-react';
+import { AlertCircle, BookOpen, Calendar, CheckCircle, Clock, CreditCard, DollarSign, Search, Smartphone } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 import Modal from '../../../../components/common/Modal';
@@ -241,7 +241,7 @@ const PagosPendientesPage: React.FC = () => {
     }
 
     return (
-        <div className="p-3 sm:p-4 lg:px-6 lg:py-4 bg-gradient-to-br from-orange-50 to-red-50 min-h-screen overflow-x-hidden">
+        <div className="px-3 pt-6 pb-3 sm:px-4 sm:pt-8 sm:pb-4 lg:px-6 lg:pt-8 lg:pb-6 bg-gradient-to-br from-orange-50 to-red-50 min-h-screen overflow-x-hidden">
             {/* Header */}
             <div className="mb-3 lg:mb-4">
                 <div className="flex items-center gap-3 mb-2">
@@ -344,216 +344,92 @@ const PagosPendientesPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Table */}
-            <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden min-h-[340px] sm:min-h-[420px] flex flex-col">
-                <div className="md:hidden p-3 space-y-3">
-                    {pagosPendientes.length === 0 ? (
-                        <div className="py-8 text-center text-gray-500">
-                            <CheckCircle className="w-10 h-10 mx-auto mb-2 text-green-400" />
-                            <p className="font-medium text-green-600">¡Excelente! No hay pagos pendientes</p>
-                        </div>
-                    ) : (
-                        pagosPendientesPaginados.map((suscripcion) => {
-                            const urgencia = getUrgencia(suscripcion.fechaVencimiento);
-                            const badge = getUrgenciaBadge(urgencia);
-                            const dias = getDiasHastaVencimiento(suscripcion.fechaVencimiento);
+            {/* Cards móviles */}
+            <div className="md:hidden space-y-3">
+                {pagosPendientes.length === 0 ? (
+                    <div className="py-8 text-center text-gray-500 bg-white rounded-xl shadow-md">
+                        <CheckCircle className="w-10 h-10 mx-auto mb-2 text-green-400" />
+                        <p className="font-medium text-green-600">¡Excelente! No hay pagos pendientes</p>
+                    </div>
+                ) : (
+                    pagosPendientesPaginados.map((suscripcion) => {
+                        const urgencia = getUrgencia(suscripcion.fechaVencimiento);
+                        const badge = getUrgenciaBadge(urgencia);
+                        const dias = getDiasHastaVencimiento(suscripcion.fechaVencimiento);
 
-                            return (
-                                <div key={suscripcion.idSuscripcion} className="rounded-lg border border-gray-200 p-3">
-                                    <div className="flex items-start justify-between gap-2">
-                                        <div>
-                                            <p className="text-xs font-mono font-semibold text-gray-900">
-                                                {generarNumeroFactura(suscripcion.idSuscripcion, suscripcion.fechaInicio)}
-                                            </p>
-                                            <p className="text-sm font-medium text-gray-900 mt-1">
-                                                {suscripcion.idInstitucion?.nombre || 'N/A'}
-                                            </p>
-                                            <p className="text-xs text-gray-500">{suscripcion.idInstitucion?.codModular || 'N/A'}</p>
-                                        </div>
-                                        <span className={`px-2 py-1 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full ${badge.bg}`}>
-                                            {badge.icon}
-                                            {badge.text}
-                                        </span>
+                        return (
+                            <div key={suscripcion.idSuscripcion} className="bg-white rounded-lg border border-gray-200 p-3 shadow-sm">
+                                <div className="flex items-start justify-between gap-2">
+                                    <div>
+                                        <p className="text-xs font-mono font-semibold text-gray-900">
+                                            {generarNumeroFactura(suscripcion.idSuscripcion, suscripcion.fechaInicio)}
+                                        </p>
+                                        <p className="text-sm font-medium text-gray-900 mt-1">
+                                            {suscripcion.idInstitucion?.nombre || 'N/A'}
+                                        </p>
+                                        <p className="text-xs text-gray-500">{suscripcion.idInstitucion?.codModular || 'N/A'}</p>
                                     </div>
+                                    <span className={`px-2 py-1 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full ${badge.bg}`}>
+                                        {badge.icon}
+                                        {badge.text}
+                                    </span>
+                                </div>
 
-                                    <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
-                                        <div>
-                                            <p className="text-gray-500">Plan</p>
-                                            <p className="font-medium text-gray-900">{suscripcion.idPlan?.nombrePlan || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-gray-500">Monto</p>
-                                            <p className="font-semibold text-gray-900">{formatPrice(suscripcion.precioAcordado)}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-gray-500">Vencimiento</p>
-                                            <p className="font-medium text-gray-900">{formatDate(suscripcion.fechaVencimiento)}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-gray-500">Días</p>
-                                            <p className={`font-semibold ${
-                                                dias < 0 ? 'text-red-600' : dias <= 7 ? 'text-orange-600' : 'text-yellow-600'
-                                            }`}>
-                                                {dias < 0 ? `${Math.abs(dias)}d` : `${dias}d`}
-                                            </p>
-                                        </div>
+                                <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
+                                    <div>
+                                        <p className="text-gray-500">Plan</p>
+                                        <p className="font-medium text-gray-900">{suscripcion.idPlan?.nombrePlan || 'N/A'}</p>
                                     </div>
-
-                                    <div className="flex items-center justify-end gap-1 mt-3 pt-3 border-t border-gray-100">
-                                        <button
-                                            onClick={() => abrirModalPago(suscripcion)}
-                                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                                            title="Registrar pago"
-                                        >
-                                            <DollarSign className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                            onClick={() => enviarRecordatorio(suscripcion)}
-                                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                            title="Enviar recordatorio"
-                                        >
-                                            <Smartphone className="w-4 h-4" />
-                                        </button>
-                                        <button
-                                            onClick={() => abrirDetallePago(suscripcion)}
-                                            className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                                            title="Ver detalles"
-                                        >
-                                            <BookOpen className="w-4 h-4" />
-                                        </button>
+                                    <div>
+                                        <p className="text-gray-500">Monto</p>
+                                        <p className="font-semibold text-gray-900">{formatPrice(suscripcion.precioAcordado)}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-500">Vencimiento</p>
+                                        <p className="font-medium text-gray-900">{formatDate(suscripcion.fechaVencimiento)}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-gray-500">Días</p>
+                                        <p className={`font-semibold ${
+                                            dias < 0 ? 'text-red-600' : dias <= 7 ? 'text-orange-600' : 'text-yellow-600'
+                                        }`}>
+                                            {dias < 0 ? `${Math.abs(dias)}d` : `${dias}d`}
+                                        </p>
                                     </div>
                                 </div>
-                            );
-                        })
-                    )}
-                </div>
 
-                <div className="hidden md:block overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50 sticky top-0 z-10">
-                            <tr>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                    Urgencia
-                                </th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                    N° Factura
-                                </th>
-                                <th className="px-3 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                    Institución
-                                </th>
-                                <th className="px-2 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                    Plan
-                                </th>
-                                <th className="px-3 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                    Monto
-                                </th>
-                                <th className="px-2 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                    Venc.
-                                </th>
-                                <th className="px-2 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                    Días
-                                </th>
-                                <th className="px-2 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                                    Acciones
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {pagosPendientes.length === 0 ? (
-                                <tr>
-                                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
-                                        <CheckCircle className="w-12 h-12 mx-auto mb-3 text-green-400" />
-                                        <p className="text-lg font-medium text-green-600">¡Excelente! No hay pagos pendientes</p>
-                                        <p className="text-sm text-gray-400 mt-1">Todas las suscripciones están al día</p>
-                                    </td>
-                                </tr>
-                            ) : (
-                                pagosPendientesPaginados.map((suscripcion) => {
-                                    const urgencia = getUrgencia(suscripcion.fechaVencimiento);
-                                    const badge = getUrgenciaBadge(urgencia);
-                                    const dias = getDiasHastaVencimiento(suscripcion.fechaVencimiento);
-                                    
-                                    return (
-                                        <tr 
-                                            key={suscripcion.idSuscripcion} 
-                                            className={`hover:bg-gray-50 transition-colors ${
-                                                urgencia === 'vencida' ? 'bg-red-50/30' : ''
-                                            }`}
-                                        >
-                                            <td className="px-3 py-3 whitespace-nowrap">
-                                                <span className={`px-2 py-1 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full ${badge.bg}`}>
-                                                    {badge.icon}
-                                                    {badge.text}
-                                                </span>
-                                            </td>
-                                            <td className="px-3 py-3 whitespace-nowrap">
-                                                <span className="text-xs font-mono font-semibold text-gray-900">
-                                                    {generarNumeroFactura(suscripcion.idSuscripcion, suscripcion.fechaInicio)}
-                                                </span>
-                                            </td>
-                                            <td className="px-3 py-3">
-                                                <div>
-                                                    <p className="text-xs font-medium text-gray-900">
-                                                        {suscripcion.idInstitucion?.nombre || 'N/A'}
-                                                    </p>
-                                                    <p className="text-xs text-gray-500">
-                                                        {suscripcion.idInstitucion?.codModular || 'N/A'}
-                                                    </p>
-                                                </div>
-                                            </td>
-                                            <td className="px-2 py-3 text-xs text-gray-900 text-center">
-                                                {suscripcion.idPlan?.nombrePlan || 'N/A'}
-                                            </td>
-                                            <td className="px-3 py-3 whitespace-nowrap text-center">
-                                                <span className="text-xs font-bold text-gray-900">
-                                                    {formatPrice(suscripcion.precioAcordado)}
-                                                </span>
-                                            </td>
-                                            <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-900 text-center">
-                                                {formatDate(suscripcion.fechaVencimiento)}
-                                            </td>
-                                            <td className="px-2 py-3 whitespace-nowrap text-center">
-                                                <span className={`text-xs font-bold ${
-                                                    dias < 0 ? 'text-red-600' :
-                                                    dias <= 7 ? 'text-orange-600' :
-                                                    'text-yellow-600'
-                                                }`}>
-                                                    {dias < 0 ? `${Math.abs(dias)}d` : `${dias}d`}
-                                                </span>
-                                            </td>
-                                            <td className="px-2 py-3 whitespace-nowrap text-center">
-                                                <div className="flex items-center justify-center gap-1">
-                                                    <button
-                                                        onClick={() => abrirModalPago(suscripcion)}
-                                                        className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                                                        title="Registrar pago"
-                                                    >
-                                                        <DollarSign className="w-4 h-4" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => enviarRecordatorio(suscripcion)}
-                                                        className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                        title="Enviar recordatorio"
-                                                    >
-                                                        <Smartphone className="w-4 h-4" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => abrirDetallePago(suscripcion)}
-                                                        className="p-1.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-                                                        title="Ver detalles"
-                                                    >
-                                                        <BookOpen className="w-4 h-4" />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-                <div className="border-t border-gray-200">
+                                <div className="flex items-center justify-end gap-1 mt-3 pt-3 border-t border-gray-100">
+                                    <button
+                                        onClick={() => abrirModalPago(suscripcion)}
+                                        className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                        title="Registrar pago"
+                                    >
+                                        <DollarSign className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        onClick={() => enviarRecordatorio(suscripcion)}
+                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                        title="Enviar recordatorio"
+                                    >
+                                        <Smartphone className="w-4 h-4" />
+                                    </button>
+                                    <button
+                                        onClick={() => abrirDetallePago(suscripcion)}
+                                        className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                                        title="Ver detalles"
+                                    >
+                                        <BookOpen className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })
+                )}
+            </div>
+
+            {/* Paginación móvil */}
+            {!isLoading && pagosPendientes.length > 0 && (
+                <div className="md:hidden">
                     <Pagination
                         currentPage={currentPage}
                         totalItems={pagosPendientes.length}
@@ -562,6 +438,149 @@ const PagosPendientesPage: React.FC = () => {
                         onItemsPerPageChange={setItemsPerPage}
                     />
                 </div>
+            )}
+
+            {/* Tabla desktop */}
+            <div className="hidden md:block bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+                {isLoading ? (
+                    <div className="flex justify-center items-center h-64">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+                    </div>
+                ) : pagosPendientes.length === 0 ? (
+                    <div className="text-center py-12">
+                        <CheckCircle className="w-12 h-12 mx-auto mb-3 text-green-400" />
+                        <p className="text-lg font-medium text-green-600">¡Excelente! No hay pagos pendientes</p>
+                        <p className="text-sm text-gray-400 mt-1">Todas las suscripciones están al día</p>
+                    </div>
+                ) : (
+                    <>
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50 sticky top-0 z-10">
+                                    <tr>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                            Urgencia
+                                        </th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                            N° Factura
+                                        </th>
+                                        <th className="px-3 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                            Institución
+                                        </th>
+                                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                            Plan
+                                        </th>
+                                        <th className="px-3 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                            Monto
+                                        </th>
+                                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                            Venc.
+                                        </th>
+                                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                            Días
+                                        </th>
+                                        <th className="px-2 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                                            Acciones
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {pagosPendientesPaginados.map((suscripcion) => {
+                                        const urgencia = getUrgencia(suscripcion.fechaVencimiento);
+                                        const badge = getUrgenciaBadge(urgencia);
+                                        const dias = getDiasHastaVencimiento(suscripcion.fechaVencimiento);
+                                        
+                                        return (
+                                            <tr 
+                                                key={suscripcion.idSuscripcion} 
+                                                className={`hover:bg-gray-50 transition-colors ${
+                                                    urgencia === 'vencida' ? 'bg-red-50/30' : ''
+                                                }`}
+                                            >
+                                                <td className="px-3 py-3 whitespace-nowrap">
+                                                    <span className={`px-2 py-1 inline-flex items-center gap-1 text-xs leading-5 font-semibold rounded-full ${badge.bg}`}>
+                                                        {badge.icon}
+                                                        {badge.text}
+                                                    </span>
+                                                </td>
+                                                <td className="px-3 py-3 whitespace-nowrap">
+                                                    <span className="text-xs font-mono font-semibold text-gray-900">
+                                                        {generarNumeroFactura(suscripcion.idSuscripcion, suscripcion.fechaInicio)}
+                                                    </span>
+                                                </td>
+                                                <td className="px-3 py-3">
+                                                    <div>
+                                                        <p className="text-xs font-medium text-gray-900">
+                                                            {suscripcion.idInstitucion?.nombre || 'N/A'}
+                                                        </p>
+                                                        <p className="text-xs text-gray-500">
+                                                            {suscripcion.idInstitucion?.codModular || 'N/A'}
+                                                        </p>
+                                                    </div>
+                                                </td>
+                                                <td className="px-2 py-3 text-xs text-gray-900 text-center">
+                                                    {suscripcion.idPlan?.nombrePlan || 'N/A'}
+                                                </td>
+                                                <td className="px-3 py-3 whitespace-nowrap text-center">
+                                                    <span className="text-xs font-bold text-gray-900">
+                                                        {formatPrice(suscripcion.precioAcordado)}
+                                                    </span>
+                                                </td>
+                                                <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-900 text-center">
+                                                    {formatDate(suscripcion.fechaVencimiento)}
+                                                </td>
+                                                <td className="px-2 py-3 whitespace-nowrap text-center">
+                                                    <span className={`text-xs font-bold ${
+                                                        dias < 0 ? 'text-red-600' :
+                                                        dias <= 7 ? 'text-orange-600' :
+                                                        'text-yellow-600'
+                                                    }`}>
+                                                        {dias < 0 ? `${Math.abs(dias)}d` : `${dias}d`}
+                                                    </span>
+                                                </td>
+                                                <td className="px-2 py-3 whitespace-nowrap text-center">
+                                                    <div className="flex items-center justify-center gap-1">
+                                                        <button
+                                                            onClick={() => abrirModalPago(suscripcion)}
+                                                            className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                                            title="Registrar pago"
+                                                        >
+                                                            <DollarSign className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => enviarRecordatorio(suscripcion)}
+                                                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                            title="Enviar recordatorio"
+                                                        >
+                                                            <Smartphone className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => abrirDetallePago(suscripcion)}
+                                                            className="p-1.5 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+                                                            title="Ver detalles"
+                                                        >
+                                                            <BookOpen className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="border-t border-gray-200">
+                            <Pagination
+                                currentPage={currentPage}
+                                totalItems={pagosPendientes.length}
+                                itemsPerPage={itemsPerPage}
+                                onPageChange={setCurrentPage}
+                                onItemsPerPageChange={setItemsPerPage}
+                            />
+                        </div>
+                    </>
+                )}
             </div>
 
             {/* Summary Footer */}

@@ -66,11 +66,25 @@ api.interceptors.response.use(
 
 // Endpoints de la API
 export const API_ENDPOINTS = {
+    // Endpoints backoffice (super-admins)
+    INSTITUCIONES: '/restful/institucion',
+    SUSCRIPCIONES: '/restful/suscripciones',
+    USUARIOS: '/restful/usuarios',
+    SUPER_ADMINS: '/restful/superadmins',
+    PAGOS_CAJA: '/restful/pagoscaja',
+    PLANES: '/restful/planes',
+    ESTADOS_SUSCRIPCION: '/restful/estadossuscripcion',
+    CICLOS_FACTURACION: '/restful/ciclosfacturacion',
+    METODOS_PAGO: '/restful/metodospago',
+    SEDES: '/restful/sedes',
+    TIPOS_DOCUMENTO: '/restful/tipodocumentos',
+    ROLES: '/restful/roles',
+    FILES_UPLOAD: '/restful/files/upload',
+
+    // Endpoints portal (escuelas)
     ALUMNOS: '/restful/alumnos',
     APODERADOS: '/restful/apoderados',
     CURSOS: '/restful/cursos',
-    
-    // Agregar otros endpoints aquí según se vaya implementando
 };
 
 // Configuración adicional de la aplicación

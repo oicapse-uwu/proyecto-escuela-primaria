@@ -1,4 +1,4 @@
-import { Building2, Calendar, CreditCard, X } from 'lucide-react';
+import { Building2, Calendar, CreditCard, Search, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import type { Institucion } from '../../instituciones/types';
 import type { CicloFacturacion, EstadoSuscripcion, MetodoPago, Plan, Suscripcion, SuscripcionFormData } from '../types';
@@ -39,6 +39,26 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
 
     const [planSeleccionado, setPlanSeleccionado] = useState<Plan | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [searchInstitucion, setSearchInstitucion] = useState('');
+    const [showInstitucionDropdown, setShowInstitucionDropdown] = useState(false);
+
+    // Normalizar texto para búsqueda
+    const normalizeText = (value?: string | number | null) =>
+        String(value ?? '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+
+    // Filtrar instituciones por búsqueda
+    const institucionesFiltradas = instituciones.filter(inst => {
+        const search = normalizeText(searchInstitucion.trim());
+        if (!search) return true;
+        
+        return (
+            normalizeText(inst.nombre).includes(search) ||
+            normalizeText(inst.codModular).includes(search)
+        );
+    });
 
     useEffect(() => {
         if (suscripcionEditar) {
@@ -57,8 +77,22 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
             
             const plan = suscripcionEditar.idPlan ? planes.find(p => p.idPlan === suscripcionEditar.idPlan?.idPlan) : null;
             setPlanSeleccionado(plan || null);
+            
+            // Restaurar nombre de institución
+            if (suscripcionEditar.idInstitucion) {
+                const inst = instituciones.find(i => i.idInstitucion === suscripcionEditar.idInstitucion?.idInstitucion);
+                if (inst) {
+                    setSearchInstitucion(`${inst.nombre} - ${inst.codModular}`);
+                }
+            }
         }
-    }, [suscripcionEditar, planes]);
+    }, [suscripcionEditar, planes, instituciones]);
+
+    const handleSelectInstitucion = (inst: Institucion) => {
+        setFormData(prev => ({ ...prev, idInstitucion: inst.idInstitucion }));
+        setSearchInstitucion(`${inst.nombre} - ${inst.codModular}`);
+        setShowInstitucionDropdown(false);
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -147,25 +181,67 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
                                 <span>Información Básica</span>
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* Institución */}
-                                <div className="md:col-span-2">
+                                {/* Institución con búsqueda */}
+                                <div className="md:col-span-2 relative">
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Institución *
                                     </label>
-                                    <select
-                                        name="idInstitucion"
-                                        value={formData.idInstitucion}
-                                        onChange={handleChange}
-                                        required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                    >
-                                        <option value={0}>Seleccione una institución</option>
-                                        {instituciones.map(inst => (
-                                            <option key={inst.idInstitucion} value={inst.idInstitucion}>
-                                                {inst.nombre} - {inst.codModular}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none z-10" />
+                                        <input
+                                            type="text"
+                                            value={searchInstitucion}
+                                            onChange={(e) => {
+                                                setSearchInstitucion(e.target.value);
+                                                setShowInstitucionDropdown(true);
+                                            }}
+                                            onFocus={() => setShowInstitucionDropdown(true)}
+                                            placeholder="Buscar por nombre o código modular..."
+                                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                            required={formData.idInstitucion === 0}
+                                        />
+                                    </div>
+                                    
+                                    {/* Dropdown de instituciones */}
+                                    {showInstitucionDropdown && (
+                                        <>
+                                            <div 
+                                                className="fixed inset-0 z-10" 
+                                                onClick={() => setShowInstitucionDropdown(false)}
+                                            />
+                                            <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                                {institucionesFiltradas.length === 0 ? (
+                                                    <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                                                        No se encontraron instituciones
+                                                    </div>
+                                                ) : (
+                                                    institucionesFiltradas.map(inst => (
+                                                        <button
+                                                            key={inst.idInstitucion}
+                                                            type="button"
+                                                            onClick={() => handleSelectInstitucion(inst)}
+                                                            className={`w-full text-left px-4 py-2 hover:bg-primary/10 transition-colors ${
+                                                                formData.idInstitucion === inst.idInstitucion ? 'bg-primary/20' : ''
+                                                            }`}
+                                                        >
+                                                            <div className="text-sm font-medium text-gray-900">
+                                                                {inst.nombre}
+                                                            </div>
+                                                            <div className="text-xs text-gray-500">
+                                                                {inst.codModular}
+                                                            </div>
+                                                        </button>
+                                                    ))
+                                                )}
+                                            </div>
+                                        </>
+                                    )}
+                                    
+                                    {formData.idInstitucion === 0 && searchInstitucion && (
+                                        <p className="text-xs text-red-500 mt-1">
+                                            Seleccione una institución de la lista
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Plan */}

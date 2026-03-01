@@ -357,7 +357,7 @@ const UsoSistemaPage: React.FC = () => {
     };
 
     return (
-        <div className="p-3 sm:p-4 lg:px-5 lg:py-4 overflow-x-hidden">
+        <div className="px-3 pt-6 pb-3 sm:px-4 sm:pt-8 sm:pb-4 lg:px-5 lg:pt-8 lg:pb-6 overflow-x-hidden">
             <div className="mb-4 flex flex-col md:flex-row md:items-start md:justify-between gap-2">
                 <div>
                     <h1 className="text-2xl lg:text-[28px] font-bold text-gray-800 flex items-center gap-2">

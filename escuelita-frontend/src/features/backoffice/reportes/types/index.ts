@@ -66,6 +66,15 @@ export interface ReporteSuperAdmin {
     estado: number;
 }
 
+export interface ReporteAlumno {
+    idAlumno: number;
+    numeroDocumento: string;
+    nombres: string;
+    apellidos: string;
+    estadoAlumno?: string;
+    estado: number;
+}
+
 export interface ReportePagoCaja {
     idPago: number;
     montoTotalPagado: number | null;

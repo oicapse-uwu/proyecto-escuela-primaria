@@ -1,5 +1,5 @@
 // API para subida de archivos
-import { api } from '../../../../config/api.config';
+import { api, API_ENDPOINTS } from '../../../../config/api.config';
 
 interface UploadResponse {
     mensaje: string;
@@ -19,7 +19,7 @@ export const subirArchivo = async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append('file', file);
     
-    const response = await api.post<UploadResponse>('/restful/files/upload', formData, {
+    const response = await api.post<UploadResponse>(API_ENDPOINTS.FILES_UPLOAD, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },

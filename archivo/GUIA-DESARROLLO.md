@@ -137,6 +137,35 @@ tu-modulo/
 
 **📖 Referencia:** Si necesitas guiarte con archivos que ya funcionan, revisa la carpeta `backoffice/instituciones` como ejemplo.
 
+---
+
+## 📚 Guías Complementarias
+
+Antes de empezar a desarrollar, **LEE ESTAS GUÍAS**:
+
+### 🧭 [GUIA-SIDEBAR.md](GUIA-SIDEBAR.md)
+**IMPORTANTE:** Explica cómo funciona el Sidebar y por qué **NO debes volver a crearlo** en cada vista.
+
+**Lee esto para entender:**
+- Cómo funciona el Layout principal
+- Por qué el Sidebar ya está implementado
+- Cómo agregar tu módulo al menú de navegación
+- Errores comunes que debes evitar
+
+### 🧩 [GUIA-COMPONENTES-REUTILIZABLES.md](GUIA-COMPONENTES-REUTILIZABLES.md)
+**IMPORTANTE:** Lista todos los componentes que puedes usar en tu módulo sin tener que crearlos.
+
+**Lee esto para conocer:**
+- Modal (ventanas emergentes)
+- Pagination (paginación de tablas)
+- Otros componentes disponibles
+- Ejemplos de uso completos
+- Cómo crear nuevos componentes reutilizables
+
+**⚠️ No reinventes la rueda** - Si un componente ya existe, úsalo. Te ahorrará tiempo y mantendrá consistencia en el proyecto.
+
+---
+
 ## 📝 Flujo de Trabajo con Git
 
 ### Trabajar en tu Rama
@@ -195,7 +224,7 @@ git checkout -b feature/tu-rama-experimental
 
 **RECUERDA:** No hay preguntas tontas, todas las dudas son válidas. ¡Pregunta! 😊 PREGUNTEN :D 
 
-            psdt: les voy a botar del grupo si hacen mal
+            psdt: pregunten de vrd :D les voy a botar si no
 
 ---
 

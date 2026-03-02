@@ -94,7 +94,7 @@ const AlumnoForm: React.FC<AlumnoFormProps> = ({
             return;
         }
         const valorProcesado =
-            name === 'numeroDocumento' && requiereSoloNumeros
+            (name === 'numeroDocumento' && requiereSoloNumeros) || name === 'telefonoContacto'
                 ? value.replace(/\D/g, '')
                 : value;
         setFormData(prev => ({ ...prev, [name]: valorProcesado }));
@@ -356,7 +356,8 @@ const AlumnoForm: React.FC<AlumnoFormProps> = ({
                         onChange={handleChange}
                         className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Ej: 987654321"
-                        maxLength={20}
+                        inputMode="numeric"
+                        maxLength={9}
                     />
                 </div>
 

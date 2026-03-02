@@ -342,9 +342,17 @@ const AlumnosPage: React.FC = () => {
                                     <tr key={alumno.idAlumno} className="hover:bg-gray-50 transition-colors">
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
-                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-white
+                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-white overflow-hidden flex-shrink-0
                                                               ${alumno.genero === 'M' ? 'bg-blue-500' : 'bg-pink-500'}`}>
-                                                    {alumno.nombres.charAt(0)}{alumno.apellidos.charAt(0)}
+                                                    {alumno.fotoUrl ? (
+                                                        <img
+                                                            src={`${import.meta.env.VITE_API_BASE_URL || 'http://primaria.spring.informaticapp.com:4040'}${alumno.fotoUrl}`}
+                                                            alt={alumno.nombres}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <>{alumno.nombres.charAt(0)}{alumno.apellidos.charAt(0)}</>
+                                                    )}
                                                 </div>
                                                 <div className="ml-3">
                                                     <Link 
@@ -471,9 +479,17 @@ const AlumnosPage: React.FC = () => {
                         <div key={alumno.idAlumno} className="bg-white rounded-lg border border-gray-200 p-4">
                             <div className="flex items-start justify-between mb-3">
                                 <div className="flex items-center">
-                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold text-white
+                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold text-white overflow-hidden flex-shrink-0
                                                   ${alumno.genero === 'M' ? 'bg-blue-500' : 'bg-pink-500'}`}>
-                                        {alumno.nombres.charAt(0)}{alumno.apellidos.charAt(0)}
+                                        {alumno.fotoUrl ? (
+                                            <img
+                                                src={`${import.meta.env.VITE_API_BASE_URL || 'http://primaria.spring.informaticapp.com:4040'}${alumno.fotoUrl}`}
+                                                alt={alumno.nombres}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <>{alumno.nombres.charAt(0)}{alumno.apellidos.charAt(0)}</>
+                                        )}
                                     </div>
                                     <div className="ml-3">
                                         <Link 

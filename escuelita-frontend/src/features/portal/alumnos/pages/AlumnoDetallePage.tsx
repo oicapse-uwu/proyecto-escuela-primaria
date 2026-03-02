@@ -255,7 +255,9 @@ const AlumnoDetallePage: React.FC = () => {
                 idAlumno: alumno.idAlumno,
                 idRequisito: requisitoSeleccionado.idRequisito,
                 rutaArchivo: rutaArchivoFinal,
-                fechaSubida: documentoFormData.fechaSubida,
+                fechaSubida: documentoFormData.fechaSubida.includes('T')
+                    ? documentoFormData.fechaSubida
+                    : documentoFormData.fechaSubida + 'T00:00:00',
                 observaciones: documentoFormData.observaciones || ''
             };
 
@@ -326,6 +328,18 @@ const AlumnoDetallePage: React.FC = () => {
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </button>
+                    <div className={`w-14 h-14 rounded-full flex items-center justify-center font-bold text-white text-lg overflow-hidden flex-shrink-0
+                                    ${alumno.genero === 'M' ? 'bg-blue-500' : 'bg-pink-500'}`}>
+                        {alumno.fotoUrl ? (
+                            <img
+                                src={`${import.meta.env.VITE_API_BASE_URL || 'http://primaria.spring.informaticapp.com:4040'}${alumno.fotoUrl}`}
+                                alt={alumno.nombres}
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <>{alumno.nombres.charAt(0)}{alumno.apellidos.charAt(0)}</>
+                        )}
+                    </div>
                     <div>
                         <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
                             {alumno.nombres} {alumno.apellidos}

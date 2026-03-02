@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { filtrarPorSedeActual } from '../../../../utils/sedeFilter';
 import {
     actualizarAlumno,
     crearAlumno,
@@ -38,7 +39,9 @@ export const useAlumnos = (): UseAlumnosReturn => {
         setError(null);
         try {
             const datos = await obtenerTodosAlumnos();
-            setAlumnos(datos);
+            // 🔒 FILTRAR POR SEDE DEL USUARIO ACTUAL
+            const datosFiltrados = filtrarPorSedeActual(datos);
+            setAlumnos(datosFiltrados);
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Error al cargar alumnos';
             setError(errorMessage);

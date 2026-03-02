@@ -8,6 +8,7 @@ export interface SuperAdmin {
     usuario: string;
     password?: string;
     rolPlataforma: string;
+    fotoUrl?: string;
     estado: number;
 }
 
@@ -18,6 +19,7 @@ export interface SuperAdminFormData {
     usuario: string;
     password: string;
     rolPlataforma: string;
+    fotoUrl?: string;
 }
 
 export interface SuperAdminDTO {
@@ -28,6 +30,7 @@ export interface SuperAdminDTO {
     usuario: string;
     password: string;
     rolPlataforma: string;
+    fotoUrl?: string;
 }
 
 export interface UsuarioSistema {

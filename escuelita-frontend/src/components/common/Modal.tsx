@@ -28,34 +28,41 @@ const Modal: React.FC<ModalProps> = ({
     if (!isOpen) return null;
 
     const sizeClasses = {
-        sm: 'max-w-sm',
-        md: 'max-w-md',
-        lg: 'max-w-lg',
-        xl: 'max-w-xl',
-        '2xl': 'max-w-2xl',
-        '4xl': 'max-w-4xl'
+        sm: 'max-w-[calc(100%-1rem)] sm:max-w-sm',
+        md: 'max-w-[calc(100%-1rem)] sm:max-w-md',
+        lg: 'max-w-[calc(100%-1rem)] sm:max-w-lg',
+        xl: 'max-w-[calc(100%-1rem)] sm:max-w-xl',
+        '2xl': 'max-w-[calc(100%-1rem)] sm:max-w-2xl',
+        '4xl': 'max-w-[calc(100%-1rem)] sm:max-w-4xl'
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className={`bg-white rounded-lg shadow-xl ${sizeClasses[size]} w-full max-h-[90vh] overflow-hidden`}>
+        <div 
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4"
+            onClick={onClose}
+        >
+            <div 
+                className={`bg-white rounded-lg sm:rounded-xl shadow-2xl ${sizeClasses[size]} w-full max-h-[96vh] sm:max-h-[90vh] overflow-hidden flex flex-col`}
+                onClick={(e) => e.stopPropagation()}
+            >
                 {/* Header */}
-                <div className="bg-gradient-to-r from-primary to-primary-light p-6 text-white flex justify-between items-center">
-                    <h2 className="text-2xl font-bold">
+                <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 bg-gray-50">
+                    <h2 className="text-lg sm:text-xl font-bold text-gray-900">
                         {title}
                     </h2>
                     {showCloseButton && (
                         <button
                             onClick={onClose}
-                            className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                            className="p-1.5 hover:bg-gray-200 rounded-lg transition-colors text-gray-600 hover:text-gray-800"
+                            aria-label="Cerrar"
                         >
-                            <X className="w-6 h-6" />
+                            <X className="w-5 h-5" />
                         </button>
                     )}
                 </div>
 
                 {/* Content */}
-                <div className="overflow-y-auto max-h-[calc(90vh-88px)]">
+                <div className="overflow-y-auto flex-1 p-4 sm:p-6">
                     {children}
                 </div>
             </div>

@@ -6,6 +6,7 @@ public class SuperAdminDTO {
     private String apellidos;
     private String correo;
     private String usuario;
+    private String fotoUrl;
     private RolDTO rol;
 
     // Constructor vacío
@@ -42,6 +43,12 @@ public class SuperAdminDTO {
     }
     public void setUsuario(String usuario) {
         this.usuario = usuario;
+    }
+    public String getFotoUrl() {
+        return fotoUrl;
+    }
+    public void setFotoUrl(String fotoUrl) {
+        this.fotoUrl = fotoUrl;
     }
     public RolDTO getRol() {
         return rol;

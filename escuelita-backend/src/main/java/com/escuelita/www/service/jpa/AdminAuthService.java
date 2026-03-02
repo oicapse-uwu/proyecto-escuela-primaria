@@ -75,6 +75,7 @@ public class AdminAuthService {
         dto.setApellidos(admin.getApellidos());
         dto.setCorreo(admin.getCorreo());
         dto.setUsuario(admin.getUsuario());
+        dto.setFotoUrl(admin.getFotoUrl());
         
         // Crear rol DTO
         RolDTO rol = new RolDTO(1, "SUPER_ADMIN");

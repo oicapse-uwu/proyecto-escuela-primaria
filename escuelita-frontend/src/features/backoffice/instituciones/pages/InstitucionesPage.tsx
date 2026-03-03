@@ -38,8 +38,7 @@ const InstitucionesPage: React.FC = () => {
 
         return (
             normalizeText(inst.nombre).includes(search) ||
-            normalizeText(inst.codModular).includes(search) ||
-            normalizeText(inst.nombreDirector).includes(search)
+            normalizeText(inst.codModular).includes(search)
         );
     });
 
@@ -140,7 +139,7 @@ const InstitucionesPage: React.FC = () => {
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 lg:w-5 lg:h-5" />
                     <input
                         type="text"
-                        placeholder="Buscar por nombre, código modular o director..."
+                        placeholder="Buscar por nombre o código modular..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-9 lg:pl-10 pr-4 py-2.5 text-sm lg:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -190,10 +189,6 @@ const InstitucionesPage: React.FC = () => {
                                 <div className="flex justify-between">
                                     <span className="text-gray-500 font-medium">Cód. Modular:</span>
                                     <span className="text-gray-900 font-semibold">{institucion.codModular}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-500 font-medium">Director:</span>
-                                    <span className="text-gray-900 text-right truncate ml-2">{institucion.nombreDirector}</span>
                                 </div>
                             </div>
                             
@@ -262,9 +257,6 @@ const InstitucionesPage: React.FC = () => {
                                     <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
                                         Cód. Modular
                                     </th>
-                                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
-                                        Director
-                                    </th>
                                     <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 min-w-[120px]">
                                         Acciones
                                     </th>
@@ -298,9 +290,6 @@ const InstitucionesPage: React.FC = () => {
                                         </td>
                                         <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-900 min-w-[100px]">
                                             {institucion.codModular}
-                                        </td>
-                                        <td className="px-3 py-3 text-xs text-gray-900 min-w-[150px]">
-                                            <div className="line-clamp-2">{institucion.nombreDirector}</div>
                                         </td>
                                         <td className="px-2 py-3 whitespace-nowrap text-center sticky right-0 bg-white min-w-[120px]">
                                             <div className="flex items-center justify-center gap-1">

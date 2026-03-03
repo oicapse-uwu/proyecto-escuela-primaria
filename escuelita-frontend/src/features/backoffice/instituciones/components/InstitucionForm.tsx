@@ -1,4 +1,4 @@
-import { Building2, Copy, FileText, Receipt, Upload, User, X } from 'lucide-react';
+import { Building2, Copy, FileText, Receipt, Upload, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { subirArchivo } from '../api/uploadApi';
@@ -23,7 +23,6 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
         codModular: '',
         tipoGestion: 'Pública',
         resolucionCreacion: '',
-        nombreDirector: '',
         logoPath: '',
         ruc: '',
         razonSocial: '',
@@ -53,7 +52,6 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                 codModular: institucion.codModular,
                 tipoGestion: institucion.tipoGestion,
                 resolucionCreacion: institucion.resolucionCreacion,
-                nombreDirector: institucion.nombreDirector,
                 logoPath: institucion.logoPath || '',
                 ruc: institucion.ruc || '',
                 razonSocial: institucion.razonSocial || '',
@@ -158,7 +156,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full overflow-hidden flex flex-col">
                 {/* Header */}
                 <div className="bg-gradient-to-r from-primary to-primary-light p-6 text-white flex justify-between items-center">
                     <h2 className="text-2xl font-bold flex items-center space-x-2">
@@ -175,7 +173,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
+                <form onSubmit={handleSubmit} className="flex flex-col">
                     {/* Tabs */}
                     <div className="bg-gray-50 border-b border-gray-200 px-6">
                         <div className="flex space-x-1">
@@ -218,8 +216,8 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                         </div>
                     </div>
 
-                    {/* Tab Content - Scrollable with fixed height */}
-                    <div className="overflow-y-auto p-6 h-[380px]">
+                    {/* Tab Content */}
+                    <div className="p-6 h-[350px] overflow-y-auto">
                         {/* Tab 1: Información Básica */}
                         {activeTab === 'basica' && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -394,22 +392,6 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                         </p>
                                     )}
                                 </div>
-
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        <User className="inline w-4 h-4 mr-1" />
-                                        Nombre del Director *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="nombreDirector"
-                                        value={formData.nombreDirector}
-                                        onChange={handleChange}
-                                        required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                        placeholder="Ej: Juan Pérez García"
-                                    />
-                                </div>
                             </div>
                         )}
 
@@ -506,25 +488,19 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                         placeholder="Ej: 987654321"
                                     />
                                 </div>
-
-                                <div className="md:col-span-2 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                    <p className="text-sm text-blue-800">
-                                        💡 <strong>Nota:</strong> Los datos de facturación son opcionales en la creación, pero serán necesarios para emitir comprobantes de la suscripción.
-                                    </p>
-                                </div>
                             </div>
                         )}
 
                         {/* Tab 3: Logo */}
                         {activeTab === 'logo' && (
-                            <div className="max-w-2xl mx-auto">
+                            <div className="max-w-3xl mx-auto h-full flex flex-col justify-center">
                                 <div className="text-center mb-6">
                                     <h3 className="text-lg font-semibold text-gray-800 mb-2">Logo de la Institución</h3>
                                     <p className="text-sm text-gray-600">Sube el logo que representará a tu institución en el sistema</p>
                                 </div>
                                 
-                                <div className="flex flex-col items-center gap-6">
-                                    {/* Vista previa grande */}
+                                <div className="flex items-center gap-8 justify-center">
+                                    {/* Vista previa */}
                                     <div className="flex-shrink-0">
                                         {imagePreview ? (
                                             <div className="relative">
@@ -542,36 +518,32 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                     </div>
                                     
                                     {/* Input de archivo */}
-                                    <div className="w-full">
+                                    <div className="flex-1 max-w-md">
                                         <input
                                             type="file"
                                             accept="image/*"
                                             onChange={handleFileChange}
                                             className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-dark transition-all"
                                         />
-                                        <div className="mt-3 text-center">
+                                        <div className="mt-3">
                                             <p className="text-xs text-gray-500">
-                                                Formatos aceptados: JPG, PNG, GIF
-                                            </p>
-                                            <p className="text-xs text-gray-500">
-                                                Tamaño máximo: 5MB
+                                                Formatos aceptados: JPG, PNG, GIF - Tamáximo: 5MB
                                             </p>
                                         </div>
+                                        {imagePreview && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setImagePreview('');
+                                                    setSelectedFile(null);
+                                                    setFormData(prev => ({ ...prev, logoPath: '' }));
+                                                }}
+                                                className="mt-3 text-sm text-red-600 hover:text-red-700 underline"
+                                            >
+                                                Eliminar imagen
+                                            </button>
+                                        )}
                                     </div>
-
-                                    {imagePreview && (
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setImagePreview('');
-                                                setSelectedFile(null);
-                                                setFormData(prev => ({ ...prev, logoPath: '' }));
-                                            }}
-                                            className="text-sm text-red-600 hover:text-red-700 underline"
-                                        >
-                                            Eliminar imagen
-                                        </button>
-                                    )}
                                 </div>
                             </div>
                         )}

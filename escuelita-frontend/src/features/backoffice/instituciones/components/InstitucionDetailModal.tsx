@@ -71,14 +71,6 @@ const InstitucionDetailModal: React.FC<InstitucionDetailModalProps> = ({ institu
                             
                             <div className="space-y-3">
                                 <div className="flex items-start gap-3">
-                                    <User className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-xs text-gray-500 font-medium">Director</p>
-                                        <p className="text-sm text-gray-900 font-semibold">{institucion.nombreDirector}</p>
-                                    </div>
-                                </div>
-                                
-                                <div className="flex items-start gap-3">
                                     <FileText className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                                     <div className="flex-1 min-w-0">
                                         <p className="text-xs text-gray-500 font-medium">Resolución de Creación</p>

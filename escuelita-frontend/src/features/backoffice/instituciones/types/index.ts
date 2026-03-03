@@ -6,7 +6,7 @@ export interface Institucion {
     codModular: string;
     tipoGestion: string;
     resolucionCreacion: string;
-    nombreDirector: string;
+    nombreDirector?: string;
     logoPath?: string;
     ruc?: string;
     razonSocial?: string;
@@ -22,7 +22,6 @@ export interface InstitucionFormData {
     codModular: string;
     tipoGestion: string;
     resolucionCreacion: string;
-    nombreDirector: string;
     logoPath?: string;
     ruc?: string;
     razonSocial?: string;
@@ -38,7 +37,6 @@ export interface InstitucionDTO {
     codModular: string;
     tipoGestion: string;
     resolucionCreacion: string;
-    nombreDirector: string;
     logoPath?: string;
     ruc?: string;
     razonSocial?: string;

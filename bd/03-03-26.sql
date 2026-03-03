@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 03-03-2026 a las 05:39:15
+-- Tiempo de generación: 03-03-2026 a las 08:23:57
 -- Versión del servidor: 10.11.16-MariaDB
 -- Versión de PHP: 8.4.17
 
@@ -539,27 +539,33 @@ CREATE TABLE `institucion` (
   `fecha_inicio_suscripcion` date DEFAULT NULL,
   `fecha_vencimiento_licencia` date DEFAULT NULL,
   `plan_contratado` varchar(50) DEFAULT 'Plan Básico',
-  `estado` int(11) DEFAULT NULL
+  `estado` int(11) DEFAULT NULL,
+  `correo_facturacion` varchar(100) DEFAULT NULL,
+  `domicilio_fiscal` varchar(255) DEFAULT NULL,
+  `razon_social` varchar(200) DEFAULT NULL,
+  `representante_legal` varchar(150) DEFAULT NULL,
+  `ruc` varchar(11) DEFAULT NULL,
+  `telefono_facturacion` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `institucion`
 --
 
-INSERT INTO `institucion` (`id_institucion`, `nombre`, `cod_modular`, `tipo_gestion`, `resolucion_creacion`, `nombre_director`, `logo_path`, `estado_suscripcion`, `fecha_inicio_suscripcion`, `fecha_vencimiento_licencia`, `plan_contratado`, `estado`) VALUES
-(1, 'Colegio Primaria San Marcos', '1234567', 'Privada', 'R.M. N° 999-2004-UGEL-01', 'Jorge Manolo Lopez', '/uploads/logos/3828afbe-21a3-4f69-bdfc-2acb298f6ece.jpg', 'ACTIVA', '2026-02-27', '2027-02-27', 'Plan Básico', 1),
-(2, 'Colegio Primaria San Juan', '1111111', 'Pública', 'R.D.R. N° 123456-2024-DRE-SANMARTIN', 'Perez Obradon Juan Carlos', '/uploads/logos/dd540bde-ba4d-4656-b3ae-61c61e0bcf9c.jpeg', 'SUSPENDIDA', NULL, NULL, 'Plan Básico', 1),
-(3, 'Colegio Primaria San José', '2222222', 'Pública', 'R.D. N° 1234-2001-DRELM', 'Leodan Vallejos Diaz', '/uploads/logos/c8f58fd0-f1a8-4ee0-8f76-00b4438ff1c4.jpg', 'DEMO', NULL, NULL, 'Plan Básico', 1),
-(6, 'Colegio Primaria Nueva Alianza', '3333333', 'Pública', 'R.D. N° 1235-2003-DRELM', 'Marcos Valles Diaz', NULL, 'VENCIDA', NULL, NULL, 'Plan Básico', 1),
-(7, 'Colegio San Juan', '4444444', 'Privada', 'R.G.R. N° 5678-2024-GRE-RIOJA', 'Ana María Rojas', '/uploads/logos/f1acde59-4a77-4131-9b0c-85b3a7a8a9b6.jpeg', 'DEMO', '2026-02-27', '2027-02-27', 'Plan Enterprise', 1),
-(12, 'Prueba 1', '1234568', 'Privada', 'R.D. N° 1234-2024-DRELM', 'Juan Perez Garcia', '/uploads/logos/42080f46-9592-4539-a5e2-01f676930ea5.jpeg', 'DEMO', '2026-02-27', '2027-02-27', 'Plan Básico', 1),
-(13, 'IE 00179 San Jose del Alto Mayo', '9632548', 'Pública', 'R.M. N° 999-2002-UGEL-01', 'Leondan Rubio Vallejos', NULL, 'ACTIVA', '2026-01-27', '2027-02-26', 'Plan Básico', 1),
-(14, 'IE 00189 Nueva Alianza', '8954166', 'Pública', 'R.M. N° 9919-2004-UGEL-01', 'Chapoñan Valdera', NULL, 'ACTIVA', '2026-01-27', '2027-03-01', 'Plan Básico', 1),
-(15, 'Institucion Educativa N° 100', '1234123', 'Pública', 'R.D. N° 1234-1970-DRELM', 'Rita Elena Lopez Gonzales', '/uploads/logos/876a43da-77a6-4324-974b-7163db570804.jpg', 'ACTIVA', '2026-02-28', '2026-03-01', 'Plan Enterprise', 1),
-(16, 'I.E San Antonio de Cumbaza', '7689022', 'Privada', 'R.D. N° 1234-2024-DRELM', 'Cristina Berru', NULL, 'ACTIVA', '2026-03-03', '2026-01-07', 'Plan Básico', 1),
-(17, 'I.E Fernando Velez', '5616521', 'Pública', 'R.D. N° 1234-2000-DRELM', 'Jui Contreras', '/uploads/logos/ac1e7e85-3e3f-4678-9362-b16ce0d8dfee.jpg', 'ACTIVA', '2026-03-07', '2026-02-16', 'Plan Básico', 1),
-(18, 'Institucion Educativa Nuestra Señora de Fatima', '1111112', 'Privada', 'R.G.R. N° 5678-1990-GRE-PIURA', 'Cinthia Rodriguez', '/uploads/logos/731e50d1-2372-457c-9151-67107ce29653.png', 'ACTIVA', '2026-02-28', '2027-02-28', 'Plan Enterprise', 1),
-(19, 'Juan Jimenez Pimentel', '1111123', 'Pública', 'R.D.R. N° 123456-2024-DRE-TARAPOTO', 'Juan Lopez Solano', NULL, 'ACTIVA', '2026-02-01', '2026-03-01', 'Plan Enterprise', 1);
+INSERT INTO `institucion` (`id_institucion`, `nombre`, `cod_modular`, `tipo_gestion`, `resolucion_creacion`, `nombre_director`, `logo_path`, `estado_suscripcion`, `fecha_inicio_suscripcion`, `fecha_vencimiento_licencia`, `plan_contratado`, `estado`, `correo_facturacion`, `domicilio_fiscal`, `razon_social`, `representante_legal`, `ruc`, `telefono_facturacion`) VALUES
+(1, 'Colegio Primaria San Marcos', '1234567', 'Privada', 'R.M. N° 999-2004-UGEL-01', 'Jorge Manolo Lopez', '/uploads/logos/3828afbe-21a3-4f69-bdfc-2acb298f6ece.jpg', 'ACTIVA', '2026-02-27', '2027-02-27', 'Plan Básico', 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(2, 'Colegio Primaria San Juan', '1111111', 'Pública', 'R.D.R. N° 123456-2024-DRE-SANMARTIN', 'Perez Obradon Juan Carlos', '/uploads/logos/dd540bde-ba4d-4656-b3ae-61c61e0bcf9c.jpeg', 'SUSPENDIDA', NULL, NULL, 'Plan Básico', 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(3, 'Colegio Primaria San José', '2222222', 'Pública', 'R.D. N° 1234-2001-DRELM', 'Leodan Vallejos Diaz', '/uploads/logos/c8f58fd0-f1a8-4ee0-8f76-00b4438ff1c4.jpg', 'DEMO', NULL, NULL, 'Plan Básico', 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(6, 'Colegio Primaria Nueva Alianza', '3333333', 'Pública', 'R.D. N° 1235-2003-DRELM', 'Marcos Valles Diaz', NULL, 'VENCIDA', NULL, NULL, 'Plan Básico', 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(7, 'Colegio San Juan', '4444444', 'Privada', 'R.G.R. N° 5678-2024-GRE-RIOJA', 'Ana María Rojas', '/uploads/logos/f1acde59-4a77-4131-9b0c-85b3a7a8a9b6.jpeg', 'DEMO', '2026-02-27', '2027-02-27', 'Plan Enterprise', 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(12, 'Prueba 1', '1234568', 'Privada', 'R.D. N° 1234-2024-DRELM', 'Juan Perez Garcia', '/uploads/logos/42080f46-9592-4539-a5e2-01f676930ea5.jpeg', 'DEMO', '2026-02-27', '2027-02-27', 'Plan Básico', 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(13, 'IE 00179 San Jose del Alto Mayo', '9632548', 'Pública', 'R.M. N° 999-2002-UGEL-01', 'Leondan Rubio Vallejos', NULL, 'ACTIVA', '2026-01-27', '2027-02-26', 'Plan Básico', 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(14, 'IE 00189 Nueva Alianza', '8954166', 'Pública', 'R.M. N° 9919-2004-UGEL-01', 'Chapoñan Valdera', NULL, 'ACTIVA', '2026-01-27', '2027-03-01', 'Plan Básico', 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(15, 'Institucion Educativa N° 100', '1234123', 'Pública', 'R.D. N° 1234-1970-DRELM', 'Rita Elena Lopez Gonzales', '/uploads/logos/876a43da-77a6-4324-974b-7163db570804.jpg', 'ACTIVA', '2026-02-28', '2026-03-01', 'Plan Enterprise', 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(16, 'I.E San Antonio de Cumbaza', '7689022', 'Privada', 'R.D. N° 1234-2024-DRELM', 'Cristina Berru', NULL, 'ACTIVA', '2026-03-03', '2026-01-07', 'Plan Básico', 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(17, 'I.E Fernando Velez', '5616521', 'Pública', 'R.D. N° 1234-2000-DRELM', 'Jui Contreras', '/uploads/logos/ac1e7e85-3e3f-4678-9362-b16ce0d8dfee.jpg', 'ACTIVA', '2026-03-07', '2026-02-16', 'Plan Básico', 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(18, 'Institucion Educativa Nuestra Señora de Fatima', '1111112', 'Privada', 'R.G.R. N° 5678-1990-GRE-PIURA', 'Cinthia Rodriguez', '/uploads/logos/731e50d1-2372-457c-9151-67107ce29653.png', 'ACTIVA', '2026-02-28', '2027-02-28', 'Plan Enterprise', 1, NULL, NULL, NULL, NULL, NULL, NULL),
+(19, 'Juan Jimenez Pimentel', '1111123', 'Pública', 'R.D.R. N° 123456-2024-DRE-TARAPOTO', 'Juan Lopez Solano', NULL, 'ACTIVA', '2026-02-01', '2026-03-01', 'Plan Enterprise', 1, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1055,20 +1061,22 @@ CREATE TABLE `sedes` (
   `ugel` varchar(100) DEFAULT NULL,
   `telefono` varchar(20) DEFAULT NULL,
   `correo_institucional` varchar(100) DEFAULT NULL,
-  `estado` int(11) DEFAULT NULL
+  `estado` int(11) DEFAULT NULL,
+  `codigo_establecimiento` varchar(4) DEFAULT NULL,
+  `es_sede_principal` bit(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `sedes`
 --
 
-INSERT INTO `sedes` (`id_sede`, `id_institucion`, `nombre_sede`, `direccion`, `distrito`, `provincia`, `departamento`, `ugel`, `telefono`, `correo_institucional`, `estado`) VALUES
-(1, 1, 'Sede Principal', 'Av. Los Estudiantes 123', NULL, NULL, NULL, NULL, NULL, NULL, 1),
-(2, 2, 'Sede Norte', 'Av. Las Palmeras 456', NULL, NULL, NULL, NULL, NULL, NULL, 1),
-(3, 2, 'Sede Central San Juan', 'Jr. Los Pinos 789', NULL, NULL, NULL, NULL, NULL, NULL, 1),
-(4, 2, 'Sede Central Tarapoto', 'Jr. San Martín 456', 'Morales', 'San Martín', 'San Martín', 'UGEL San Martín', '042-555123', 'tarapoto@sanmarcos.edu.pe', 1),
-(5, 1, 'Sede Central Pimentel Chiclayo', 'jr. Pimentel nro 230', 'Pimentel', 'Chiclayo', 'Lambayeque', 'UGUEL Chiclayo', '987254619', 'pimentel@gmail.com', 1),
-(6, 19, 'Sede Tarapoto', 'Jr. Pimentel 341 - Av. Juan', 'Tarapoto', 'Tarapoto', 'San Martin', 'TARAPOTO', '909567564', 'juan@jp.edu.pe', 1);
+INSERT INTO `sedes` (`id_sede`, `id_institucion`, `nombre_sede`, `direccion`, `distrito`, `provincia`, `departamento`, `ugel`, `telefono`, `correo_institucional`, `estado`, `codigo_establecimiento`, `es_sede_principal`) VALUES
+(1, 1, 'Sede Principal', 'Av. Los Estudiantes 123', NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL),
+(2, 2, 'Sede Norte', 'Av. Las Palmeras 456', NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL),
+(3, 2, 'Sede Central San Juan', 'Jr. Los Pinos 789', NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL),
+(4, 2, 'Sede Central Tarapoto', 'Jr. San Martín 456', 'Morales', 'San Martín', 'San Martín', 'UGEL San Martín', '042-555123', 'tarapoto@sanmarcos.edu.pe', 1, NULL, NULL),
+(5, 1, 'Sede Central Pimentel Chiclayo', 'jr. Pimentel nro 230', 'Pimentel', 'Chiclayo', 'Lambayeque', 'UGUEL Chiclayo', '987254619', 'pimentel@gmail.com', 1, NULL, NULL),
+(6, 19, 'Sede Tarapoto', 'Jr. Pimentel 341 - Av. Juan', 'Tarapoto', 'Tarapoto', 'San Martin', 'TARAPOTO', '909567564', 'juan@jp.edu.pe', 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1408,7 +1416,8 @@ ALTER TABLE `horarios`
 --
 ALTER TABLE `institucion`
   ADD PRIMARY KEY (`id_institucion`),
-  ADD UNIQUE KEY `cod_modular` (`cod_modular`);
+  ADD UNIQUE KEY `cod_modular` (`cod_modular`),
+  ADD UNIQUE KEY `UK7hvosqjv2w66jh7eoema9l53p` (`ruc`);
 
 --
 -- Indices de la tabla `malla_curricular`

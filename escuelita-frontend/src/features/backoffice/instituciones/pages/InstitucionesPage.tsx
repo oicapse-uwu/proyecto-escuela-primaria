@@ -1,7 +1,8 @@
-import { Building2, Edit, Plus, Search, Shield, Trash2 } from 'lucide-react';
+import { Building2, Edit, Eye, Plus, Search, Shield, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Toaster } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
+import InstitucionDetailModal from '../components/InstitucionDetailModal';
 import InstitucionForm from '../components/InstitucionForm';
 import { useInstituciones } from '../hooks/useInstituciones';
 import type { Institucion, InstitucionFormData } from '../types';
@@ -19,6 +20,7 @@ const InstitucionesPage: React.FC = () => {
     
     const [showForm, setShowForm] = useState(false);
     const [institucionEditar, setInstitucionEditar] = useState<Institucion | null>(null);
+    const [institucionVer, setInstitucionVer] = useState<Institucion | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -239,14 +241,17 @@ const InstitucionesPage: React.FC = () => {
                                     <span className="text-gray-500 font-medium">Director:</span>
                                     <span className="text-gray-900 text-right truncate ml-2">{institucion.nombreDirector}</span>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-500 font-medium">Plan:</span>
-                                    <span className="text-gray-900 font-semibold">{institucion.planContratado}</span>
-                                </div>
                             </div>
                             
                             {/* Acciones */}
                             <div className="flex gap-2 pt-3 border-t border-gray-100">
+                                <button
+                                    onClick={() => setInstitucionVer(institucion)}
+                                    className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                                >
+                                    <Eye className="w-4 h-4" />
+                                    <span className="text-sm font-medium">Ver</span>
+                                </button>
                                 <button
                                     onClick={() => handleEditar(institucion)}
                                     className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 text-primary bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors"
@@ -306,13 +311,10 @@ const InstitucionesPage: React.FC = () => {
                                     <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
                                         Director
                                     </th>
-                                    <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
-                                        Plan
-                                    </th>
                                     <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
                                         Estado
                                     </th>
-                                    <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 min-w-[90px]">
+                                    <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 min-w-[120px]">
                                         Acciones
                                     </th>
                                 </tr>
@@ -349,16 +351,20 @@ const InstitucionesPage: React.FC = () => {
                                         <td className="px-3 py-3 text-xs text-gray-900 min-w-[150px]">
                                             <div className="line-clamp-2">{institucion.nombreDirector}</div>
                                         </td>
-                                        <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-900 min-w-[120px]">
-                                            {institucion.planContratado}
-                                        </td>
                                         <td className="px-2 py-3 whitespace-nowrap min-w-[100px]">
                                             <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoBadge(institucion.estadoSuscripcion)}`}>
                                                 {institucion.estadoSuscripcion}
                                             </span>
                                         </td>
-                                        <td className="px-2 py-3 whitespace-nowrap text-center sticky right-0 bg-white min-w-[90px]">
+                                        <td className="px-2 py-3 whitespace-nowrap text-center sticky right-0 bg-white min-w-[120px]">
                                             <div className="flex items-center justify-center gap-1">
+                                                <button
+                                                    onClick={() => setInstitucionVer(institucion)}
+                                                    className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                    title="Ver Detalle"
+                                                >
+                                                    <Eye className="w-4 h-4" />
+                                                </button>
                                                 <button
                                                     onClick={() => handleEditar(institucion)}
                                                     className="p-1.5 text-primary hover:bg-primary/10 rounded-lg transition-colors"
@@ -400,6 +406,14 @@ const InstitucionesPage: React.FC = () => {
                     onSubmit={handleSubmit}
                     onCancel={handleCancel}
                     isLoading={isLoading}
+                />
+            )}
+
+            {/* Modal Detail */}
+            {institucionVer && (
+                <InstitucionDetailModal
+                    institucion={institucionVer}
+                    onClose={() => setInstitucionVer(null)}
                 />
             )}
         </div>

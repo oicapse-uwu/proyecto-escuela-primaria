@@ -10,6 +10,8 @@ export interface ReporteInstitucion {
 
 export interface ReporteSuscripcion {
     idSuscripcion: number;
+    limiteAlumnosContratado?: number | null;
+    limiteSedesContratadas?: number | null;
     precioAcordado: number | null;
     fechaInicio: string | null;
     fechaVencimiento: string | null;
@@ -66,12 +68,33 @@ export interface ReporteSuperAdmin {
     estado: number;
 }
 
+export interface ReporteSede {
+    idSede: number;
+    nombreSede: string;
+    distrito?: string | null;
+    provincia?: string | null;
+    departamento?: string | null;
+    idInstitucion?: {
+        idInstitucion: number;
+        nombre: string;
+    } | null;
+    estado: number;
+}
+
 export interface ReporteAlumno {
     idAlumno: number;
     numeroDocumento: string;
     nombres: string;
     apellidos: string;
     estadoAlumno?: string;
+    idSede?: {
+        idSede: number;
+        nombreSede: string;
+        idInstitucion?: {
+            idInstitucion: number;
+            nombre: string;
+        } | null;
+    } | null;
     estado: number;
 }
 
@@ -82,6 +105,17 @@ export interface ReportePagoCaja {
     idMetodo?: {
         idMetodo: number;
         nombreMetodo: string;
+    } | null;
+    idUsuario?: {
+        idUsuario: number;
+        idSede?: {
+            idSede: number;
+            nombreSede: string;
+            idInstitucion?: {
+                idInstitucion: number;
+                nombre: string;
+            } | null;
+        } | null;
     } | null;
     estado: number;
 }
@@ -110,6 +144,27 @@ export interface UsoPorInstitucion {
     estadoSuscripcion: string;
     totalUsuarios: number;
     porcentajeUso: number;
+}
+
+export interface SaludComercialInstitucion {
+    idInstitucion: number;
+    nombre: string;
+    codModular: string;
+    planContratado: string;
+    estadoSuscripcion: string;
+    totalSuscripciones: number;
+    suscripcionesVencidas: number;
+    suscripcionesPorVencer30d: number;
+    limiteAlumnosContratado: number;
+    limiteSedesContratadas: number;
+    totalAlumnos: number;
+    totalSedes: number;
+    totalUsuarios: number;
+    ocupacionAlumnosPct: number;
+    ocupacionSedesPct: number;
+    ingresoComprometido: number;
+    ingresoCobrado: number;
+    brechaCobranza: number;
 }
 
 export interface ResumenReportes {

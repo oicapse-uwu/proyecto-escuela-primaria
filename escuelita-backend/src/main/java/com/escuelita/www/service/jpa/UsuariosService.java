@@ -19,6 +19,10 @@ public class UsuariosService implements IUsuariosService {
         return repoUsuarios.findAll();
     }
     @Override
+    public List<Usuarios> buscarPorSede(Long idSede) {
+        return repoUsuarios.findByIdSede_IdSede(idSede);
+    }
+    @Override
     public Usuarios guardar(Usuarios usuarios) {
         return repoUsuarios.save(usuarios);
     }

@@ -6,6 +6,7 @@ import ReportesRoutes from './features/backoffice/reportes/routes/ReportesRoutes
 import SuscripcionesRoutes from './features/backoffice/suscripciones/routes/SuscripcionesRoutes';
 import UsuariosRoutes from './features/backoffice/usuarios/routes/UsuariosRoutes';
 import AlumnosRoutes from './features/portal/alumnos/routes/AlumnosRoutes';
+import UsuariosPortalRoutes from './features/portal/usuarios/routes/UsuariosPortalRoutes';
 import EscuelaLayout from './layouts/EscuelaLayout';
 import SuperAdminLayout from './layouts/SuperAdminLayout';
 import DashboardEscuela from './pages/DashboardEscuela';
@@ -56,6 +57,7 @@ function App() {
             
             {/* Rutas futuras para módulos de escuela */}
             <Route path="alumnos/*" element={<AlumnosRoutes />} />
+            <Route path="configuracion/usuarios/*" element={<UsuariosPortalRoutes />} />
             {/* <Route path="matriculas/*" element={<MatriculasRoutes />} /> */}
             {/* <Route path="evaluaciones/*" element={<EvaluacionesRoutes />} /> */}
             {/* <Route path="pagos/*" element={<PagosRoutes />} /> */}

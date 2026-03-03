@@ -5,6 +5,7 @@ import {
     obtenerInstitucionesReporte,
     obtenerPagosCajaReporte,
     obtenerPlanesReporte,
+    obtenerSedesReporte,
     obtenerSuperAdminsReporte,
     obtenerSuscripcionesReporte,
     obtenerUsuariosReporte
@@ -16,10 +17,12 @@ import type {
     ReporteAlumno,
     ReporteInstitucion,
     ReportePagoCaja,
+    ReporteSede,
     ReporteSuperAdmin,
     ReporteSuscripcion,
     ReporteUsuarioSistema,
     ResumenReportes,
+    SaludComercialInstitucion,
     UsoPorInstitucion
 } from '../types';
 
@@ -44,6 +47,7 @@ export const useReportes = () => {
     const [superAdmins, setSuperAdmins] = useState<ReporteSuperAdmin[]>([]);
     const [pagosCaja, setPagosCaja] = useState<ReportePagoCaja[]>([]);
     const [alumnos, setAlumnos] = useState<ReporteAlumno[]>([]);
+    const [sedes, setSedes] = useState<ReporteSede[]>([]);
     const [planes, setPlanes] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -53,14 +57,15 @@ export const useReportes = () => {
         setError(null);
 
         try {
-            const [institucionesData, suscripcionesData, usuariosData, superAdminsData, pagosCajaData, alumnosData, planesData] = await Promise.all([
+            const [institucionesData, suscripcionesData, usuariosData, superAdminsData, pagosCajaData, alumnosData, planesData, sedesData] = await Promise.all([
                 obtenerInstitucionesReporte(),
                 obtenerSuscripcionesReporte(),
                 obtenerUsuariosReporte(),
                 obtenerSuperAdminsReporte(),
                 obtenerPagosCajaReporte(),
                 obtenerAlumnosReporte(),
-                obtenerPlanesReporte()
+                obtenerPlanesReporte(),
+                obtenerSedesReporte()
             ]);
 
             setInstituciones(institucionesData || []);
@@ -70,6 +75,7 @@ export const useReportes = () => {
             setPagosCaja(pagosCajaData || []);
             setAlumnos(alumnosData || []);
             setPlanes(planesData || []);
+            setSedes(sedesData || []);
         } catch (err: any) {
             const mensaje = err.response?.data?.message || 'Error al cargar reportes';
             setError(mensaje);
@@ -216,6 +222,107 @@ export const useReportes = () => {
         return data.sort((a, b) => b.porcentajeUso - a.porcentajeUso);
     }, [instituciones, usuarios]);
 
+    const saludComercialInstituciones = useMemo<SaludComercialInstitucion[]>(() => {
+        const suscripcionesPorInstitucion = new Map<number, ReporteSuscripcion[]>();
+        suscripciones.forEach((suscripcion) => {
+            const idInstitucion = suscripcion.idInstitucion?.idInstitucion;
+            if (typeof idInstitucion !== 'number') return;
+            const bucket = suscripcionesPorInstitucion.get(idInstitucion) || [];
+            bucket.push(suscripcion);
+            suscripcionesPorInstitucion.set(idInstitucion, bucket);
+        });
+
+        const usuariosPorInstitucion = new Map<number, number>();
+        usuarios.forEach((usuario) => {
+            const idInstitucion = usuario.idSede?.idInstitucion?.idInstitucion;
+            if (typeof idInstitucion !== 'number') return;
+            usuariosPorInstitucion.set(idInstitucion, (usuariosPorInstitucion.get(idInstitucion) || 0) + 1);
+        });
+
+        const alumnosPorInstitucion = new Map<number, number>();
+        alumnos.forEach((alumno) => {
+            const idInstitucion = alumno.idSede?.idInstitucion?.idInstitucion;
+            if (typeof idInstitucion !== 'number') return;
+            alumnosPorInstitucion.set(idInstitucion, (alumnosPorInstitucion.get(idInstitucion) || 0) + 1);
+        });
+
+        const sedesPorInstitucion = new Map<number, number>();
+        sedes.forEach((sede) => {
+            const idInstitucion = sede.idInstitucion?.idInstitucion;
+            if (typeof idInstitucion !== 'number') return;
+            sedesPorInstitucion.set(idInstitucion, (sedesPorInstitucion.get(idInstitucion) || 0) + 1);
+        });
+
+        const pagosPorInstitucion = new Map<number, number>();
+        pagosCaja.forEach((pago) => {
+            const idInstitucion = pago.idUsuario?.idSede?.idInstitucion?.idInstitucion;
+            if (typeof idInstitucion !== 'number') return;
+            const monto = Number(pago.montoTotalPagado) || 0;
+            pagosPorInstitucion.set(idInstitucion, (pagosPorInstitucion.get(idInstitucion) || 0) + monto);
+        });
+
+        const hoy = new Date();
+        hoy.setHours(0, 0, 0, 0);
+
+        return instituciones.map((institucion) => {
+            const idInstitucion = institucion.idInstitucion;
+            const suscripcionesDeInstitucion = suscripcionesPorInstitucion.get(idInstitucion) || [];
+            const totalUsuarios = usuariosPorInstitucion.get(idInstitucion) || 0;
+            const totalAlumnos = alumnosPorInstitucion.get(idInstitucion) || 0;
+            const totalSedes = sedesPorInstitucion.get(idInstitucion) || 0;
+            const ingresoComprometido = suscripcionesDeInstitucion.reduce(
+                (acc, item) => acc + (Number(item.precioAcordado) || 0),
+                0
+            );
+            const ingresoCobrado = pagosPorInstitucion.get(idInstitucion) || 0;
+
+            const limiteAlumnosContratado = suscripcionesDeInstitucion.reduce(
+                (max, item) => Math.max(max, Number(item.limiteAlumnosContratado) || 0),
+                0
+            );
+            const limiteSedesContratadas = suscripcionesDeInstitucion.reduce(
+                (max, item) => Math.max(max, Number(item.limiteSedesContratadas) || 0),
+                0
+            );
+
+            const suscripcionesVencidas = suscripcionesDeInstitucion.filter((item) => {
+                if (!item.fechaVencimiento) return false;
+                const fechaVencimiento = new Date(item.fechaVencimiento);
+                return !Number.isNaN(fechaVencimiento.getTime()) && fechaVencimiento < hoy;
+            }).length;
+
+            const suscripcionesPorVencer30d = suscripcionesDeInstitucion.filter((item) => {
+                if (!item.fechaVencimiento) return false;
+                const fechaVencimiento = new Date(item.fechaVencimiento);
+                if (Number.isNaN(fechaVencimiento.getTime()) || fechaVencimiento < hoy) return false;
+                const diffMs = fechaVencimiento.getTime() - hoy.getTime();
+                const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+                return diffDias <= 30;
+            }).length;
+
+            return {
+                idInstitucion,
+                nombre: institucion.nombre,
+                codModular: institucion.codModular,
+                planContratado: institucion.planContratado || 'Sin plan',
+                estadoSuscripcion: institucion.estadoSuscripcion || 'Sin estado',
+                totalSuscripciones: suscripcionesDeInstitucion.length,
+                suscripcionesVencidas,
+                suscripcionesPorVencer30d,
+                limiteAlumnosContratado,
+                limiteSedesContratadas,
+                totalAlumnos,
+                totalSedes,
+                totalUsuarios,
+                ocupacionAlumnosPct: limiteAlumnosContratado > 0 ? (totalAlumnos / limiteAlumnosContratado) * 100 : 0,
+                ocupacionSedesPct: limiteSedesContratadas > 0 ? (totalSedes / limiteSedesContratadas) * 100 : 0,
+                ingresoComprometido,
+                ingresoCobrado,
+                brechaCobranza: ingresoComprometido - ingresoCobrado
+            };
+        }).sort((a, b) => b.brechaCobranza - a.brechaCobranza);
+    }, [instituciones, suscripciones, usuarios, alumnos, sedes, pagosCaja]);
+
     return {
         instituciones,
         suscripciones,
@@ -223,6 +330,7 @@ export const useReportes = () => {
         superAdmins,
         pagosCaja,
         alumnos,
+        sedes,
         planes,
         resumen,
         institucionesPorTipoGestion,
@@ -230,6 +338,7 @@ export const useReportes = () => {
         usuariosPorRol,
         usuariosPorSede,
         usoPorInstitucion,
+        saludComercialInstituciones,
         ingresosPorPlan,
         ingresosPorMetodoPago,
         isLoading,

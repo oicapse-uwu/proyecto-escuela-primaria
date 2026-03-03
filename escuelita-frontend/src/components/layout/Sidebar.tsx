@@ -66,7 +66,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                 { name: 'Sedes', path: '/configuracion/sedes', icon: MapPin },
                 { name: 'Año Escolar', path: '/configuracion/anio-escolar', icon: Calendar },
                 { name: 'Periodos Académicos', path: '/configuracion/periodos', icon: CalendarDays },
-                { name: 'Usuarios y Roles', path: '/configuracion/usuarios', icon: UserCog },
+                { name: 'Usuarios y Roles', path: '/escuela/configuracion/usuarios', icon: UserCog },
                 { name: 'Tipos de Documento', path: '/configuracion/tipo-documentos', icon: FileType },
             ]
         },

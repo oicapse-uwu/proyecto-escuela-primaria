@@ -3,6 +3,7 @@ package com.escuelita.www.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ import com.escuelita.www.entity.Roles;
 import com.escuelita.www.repository.ModulosRepository;
 import com.escuelita.www.repository.PermisosRepository;
 import com.escuelita.www.repository.RolesRepository;
+import com.escuelita.www.repository.UsuariosRepository;
 
 import com.escuelita.www.service.IRolModuloPermisoService;
 
@@ -36,10 +38,27 @@ public class RolModuloPermisoController {
     private ModulosRepository repoModulos;
     @Autowired
     private PermisosRepository repoPermisos;
+    @Autowired
+    private UsuariosRepository repoUsuarios;
 
     @GetMapping("/rolmodulopermiso")
     public List<RolModuloPermiso> buscarTodos() {
         return serviceRmp.buscarTodos();
+    }
+    @GetMapping("/rolmodulopermiso/sede/{idSede}")
+    public List<RolModuloPermiso> buscarPorSede(@PathVariable Long idSede) {
+        List<Long> roleIds = repoUsuarios.findByIdSede_IdSede(idSede).stream()
+            .map(usuario -> usuario.getIdRol())
+            .filter(rol -> rol != null)
+            .map(rol -> rol.getIdRol())
+            .distinct()
+            .collect(Collectors.toList());
+
+        if (roleIds.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+
+        return serviceRmp.buscarPorRoles(roleIds);
     }
     @PostMapping("/rolmodulopermiso")
     public ResponseEntity<?> guardar(@RequestBody RolModuloPermisoDTO dto) {

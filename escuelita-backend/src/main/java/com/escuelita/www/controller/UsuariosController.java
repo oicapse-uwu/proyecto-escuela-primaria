@@ -42,6 +42,10 @@ public class UsuariosController {
     public List<Usuarios> buscarTodos() {
         return serviceUsuarios.buscarTodos();
     }
+    @GetMapping("/usuarios/sede/{idSede}")
+    public List<Usuarios> buscarPorSede(@PathVariable Long idSede) {
+        return serviceUsuarios.buscarPorSede(idSede);
+    }
     @PostMapping("/usuarios")
     public ResponseEntity<?> guardar(@RequestBody UsuariosDTO dto) {
         Usuarios usuarios = new Usuarios();
@@ -75,6 +79,14 @@ public class UsuariosController {
             return ResponseEntity.badRequest()
                     .body("ID requerido");
         }
+
+        Optional<Usuarios> usuarioActualOpt = serviceUsuarios.buscarId(dto.getIdUsuario());
+        if (usuarioActualOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("Usuario no encontrado");
+        }
+
+        Usuarios usuarioActual = usuarioActualOpt.get();
+
         Usuarios usuarios = new Usuarios();
         usuarios.setIdUsuario(dto.getIdUsuario());
         usuarios.setNumeroDocumento(dto.getNumeroDocumento());
@@ -82,18 +94,28 @@ public class UsuariosController {
         usuarios.setNombres(dto.getNombres());
         usuarios.setCorreo(dto.getCorreo());
         usuarios.setUsuario(dto.getUsuario());
-        usuarios.setContrasena(dto.getContrasena());
+        String nuevaContrasena = dto.getContrasena();
+        if (nuevaContrasena != null && !nuevaContrasena.trim().isEmpty()) {
+            usuarios.setContrasena(nuevaContrasena);
+        } else {
+            usuarios.setContrasena(usuarioActual.getContrasena());
+        }
         usuarios.setFotoPerfil(dto.getFotoPerfil());
         
-        Sedes sedes = repoSedes
-            .findById(dto.getIdSede())
-            .orElse(null);
-        Roles roles = repoRoles
-            .findById(dto.getIdRol())
-            .orElse(null);
-        TipoDocumentos tipoDocumentos = repoTipoDocs
-            .findById(dto.getIdTipoDoc())
-            .orElse(null);
+        Sedes sedes = usuarioActual.getIdSede();
+        if (dto.getIdSede() != null && dto.getIdSede() > 0) {
+            sedes = repoSedes.findById(dto.getIdSede()).orElse(usuarioActual.getIdSede());
+        }
+
+        Roles roles = usuarioActual.getIdRol();
+        if (dto.getIdRol() != null && dto.getIdRol() > 0) {
+            roles = repoRoles.findById(dto.getIdRol()).orElse(usuarioActual.getIdRol());
+        }
+
+        TipoDocumentos tipoDocumentos = usuarioActual.getIdTipoDoc();
+        if (dto.getIdTipoDoc() != null && dto.getIdTipoDoc() > 0) {
+            tipoDocumentos = repoTipoDocs.findById(dto.getIdTipoDoc()).orElse(usuarioActual.getIdTipoDoc());
+        }
 
         usuarios.setIdSede(sedes);
         usuarios.setIdRol(roles);

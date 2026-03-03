@@ -1,4 +1,4 @@
-import { Building2, Edit, Eye, Plus, Search, Shield, Trash2 } from 'lucide-react';
+import { Building2, Edit, Eye, Plus, Search, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Toaster } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
@@ -95,16 +95,6 @@ const InstitucionesPage: React.FC = () => {
         setInstitucionEditar(null);
     };
 
-    const getEstadoBadge = (estado: string) => {
-        const colors = {
-            DEMO: 'bg-yellow-100 text-yellow-800',
-            ACTIVA: 'bg-green-100 text-green-800',
-            SUSPENDIDA: 'bg-orange-100 text-orange-800',
-            VENCIDA: 'bg-red-100 text-red-800'
-        };
-        return colors[estado as keyof typeof colors] || 'bg-gray-100 text-gray-800';
-    };
-
     return (
         <div className="px-3 pt-6 pb-3 sm:px-4 sm:pt-8 sm:pb-4 lg:px-6 lg:pt-8 lg:pb-6 overflow-x-hidden">
             <Toaster position="top-right" richColors />
@@ -132,47 +122,14 @@ const InstitucionesPage: React.FC = () => {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-3 mb-2 lg:mb-3">
-                <div className="bg-white rounded-lg shadow p-3 sm:p-3.5 lg:p-3.5">
+            <div className="grid grid-cols-1 gap-3 mb-3">
+                <div className="bg-white rounded-lg shadow p-4">
                     <div className="flex items-center justify-between">
                         <div className="min-w-0 flex-1">
-                            <p className="text-[10px] sm:text-xs lg:text-sm text-gray-600 truncate">Total Instituciones</p>
-                            <p className="text-lg sm:text-xl lg:text-xl font-bold text-gray-800">{instituciones.length}</p>
+                            <p className="text-sm text-gray-600">Total Instituciones</p>
+                            <p className="text-2xl font-bold text-gray-800">{instituciones.length}</p>
                         </div>
-                        <Building2 className="w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 text-primary opacity-50 flex-shrink-0 ml-2" />
-                    </div>
-                </div>
-                <div className="bg-white rounded-lg shadow p-3 sm:p-3.5 lg:p-3.5">
-                    <div className="flex items-center justify-between">
-                        <div className="min-w-0 flex-1">
-                            <p className="text-[10px] sm:text-xs lg:text-sm text-gray-600 truncate">Activas</p>
-                            <p className="text-lg sm:text-xl lg:text-xl font-bold text-green-600">
-                                {instituciones.filter(i => i.estadoSuscripcion === 'ACTIVA').length}
-                            </p>
-                        </div>
-                        <Shield className="w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 text-green-500 opacity-50 flex-shrink-0 ml-2" />
-                    </div>
-                </div>
-                <div className="bg-white rounded-lg shadow p-3 sm:p-3.5 lg:p-3.5">
-                    <div className="flex items-center justify-between">
-                        <div className="min-w-0 flex-1">
-                            <p className="text-[10px] sm:text-xs lg:text-sm text-gray-600 truncate">En Demo</p>
-                            <p className="text-lg sm:text-xl lg:text-xl font-bold text-yellow-600">
-                                {instituciones.filter(i => i.estadoSuscripcion === 'DEMO').length}
-                            </p>
-                        </div>
-                        <Shield className="w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 text-yellow-500 opacity-50 flex-shrink-0 ml-2" />
-                    </div>
-                </div>
-                <div className="bg-white rounded-lg shadow p-3 sm:p-3.5 lg:p-3.5">
-                    <div className="flex items-center justify-between">
-                        <div className="min-w-0 flex-1">
-                            <p className="text-[10px] sm:text-xs lg:text-sm text-gray-600 truncate">Suspendidas</p>
-                            <p className="text-lg sm:text-xl lg:text-xl font-bold text-red-600">
-                                {instituciones.filter(i => i.estadoSuscripcion === 'SUSPENDIDA' || i.estadoSuscripcion === 'VENCIDA').length}
-                            </p>
-                        </div>
-                        <Shield className="w-6 h-6 sm:w-8 sm:h-8 lg:w-9 lg:h-9 text-red-500 opacity-50 flex-shrink-0 ml-2" />
+                        <Building2 className="w-10 h-10 text-primary opacity-50 flex-shrink-0 ml-2" />
                     </div>
                 </div>
             </div>
@@ -226,9 +183,6 @@ const InstitucionesPage: React.FC = () => {
                                         <p className="text-xs text-gray-500">{institucion.tipoGestion}</p>
                                     </div>
                                 </div>
-                                <span className={`px-2 py-1 text-xs font-semibold rounded-full whitespace-nowrap ml-2 ${getEstadoBadge(institucion.estadoSuscripcion)}`}>
-                                    {institucion.estadoSuscripcion}
-                                </span>
                             </div>
                             
                             {/* Info de la card */}
@@ -311,9 +265,6 @@ const InstitucionesPage: React.FC = () => {
                                     <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
                                         Director
                                     </th>
-                                    <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
-                                        Estado
-                                    </th>
                                     <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 min-w-[120px]">
                                         Acciones
                                     </th>
@@ -350,11 +301,6 @@ const InstitucionesPage: React.FC = () => {
                                         </td>
                                         <td className="px-3 py-3 text-xs text-gray-900 min-w-[150px]">
                                             <div className="line-clamp-2">{institucion.nombreDirector}</div>
-                                        </td>
-                                        <td className="px-2 py-3 whitespace-nowrap min-w-[100px]">
-                                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getEstadoBadge(institucion.estadoSuscripcion)}`}>
-                                                {institucion.estadoSuscripcion}
-                                            </span>
                                         </td>
                                         <td className="px-2 py-3 whitespace-nowrap text-center sticky right-0 bg-white min-w-[120px]">
                                             <div className="flex items-center justify-center gap-1">

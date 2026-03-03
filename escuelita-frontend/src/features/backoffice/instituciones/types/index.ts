@@ -14,10 +14,6 @@ export interface Institucion {
     representanteLegal?: string;
     correoFacturacion?: string;
     telefonoFacturacion?: string;
-    estadoSuscripcion: 'DEMO' | 'ACTIVA' | 'SUSPENDIDA' | 'VENCIDA';
-    fechaInicioSuscripcion?: string;
-    fechaVencimientoLicencia?: string;
-    planContratado: string;
     estado: number;
 }
 

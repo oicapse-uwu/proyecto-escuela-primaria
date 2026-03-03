@@ -1,4 +1,4 @@
-import { Briefcase, Building2, Calendar, CreditCard, FileText, Mail, MapPin, Phone, Shield, User, X } from 'lucide-react';
+import { Briefcase, Building2, CreditCard, FileText, Mail, MapPin, Phone, Shield, User, X } from 'lucide-react';
 import React from 'react';
 import type { Institucion } from '../types';
 
@@ -10,27 +10,6 @@ interface InstitucionDetailModalProps {
 }
 
 const InstitucionDetailModal: React.FC<InstitucionDetailModalProps> = ({ institucion, onClose }) => {
-    const getEstadoBadge = (estado: string) => {
-        switch (estado?.toUpperCase()) {
-            case 'ACTIVA':
-                return 'bg-green-100 text-green-800 border-green-200';
-            case 'VENCIDA':
-                return 'bg-red-100 text-red-800 border-red-200';
-            case 'SUSPENDIDA':
-                return 'bg-orange-100 text-orange-800 border-orange-200';
-            case 'DEMO':
-                return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-            default:
-                return 'bg-gray-100 text-gray-800 border-gray-200';
-        }
-    };
-
-    const formatDate = (dateString: string | null | undefined) => {
-        if (!dateString) return 'No especificada';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('es-PE', { year: 'numeric', month: 'long', day: 'numeric' });
-    };
-
     const logoUrl = institucion.logoPath 
         ? `${API_BASE_URL}/api/instituciones/logo/${institucion.logoPath.split('/').pop()}`
         : null;
@@ -74,12 +53,6 @@ const InstitucionDetailModal: React.FC<InstitucionDetailModalProps> = ({ institu
                                     <span className="text-sm font-medium">{institucion.tipoGestion}</span>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div className="flex-shrink-0">
-                            <span className={`px-4 py-2 rounded-full text-sm font-semibold border-2 ${getEstadoBadge(institucion.estadoSuscripcion)}`}>
-                                {institucion.estadoSuscripcion}
-                            </span>
                         </div>
                     </div>
                 </div>
@@ -189,33 +162,6 @@ const InstitucionDetailModal: React.FC<InstitucionDetailModalProps> = ({ institu
                                         <p className="text-sm text-gray-500">No se han registrado datos de facturación</p>
                                     </div>
                                 )}
-                            </div>
-                        </div>
-
-                        {/* Información de Suscripción */}
-                        <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100 lg:col-span-2">
-                            <div className="flex items-center gap-2 mb-4">
-                                <div className="p-2 bg-purple-600 rounded-lg">
-                                    <Calendar className="w-5 h-5 text-white" />
-                                </div>
-                                <h3 className="text-lg font-bold text-gray-800">Información de Suscripción</h3>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="bg-white/60 rounded-lg p-4 border border-purple-200">
-                                    <p className="text-xs text-gray-500 font-medium mb-1">Plan Contratado</p>
-                                    <p className="text-lg text-gray-900 font-bold">{institucion.planContratado || 'No especificado'}</p>
-                                </div>
-                                
-                                <div className="bg-white/60 rounded-lg p-4 border border-purple-200">
-                                    <p className="text-xs text-gray-500 font-medium mb-1">Fecha de Inicio</p>
-                                    <p className="text-sm text-gray-900 font-semibold">{formatDate(institucion.fechaInicioSuscripcion)}</p>
-                                </div>
-                                
-                                <div className="bg-white/60 rounded-lg p-4 border border-purple-200">
-                                    <p className="text-xs text-gray-500 font-medium mb-1">Fecha de Vencimiento</p>
-                                    <p className="text-sm text-gray-900 font-semibold">{formatDate(institucion.fechaVencimientoLicencia)}</p>
-                                </div>
                             </div>
                         </div>
                     </div>

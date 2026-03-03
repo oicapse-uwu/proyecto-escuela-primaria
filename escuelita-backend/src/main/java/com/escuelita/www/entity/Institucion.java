@@ -2,8 +2,6 @@
 
 package com.escuelita.www.entity;
 
-import java.time.LocalDate;
-
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -23,9 +21,7 @@ import jakarta.persistence.Table;
 @JsonPropertyOrder({
     "idInstitucion", "nombre", "ruc", "razonSocial", "domicilioFiscal", 
     "codModular", "tipoGestion", "resolucionCreacion", "nombreDirector", 
-    "representanteLegal", "correoFacturacion", "telefonoFacturacion", "logoPath",
-    "estadoSuscripcion", "fechaInicioSuscripcion", 
-    "fechaVencimientoLicencia", "planContratado", "estado"
+    "representanteLegal", "correoFacturacion", "telefonoFacturacion", "logoPath", "estado"
 })
 public class Institucion {
     @Id
@@ -57,14 +53,6 @@ public class Institucion {
     private String telefonoFacturacion;
     @Column(name = "logo_path", length = 255)
     private String logoPath;
-    @Column(name = "estado_suscripcion", length = 50)
-    private String estadoSuscripcion = "DEMO";
-    @Column(name = "fecha_inicio_suscripcion")
-    private LocalDate fechaInicioSuscripcion;
-    @Column(name = "fecha_vencimiento_licencia")
-    private LocalDate fechaVencimientoLicencia;
-    @Column(name = "plan_contratado", length = 50)
-    private String planContratado = "Plan Básico";
 
     private Integer estado = 1;
 
@@ -153,30 +141,6 @@ public class Institucion {
     public void setLogoPath(String logoPath) {
         this.logoPath = logoPath;
     }
-    public String getEstadoSuscripcion() {
-        return estadoSuscripcion;
-    }
-    public void setEstadoSuscripcion(String estadoSuscripcion) {
-        this.estadoSuscripcion = estadoSuscripcion;
-    }
-    public LocalDate getFechaInicioSuscripcion() {
-        return fechaInicioSuscripcion;
-    }
-    public void setFechaInicioSuscripcion(LocalDate fechaInicioSuscripcion) {
-        this.fechaInicioSuscripcion = fechaInicioSuscripcion;
-    }
-    public LocalDate getFechaVencimientoLicencia() {
-        return fechaVencimientoLicencia;
-    }
-    public void setFechaVencimientoLicencia(LocalDate fechaVencimientoLicencia) {
-        this.fechaVencimientoLicencia = fechaVencimientoLicencia;
-    }
-    public String getPlanContratado() {
-        return planContratado;
-    }
-    public void setPlanContratado(String planContratado) {
-        this.planContratado = planContratado;
-    }
     public Integer getEstado() {
         return estado;
     }
@@ -189,9 +153,7 @@ public class Institucion {
                 + razonSocial + ", domicilioFiscal=" + domicilioFiscal + ", codModular=" + codModular + ", tipoGestion="
                 + tipoGestion + ", resolucionCreacion=" + resolucionCreacion + ", nombreDirector=" + nombreDirector
                 + ", representanteLegal=" + representanteLegal + ", correoFacturacion=" + correoFacturacion
-                + ", telefonoFacturacion=" + telefonoFacturacion + ", logoPath=" + logoPath + ", estadoSuscripcion="
-                + estadoSuscripcion + ", fechaInicioSuscripcion=" + fechaInicioSuscripcion
-                + ", fechaVencimientoLicencia=" + fechaVencimientoLicencia + ", planContratado=" + planContratado
-                + ", estado=" + estado + "]";
+                + ", telefonoFacturacion=" + telefonoFacturacion + ", logoPath=" + logoPath + ", estado=" + estado
+                + "]";
     }
 }

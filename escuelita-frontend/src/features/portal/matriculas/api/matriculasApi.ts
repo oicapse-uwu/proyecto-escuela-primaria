@@ -1,7 +1,19 @@
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
-import type { Matricula, MatriculaDTO } from '../types';
+import type { AnioEscolar, Matricula, MatriculaDTO, Seccion } from '../types';
 
 const ENDPOINT = API_ENDPOINTS.MATRICULAS;
+
+// Obtiene todas las secciones
+export const obtenerTodasSecciones = async (): Promise<Seccion[]> => {
+    const response = await api.get<Seccion[]>(API_ENDPOINTS.SECCIONES);
+    return response.data;
+};
+
+// Obtiene todos los años escolares
+export const obtenerTodosAniosEscolares = async (): Promise<AnioEscolar[]> => {
+    const response = await api.get<AnioEscolar[]>(API_ENDPOINTS.ANIO_ESCOLAR);
+    return response.data;
+};
 
 // Obtiene todas las matrículas
 export const obtenerTodasMatriculas = async (): Promise<Matricula[]> => {

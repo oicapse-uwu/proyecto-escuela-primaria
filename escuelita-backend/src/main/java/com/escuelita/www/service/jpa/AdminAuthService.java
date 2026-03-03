@@ -61,7 +61,7 @@ public class AdminAuthService {
         }
         
         // 4. Generar token JWT con tipo de usuario
-        String token = jwtUtil.generarToken("ADMIN_" + admin.getIdAdmin().toString());
+        String token = jwtUtil.generarToken("SUPER_ADMIN_" + admin.getIdAdmin().toString());
         
         // 5. Convertir a DTO y retornar
         SuperAdminDTO adminDTO = convertToDTO(admin);

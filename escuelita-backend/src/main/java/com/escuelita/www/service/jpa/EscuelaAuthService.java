@@ -5,7 +5,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.escuelita.www.entity.EscuelaLoginResponse;
+import com.escuelita.www.entity.Institucion;
 import com.escuelita.www.entity.LoginRequest;
+import com.escuelita.www.entity.Sedes;
+import com.escuelita.www.entity.Suscripciones;
 import com.escuelita.www.entity.UsuarioEscuelaDTO;
 import com.escuelita.www.entity.UsuarioEscuelaDTO.RolDTO;
 import com.escuelita.www.entity.UsuarioEscuelaDTO.SedeDTO;
@@ -24,6 +27,9 @@ public class EscuelaAuthService {
     
     @Autowired
     private JwtUtil jwtUtil;
+    
+    @Autowired
+    private SuscripcionValidator suscripcionValidator;
     
     public EscuelaLoginResponse authenticate(LoginRequest request) throws Exception {
         // 1. Buscar usuario en la BD por usuario
@@ -66,10 +72,29 @@ public class EscuelaAuthService {
             throw new Exception("Usuario sin sede asignada");
         }
         
-        // 5. Generar token JWT con tipo de usuario y sede
+        Sedes sede = usuario.getIdSede();
+        
+        // 5. VALIDAR SUSCRIPCIÓN ACTIVA
+        // Obtener la institución de la sede
+        Institucion institucion = sede.getIdInstitucion();
+        if (institucion == null) {
+            throw new Exception("La sede no tiene una institución asociada");
+        }
+        
+        // Validar que la institución tenga suscripción activa
+        try {
+            Suscripciones suscripcion = suscripcionValidator.validarSuscripcionActiva(institucion);
+            System.out.println("✅ Suscripción válida para institución: " + institucion.getNombre() + 
+                " (Vence: " + suscripcion.getFechaVencimiento() + ")");
+        } catch (Exception e) {
+            // Lanzar la excepción con el mensaje específico
+            throw new Exception("⚠️  ACCESO DENEGADO: " + e.getMessage());
+        }
+        
+        // 6. Generar token JWT con tipo de usuario y sede
         String token = jwtUtil.generarToken("ESCUELA_" + usuario.getIdUsuario().toString() + "_SEDE_" + usuario.getIdSede().getIdSede());
         
-        // 6. Convertir a DTO y retornar
+        // 7. Convertir a DTO y retornar
         UsuarioEscuelaDTO usuarioDTO = convertToDTO(usuario);
         return new EscuelaLoginResponse(token, usuarioDTO);
     }

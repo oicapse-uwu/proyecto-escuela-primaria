@@ -86,6 +86,8 @@ export const API_ENDPOINTS = {
     APODERADOS: '/restful/apoderados',
     ALUMNO_APODERADO: '/restful/alumnoapoderado',
     MATRICULAS: '/restful/matriculas',
+    SECCIONES: '/restful/secciones',
+    ANIO_ESCOLAR: '/restful/anioescolar',
     REQUISITOS_DOCUMENTOS: '/restful/requisitosdocumentos',
     DOCUMENTOS_ALUMNO: '/restful/documentosalumno',
     CURSOS: '/restful/cursos',

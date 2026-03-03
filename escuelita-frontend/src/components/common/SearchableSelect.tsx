@@ -35,25 +35,64 @@ function SearchableSelect<T>({
 }: SearchableSelectProps<T>) {
     const [searchTerm, setSearchTerm] = useState('');
     const [showDropdown, setShowDropdown] = useState(false);
-    const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
+    const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0, maxHeight: 240 });
     const inputWrapperRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Recalcular posición cada vez que se abre
     useEffect(() => {
         if (showDropdown && inputWrapperRef.current) {
             const rect = inputWrapperRef.current.getBoundingClientRect();
+            const spaceBelow = window.innerHeight - rect.bottom - 8;
+            let maxHeight = Math.max(80, Math.min(spaceBelow, 165));
+
+            // Limitar el dropdown al contenedor scrollable/recortante más cercano (ej: modal)
+            let el: HTMLElement | null = inputWrapperRef.current.parentElement;
+            while (el && el !== document.body) {
+                const style = window.getComputedStyle(el);
+                if (['auto', 'scroll', 'hidden'].some(v => style.overflowY === v || style.overflow === v)) {
+                    const containerBottom = el.getBoundingClientRect().bottom;
+                    const spaceInContainer = containerBottom - rect.bottom - 12;
+                    if (spaceInContainer < maxHeight) {
+                        maxHeight = Math.max(80, spaceInContainer);
+                    }
+                    break;
+                }
+                el = el.parentElement;
+            }
+
             setDropdownPos({
-                top: rect.bottom + window.scrollY + 4,
-                left: rect.left + window.scrollX,
+                top: rect.bottom + 4,
+                left: rect.left,
                 width: rect.width,
+                maxHeight,
             });
         }
     }, [showDropdown]);
 
-    // Cerrar si se hace scroll o resize
+    // Cerrar al hacer click FUERA del input y del dropdown (incluye scrollbar nativo)
     useEffect(() => {
         if (!showDropdown) return;
-        const close = () => setShowDropdown(false);
+        const handleMouseDown = (e: MouseEvent) => {
+            // El scrollbar nativo devuelve un e.target que no es un Node — en ese caso no cerrar
+            if (!(e.target instanceof Node)) return;
+            const inputEl = inputWrapperRef.current;
+            const dropEl = dropdownRef.current;
+            if (inputEl && inputEl.contains(e.target)) return;
+            if (dropEl && dropEl.contains(e.target)) return;
+            setShowDropdown(false);
+        };
+        document.addEventListener('mousedown', handleMouseDown);
+        return () => document.removeEventListener('mousedown', handleMouseDown);
+    }, [showDropdown]);
+
+    // Cerrar si se hace scroll FUERA del dropdown, o resize
+    useEffect(() => {
+        if (!showDropdown) return;
+        const close = (e: Event) => {
+            if (dropdownRef.current && dropdownRef.current.contains(e.target as Node)) return;
+            setShowDropdown(false);
+        };
         window.addEventListener('scroll', close, true);
         window.addEventListener('resize', close);
         return () => {
@@ -98,22 +137,20 @@ function SearchableSelect<T>({
 
     const dropdownEl = showDropdown ? createPortal(
         <>
-            {/* Backdrop invisible para cerrar al hacer click fuera */}
-            <div
-                className="fixed inset-0"
-                style={{ zIndex: 9998 }}
-                onClick={() => setShowDropdown(false)}
-            />
             {/* Panel del dropdown */}
             <div
+                ref={dropdownRef}
                 style={{
-                    position: 'absolute',
+                    position: 'fixed',
                     top: dropdownPos.top,
                     left: dropdownPos.left,
                     width: dropdownPos.width,
                     zIndex: 9999,
+                    maxHeight: dropdownPos.maxHeight,
+                    display: 'flex',
+                    flexDirection: 'column',
                 }}
-                className="bg-white border border-gray-300 rounded-lg shadow-xl max-h-96 overflow-hidden"
+                className="bg-white border border-gray-300 rounded-lg shadow-xl"
             >
                 {filteredOptions.length === 0 ? (
                     <div className="px-4 py-3 text-sm text-gray-500 text-center">
@@ -121,9 +158,9 @@ function SearchableSelect<T>({
                     </div>
                 ) : (
                     <>
-                        {/* Header con contador - sticky */}
+                        {/* Header con contador */}
                         {filteredOptions.length > 5 && (
-                            <div className="sticky top-0 bg-blue-50 px-4 py-2 border-b border-blue-100 z-10">
+                            <div className="flex-shrink-0 bg-blue-50 px-4 py-2 border-b border-blue-100 rounded-t-lg">
                                 <p className="text-xs font-medium text-blue-700">
                                     {filteredOptions.length} {filteredOptions.length === 1 ? 'resultado' : 'resultados'}
                                     {filteredOptions.length !== options.length && ` de ${options.length} total`}
@@ -132,7 +169,7 @@ function SearchableSelect<T>({
                         )}
                         
                         {/* Lista scrolleable */}
-                        <div className="overflow-y-auto max-h-80">
+                        <div className="overflow-y-auto" style={{ flex: 1, minHeight: 0 }}>
                             {filteredOptions.map(option => {
                                 const id = getOptionId(option);
                                 const isSelected = id === value;
@@ -188,10 +225,6 @@ function SearchableSelect<T>({
                         setShowDropdown(true);
                     }}
                     onFocus={handleFocus}
-                    onBlur={() => {
-                        // Delay para permitir click en opciones
-                        setTimeout(() => setShowDropdown(false), 150);
-                    }}
                     placeholder={placeholder}
                     disabled={disabled}
                     className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${

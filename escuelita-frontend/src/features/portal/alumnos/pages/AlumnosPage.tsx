@@ -1,4 +1,4 @@
-import { Calendar, CheckCircle, Edit, FileText, IdCard, MapPin, Phone, Plus, Search, Trash2, User, Users, XCircle } from 'lucide-react';
+import { Calendar, CheckCircle, Edit, FileText, IdCard, Phone, Plus, Search, Trash2, User, Users, XCircle } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Toaster, toast } from 'sonner';
@@ -310,9 +310,6 @@ const AlumnosPage: React.FC = () => {
                                     Edad
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Sede
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Contacto
                                 </th>
                                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -326,7 +323,7 @@ const AlumnosPage: React.FC = () => {
                         <tbody className="bg-white divide-y divide-gray-200">
                             {alumnosPaginados.length === 0 ? (
                                 <tr>
-                                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
+                                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
                                         <Users className="w-12 h-12 mx-auto mb-2 text-gray-400" />
                                         <p className="text-lg font-medium">No se encontraron alumnos</p>
                                         <p className="text-sm mt-1">
@@ -384,12 +381,6 @@ const AlumnosPage: React.FC = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             {calcularEdad(alumno.fechaNacimiento)} años
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="flex items-center text-sm">
-                                                <MapPin className="w-4 h-4 mr-2 text-gray-400" />
-                                                <span className="text-gray-900">{alumno.idSede.nombreSede}</span>
-                                            </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {alumno.telefonoContacto && (
@@ -527,10 +518,6 @@ const AlumnosPage: React.FC = () => {
                                     <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
                                     <span>{new Date(alumno.fechaNacimiento).toLocaleDateString('es-PE')}</span>
                                     <span className="ml-2 text-gray-500">({calcularEdad(alumno.fechaNacimiento)} años)</span>
-                                </div>
-                                <div className="flex items-center text-gray-600">
-                                    <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
-                                    <span>{alumno.idSede.nombreSede}</span>
                                 </div>
                                 {alumno.telefonoContacto && (
                                     <div className="flex items-center text-gray-600">

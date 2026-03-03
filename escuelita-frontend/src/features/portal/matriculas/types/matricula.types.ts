@@ -4,7 +4,9 @@ import type { Alumno } from '../../alumnos/types';
 export interface Seccion {
     idSeccion: number;
     nombreSeccion: string;
-    idGrado?: any;
+    vacantes?: number;
+    idGrado?: { idGrado: number; nombreGrado: string };
+    idSede?: { idSede: number };
     estado?: number;
 }
 
@@ -12,6 +14,7 @@ export interface AnioEscolar {
     idAnioEscolar: number;
     nombreAnio: string;
     activo?: number;
+    idSede?: { idSede: number };
     estado?: number;
 }
 

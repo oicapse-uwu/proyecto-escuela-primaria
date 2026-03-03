@@ -166,23 +166,35 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
 
                                 {/* Plan */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Plan *
-                                    </label>
-                                    <select
-                                        name="idPlan"
+                                    <SearchableSelect
                                         value={formData.idPlan}
-                                        onChange={handleChange}
+                                        onChange={(value) => {
+                                            const numValue = Number(value);
+                                            setFormData(prev => ({ ...prev, idPlan: numValue }));
+                                            if (numValue > 0) {
+                                                const plan = planes.find(p => p.idPlan === numValue);
+                                                if (plan) {
+                                                    setPlanSeleccionado(plan);
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        idPlan: numValue,
+                                                        limiteAlumnosContratado: plan.limiteAlumnos || 0,
+                                                        limiteSedesContratadas: plan.limiteSedes || 1,
+                                                        precioAcordado: plan.precioAnual || 0
+                                                    }));
+                                                }
+                                            } else {
+                                                setPlanSeleccionado(null);
+                                            }
+                                        }}
+                                        options={planes}
+                                        getOptionId={(plan) => plan.idPlan}
+                                        getOptionLabel={(plan) => plan.nombrePlan}
+                                        label="Plan"
+                                        placeholder="Buscar plan..."
                                         required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                    >
-                                        <option value={0}>Seleccione un plan</option>
-                                        {planes.map(plan => (
-                                            <option key={plan.idPlan} value={plan.idPlan}>
-                                                {plan.nombrePlan}
-                                            </option>
-                                        ))}
-                                    </select>
+                                        emptyMessage="No se encontraron planes"
+                                    />
                                 </div>
 
                                 {/* Estado */}

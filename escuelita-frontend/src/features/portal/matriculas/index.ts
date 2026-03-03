@@ -15,7 +15,7 @@ export type {
 // API Matrículas
 export {
     actualizarMatricula, crearMatricula, eliminarMatricula, obtenerMatriculaPorId,
-    obtenerMatriculasPorAlumno, obtenerTodasMatriculas
+    obtenerMatriculasPorAlumno, obtenerTodasMatriculas, obtenerTodasSecciones, obtenerTodosAniosEscolares
 } from './api/matriculasApi';
 
 // API Requisitos

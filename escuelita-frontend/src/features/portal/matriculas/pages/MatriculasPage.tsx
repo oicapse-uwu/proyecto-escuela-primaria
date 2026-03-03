@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Toaster, toast } from 'sonner';
 import Modal from '../../../../components/common/Modal';
 import Pagination from '../../../../components/common/Pagination';
+import SearchableSelect from '../../../../components/common/SearchableSelect';
 import { filtrarPorSedeActual } from '../../../../utils/sedeFilter';
 import { obtenerTodosAlumnos } from '../../alumnos/api/alumnosApi';
 import type { Alumno } from '../../alumnos/types';
@@ -10,13 +11,17 @@ import {
     actualizarMatricula,
     crearMatricula,
     eliminarMatricula,
-    obtenerTodasMatriculas
+    obtenerTodasMatriculas,
+    obtenerTodasSecciones,
+    obtenerTodosAniosEscolares
 } from '../api/matriculasApi';
-import type { Matricula, MatriculaFormData } from '../types';
+import type { AnioEscolar, Matricula, MatriculaFormData, Seccion } from '../types';
 
 const MatriculasPage: React.FC = () => {
     const [matriculas, setMatriculas] = useState<Matricula[]>([]);
     const [alumnos, setAlumnos] = useState<Alumno[]>([]);
+    const [secciones, setSecciones] = useState<Seccion[]>([]);
+    const [aniosEscolares, setAniosEscolares] = useState<AnioEscolar[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [matriculaEditar, setMatriculaEditar] = useState<Matricula | null>(null);
@@ -30,9 +35,13 @@ const MatriculasPage: React.FC = () => {
         idSeccion: 0,
         idAnio: 0,
         codigoMatricula: '',
-        situacionAcademicaPrevia: '',
+        situacionAcademicaPrevia: 'Ingresante',
         estadoMatricula: 'Activa',
-        fechaMatricula: new Date().toISOString().split('T')[0]
+        fechaMatricula: new Date().toISOString().split('T')[0],
+        observacionesMatricula: '',
+        fechaRetiro: '',
+        motivoRetiro: '',
+        colegioDestino: ''
     });
 
     useEffect(() => {
@@ -42,20 +51,29 @@ const MatriculasPage: React.FC = () => {
     const cargarDatos = async () => {
         try {
             setLoading(true);
-            const [matriculasData, alumnosData] = await Promise.all([
+            const [matriculasData, alumnosData, seccionesData, aniosData] = await Promise.all([
                 obtenerTodasMatriculas(),
-                obtenerTodosAlumnos()
+                obtenerTodosAlumnos(),
+                obtenerTodasSecciones(),
+                obtenerTodosAniosEscolares()
             ]);
             // 🔒 FILTRAR POR SEDE DEL USUARIO ACTUAL
             const alumnosFiltrados = filtrarPorSedeActual(alumnosData);
-            // Las matrículas se filtran por la sede del alumno (idAlumno.idSede)
             const user = JSON.parse(localStorage.getItem('escuela_user') || '{}');
             const idSedeActual = user?.sede?.idSede;
-            const matriculasFiltradas = matriculasData.filter(m => 
+            const matriculasFiltradas = matriculasData.filter(m =>
                 m.idAlumno?.idSede?.idSede === idSedeActual
+            );
+            const seccionesFiltradas = seccionesData.filter(s =>
+                s.idSede?.idSede === idSedeActual
+            );
+            const aniosFiltrados = aniosData.filter(a =>
+                a.idSede?.idSede === idSedeActual
             );
             setMatriculas(matriculasFiltradas);
             setAlumnos(alumnosFiltrados);
+            setSecciones(seccionesFiltradas);
+            setAniosEscolares(aniosFiltrados);
         } catch (error) {
             console.error('Error cargando datos:', error);
             toast.error('Error al cargar datos');
@@ -97,9 +115,13 @@ const MatriculasPage: React.FC = () => {
             idSeccion: 0,
             idAnio: 0,
             codigoMatricula: generarCodigoMatricula(),
-            situacionAcademicaPrevia: '',
+            situacionAcademicaPrevia: 'Ingresante',
             estadoMatricula: 'Activa',
-            fechaMatricula: new Date().toISOString().split('T')[0]
+            fechaMatricula: new Date().toISOString().split('T')[0],
+            observacionesMatricula: '',
+            fechaRetiro: '',
+            motivoRetiro: '',
+            colegioDestino: ''
         });
         setShowModal(true);
     };
@@ -113,15 +135,22 @@ const MatriculasPage: React.FC = () => {
 
     const handleEditar = (matricula: Matricula) => {
         setMatriculaEditar(matricula);
+        const fecha = matricula.fechaMatricula
+            ? String(matricula.fechaMatricula).split('T')[0]
+            : new Date().toISOString().split('T')[0];
         setFormData({
             idMatricula: matricula.idMatricula,
             idAlumno: matricula.idAlumno?.idAlumno || 0,
             idSeccion: matricula.idSeccion?.idSeccion || 0,
-            idAnio: matricula.idAnio?.idAnio || 0,
-            codigoMatricula: matricula.codigoMatricula,
-            situacionAcademicaPrevia: matricula.situacionAcademicaPrevia || '',
-            estadoMatricula: matricula.estadoMatricula,
-            fechaMatricula: matricula.fechaMatricula
+            idAnio: (matricula.idAnio as any)?.idAnioEscolar || 0,
+            codigoMatricula: matricula.codigoMatricula || '',
+            situacionAcademicaPrevia: matricula.situacionAcademicaPrevia || 'Ingresante',
+            estadoMatricula: matricula.estadoMatricula || 'Activa',
+            fechaMatricula: fecha,
+            observacionesMatricula: matricula.observacionesMatricula || '',
+            fechaRetiro: matricula.fechaRetiro || '',
+            motivoRetiro: matricula.motivoRetiro || '',
+            colegioDestino: matricula.colegioDestino || ''
         });
         setShowModal(true);
     };
@@ -145,22 +174,45 @@ const MatriculasPage: React.FC = () => {
             toast.error('Debe seleccionar un alumno');
             return;
         }
-        if (!formData.codigoMatricula.trim()) {
-            toast.error('El código de matrícula es obligatorio');
+        if (!formData.idSeccion || formData.idSeccion === 0) {
+            toast.error('Debe seleccionar una sección');
+            return;
+        }
+        if (!formData.idAnio || formData.idAnio === 0) {
+            toast.error('Debe seleccionar un año escolar');
+            return;
+        }
+        if (!formData.fechaMatricula) {
+            toast.error('La fecha de matrícula es obligatoria');
             return;
         }
 
+        // El backend espera LocalDateTime — agrega hora si no tiene
+        const fechaConHora = formData.fechaMatricula.includes('T')
+            ? formData.fechaMatricula
+            : `${formData.fechaMatricula}T00:00:00`;
+
+        const payload = {
+            ...formData,
+            fechaMatricula: fechaConHora,
+            observacionesMatricula: formData.observacionesMatricula || undefined,
+            fechaRetiro: formData.fechaRetiro || undefined,
+            motivoRetiro: formData.motivoRetiro || undefined,
+            colegioDestino: formData.colegioDestino || undefined,
+        };
+
         try {
             if (matriculaEditar) {
-                await actualizarMatricula(formData);
+                await actualizarMatricula(payload);
                 toast.success('Matrícula actualizada exitosamente');
             } else {
-                await crearMatricula(formData);
+                await crearMatricula(payload);
                 toast.success('Matrícula creada exitosamente');
             }
             setShowModal(false);
             cargarDatos();
         } catch (error) {
+            console.error(error);
             toast.error(matriculaEditar ? 'Error al actualizar matrícula' : 'Error al crear matrícula');
         }
     };
@@ -168,7 +220,7 @@ const MatriculasPage: React.FC = () => {
     const totalMatriculas = matriculasFiltradas.length;
     const matriculasActivas = matriculasFiltradas.filter(m => m.estadoMatricula === 'Activa').length;
     const matriculasRetiradas = matriculasFiltradas.filter(m => m.estadoMatricula === 'Retirada').length;
-    const matriculasTrasladadas = matriculasFiltradas.filter(m => m.estadoMatricula === 'Trasladado').length;
+    const matriculasTrasladadas = matriculasFiltradas.filter(m => m.estadoMatricula === 'Trasladado_Saliente').length;
 
     if (loading) {
         return (
@@ -277,7 +329,7 @@ const MatriculasPage: React.FC = () => {
                         <option value="">Todos los estados</option>
                         <option value="Activa">Activa</option>
                         <option value="Retirada">Retirada</option>
-                        <option value="Trasladado">Trasladado</option>
+                        <option value="Trasladado_Saliente">Trasladado Saliente</option>
                     </select>
                     <select
                         value={itemsPerPage}
@@ -337,10 +389,15 @@ const MatriculasPage: React.FC = () => {
                                 </tr>
                             ) : (
                                 matriculasPaginadas.map((matricula) => {
-                                    const estadoColor = {
+                                    const estadoColor: Record<string, string> = {
                                         'Activa': 'bg-green-100 text-green-800',
                                         'Retirada': 'bg-red-100 text-red-800',
-                                        'Trasladado': 'bg-orange-100 text-orange-800'
+                                        'Trasladado_Saliente': 'bg-orange-100 text-orange-800'
+                                    };
+                                    const estadoLabel: Record<string, string> = {
+                                        'Activa': 'Activa',
+                                        'Retirada': 'Retirada',
+                                        'Trasladado_Saliente': 'Trasladado Saliente'
                                     };
 
                                     return (
@@ -367,8 +424,8 @@ const MatriculasPage: React.FC = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                               ${estadoColor[matricula.estadoMatricula as keyof typeof estadoColor]}`}>
-                                                    {matricula.estadoMatricula}
+                                                               ${estadoColor[matricula.estadoMatricula] || 'bg-gray-100 text-gray-800'}`}>
+                                                    {estadoLabel[matricula.estadoMatricula] || matricula.estadoMatricula}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -416,10 +473,15 @@ const MatriculasPage: React.FC = () => {
                     </div>
                 ) : (
                     matriculasPaginadas.map((matricula) => {
-                        const estadoColor = {
+                        const estadoColor: Record<string, string> = {
                             'Activa': 'bg-green-100 text-green-800',
                             'Retirada': 'bg-red-100 text-red-800',
-                            'Trasladado': 'bg-orange-100 text-orange-800'
+                            'Trasladado_Saliente': 'bg-orange-100 text-orange-800'
+                        };
+                        const estadoLabel: Record<string, string> = {
+                            'Activa': 'Activa',
+                            'Retirada': 'Retirada',
+                            'Trasladado_Saliente': 'Trasladado Saliente'
                         };
 
                         return (
@@ -451,8 +513,8 @@ const MatriculasPage: React.FC = () => {
                                     <div className="flex items-center justify-between">
                                         <span className="text-gray-600">Estado:</span>
                                         <span className={`px-2 py-1 text-xs font-semibold rounded-full 
-                                                       ${estadoColor[matricula.estadoMatricula as keyof typeof estadoColor]}`}>
-                                            {matricula.estadoMatricula}
+                                                       ${estadoColor[matricula.estadoMatricula] || 'bg-gray-100 text-gray-800'}`}>
+                                            {estadoLabel[matricula.estadoMatricula] || matricula.estadoMatricula}
                                         </span>
                                     </div>
                                     <div className="flex items-center text-gray-600">
@@ -474,6 +536,7 @@ const MatriculasPage: React.FC = () => {
                         totalItems={matriculasFiltradas.length}
                         itemsPerPage={itemsPerPage}
                         onPageChange={setCurrentPage}
+                        onItemsPerPageChange={(n) => { setItemsPerPage(n); setCurrentPage(1); }}
                     />
                 </div>
             )}
@@ -487,22 +550,61 @@ const MatriculasPage: React.FC = () => {
             >
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
                         {/* Alumno */}
                         <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 <User className="inline w-4 h-4 mr-1" />
                                 Alumno <span className="text-red-500">*</span>
                             </label>
-                            <select
+                            <SearchableSelect
                                 value={formData.idAlumno}
-                                onChange={(e) => setFormData({...formData, idAlumno: Number(e.target.value)})}
+                                onChange={(v) => setFormData({...formData, idAlumno: Number(v)})}
+                                options={alumnos}
+                                getOptionId={(a) => a.idAlumno}
+                                getOptionLabel={(a) => `${a.nombres} ${a.apellidos}`}
+                                getOptionSubtext={(a) => a.numeroDocumento}
+                                placeholder="Buscar por nombre o documento..."
+                                required
+                                emptyMessage="No se encontraron alumnos"
+                            />
+                        </div>
+
+                        {/* Sección */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Sección <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                value={formData.idSeccion}
+                                onChange={(e) => setFormData({...formData, idSeccion: Number(e.target.value)})}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                                 required
                             >
-                                <option value={0}>Seleccione un alumno</option>
-                                {alumnos.map(alumno => (
-                                    <option key={alumno.idAlumno} value={alumno.idAlumno}>
-                                        {alumno.nombres} {alumno.apellidos} - {alumno.numeroDocumento}
+                                <option value={0}>Seleccione sección...</option>
+                                {secciones.map(s => (
+                                    <option key={s.idSeccion} value={s.idSeccion}>
+                                        {s.idGrado?.nombreGrado ? `${s.idGrado.nombreGrado} - ${s.nombreSeccion}` : s.nombreSeccion}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Año Escolar */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Año Escolar <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                value={formData.idAnio}
+                                onChange={(e) => setFormData({...formData, idAnio: Number(e.target.value)})}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                required
+                            >
+                                <option value={0}>Seleccione año escolar...</option>
+                                {aniosEscolares.map(a => (
+                                    <option key={a.idAnioEscolar} value={a.idAnioEscolar}>
+                                        {a.nombreAnio}
                                     </option>
                                 ))}
                             </select>
@@ -512,7 +614,7 @@ const MatriculasPage: React.FC = () => {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 <FileText className="inline w-4 h-4 mr-1" />
-                                Código Matrícula <span className="text-red-500">*</span>
+                                Código Matrícula
                             </label>
                             <input
                                 type="text"
@@ -520,7 +622,6 @@ const MatriculasPage: React.FC = () => {
                                 onChange={(e) => setFormData({...formData, codigoMatricula: e.target.value})}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                                 placeholder="MAT-2026-0001"
-                                required
                             />
                         </div>
 
@@ -539,6 +640,23 @@ const MatriculasPage: React.FC = () => {
                             />
                         </div>
 
+                        {/* Situación Académica Previa */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Situación Académica Previa <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                value={formData.situacionAcademicaPrevia}
+                                onChange={(e) => setFormData({...formData, situacionAcademicaPrevia: e.target.value as any})}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                required
+                            >
+                                <option value="Ingresante">Ingresante</option>
+                                <option value="Promovido">Promovido</option>
+                                <option value="Repitente">Repitente</option>
+                            </select>
+                        </div>
+
                         {/* Estado */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -546,45 +664,89 @@ const MatriculasPage: React.FC = () => {
                             </label>
                             <select
                                 value={formData.estadoMatricula}
-                                onChange={(e) => setFormData({...formData, estadoMatricula: e.target.value})}
+                                onChange={(e) => setFormData({...formData, estadoMatricula: e.target.value as any})}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                                 required
                             >
                                 <option value="Activa">Activa</option>
                                 <option value="Retirada">Retirada</option>
-                                <option value="Trasladado">Trasladado</option>
+                                <option value="Trasladado_Saliente">Trasladado Saliente</option>
                             </select>
                         </div>
 
-                        {/* Situación Académica Previa */}
-                        <div>
+                        {/* Observaciones */}
+                        <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Situación Académica Previa
+                                Observaciones
                             </label>
-                            <input
-                                type="text"
-                                value={formData.situacionAcademicaPrevia}
-                                onChange={(e) => setFormData({...formData, situacionAcademicaPrevia: e.target.value})}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                placeholder="Aprobado, Repitente, Traslado, etc."
+                            <textarea
+                                value={formData.observacionesMatricula || ''}
+                                onChange={(e) => setFormData({...formData, observacionesMatricula: e.target.value})}
+                                rows={2}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
+                                placeholder="Observaciones generales..."
                             />
                         </div>
+
+                        {/* Campos condicionales: Retirada */}
+                        {formData.estadoMatricula === 'Retirada' && (
+                            <>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Fecha de Retiro
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={formData.fechaRetiro || ''}
+                                        onChange={(e) => setFormData({...formData, fechaRetiro: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Motivo de Retiro
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.motivoRetiro || ''}
+                                        onChange={(e) => setFormData({...formData, motivoRetiro: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Motivo del retiro..."
+                                    />
+                                </div>
+                            </>
+                        )}
+
+                        {/* Campos condicionales: Traslado */}
+                        {formData.estadoMatricula === 'Trasladado_Saliente' && (
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Colegio Destino
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.colegioDestino || ''}
+                                    onChange={(e) => setFormData({...formData, colegioDestino: e.target.value})}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Nombre del colegio destino..."
+                                />
+                            </div>
+                        )}
+
                     </div>
 
                     {/* Botones */}
-                    <div className="flex justify-end gap-3 pt-4 border-t mt-6">
+                    <div className="flex justify-end gap-3 pt-4 border-t mt-2">
                         <button
                             type="button"
                             onClick={() => setShowModal(false)}
-                            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 
-                                     transition-colors duration-200 font-medium"
+                            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors font-medium"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
-                                     transition-colors duration-200 font-medium"
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                         >
                             {matriculaEditar ? 'Actualizar' : 'Crear'}
                         </button>

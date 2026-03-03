@@ -628,7 +628,11 @@ const AlumnoDetallePage: React.FC = () => {
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <p className="text-sm text-gray-600">Sede</p>
+                                        <p className="text-sm text-blue-600">Colegio</p>
+                                        <p className="font-medium">{alumno.idSede.idInstitucion?.nombre || 'No especificado'}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-teal-600">Sede</p>
                                         <p className="font-medium">{alumno.idSede.nombreSede}</p>
                                     </div>
                                     <div>

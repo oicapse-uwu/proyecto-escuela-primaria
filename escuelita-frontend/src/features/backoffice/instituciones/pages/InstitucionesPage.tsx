@@ -1,8 +1,8 @@
-import { Building2, Edit, Eye, Plus, Search, Trash2 } from 'lucide-react';
+import { Building2, Edit, FolderOpen, Plus, Search, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
-import InstitucionDetailModal from '../components/InstitucionDetailModal';
 import InstitucionForm from '../components/InstitucionForm';
 import { useInstituciones } from '../hooks/useInstituciones';
 import type { Institucion, InstitucionFormData } from '../types';
@@ -10,6 +10,7 @@ import type { Institucion, InstitucionFormData } from '../types';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://primaria.spring.informaticapp.com:4040';
 
 const InstitucionesPage: React.FC = () => {
+    const navigate = useNavigate();
     const { 
         instituciones, 
         isLoading, 
@@ -20,7 +21,6 @@ const InstitucionesPage: React.FC = () => {
     
     const [showForm, setShowForm] = useState(false);
     const [institucionEditar, setInstitucionEditar] = useState<Institucion | null>(null);
-    const [institucionVer, setInstitucionVer] = useState<Institucion | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -195,11 +195,11 @@ const InstitucionesPage: React.FC = () => {
                             {/* Acciones */}
                             <div className="flex gap-2 pt-3 border-t border-gray-100">
                                 <button
-                                    onClick={() => setInstitucionVer(institucion)}
+                                    onClick={() => navigate(`/admin/instituciones/${institucion.idInstitucion}?tab=sedes`)}
                                     className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
                                 >
-                                    <Eye className="w-4 h-4" />
-                                    <span className="text-sm font-medium">Ver</span>
+                                    <FolderOpen className="w-4 h-4" />
+                                    <span className="text-sm font-medium">Sedes</span>
                                 </button>
                                 <button
                                     onClick={() => handleEditar(institucion)}
@@ -294,11 +294,11 @@ const InstitucionesPage: React.FC = () => {
                                         <td className="px-2 py-3 whitespace-nowrap text-center sticky right-0 bg-white min-w-[120px]">
                                             <div className="flex items-center justify-center gap-1">
                                                 <button
-                                                    onClick={() => setInstitucionVer(institucion)}
+                                                    onClick={() => navigate(`/admin/instituciones/${institucion.idInstitucion}?tab=sedes`)}
                                                     className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                    title="Ver Detalle"
+                                                    title="Gestionar Sedes"
                                                 >
-                                                    <Eye className="w-4 h-4" />
+                                                    <FolderOpen className="w-4 h-4" />
                                                 </button>
                                                 <button
                                                     onClick={() => handleEditar(institucion)}
@@ -344,13 +344,6 @@ const InstitucionesPage: React.FC = () => {
                 />
             )}
 
-            {/* Modal Detail */}
-            {institucionVer && (
-                <InstitucionDetailModal
-                    institucion={institucionVer}
-                    onClose={() => setInstitucionVer(null)}
-                />
-            )}
         </div>
     );
 };

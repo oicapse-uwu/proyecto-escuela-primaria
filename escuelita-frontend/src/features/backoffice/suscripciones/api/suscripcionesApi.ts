@@ -1,5 +1,5 @@
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
-import type { CicloFacturacion, EstadoSuscripcion, MetodoPago, Suscripcion, SuscripcionDTO } from '../types';
+import type { CicloFacturacion, EstadoSuscripcion, MetodoPago, Suscripcion, SuscripcionDTO, SuscripcionFormData } from '../types';
 
 // Obtener todas las suscripciones
 export const getSuscripcionesApi = async (): Promise<Suscripcion[]> => {
@@ -77,4 +77,13 @@ export const getMetodosPagoApi = async (): Promise<MetodoPago[]> => {
 
 export const createPagoCajaApi = async (pago: PagoCajaDTO): Promise<void> => {
     await api.post(API_ENDPOINTS.PAGOS_CAJA, pago);
+};
+
+// Obtener suscripción por institución
+export const getSuscripcionPorInstitucionApi = async (idInstitucion: number): Promise<Suscripcion | null> => {
+    const suscripciones = await getSuscripcionesApi();
+    const suscripcion = suscripciones.find(
+        s => s.idInstitucion?.idInstitucion === idInstitucion && s.estado === 1
+    );
+    return suscripcion || null;
 };

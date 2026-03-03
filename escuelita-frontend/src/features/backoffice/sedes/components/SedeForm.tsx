@@ -10,13 +10,15 @@ interface SedeFormProps {
     onSubmit: (data: SedeFormData) => Promise<void>;
     onCancel: () => void;
     isLoading?: boolean;
+    idInstitucionFijo?: number; // ID de institución fijo (oculta el selector)
 }
 
 const SedeForm: React.FC<SedeFormProps> = ({ 
     sede, 
     onSubmit, 
     onCancel, 
-    isLoading = false 
+    isLoading = false,
+    idInstitucionFijo
 }) => {
     const [formData, setFormData] = useState<SedeFormData>({
         nombreSede: '',
@@ -35,8 +37,14 @@ const SedeForm: React.FC<SedeFormProps> = ({
     const [instituciones, setInstituciones] = useState<Institucion[]>([]);
     const [loadingInstituciones, setLoadingInstituciones] = useState(false);
 
-    // Cargar instituciones al montar el componente
+    // Cargar instituciones al montar el componente (solo si no hay institución fija)
     useEffect(() => {
+        if (idInstitucionFijo) {
+            // Si hay institución fija, establecerla en el formulario
+            setFormData(prev => ({ ...prev, idInstitucion: idInstitucionFijo }));
+            return;
+        }
+
         const cargarInstituciones = async () => {
             setLoadingInstituciones(true);
             try {
@@ -51,7 +59,7 @@ const SedeForm: React.FC<SedeFormProps> = ({
         };
         
         cargarInstituciones();
-    }, []);
+    }, [idInstitucionFijo]);
 
     useEffect(() => {
         if (sede) {
@@ -68,8 +76,11 @@ const SedeForm: React.FC<SedeFormProps> = ({
                 correoInstitucional: sede.correoInstitucional,
                 idInstitucion: sede.idInstitucion.idInstitucion
             });
+        } else if (idInstitucionFijo) {
+            // Si no hay sede pero sí institución fija, establecerla
+            setFormData(prev => ({ ...prev, idInstitucion: idInstitucionFijo }));
         }
-    }, [sede]);
+    }, [sede, idInstitucionFijo]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
@@ -130,25 +141,33 @@ const SedeForm: React.FC<SedeFormProps> = ({
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Institución *
                             </label>
-                            <select
-                                name="idInstitucion"
-                                value={formData.idInstitucion}
-                                onChange={handleChange}
-                                required
-                                disabled={loadingInstituciones || !!sede}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100"
-                            >
-                                <option value={0}>Seleccione una institución</option>
-                                {instituciones.map(inst => (
-                                    <option key={inst.idInstitucion} value={inst.idInstitucion}>
-                                        {inst.nombre}
-                                    </option>
-                                ))}
-                            </select>
-                            {sede && (
-                                <p className="text-xs text-gray-500 mt-1">
-                                    No se puede cambiar la institución de una sede existente
-                                </p>
+                            {idInstitucionFijo ? (
+                                <div className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700">
+                                    {instituciones.find(i => i.idInstitucion === idInstitucionFijo)?.nombre || 'Institución seleccionada'}
+                                </div>
+                            ) : (
+                                <>
+                                    <select
+                                        name="idInstitucion"
+                                        value={formData.idInstitucion}
+                                        onChange={handleChange}
+                                        required
+                                        disabled={loadingInstituciones || !!sede}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100"
+                                    >
+                                        <option value={0}>Seleccione una institución</option>
+                                        {instituciones.map(inst => (
+                                            <option key={inst.idInstitucion} value={inst.idInstitucion}>
+                                                {inst.nombre}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {sede && (
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            No se puede cambiar la institución de una sede existente
+                                        </p>
+                                    )}
+                                </>
                             )}
                         </div>
 

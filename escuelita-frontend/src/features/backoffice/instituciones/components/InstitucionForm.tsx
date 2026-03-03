@@ -37,6 +37,12 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
     const [uploadingFile, setUploadingFile] = useState(false);
     const [resolucionValida, setResolucionValida] = useState<boolean>(true);
     const [resolucionTouched, setResolucionTouched] = useState<boolean>(false);
+    
+    // Estados para la ventana flotante de ayuda
+    const [showHelperWindow, setShowHelperWindow] = useState(false);
+    const [helperPosition, setHelperPosition] = useState({ x: 650, y: 250 });
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
     // Regex para validar resolución con reglas específicas por tipo:
     // R.D. → solo DRELM
@@ -113,8 +119,42 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
         setFormData(prev => ({ ...prev, resolucionCreacion: ejemplo }));
         setResolucionTouched(true);
         setResolucionValida(true);
+        setShowHelperWindow(false);
         toast.success('¡Ejemplo copiado! Ahora edita los valores', { duration: 2000 });
     };
+
+    // Handlers para la ventana arrastrable
+    const handleMouseDown = (e: React.MouseEvent) => {
+        setIsDragging(true);
+        setDragOffset({
+            x: e.clientX - helperPosition.x,
+            y: e.clientY - helperPosition.y
+        });
+    };
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (isDragging) {
+                setHelperPosition({
+                    x: e.clientX - dragOffset.x,
+                    y: e.clientY - dragOffset.y
+                });
+            }
+        };
+
+        const handleMouseUp = () => {
+            setIsDragging(false);
+        };
+
+        if (isDragging) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+            return () => {
+                window.removeEventListener('mousemove', handleMouseMove);
+                window.removeEventListener('mouseup', handleMouseUp);
+            };
+        }
+    }, [isDragging, dragOffset]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -283,6 +323,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                             name="resolucionCreacion"
                                             value={formData.resolucionCreacion}
                                             onChange={handleChange}
+                                            onFocus={() => setShowHelperWindow(true)}
                                             onBlur={() => setResolucionTouched(true)}
                                             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 transition-colors ${
                                                 resolucionTouched && !resolucionValida && formData.resolucionCreacion.trim() !== ''
@@ -292,24 +333,59 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                             placeholder="Ej: R.D. N° 1234-2024-DRELM"
                                         />
                                         
-                                        {/* Tooltip flotante con flecha */}
+                                        {/* Mensaje de error simple */}
                                         {resolucionTouched && !resolucionValida && formData.resolucionCreacion.trim() !== '' && (
-                                            <div className="absolute top-full right-0 mt-2 w-80 md:w-96 z-50">
-                                                {/* Flecha */}
-                                                <div className="absolute -top-2 right-4 w-4 h-4 bg-red-50 border-l border-t border-red-200 transform rotate-45"></div>
-                                                
-                                                {/* Contenido del tooltip */}
-                                                <div className="bg-red-50 border border-red-200 rounded-lg shadow-lg p-3">
-                                                    <p className="text-sm text-red-700 font-medium mb-2">
-                                                        ⚠️ Formato de resolución inválido
-                                                    </p>
-                                                    <p className="text-xs text-red-600 mb-2">
-                                                        Cada tipo de resolución tiene su instancia específica:
-                                                    </p>
-                                                    <p className="text-xs text-gray-600 mb-3 bg-blue-50 border border-blue-200 rounded p-2">
-                                                        👆 <span className="font-semibold">Haz clic en cualquier ejemplo</span> para copiarlo al campo y editarlo
-                                                    </p>
-                                                    <div className="text-xs space-y-3 max-h-64 overflow-y-auto">
+                                            <div className="absolute top-full left-0 mt-1 z-50">
+                                                <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-1.5">
+                                                    ⚠️ Formato inválido. Click en el campo para ver ejemplos.
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {(!resolucionTouched || resolucionValida || formData.resolucionCreacion.trim() === '') && (
+                                        <p className="mt-1 text-xs text-gray-500">
+                                            Click para ver formatos
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Ventana flotante arrastrable con ejemplos */}
+                        {showHelperWindow && (
+                            <div 
+                                className="fixed z-[9999] bg-white border-2 border-primary rounded-lg shadow-2xl"
+                                style={{
+                                    left: `${helperPosition.x}px`,
+                                    top: `${helperPosition.y}px`,
+                                    width: '380px',
+                                    maxHeight: '500px'
+                                }}
+                            >
+                                {/* Header arrastrable */}
+                                <div 
+                                    className="bg-gradient-to-r from-primary to-primary-light p-3 rounded-t-lg cursor-move flex justify-between items-center"
+                                    onMouseDown={handleMouseDown}
+                                >
+                                    <div className="flex items-center gap-2 text-white">
+                                        <FileText className="w-4 h-4" />
+                                        <span className="text-sm font-semibold">Formatos de Resolución</span>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowHelperWindow(false)}
+                                        className="text-white hover:bg-white/20 rounded p-1 transition-colors"
+                                        type="button"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                </div>
+
+                                {/* Contenido */}
+                                <div className="p-4 max-h-[420px] overflow-y-auto">
+                                    <p className="text-xs text-gray-600 mb-3 bg-blue-50 border border-blue-200 rounded p-2">
+                                        👆 <span className="font-semibold">Haz clic en un ejemplo</span> para copiarlo y editarlo
+                                    </p>
+                                    <div className="text-xs space-y-3">
                                                         {/* R.D. */}
                                                         <div 
                                                             onClick={() => copiarEjemplo('R.D. N° 1234-2024-DRELM')}
@@ -381,16 +457,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                                                 <Copy className="w-4 h-4 text-gray-400 group-hover:text-primary flex-shrink-0 ml-2" />
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
-                                    {(!resolucionTouched || resolucionValida || formData.resolucionCreacion.trim() === '') && (
-                                        <p className="mt-1 text-xs text-gray-500">
-                                            Ejemplo: R.D. N° 1234-2024-DRELM
-                                        </p>
-                                    )}
                                 </div>
                             </div>
                         )}

@@ -2,8 +2,6 @@
 
 package com.escuelita.www.entity;
 
-import java.time.LocalDate;
-
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -21,10 +19,9 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE institucion SET estado=0 WHERE id_institucion=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idInstitucion", "nombre", "codModular", "tipoGestion", 
-    "resolucionCreacion", "nombreDirector", "logoPath",
-    "estadoSuscripcion", "fechaInicioSuscripcion", 
-    "fechaVencimientoLicencia", "planContratado", "estado"
+    "idInstitucion", "nombre", "ruc", "razonSocial", "domicilioFiscal", 
+    "codModular", "tipoGestion", "resolucionCreacion", "nombreDirector", 
+    "representanteLegal", "correoFacturacion", "telefonoFacturacion", "logoPath", "estado"
 })
 public class Institucion {
     @Id
@@ -34,6 +31,12 @@ public class Institucion {
 
     @Column(length = 150)
     private String nombre;
+    @Column(length = 11, unique = true)
+    private String ruc;
+    @Column(name = "razon_social", length = 200)
+    private String razonSocial;
+    @Column(name = "domicilio_fiscal", length = 255)
+    private String domicilioFiscal;
     @Column(name = "cod_modular", length = 10)
     private String codModular;
     @Column(name = "tipo_gestion", length = 50)
@@ -42,16 +45,14 @@ public class Institucion {
     private String resolucionCreacion;
     @Column(name = "nombre_director", length = 100)
     private String nombreDirector;
+    @Column(name = "representante_legal", length = 150)
+    private String representanteLegal;
+    @Column(name = "correo_facturacion", length = 100)
+    private String correoFacturacion;
+    @Column(name = "telefono_facturacion", length = 20)
+    private String telefonoFacturacion;
     @Column(name = "logo_path", length = 255)
     private String logoPath;
-    @Column(name = "estado_suscripcion", length = 50)
-    private String estadoSuscripcion = "DEMO";
-    @Column(name = "fecha_inicio_suscripcion")
-    private LocalDate fechaInicioSuscripcion;
-    @Column(name = "fecha_vencimiento_licencia")
-    private LocalDate fechaVencimientoLicencia;
-    @Column(name = "plan_contratado", length = 50)
-    private String planContratado = "Plan Básico";
 
     private Integer estado = 1;
 
@@ -74,11 +75,47 @@ public class Institucion {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
+    public String getRuc() {
+        return ruc;
+    }
+    public void setRuc(String ruc) {
+        this.ruc = ruc;
+    }
+    public String getRazonSocial() {
+        return razonSocial;
+    }
+    public void setRazonSocial(String razonSocial) {
+        this.razonSocial = razonSocial;
+    }
+    public String getDomicilioFiscal() {
+        return domicilioFiscal;
+    }
+    public void setDomicilioFiscal(String domicilioFiscal) {
+        this.domicilioFiscal = domicilioFiscal;
+    }
     public String getCodModular() {
         return codModular;
     }
     public void setCodModular(String codModular) {
         this.codModular = codModular;
+    }
+    public String getRepresentanteLegal() {
+        return representanteLegal;
+    }
+    public void setRepresentanteLegal(String representanteLegal) {
+        this.representanteLegal = representanteLegal;
+    }
+    public String getCorreoFacturacion() {
+        return correoFacturacion;
+    }
+    public void setCorreoFacturacion(String correoFacturacion) {
+        this.correoFacturacion = correoFacturacion;
+    }
+    public String getTelefonoFacturacion() {
+        return telefonoFacturacion;
+    }
+    public void setTelefonoFacturacion(String telefonoFacturacion) {
+        this.telefonoFacturacion = telefonoFacturacion;
     }
     public String getTipoGestion() {
         return tipoGestion;
@@ -104,30 +141,6 @@ public class Institucion {
     public void setLogoPath(String logoPath) {
         this.logoPath = logoPath;
     }
-    public String getEstadoSuscripcion() {
-        return estadoSuscripcion;
-    }
-    public void setEstadoSuscripcion(String estadoSuscripcion) {
-        this.estadoSuscripcion = estadoSuscripcion;
-    }
-    public LocalDate getFechaInicioSuscripcion() {
-        return fechaInicioSuscripcion;
-    }
-    public void setFechaInicioSuscripcion(LocalDate fechaInicioSuscripcion) {
-        this.fechaInicioSuscripcion = fechaInicioSuscripcion;
-    }
-    public LocalDate getFechaVencimientoLicencia() {
-        return fechaVencimientoLicencia;
-    }
-    public void setFechaVencimientoLicencia(LocalDate fechaVencimientoLicencia) {
-        this.fechaVencimientoLicencia = fechaVencimientoLicencia;
-    }
-    public String getPlanContratado() {
-        return planContratado;
-    }
-    public void setPlanContratado(String planContratado) {
-        this.planContratado = planContratado;
-    }
     public Integer getEstado() {
         return estado;
     }
@@ -136,10 +149,11 @@ public class Institucion {
     }
     @Override
     public String toString() {
-        return "Institucion [idInstitucion=" + idInstitucion + ", nombre=" + nombre + ", codModular=" + codModular
-                + ", tipoGestion=" + tipoGestion + ", resolucionCreacion=" + resolucionCreacion + ", nombreDirector="
-                + nombreDirector + ", logoPath=" + logoPath + ", estadoSuscripcion=" + estadoSuscripcion
-                + ", fechaInicioSuscripcion=" + fechaInicioSuscripcion + ", fechaVencimientoLicencia="
-                + fechaVencimientoLicencia + ", planContratado=" + planContratado + ", estado=" + estado + "]";
+        return "Institucion [idInstitucion=" + idInstitucion + ", nombre=" + nombre + ", ruc=" + ruc + ", razonSocial="
+                + razonSocial + ", domicilioFiscal=" + domicilioFiscal + ", codModular=" + codModular + ", tipoGestion="
+                + tipoGestion + ", resolucionCreacion=" + resolucionCreacion + ", nombreDirector=" + nombreDirector
+                + ", representanteLegal=" + representanteLegal + ", correoFacturacion=" + correoFacturacion
+                + ", telefonoFacturacion=" + telefonoFacturacion + ", logoPath=" + logoPath + ", estado=" + estado
+                + "]";
     }
 }

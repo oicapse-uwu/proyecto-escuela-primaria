@@ -14,22 +14,20 @@ import {
     CreditCard,
     DollarSign,
     DoorOpen,
+    FileCheck,
     FileText,
     FileType,
-    FolderOpen,
     GraduationCap,
     Grid3x3,
     Layers,
     LayoutDashboard,
     MapPin,
-    MessageSquare,
     Receipt,
     Settings,
     TrendingUp,
     User,
     UserCheck,
     UserCog,
-    UserPlus,
     Users,
     Wallet,
     X
@@ -56,78 +54,75 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
         { 
             name: 'Dashboard', 
             icon: LayoutDashboard, 
-            path: '/' 
+            path: '/escuela/dashboard' 
         },
         {
             name: 'Configuración',
             icon: Settings,
             subItems: [
-                { name: 'Institución', path: '/configuracion/institucion', icon: Building },
-                { name: 'Sedes', path: '/configuracion/sedes', icon: MapPin },
-                { name: 'Año Escolar', path: '/configuracion/anio-escolar', icon: Calendar },
-                { name: 'Periodos Académicos', path: '/configuracion/periodos', icon: CalendarDays },
-                { name: 'Usuarios y Roles', path: '/configuracion/usuarios', icon: UserCog },
-                { name: 'Tipos de Documento', path: '/configuracion/tipo-documentos', icon: FileType },
+                { name: 'Institución', path: '/escuela/configuracion/institucion', icon: Building },
+                { name: 'Sedes', path: '/escuela/configuracion/sedes', icon: MapPin },
+                { name: 'Año Escolar', path: '/escuela/configuracion/anio-escolar', icon: Calendar },
+                { name: 'Periodos Académicos', path: '/escuela/configuracion/periodos', icon: CalendarDays },
+                { name: 'Usuarios y Roles', path: '/escuela/configuracion/usuarios', icon: UserCog },
+                { name: 'Tipos de Documento', path: '/escuela/configuracion/tipo-documentos', icon: FileType },
             ]
         },
         {
             name: 'Infraestructura',
             icon: Building2,
             subItems: [
-                { name: 'Grados y Secciones', path: '/infraestructura/grados-secciones', icon: Layers },
-                { name: 'Aulas', path: '/infraestructura/aulas', icon: DoorOpen },
+                { name: 'Grados y Secciones', path: '/escuela/infraestructura/grados-secciones', icon: Layers },
+                { name: 'Aulas', path: '/escuela/infraestructura/aulas', icon: DoorOpen },
             ]
         },
         {
             name: 'Gestión Académica',
             icon: GraduationCap,
             subItems: [
-                { name: 'Áreas y Cursos', path: '/academica/areas-cursos', icon: BookOpen },
-                { name: 'Malla Curricular', path: '/academica/malla', icon: Grid3x3 },
-                { name: 'Docentes', path: '/academica/docentes', icon: User },
-                { name: 'Especialidades', path: '/academica/especialidades', icon: Briefcase },
-                { name: 'Asignación Docente', path: '/academica/asignacion', icon: ClipboardList },
-                { name: 'Horarios', path: '/academica/horarios', icon: Clock },
+                { name: 'Áreas y Cursos', path: '/escuela/academica/areas-cursos', icon: BookOpen },
+                { name: 'Malla Curricular', path: '/escuela/academica/malla', icon: Grid3x3 },
+                { name: 'Docentes', path: '/escuela/academica/docentes', icon: User },
+                { name: 'Especialidades', path: '/escuela/academica/especialidades', icon: Briefcase },
+                { name: 'Asignación Docente', path: '/escuela/academica/asignacion', icon: ClipboardList },
+                { name: 'Horarios', path: '/escuela/academica/horarios', icon: Clock },
             ]
         },
         {
             name: 'Alumnos',
             icon: Users,
             subItems: [
-                { name: 'Lista de Alumnos', path: '/alumnos/lista', icon: Users },
-                { name: 'Apoderados', path: '/alumnos/apoderados', icon: UserCheck },
-                { name: 'Relación Alumno-Apoderado', path: '/alumnos/relacion', icon: UserPlus },
-                { name: 'Documentos', path: '/alumnos/documentos', icon: FolderOpen },
+                { name: 'Lista de Alumnos', path: '/escuela/alumnos', icon: Users },
+                { name: 'Apoderados', path: '/escuela/apoderados', icon: UserCheck },
             ]
         },
         {
             name: 'Matrículas',
             icon: ClipboardCheck,
             subItems: [
-                { name: 'Nueva Matrícula', path: '/matriculas/nueva', icon: UserPlus },
-                { name: 'Gestionar Matrículas', path: '/matriculas/gestionar', icon: ClipboardList },
-                { name: 'Traslados', path: '/matriculas/traslados', icon: MessageSquare },
+                { name: 'Gestionar Matrículas', path: '/escuela/matriculas', icon: ClipboardList },
+                { name: 'Requisitos de Documentos', path: '/escuela/matriculas/requisitos', icon: FileCheck },
             ]
         },
         {
             name: 'Evaluaciones y Notas',
             icon: FileText,
             subItems: [
-                { name: 'Asistencias', path: '/evaluaciones/asistencias', icon: CheckCircle },
-                { name: 'Evaluaciones', path: '/evaluaciones/lista', icon: FileText },
-                { name: 'Calificaciones', path: '/evaluaciones/calificaciones', icon: ClipboardCheck },
-                { name: 'Promedios', path: '/evaluaciones/promedios', icon: TrendingUp },
+                { name: 'Asistencias', path: '/escuela/evaluaciones/asistencias', icon: CheckCircle },
+                { name: 'Evaluaciones', path: '/escuela/evaluaciones/lista', icon: FileText },
+                { name: 'Calificaciones', path: '/escuela/evaluaciones/calificaciones', icon: ClipboardCheck },
+                { name: 'Promedios', path: '/escuela/evaluaciones/promedios', icon: TrendingUp },
             ]
         },
         {
             name: 'Pagos y Pensiones',
             icon: Wallet,
             subItems: [
-                { name: 'Conceptos de Pago', path: '/pagos/conceptos', icon: DollarSign },
-                { name: 'Métodos de Pago', path: '/pagos/metodos', icon: CreditCard },
-                { name: 'Registrar Pago', path: '/pagos/registrar', icon: Receipt },
-                { name: 'Deudas por Alumno', path: '/pagos/deudas', icon: BarChart3 },
-                { name: 'Reportes de Caja', path: '/pagos/reportes', icon: TrendingUp },
+                { name: 'Conceptos de Pago', path: '/escuela/pagos/conceptos', icon: DollarSign },
+                { name: 'Métodos de Pago', path: '/escuela/pagos/metodos', icon: CreditCard },
+                { name: 'Registrar Pago', path: '/escuela/pagos/registrar', icon: Receipt },
+                { name: 'Deudas por Alumno', path: '/escuela/pagos/deudas', icon: BarChart3 },
+                { name: 'Reportes de Caja', path: '/escuela/pagos/reportes', icon: TrendingUp },
             ]
         },
     ];
@@ -162,7 +157,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                 </button>
                 <div className="flex flex-col items-center">
                     {/* Logo del colegio */}
-                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-3 shadow-lg p-2">
+                    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-3 border-2 border-primary/30 shadow-lg p-3 transition-transform hover:scale-110 cursor-pointer">
                         <img src="/src/assets/logo/Logo_escuelita.svg" alt="Logo Escuelita" className="w-full h-full object-contain" />
                     </div>
                     {/* Nombre del colegio */}

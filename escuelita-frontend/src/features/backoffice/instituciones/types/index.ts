@@ -8,10 +8,12 @@ export interface Institucion {
     resolucionCreacion: string;
     nombreDirector: string;
     logoPath?: string;
-    estadoSuscripcion: 'DEMO' | 'ACTIVA' | 'SUSPENDIDA' | 'VENCIDA';
-    fechaInicioSuscripcion?: string;
-    fechaVencimientoLicencia?: string;
-    planContratado: string;
+    ruc?: string;
+    razonSocial?: string;
+    domicilioFiscal?: string;
+    representanteLegal?: string;
+    correoFacturacion?: string;
+    telefonoFacturacion?: string;
     estado: number;
 }
 
@@ -22,10 +24,12 @@ export interface InstitucionFormData {
     resolucionCreacion: string;
     nombreDirector: string;
     logoPath?: string;
-    estadoSuscripcion: string;
-    fechaInicioSuscripcion?: string;
-    fechaVencimientoLicencia?: string;
-    planContratado: string;
+    ruc?: string;
+    razonSocial?: string;
+    domicilioFiscal?: string;
+    representanteLegal?: string;
+    correoFacturacion?: string;
+    telefonoFacturacion?: string;
 }
 
 export interface InstitucionDTO {
@@ -36,8 +40,10 @@ export interface InstitucionDTO {
     resolucionCreacion: string;
     nombreDirector: string;
     logoPath?: string;
-    estadoSuscripcion: string;
-    fechaInicioSuscripcion?: string;
-    fechaVencimientoLicencia?: string;
-    planContratado: string;
+    ruc?: string;
+    razonSocial?: string;
+    domicilioFiscal?: string;
+    representanteLegal?: string;
+    correoFacturacion?: string;
+    telefonoFacturacion?: string;
 }

@@ -2,6 +2,7 @@ import { Edit, Plus, Search, Shield, Trash2, UserCog } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import { Toaster } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
+import { adminAuthService } from '../../../../services/adminAuth.service';
 import SuperAdminForm from '../components/SuperAdminForm';
 import { useSuperAdmins } from '../hooks/useSuperAdmins';
 import type { SuperAdmin, SuperAdminFormData } from '../types';
@@ -64,8 +65,18 @@ const SuperAdminsPage: React.FC = () => {
                 correo: data.correo,
                 usuario: data.usuario,
                 password: data.password || adminEditar.password || '',
-                rolPlataforma: data.rolPlataforma
+                rolPlataforma: data.rolPlataforma,
+                fotoUrl: data.fotoUrl
             });
+            // Si el admin editado es el usuario actual, actualizar el localStorage
+            const currentUser = adminAuthService.getCurrentUser();
+            if (currentUser && currentUser.idUsuario === adminEditar.idAdmin) {
+                adminAuthService.updateCurrentUser({
+                    nombres: data.nombres,
+                    apellidos: data.apellidos,
+                    fotoUrl: data.fotoUrl
+                });
+            }
         } else {
             await crear(data);
         }

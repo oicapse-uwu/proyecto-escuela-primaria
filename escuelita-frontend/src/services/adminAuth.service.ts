@@ -13,7 +13,7 @@ export interface LoginResponse {
         apellidos: string;
         correo: string;
         usuario: string;
-        fotoPerfil?: string;
+        fotoUrl?: string;
         rol: {
             idRol: number;
             nombreRol: string;
@@ -27,7 +27,7 @@ export interface AdminUsuario {
     apellidos: string;
     correo: string;
     usuario: string;
-    fotoPerfil?: string;
+    fotoUrl?: string;
     rol: {
         idRol: number;
         nombreRol: string;
@@ -77,6 +77,14 @@ class AdminAuthService {
 
     isAuthenticated(): boolean {
         return this.getToken() !== null;
+    }
+
+    updateCurrentUser(updates: Partial<AdminUsuario>): void {
+        const current = this.getCurrentUser();
+        if (current) {
+            localStorage.setItem(this.USER_KEY, JSON.stringify({ ...current, ...updates }));
+            window.dispatchEvent(new Event('adminUserUpdated'));
+        }
     }
 
     isSuperAdmin(): boolean {

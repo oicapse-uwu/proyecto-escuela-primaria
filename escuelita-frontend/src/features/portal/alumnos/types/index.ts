@@ -1,3 +1,11 @@
+// Tipos relacionados con Institución
+export interface Institucion {
+    idInstitucion: number;
+    nombre: string;
+    codModular?: string;
+    tipoGestion?: string;
+}
+
 // Tipos relacionados con Sedes
 export interface Sede {
     idSede: number;
@@ -5,13 +13,16 @@ export interface Sede {
     direccion?: string;
     telefono?: string;
     estado?: number;
+    idInstitucion?: Institucion;
 }
 
 // Tipos relacionados con Tipo de Documentos
 export interface TipoDocumento {
-    idTipoDoc: number;
-    nombreDocumento: string;
+    idDocumento: number;
+    descripcion: string;
     abreviatura?: string;
+    longitudMaxima?: number;
+    eslongitudExacta?: number;
     estado?: number;
 }
 
@@ -56,3 +67,6 @@ export interface AlumnoDTO {
 export interface AlumnoFormData extends Omit<AlumnoDTO, 'idAlumno'> {
     idAlumno?: number;
 }
+
+// Exportar tipos de Alumno-Apoderado
+export type { AlumnoApoderado, AlumnoApoderadoDTO, AlumnoApoderadoFormData } from './alumnoApoderado.types';

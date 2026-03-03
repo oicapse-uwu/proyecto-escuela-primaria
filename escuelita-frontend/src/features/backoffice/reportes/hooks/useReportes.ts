@@ -63,7 +63,22 @@ export const useReportes = () => {
                 obtenerPlanesReporte()
             ]);
 
-            setInstituciones(institucionesData || []);
+            // JOIN en memoria: Combinar instituciones con su suscripción activa
+            const institucionesConSuscripcion = (institucionesData || []).map(inst => {
+                // Buscar la suscripción activa de esta institución
+                const suscActiva = (suscripcionesData || []).find(s => 
+                    s.idInstitucion?.idInstitucion === inst.idInstitucion && 
+                    normalizarEstado(s.idEstado?.nombre).includes('ACT')
+                );
+                
+                return {
+                    ...inst,
+                    estadoSuscripcion: suscActiva?.idEstado?.nombre || 'Sin suscripción',
+                    planContratado: suscActiva?.idPlan?.nombrePlan || 'Sin plan'
+                };
+            });
+
+            setInstituciones(institucionesConSuscripcion);
             setSuscripciones(suscripcionesData || []);
             setUsuarios(usuariosData || []);
             setSuperAdmins(superAdminsData || []);

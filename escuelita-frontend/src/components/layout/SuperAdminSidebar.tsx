@@ -5,6 +5,7 @@ import {
     CreditCard,
     FileText,
     LayoutDashboard,
+    MapPin,
     Package,
     Settings,
     Shield,
@@ -40,6 +41,11 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }
             name: 'Instituciones',
             icon: Building2,
             path: '/admin/instituciones'
+        },
+        {
+            name: 'Sedes',
+            icon: MapPin,
+            path: '/admin/sedes'
         },
         {
             name: 'Suscripciones',

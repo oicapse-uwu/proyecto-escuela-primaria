@@ -18,6 +18,7 @@ export const createSuscripcionApi = async (suscripcion: SuscripcionFormData): Pr
     const dto: SuscripcionDTO = {
         limiteAlumnosContratado: suscripcion.limiteAlumnosContratado,
         limiteSedesContratadas: suscripcion.limiteSedesContratadas,
+        tipoDistribucionLimite: suscripcion.tipoDistribucionLimite || 'EQUITATIVA',
         precioAcordado: suscripcion.precioAcordado,
         fechaInicio: suscripcion.fechaInicio,
         fechaVencimiento: suscripcion.fechaVencimiento,
@@ -37,6 +38,7 @@ export const updateSuscripcionApi = async (idSuscripcion: number, suscripcion: S
         idSuscripcion,
         limiteAlumnosContratado: suscripcion.limiteAlumnosContratado,
         limiteSedesContratadas: suscripcion.limiteSedesContratadas,
+        tipoDistribucionLimite: suscripcion.tipoDistribucionLimite || 'EQUITATIVA',
         precioAcordado: suscripcion.precioAcordado,
         fechaInicio: suscripcion.fechaInicio,
         fechaVencimiento: suscripcion.fechaVencimiento,

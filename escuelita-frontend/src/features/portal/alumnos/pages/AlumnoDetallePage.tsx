@@ -92,7 +92,7 @@ const AlumnoDetallePage: React.FC = () => {
                 direccion: alumnoData.direccion || '',
                 telefonoContacto: alumnoData.telefonoContacto || '',
                 tipoIngreso: alumnoData.tipoIngreso || '',
-                estadoAlumno: alumnoData.estadoAlumno || 'Activo',
+                estadoAlumno: alumnoData.estadoAlumno || 'ACTIVO',
                 observacionesSalud: alumnoData.observacionesSalud || ''
             });
         } catch (error) {

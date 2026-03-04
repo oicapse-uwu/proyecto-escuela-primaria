@@ -52,10 +52,12 @@ public class AlumnosController {
     @PostMapping("/alumnos")
     public ResponseEntity<?> guardar(@RequestBody AlumnosDTO dto) {
         System.out.println("🔍 Intentando crear alumno para sede ID: " + dto.getIdSede());
+        System.out.println("🟡 Estado del alumno recibido: '" + dto.getEstadoAlumno() + "'");
         
         // 🔒 VALIDACIÓN DE LÍMITES POR SEDE
-        // Solo validar si el alumno será ACTIVO
-        if ("ACTIVO".equals(dto.getEstadoAlumno())) {
+        // Solo validar si el alumno será ACTIVO (case-insensitive)
+        if (dto.getEstadoAlumno() != null && dto.getEstadoAlumno().toUpperCase().equals("ACTIVO")) {
+            System.out.println("✅ Alumno ACTIVO detectado, ejecutando validación de límites...");
             Sedes sede = repoSedes.findById(dto.getIdSede()).orElse(null);
             if (sede == null) {
                 System.err.println("❌ Sede no encontrada: " + dto.getIdSede());

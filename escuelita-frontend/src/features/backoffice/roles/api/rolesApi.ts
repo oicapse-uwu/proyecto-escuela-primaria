@@ -33,3 +33,20 @@ export const crearNuevoRol = async (payload: { nombre: string; descripcion?: str
         throw error;
     }
 };
+/**
+ * Elimina un rol del sistema (soft delete)
+ */
+export const eliminarRol = async (idRol: number): Promise<void> => {
+    console.log('🗑️ Eliminando rol:', idRol);
+    try {
+        await api.delete(`${ROLES_BASE_URL}/${idRol}`);
+        console.log('✅ Rol eliminado correctamente');
+    } catch (error: any) {
+        console.error('❌ Error al eliminar rol:', {
+            status: error.response?.status,
+            data: error.response?.data,
+            idRol
+        });
+        throw error;
+    }
+};

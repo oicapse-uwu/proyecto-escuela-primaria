@@ -1,17 +1,21 @@
-import { Plus, Shield } from 'lucide-react';
+import { Plus, Shield, Trash2 } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
+import Modal from '../../../../components/common/Modal';
 import MatrizRolEditor from '../components/MatrizRolEditor';
 import CrearRolModal from '../components/CrearRolModal';
 import { useMatrizRol } from '../hooks/useMatrizRol';
 import { useRoles } from '../../usuarios/hooks/useRoles';
+import { eliminarRol } from '../api/rolesApi';
 import type { Rol } from '../../usuarios/types';
 
 const MatrizRolesPage: React.FC = () => {
     const { roles, isLoading: rolesLoading, cargarRoles } = useRoles();
     const [rolSeleccionado, setRolSeleccionado] = useState<Rol | null>(null);
     const [isCrearRolOpen, setIsCrearRolOpen] = useState(false);
+    const [isEliminarOpen, setIsEliminarOpen] = useState(false);
+    const [isEliminando, setIsEliminando] = useState(false);
     const { matriz, isLoading, isSaving, actualizarMatriz } = useMatrizRol(rolSeleccionado?.idRol ?? null);
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -35,6 +39,24 @@ const MatrizRolesPage: React.FC = () => {
         // Recargar lista de roles
         cargarRoles();
         setRolSeleccionado(null);
+    };
+
+    const handleEliminarRol = async () => {
+        if (!rolSeleccionado) return;
+        
+        setIsEliminando(true);
+        try {
+            await eliminarRol(rolSeleccionado.idRol);
+            toast.success(`Rol "${rolSeleccionado.nombre}" eliminado correctamente`);
+            setIsEliminarOpen(false);
+            setRolSeleccionado(null);
+            cargarRoles();
+        } catch (error) {
+            console.error('Error eliminando rol:', error);
+            toast.error('Error al eliminar el rol');
+        } finally {
+            setIsEliminando(false);
+        }
     };
 
     return (
@@ -110,6 +132,21 @@ const MatrizRolesPage: React.FC = () => {
                 {/* Columna 2-3: Editor de Matriz */}
                 <div className="lg:col-span-2">
                     <div className="bg-white rounded-lg shadow p-6">
+                        {rolSeleccionado && (
+                            <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+                                <div>
+                                    <h3 className="text-xl font-semibold text-gray-800">{rolSeleccionado.nombre}</h3>
+                                    <p className="text-sm text-gray-500">ID: {rolSeleccionado.idRol}</p>
+                                </div>
+                                <button
+                                    onClick={() => setIsEliminarOpen(true)}
+                                    className="flex items-center space-x-2 px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors font-medium"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                    <span>Eliminar Rol</span>
+                                </button>
+                            </div>
+                        )}
                         <MatrizRolEditor
                             matriz={matriz}
                             isLoading={isLoading}
@@ -126,6 +163,51 @@ const MatrizRolesPage: React.FC = () => {
                 onClose={() => setIsCrearRolOpen(false)}
                 onRolCreado={handleRolCreado}
             />
+
+            {/* Modal de confirmación de eliminación */}
+            <Modal
+                isOpen={isEliminarOpen}
+                onClose={() => setIsEliminarOpen(false)}
+                title="Eliminar Rol"
+                size="sm"
+            >
+                <div className="space-y-4">
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <p className="text-red-800 font-medium">
+                            ¿Está seguro de que desea eliminar el rol "<span className="font-bold">{rolSeleccionado?.nombre}</span>"?
+                        </p>
+                        <p className="text-sm text-red-600 mt-2">
+                            Esta acción no se puede deshacer. Los usuarios con este rol perderán acceso a los módulos asignados.
+                        </p>
+                    </div>
+                    <div className="flex gap-3 justify-end">
+                        <button
+                            onClick={() => setIsEliminarOpen(false)}
+                            disabled={isEliminando}
+                            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            onClick={handleEliminarRol}
+                            disabled={isEliminando}
+                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center space-x-2"
+                        >
+                            {isEliminando ? (
+                                <>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                    <span>Eliminando...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Trash2 className="w-4 h-4" />
+                                    <span>Sí, Eliminar</span>
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 };

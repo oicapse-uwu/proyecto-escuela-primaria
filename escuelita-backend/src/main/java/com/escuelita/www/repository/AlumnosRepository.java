@@ -14,6 +14,6 @@ public interface AlumnosRepository extends JpaRepository<Alumnos, Long> {
     List<Alumnos> findByIdSedeIdSede(Long idSede);
     
     // Contar alumnos activos de una sede (estado_alumno = 'ACTIVO')
-    @Query("SELECT COUNT(a) FROM Alumnos a WHERE a.idSede.idSede = :idSede AND a.estadoAlumno = 'ACTIVO'")
+    @Query("SELECT COUNT(a) FROM Alumnos a WHERE a.idSede.idSede = :idSede AND UPPER(a.estadoAlumno) = 'ACTIVO'")
     long countAlumnosActivosBySede(@Param("idSede") Long idSede);
 }

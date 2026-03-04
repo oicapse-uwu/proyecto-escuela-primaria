@@ -21,12 +21,13 @@ public interface RolModuloPermisoRepository extends JpaRepository<RolModuloPermi
 	@Query("SELECT rmp FROM RolModuloPermiso rmp WHERE rmp.idRol.idRol = :idRol ORDER BY rmp.idModulo.orden ASC")
 	List<RolModuloPermiso> findByIdRolOrdenado(@Param("idRol") Long idRol);
 	
-	// Obtener TODAS las asignaciones (activas e inactivas) ordenadas por módulo
-	// IMPORTANTE: No filtramos por estado=1 porque necesitamos desactivar los inactivos también
-	@Query("SELECT rmp FROM RolModuloPermiso rmp WHERE rmp.idRol.idRol = :idRol ORDER BY rmp.idModulo.orden ASC")
+	// Obtener solo asignaciones ACTIVAS (estado=1)
+	@Query("SELECT rmp FROM RolModuloPermiso rmp WHERE rmp.idRol.idRol = :idRol AND rmp.estado = 1 ORDER BY rmp.idModulo.orden ASC")
 	List<RolModuloPermiso> findByIdRolActivos(@Param("idRol") Long idRol);
 	
-	// Búsqueda para detectar combinaciones duplicadas (rol-módulo-permiso)
+	// 🔴 IMPORTANTE: Busca registros sin filtrar por estado
+	// Necesita encontrar TODOS los registros (activos e inactivos) para el UPSERT
+	@Query("SELECT rmp FROM RolModuloPermiso rmp WHERE rmp.idRol.idRol = :idRol AND rmp.idModulo.idModulo = :idModulo AND rmp.idPermiso.idPermiso = :idPermiso")
 	List<RolModuloPermiso> findByIdRol_IdRolAndIdModulo_IdModuloAndIdPermiso_IdPermiso(
-		Long idRol, Long idModulo, Long idPermiso);
+		@Param("idRol") Long idRol, @Param("idModulo") Long idModulo, @Param("idPermiso") Long idPermiso);
 }

@@ -1,8 +1,9 @@
-import { Building2, Calendar, CreditCard, X } from 'lucide-react';
+import { Building2, Calendar, CreditCard, Settings, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import SearchableSelect from '../../../../components/common/SearchableSelect';
 import type { Institucion } from '../../instituciones/types';
 import type { CicloFacturacion, EstadoSuscripcion, MetodoPago, Plan, Suscripcion, SuscripcionFormData } from '../types';
+import DistribucionLimitesModal from './DistribucionLimitesModal';
 
 interface SuscripcionFormProps {
     suscripcionEditar?: Suscripcion | null;
@@ -28,6 +29,7 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
     const [formData, setFormData] = useState<SuscripcionFormData>({
         limiteAlumnosContratado: 0,
         limiteSedesContratadas: 1,
+        tipoDistribucionLimite: 'EQUITATIVA',
         precioAcordado: 0,
         fechaInicio: '',
         fechaVencimiento: '',
@@ -40,12 +42,14 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
 
     const [planSeleccionado, setPlanSeleccionado] = useState<Plan | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showDistribucionModal, setShowDistribucionModal] = useState(false);
 
     useEffect(() => {
         if (suscripcionEditar) {
             setFormData({
                 limiteAlumnosContratado: suscripcionEditar.limiteAlumnosContratado || 0,
                 limiteSedesContratadas: suscripcionEditar.limiteSedesContratadas || 1,
+                tipoDistribucionLimite: suscripcionEditar.tipoDistribucionLimite || 'EQUITATIVA',
                 precioAcordado: suscripcionEditar.precioAcordado ? parseFloat(suscripcionEditar.precioAcordado.toString()) : 0,
                 fechaInicio: suscripcionEditar.fechaInicio || '',
                 fechaVencimiento: suscripcionEditar.fechaVencimiento || '',
@@ -307,6 +311,25 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
                                     )}
                                 </div>
                             </div>
+
+                            {/* Botón para configurar distribución */}
+                            {suscripcionEditar && formData.idInstitucion > 0 && (
+                                <div className="mt-4">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowDistribucionModal(true)}
+                                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 text-blue-700 border-2 border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                                    >
+                                        <Settings className="w-5 h-5" />
+                                        <span className="font-medium">
+                                            Configurar Distribución de Límites por Sede
+                                        </span>
+                                    </button>
+                                    <p className="text-xs text-gray-500 mt-2 text-center">
+                                        Define cómo se distribuyen los {formData.limiteAlumnosContratado} alumnos entre las sedes
+                                    </p>
+                                </div>
+                            )}
                         </div>
 
                         {/* Sección: Fechas y Ciclo */}
@@ -396,6 +419,20 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
                     </button>
                 </div>
             </div>
+
+            {/* Modal de Distribución de Límites */}
+            {showDistribucionModal && suscripcionEditar && (
+                <DistribucionLimitesModal
+                    idSuscripcion={suscripcionEditar.idSuscripcion}
+                    idInstitucion={formData.idInstitucion}
+                    limiteTotal={formData.limiteAlumnosContratado}
+                    tipoDistribucion={formData.tipoDistribucionLimite as 'EQUITATIVA' | 'PERSONALIZADA'}
+                    onClose={() => setShowDistribucionModal(false)}
+                    onSuccess={() => {
+                        // Actualizar si es necesario
+                    }}
+                />
+            )}
         </div>
     );
 };

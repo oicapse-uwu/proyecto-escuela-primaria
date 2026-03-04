@@ -17,9 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.escuelita.www.entity.Alumnos;
 import com.escuelita.www.entity.AlumnosDTO;
+import com.escuelita.www.entity.LimitesSedesSuscripcion;
 import com.escuelita.www.entity.Sedes;
+import com.escuelita.www.entity.Suscripciones;
 import com.escuelita.www.entity.TipoDocumentos;
+import com.escuelita.www.repository.AlumnosRepository;
+import com.escuelita.www.repository.LimitesSedesSuscripcionRepository;
 import com.escuelita.www.repository.SedesRepository;
+import com.escuelita.www.repository.SuscripcionesRepository;
 import com.escuelita.www.repository.TipoDocumentosRepository;
 import com.escuelita.www.service.IAlumnosService;
 
@@ -33,6 +38,12 @@ public class AlumnosController {
     private TipoDocumentosRepository repoTipoDocumentos;
     @Autowired
     private SedesRepository repoSedes;
+    @Autowired
+    private AlumnosRepository repoAlumnos;
+    @Autowired
+    private LimitesSedesSuscripcionRepository repoLimitesSedes;
+    @Autowired
+    private SuscripcionesRepository repoSuscripciones;
 
     @GetMapping("/alumnos")
     public List<Alumnos> buscarTodos() {
@@ -40,6 +51,46 @@ public class AlumnosController {
     }
     @PostMapping("/alumnos")
     public ResponseEntity<?> guardar(@RequestBody AlumnosDTO dto) {
+        // 🔒 VALIDACIÓN DE LÍMITES POR SEDE
+        // Solo validar si el alumno será ACTIVO
+        if ("ACTIVO".equals(dto.getEstadoAlumno())) {
+            Sedes sede = repoSedes.findById(dto.getIdSede()).orElse(null);
+            if (sede == null) {
+                return ResponseEntity.badRequest().body("Sede no encontrada");
+            }
+
+            // Buscar suscripción activa de la institución
+            Optional<Suscripciones> suscripcionOpt = repoSuscripciones
+                .findSuscripcionActivaByInstitucion(sede.getIdInstitucion());
+
+            if (suscripcionOpt.isPresent()) {
+                Suscripciones suscripcionActiva = suscripcionOpt.get();
+                
+                // Buscar límite asignado a esta sede
+                Optional<LimitesSedesSuscripcion> limite = repoLimitesSedes
+                    .findByIdSuscripcionIdAndIdSedeId(
+                        suscripcionActiva.getIdSuscripcion(),
+                        dto.getIdSede()
+                    );
+
+                if (limite.isPresent()) {
+                    int limiteAsignado = limite.get().getLimiteAlumnosAsignado();
+                    long alumnosActuales = repoAlumnos.countAlumnosActivosBySede(dto.getIdSede());
+
+                    if (alumnosActuales >= limiteAsignado) {
+                        return ResponseEntity.badRequest().body(
+                            String.format(
+                                "No se puede crear el alumno. La sede '%s' ha alcanzado su límite de %d alumnos activos.",
+                                sede.getNombreSede(),
+                                limiteAsignado
+                            )
+                        );
+                    }
+                }
+            }
+        }
+
+        // Proceder con la creación del alumno
         Alumnos alumnos = new Alumnos();
         alumnos.setNombres(dto.getNombres());
         alumnos.setApellidos(dto.getApellidos());

@@ -26,6 +26,7 @@ export interface Suscripcion {
     idSuscripcion: number;
     limiteAlumnosContratado: number;
     limiteSedesContratadas: number;
+    tipoDistribucionLimite?: string; // 'EQUITATIVA' | 'PERSONALIZADA'
     precioAcordado: number | null;
     fechaInicio: string | null;
     fechaVencimiento: string | null;
@@ -53,6 +54,7 @@ export interface Suscripcion {
 export interface SuscripcionFormData {
     limiteAlumnosContratado: number;
     limiteSedesContratadas: number;
+    tipoDistribucionLimite?: string;
     precioAcordado: number;
     fechaInicio: string;
     fechaVencimiento: string;
@@ -67,6 +69,7 @@ export interface SuscripcionDTO {
     idSuscripcion?: number;
     limiteAlumnosContratado: number;
     limiteSedesContratadas: number;
+    tipoDistribucionLimite?: string;
     precioAcordado: number;
     fechaInicio: string;
     fechaVencimiento: string;
@@ -104,4 +107,33 @@ export interface PagoCajaDTO {
     observacionPago: string;
     idMetodo: number;
     idUsuario: number;
+}
+
+// ============= LÍMITES POR SEDE =============
+export interface LimiteSedeSuscripcion {
+    idLimiteSede: number;
+    limiteAlumnosAsignado: number;
+    idSuscripcion: {
+        idSuscripcion: number;
+    };
+    idSede: {
+        idSede: number;
+        nombreSede: string;
+    };
+    estado: number;
+}
+
+export interface LimiteSedeSuscripcionDTO {
+    idLimiteSede?: number;
+    idSuscripcion: number;
+    idSede: number;
+    limiteAlumnosAsignado: number;
+    estado?: number;
+}
+
+export interface DistribucionLimitesRequest {
+    limites: Array<{
+        idSede: number;
+        limiteAlumnosAsignado: number;
+    }>;
 }

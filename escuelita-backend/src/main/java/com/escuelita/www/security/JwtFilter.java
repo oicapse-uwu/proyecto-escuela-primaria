@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.escuelita.www.entity.Registros;
 import com.escuelita.www.repository.RegistrosRepository;
+import com.escuelita.www.util.TenantContext;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.GenericFilter;
@@ -40,6 +41,26 @@ public class JwtFilter extends GenericFilter{
             // Primero intentar validar como token JWT (para Super Admins)
             if (jwtUtil.validarToken(token)) {
                 String clienteId = jwtUtil.extraerClienteId(token);
+                
+                // Extraer sede del token si es usuario de escuela
+                // Formato: "ESCUELA_123_SEDE_45" o "SUPER_ADMIN_1"
+                if (clienteId.contains("_SEDE_")) {
+                    try {
+                        String[] parts = clienteId.split("_SEDE_");
+                        if (parts.length == 2) {
+                            Long sedeId = Long.parseLong(parts[1]);
+                            TenantContext.setSedeId(sedeId);
+                            TenantContext.setUserType("ESCUELA");
+                            System.out.println("🏫 Usuario de ESCUELA - Sede ID: " + sedeId);
+                        }
+                    } catch (NumberFormatException e) {
+                        System.err.println("⚠️  Error al extraer sede del token: " + clienteId);
+                    }
+                } else if (clienteId.startsWith("SUPER_ADMIN") || clienteId.startsWith("ADMIN_")) {
+                    TenantContext.setUserType("SUPER_ADMIN");
+                    System.out.println("👑 Super Admin - Sin restricción de sede");
+                }
+                
                 UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(clienteId, 
                             null, Collections.emptyList());

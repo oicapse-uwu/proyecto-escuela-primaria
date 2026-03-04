@@ -3,15 +3,17 @@ package com.escuelita.www.entity;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({
-    "idSede", "nombreSede", "direccion", "distrito", "provincia", 
-    "departamento", "ugel", "telefono", "correoInstitucional", 
-    "idInstitucion", "estado"
+    "idSede", "nombreSede", "codigoEstablecimiento", "esSedePrincipal",
+    "direccion", "distrito", "provincia", "departamento", "ugel", 
+    "telefono", "correoInstitucional", "idInstitucion", "estado"
 })
 
 public class SedesDTO {
 
     private Long idSede;
     private String nombreSede;
+    private String codigoEstablecimiento = "0000";
+    private Boolean esSedePrincipal = false;
     private String direccion;
     private String distrito;
     private String provincia;
@@ -35,6 +37,18 @@ public class SedesDTO {
     }
     public void setNombreSede(String nombreSede) {
         this.nombreSede = nombreSede;
+    }
+    public String getCodigoEstablecimiento() {
+        return codigoEstablecimiento;
+    }
+    public void setCodigoEstablecimiento(String codigoEstablecimiento) {
+        this.codigoEstablecimiento = codigoEstablecimiento;
+    }
+    public Boolean getEsSedePrincipal() {
+        return esSedePrincipal;
+    }
+    public void setEsSedePrincipal(Boolean esSedePrincipal) {
+        this.esSedePrincipal = esSedePrincipal;
     }
     public String getDireccion() {
         return direccion;
@@ -92,9 +106,10 @@ public class SedesDTO {
     }
     @Override
     public String toString() {
-        return "SedesDTO [idSede=" + idSede + ", nombreSede=" + nombreSede + ", direccion=" + direccion + ", distrito="
-                + distrito + ", provincia=" + provincia + ", departamento=" + departamento + ", ugel=" + ugel
-                + ", telefono=" + telefono + ", correoInstitucional=" + correoInstitucional + ", idInstitucion="
-                + idInstitucion + ", estado=" + estado + "]";
+        return "SedesDTO [idSede=" + idSede + ", nombreSede=" + nombreSede + ", codigoEstablecimiento=" 
+                + codigoEstablecimiento + ", esSedePrincipal=" + esSedePrincipal + ", direccion=" + direccion 
+                + ", distrito=" + distrito + ", provincia=" + provincia + ", departamento=" + departamento 
+                + ", ugel=" + ugel + ", telefono=" + telefono + ", correoInstitucional=" + correoInstitucional 
+                + ", idInstitucion=" + idInstitucion + ", estado=" + estado + "]";
     }
 }

@@ -7,6 +7,7 @@ import com.escuelita.www.entity.Usuarios;
 public interface IUsuariosService {
     
     List<Usuarios> buscarTodos();
+    List<Usuarios> buscarPorSede(Long idSede);
     Usuarios guardar(Usuarios usuario);
     Usuarios modificar(Usuarios usuario);
     Optional<Usuarios> buscarId(Long id);

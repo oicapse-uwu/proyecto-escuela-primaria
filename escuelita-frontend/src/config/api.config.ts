@@ -41,8 +41,8 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        // Si el token es inválido o expiró (401)
-        if (error.response?.status === 401) {
+        // Si el token es inválido, expiró o no autorizado (401/403)
+        if (error.response?.status === 401 || error.response?.status === 403) {
             // Limpiar tokens
             localStorage.removeItem('escuela_token');
             localStorage.removeItem('escuela_user');
@@ -79,12 +79,28 @@ export const API_ENDPOINTS = {
     SEDES: '/restful/sedes',
     TIPOS_DOCUMENTO: '/restful/tipodocumentos',
     ROLES: '/restful/roles',
+    PERMISOS: '/restful/permisos',
+    MODULOS: '/restful/modulos',
+    ROL_MODULO_PERMISO: '/restful/rolmodulopermiso',
     FILES_UPLOAD: '/restful/files/upload',
 
     // Endpoints portal (escuelas)
     ALUMNOS: '/restful/alumnos',
     APODERADOS: '/restful/apoderados',
+    ALUMNO_APODERADO: '/restful/alumnoapoderado',
+    MATRICULAS: '/restful/matriculas',
+    SECCIONES: '/restful/secciones',
+    ANIO_ESCOLAR: '/restful/anioescolar',
+    REQUISITOS_DOCUMENTOS: '/restful/requisitosdocumentos',
+    DOCUMENTOS_ALUMNO: '/restful/documentosalumno',
     CURSOS: '/restful/cursos',
+
+    // endpoints de infraestructura
+    ANIO_ESCOLAR: '/restful/anioescolar',
+    PERIODOS: '/restful/periodos',
+    GRADOS: '/restful/grados',
+    SECCIONES: '/restful/secciones',
+    AULAS: '/restful/aulas',
 };
 
 // Configuración adicional de la aplicación

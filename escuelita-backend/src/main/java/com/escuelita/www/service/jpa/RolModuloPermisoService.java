@@ -19,6 +19,10 @@ public class RolModuloPermisoService implements IRolModuloPermisoService {
         return repoRmp.findAll();
     }
     @Override
+    public List<RolModuloPermiso> buscarPorRoles(List<Long> roleIds) {
+        return repoRmp.findByIdRol_IdRolIn(roleIds);
+    }
+    @Override
     public RolModuloPermiso guardar(RolModuloPermiso rolModuloPermiso) {
         return repoRmp.save(rolModuloPermiso);
     }

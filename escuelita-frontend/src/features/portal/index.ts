@@ -6,6 +6,7 @@
  */
 
 // Agregar features del portal según se vayan implementando:
+export * from './usuarios';
 // export * from './consulta-notas';
 // export * from './consulta-asistencias';
 // export * from './consulta-pagos';

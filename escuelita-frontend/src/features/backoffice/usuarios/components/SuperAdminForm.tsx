@@ -1,5 +1,7 @@
-import { Shield, User, X } from 'lucide-react';
+import { Camera, Shield, User, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { subirFotoAvatar } from '../../../../services/uploadService';
 import type { SuperAdmin, SuperAdminFormData } from '../types';
 
 interface SuperAdminFormProps {
@@ -21,8 +23,11 @@ const SuperAdminForm: React.FC<SuperAdminFormProps> = ({
         correo: '',
         usuario: '',
         password: '',
-        rolPlataforma: 'SUPER_ADMIN'
+        rolPlataforma: 'SUPER_ADMIN',
+        fotoUrl: ''
     });
+    const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://primaria.spring.informaticapp.com:4040';
 
     useEffect(() => {
         if (superAdmin) {
@@ -32,7 +37,8 @@ const SuperAdminForm: React.FC<SuperAdminFormProps> = ({
                 correo: superAdmin.correo,
                 usuario: superAdmin.usuario,
                 password: superAdmin.password || '',
-                rolPlataforma: superAdmin.rolPlataforma || 'SUPER_ADMIN'
+                rolPlataforma: superAdmin.rolPlataforma || 'SUPER_ADMIN',
+                fotoUrl: superAdmin.fotoUrl || ''
             });
         }
     }, [superAdmin]);
@@ -40,6 +46,20 @@ const SuperAdminForm: React.FC<SuperAdminFormProps> = ({
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleFotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+            setIsUploadingPhoto(true);
+            const url = await subirFotoAvatar(file);
+            setFormData(prev => ({ ...prev, fotoUrl: url }));
+        } catch {
+            toast.error('Error al subir la foto');
+        } finally {
+            setIsUploadingPhoto(false);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -65,6 +85,43 @@ const SuperAdminForm: React.FC<SuperAdminFormProps> = ({
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto max-h-[calc(90vh-140px)]">
+                    {/* Foto de Perfil */}
+                    <div className="flex flex-col items-center gap-2 pb-4 border-b">
+                        <div
+                            className="relative group cursor-pointer"
+                            onClick={() => document.getElementById('superadmin-foto-input')?.click()}
+                        >
+                            <div className="w-24 h-24 rounded-full border-2 border-gray-200 overflow-hidden bg-gray-100 flex items-center justify-center">
+                                {formData.fotoUrl ? (
+                                    <img
+                                        src={`${BASE_URL}${formData.fotoUrl}`}
+                                        alt="Foto perfil"
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <User className="w-12 h-12 text-gray-400" />
+                                )}
+                            </div>
+                            {isUploadingPhoto ? (
+                                <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center">
+                                    <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                                </div>
+                            ) : (
+                                <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-all">
+                                    <Camera className="w-6 h-6 text-white opacity-0 group-hover:opacity-100" />
+                                </div>
+                            )}
+                            <input
+                                id="superadmin-foto-input"
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleFotoChange}
+                            />
+                        </div>
+                        <p className="text-xs text-gray-500">Foto de perfil (opcional)</p>
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Nombres *</label>

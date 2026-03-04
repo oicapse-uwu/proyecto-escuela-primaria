@@ -38,6 +38,8 @@ public class SedesController {
     public ResponseEntity<?> guardar(@RequestBody SedesDTO dto) {
         Sedes sedes = new Sedes();
         sedes.setNombreSede(dto.getNombreSede());
+        sedes.setCodigoEstablecimiento(dto.getCodigoEstablecimiento());
+        sedes.setEsSedePrincipal(dto.getEsSedePrincipal());
         sedes.setDireccion(dto.getDireccion());
         sedes.setDistrito(dto.getDistrito());
         sedes.setProvincia(dto.getProvincia());
@@ -63,6 +65,8 @@ public class SedesController {
         Sedes sedes = new Sedes();
         sedes.setIdSede(dto.getIdSede());
         sedes.setNombreSede(dto.getNombreSede());
+        sedes.setCodigoEstablecimiento(dto.getCodigoEstablecimiento());
+        sedes.setEsSedePrincipal(dto.getEsSedePrincipal());
         sedes.setDireccion(dto.getDireccion());
         sedes.setDistrito(dto.getDistrito());
         sedes.setProvincia(dto.getProvincia());

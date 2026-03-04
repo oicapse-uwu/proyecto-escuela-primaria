@@ -1,0 +1,248 @@
+import { Search } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+
+interface SearchableSelectProps<T> {
+    value: number | string;
+    onChange: (value: number | string) => void;
+    options: T[];
+    getOptionId: (option: T) => number | string;
+    getOptionLabel: (option: T) => string;
+    getOptionSubtext?: (option: T) => string;
+    placeholder?: string;
+    label?: string;
+    required?: boolean;
+    disabled?: boolean;
+    error?: string;
+    className?: string;
+    emptyMessage?: string;
+}
+
+function SearchableSelect<T>({
+    value,
+    onChange,
+    options,
+    getOptionId,
+    getOptionLabel,
+    getOptionSubtext,
+    placeholder = 'Buscar...',
+    label,
+    required = false,
+    disabled = false,
+    error,
+    className = '',
+    emptyMessage = 'No se encontraron resultados'
+}: SearchableSelectProps<T>) {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0, maxHeight: 240 });
+    const inputWrapperRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    // Recalcular posición cada vez que se abre
+    useEffect(() => {
+        if (showDropdown && inputWrapperRef.current) {
+            const rect = inputWrapperRef.current.getBoundingClientRect();
+            const spaceBelow = window.innerHeight - rect.bottom - 8;
+            let maxHeight = Math.max(80, Math.min(spaceBelow, 165));
+
+            // Limitar el dropdown al contenedor scrollable/recortante más cercano (ej: modal)
+            let el: HTMLElement | null = inputWrapperRef.current.parentElement;
+            while (el && el !== document.body) {
+                const style = window.getComputedStyle(el);
+                if (['auto', 'scroll', 'hidden'].some(v => style.overflowY === v || style.overflow === v)) {
+                    const containerBottom = el.getBoundingClientRect().bottom;
+                    const spaceInContainer = containerBottom - rect.bottom - 12;
+                    if (spaceInContainer < maxHeight) {
+                        maxHeight = Math.max(80, spaceInContainer);
+                    }
+                    break;
+                }
+                el = el.parentElement;
+            }
+
+            setDropdownPos({
+                top: rect.bottom + 4,
+                left: rect.left,
+                width: rect.width,
+                maxHeight,
+            });
+        }
+    }, [showDropdown]);
+
+    // Cerrar al hacer click FUERA del input y del dropdown (incluye scrollbar nativo)
+    useEffect(() => {
+        if (!showDropdown) return;
+        const handleMouseDown = (e: MouseEvent) => {
+            // El scrollbar nativo devuelve un e.target que no es un Node — en ese caso no cerrar
+            if (!(e.target instanceof Node)) return;
+            const inputEl = inputWrapperRef.current;
+            const dropEl = dropdownRef.current;
+            if (inputEl && inputEl.contains(e.target)) return;
+            if (dropEl && dropEl.contains(e.target)) return;
+            setShowDropdown(false);
+        };
+        document.addEventListener('mousedown', handleMouseDown);
+        return () => document.removeEventListener('mousedown', handleMouseDown);
+    }, [showDropdown]);
+
+    // Cerrar si se hace scroll FUERA del dropdown, o resize
+    useEffect(() => {
+        if (!showDropdown) return;
+        const close = (e: Event) => {
+            if (dropdownRef.current && dropdownRef.current.contains(e.target as Node)) return;
+            setShowDropdown(false);
+        };
+        window.addEventListener('scroll', close, true);
+        window.addEventListener('resize', close);
+        return () => {
+            window.removeEventListener('scroll', close, true);
+            window.removeEventListener('resize', close);
+        };
+    }, [showDropdown]);
+
+    // Encontrar la opción seleccionada
+    const selectedOption = options.find(opt => getOptionId(opt) === value);
+    const displayValue = selectedOption 
+        ? `${getOptionLabel(selectedOption)}${getOptionSubtext ? ` - ${getOptionSubtext(selectedOption)}` : ''}`
+        : '';
+
+    // Normalizar texto para búsqueda sin acentos
+    const normalizeText = (text: string) => 
+        text.toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+
+    // Filtrar opciones por término de búsqueda
+    const filteredOptions = options.filter(option => {
+        const search = normalizeText(searchTerm.trim());
+        if (!search) return true;
+        
+        const optionLabel = normalizeText(getOptionLabel(option));
+        const subtext = getOptionSubtext ? normalizeText(getOptionSubtext(option)) : '';
+        
+        return optionLabel.includes(search) || subtext.includes(search);
+    });
+
+    const handleSelect = (option: T) => {
+        onChange(getOptionId(option));
+        setSearchTerm('');
+        setShowDropdown(false);
+    };
+
+    const handleFocus = () => {
+        setSearchTerm('');
+        setShowDropdown(true);
+    };
+
+    const dropdownEl = showDropdown ? createPortal(
+        <>
+            {/* Panel del dropdown */}
+            <div
+                ref={dropdownRef}
+                style={{
+                    position: 'fixed',
+                    top: dropdownPos.top,
+                    left: dropdownPos.left,
+                    width: dropdownPos.width,
+                    zIndex: 9999,
+                    maxHeight: dropdownPos.maxHeight,
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}
+                className="bg-white border border-gray-300 rounded-lg shadow-xl"
+            >
+                {filteredOptions.length === 0 ? (
+                    <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                        {emptyMessage}
+                    </div>
+                ) : (
+                    <>
+                        {/* Header con contador */}
+                        {filteredOptions.length > 5 && (
+                            <div className="flex-shrink-0 bg-blue-50 px-4 py-2 border-b border-blue-100 rounded-t-lg">
+                                <p className="text-xs font-medium text-blue-700">
+                                    {filteredOptions.length} {filteredOptions.length === 1 ? 'resultado' : 'resultados'}
+                                    {filteredOptions.length !== options.length && ` de ${options.length} total`}
+                                </p>
+                            </div>
+                        )}
+                        
+                        {/* Lista scrolleable */}
+                        <div className="overflow-y-auto" style={{ flex: 1, minHeight: 0 }}>
+                            {filteredOptions.map(option => {
+                                const id = getOptionId(option);
+                                const isSelected = id === value;
+                                
+                                return (
+                                    <button
+                                        key={String(id)}
+                                        type="button"
+                                        onMouseDown={(e) => {
+                                            // Evitar que el input pierda el foco antes del click
+                                            e.preventDefault();
+                                            handleSelect(option);
+                                        }}
+                                        className={`w-full text-left px-4 py-2 hover:bg-blue-50 transition-colors border-b border-gray-50 last:border-0 ${
+                                            isSelected ? 'bg-blue-100' : ''
+                                        }`}
+                                    >
+                                        <div className="text-sm font-medium text-gray-900">
+                                            {getOptionLabel(option)}
+                                        </div>
+                                        {getOptionSubtext && (
+                                            <div className="text-xs text-gray-500">
+                                                {getOptionSubtext(option)}
+                                            </div>
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </>
+                )}
+            </div>
+        </>,
+        document.body
+    ) : null;
+
+    return (
+        <div className={`relative ${className}`}>
+            {label && (
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {label}
+                    {required && <span className="text-red-500 ml-1">*</span>}
+                </label>
+            )}
+            
+            <div ref={inputWrapperRef} className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none z-10" />
+                <input
+                    type="text"
+                    value={showDropdown ? searchTerm : displayValue}
+                    onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        setShowDropdown(true);
+                    }}
+                    onFocus={handleFocus}
+                    placeholder={placeholder}
+                    disabled={disabled}
+                    className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+                        error ? 'border-red-500' : 'border-gray-300'
+                    } ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                    required={required && !value}
+                />
+            </div>
+
+            {/* Dropdown renderizado en document.body via portal */}
+            {dropdownEl}
+
+            {/* Mensajes de error */}
+            {error && (
+                <p className="text-xs text-red-500 mt-1">{error}</p>
+            )}
+        </div>
+    );
+}
+
+export default SearchableSelect;

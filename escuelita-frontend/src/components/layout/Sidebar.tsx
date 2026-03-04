@@ -14,28 +14,26 @@ import {
     CreditCard,
     DollarSign,
     DoorOpen,
+    FileCheck,
     FileText,
     FileType,
-    FolderOpen,
     GraduationCap,
     Grid3x3,
     Layers,
     LayoutDashboard,
     MapPin,
-    MessageSquare,
     Receipt,
     Settings,
     TrendingUp,
     User,
     UserCheck,
     UserCog,
-    UserPlus,
     Users,
     Wallet,
     X
 } from 'lucide-react';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 interface SidebarProps {
     isOpen?: boolean;
@@ -50,84 +48,95 @@ interface MenuItem {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
+    const location = useLocation();
     const [expandedModules, setExpandedModules] = useState<string[]>(['dashboard']);
+
+    const isActive = (path?: string) => {
+        if (!path) return false;
+        return location.pathname === path;
+    };
+
+    const isModuleActive = (module: MenuItem) => {
+        if (module.path) return isActive(module.path);
+        if (module.subItems) {
+            return module.subItems.some(sub => location.pathname === sub.path);
+        }
+        return false;
+    };
 
     const menuModules: MenuItem[] = [
         { 
             name: 'Dashboard', 
             icon: LayoutDashboard, 
-            path: '/' 
-        },
-        {
-            name: 'Configuración',
-            icon: Settings,
-            subItems: [
-                { name: 'Institución', path: '/configuracion/institucion', icon: Building },
-                { name: 'Sedes', path: '/configuracion/sedes', icon: MapPin },
-                { name: 'Año Escolar', path: '/configuracion/anio-escolar', icon: Calendar },
-                { name: 'Periodos Académicos', path: '/configuracion/periodos', icon: CalendarDays },
-                { name: 'Usuarios y Roles', path: '/configuracion/usuarios', icon: UserCog },
-                { name: 'Tipos de Documento', path: '/configuracion/tipo-documentos', icon: FileType },
-            ]
+            path: '/escuela/dashboard' 
         },
         {
             name: 'Infraestructura',
             icon: Building2,
             subItems: [
-                { name: 'Grados y Secciones', path: '/infraestructura/grados-secciones', icon: Layers },
-                { name: 'Aulas', path: '/infraestructura/aulas', icon: DoorOpen },
+                { name: 'Institución', path: '/escuela/infraestructura/institucion', icon: Building },
+                { name: 'Sedes', path: '/escuela/infraestructura/sedes', icon: MapPin },
+                { name: 'Año Escolar', path: '/escuela/infraestructura/anio-escolar', icon: Calendar },
+                { name: 'Periodos Académicos', path: '/escuela/infraestructura/periodos', icon: CalendarDays },
+                { name: 'Grados y Secciones', path: '/escuela/infraestructura/grados-secciones', icon: Layers },
+                { name: 'Aulas', path: '/escuela/infraestructura/aulas', icon: DoorOpen },
+            ]
+        },
+        {
+            name: 'Configuración',
+            icon: Settings,
+            subItems: [
+                { name: 'Usuarios y Roles', path: '/escuela/configuracion/usuarios', icon: UserCog },
+                { name: 'Tipos de Documento', path: '/escuela/configuracion/tipo-documentos', icon: FileType },
             ]
         },
         {
             name: 'Gestión Académica',
             icon: GraduationCap,
             subItems: [
-                { name: 'Áreas y Cursos', path: '/academica/areas-cursos', icon: BookOpen },
-                { name: 'Malla Curricular', path: '/academica/malla', icon: Grid3x3 },
-                { name: 'Docentes', path: '/academica/docentes', icon: User },
-                { name: 'Especialidades', path: '/academica/especialidades', icon: Briefcase },
-                { name: 'Asignación Docente', path: '/academica/asignacion', icon: ClipboardList },
-                { name: 'Horarios', path: '/academica/horarios', icon: Clock },
+                { name: 'Áreas y Cursos', path: '/escuela/academica/areas-cursos', icon: BookOpen },
+                { name: 'Malla Curricular', path: '/escuela/academica/malla', icon: Grid3x3 },
+                { name: 'Docentes', path: '/escuela/academica/docentes', icon: User },
+                { name: 'Especialidades', path: '/escuela/academica/especialidades', icon: Briefcase },
+                { name: 'Asignación Docente', path: '/escuela/academica/asignacion', icon: ClipboardList },
+                { name: 'Horarios', path: '/escuela/academica/horarios', icon: Clock },
             ]
         },
         {
             name: 'Alumnos',
             icon: Users,
             subItems: [
-                { name: 'Lista de Alumnos', path: '/alumnos/lista', icon: Users },
-                { name: 'Apoderados', path: '/alumnos/apoderados', icon: UserCheck },
-                { name: 'Relación Alumno-Apoderado', path: '/alumnos/relacion', icon: UserPlus },
-                { name: 'Documentos', path: '/alumnos/documentos', icon: FolderOpen },
+                { name: 'Lista de Alumnos', path: '/escuela/alumnos', icon: Users },
+                { name: 'Apoderados', path: '/escuela/apoderados', icon: UserCheck },
             ]
         },
         {
             name: 'Matrículas',
             icon: ClipboardCheck,
             subItems: [
-                { name: 'Nueva Matrícula', path: '/matriculas/nueva', icon: UserPlus },
-                { name: 'Gestionar Matrículas', path: '/matriculas/gestionar', icon: ClipboardList },
-                { name: 'Traslados', path: '/matriculas/traslados', icon: MessageSquare },
+                { name: 'Gestionar Matrículas', path: '/escuela/matriculas', icon: ClipboardList },
+                { name: 'Requisitos de Documentos', path: '/escuela/matriculas/requisitos', icon: FileCheck },
             ]
         },
         {
             name: 'Evaluaciones y Notas',
             icon: FileText,
             subItems: [
-                { name: 'Asistencias', path: '/evaluaciones/asistencias', icon: CheckCircle },
-                { name: 'Evaluaciones', path: '/evaluaciones/lista', icon: FileText },
-                { name: 'Calificaciones', path: '/evaluaciones/calificaciones', icon: ClipboardCheck },
-                { name: 'Promedios', path: '/evaluaciones/promedios', icon: TrendingUp },
+                { name: 'Asistencias', path: '/escuela/evaluaciones/asistencias', icon: CheckCircle },
+                { name: 'Evaluaciones', path: '/escuela/evaluaciones/lista', icon: FileText },
+                { name: 'Calificaciones', path: '/escuela/evaluaciones/calificaciones', icon: ClipboardCheck },
+                { name: 'Promedios', path: '/escuela/evaluaciones/promedios', icon: TrendingUp },
             ]
         },
         {
             name: 'Pagos y Pensiones',
             icon: Wallet,
             subItems: [
-                { name: 'Conceptos de Pago', path: '/pagos/conceptos', icon: DollarSign },
-                { name: 'Métodos de Pago', path: '/pagos/metodos', icon: CreditCard },
-                { name: 'Registrar Pago', path: '/pagos/registrar', icon: Receipt },
-                { name: 'Deudas por Alumno', path: '/pagos/deudas', icon: BarChart3 },
-                { name: 'Reportes de Caja', path: '/pagos/reportes', icon: TrendingUp },
+                { name: 'Conceptos de Pago', path: '/escuela/pagos/conceptos', icon: DollarSign },
+                { name: 'Métodos de Pago', path: '/escuela/pagos/metodos', icon: CreditCard },
+                { name: 'Registrar Pago', path: '/escuela/pagos/registrar', icon: Receipt },
+                { name: 'Deudas por Alumno', path: '/escuela/pagos/deudas', icon: BarChart3 },
+                { name: 'Reportes de Caja', path: '/escuela/pagos/reportes', icon: TrendingUp },
             ]
         },
     ];
@@ -142,7 +151,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
 
     return (
         <aside 
-            className={`bg-primary-dark text-text-light fixed left-0 top-0 bottom-0 z-50 shadow-xl sidebar-scroll transition-transform duration-300 w-72 lg:translate-x-0 ${
+            className={`bg-escuela-dark text-text-light fixed left-0 top-0 bottom-0 z-50 shadow-xl sidebar-scroll-escuela transition-transform duration-300 w-72 lg:translate-x-0 ${
                 isOpen ? 'translate-x-0' : '-translate-x-full'
             }`}
             style={{
@@ -152,7 +161,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
             }}
         >
             {/* Espacio para Logo y Título del Colegio */}
-            <div className="p-6 border-b border-primary/30 bg-gradient-to-br from-primary-dark via-primary to-primary-dark relative">
+            <div className="p-6 border-b border-escuela/30 bg-gradient-to-br from-escuela-dark via-escuela-light to-escuela relative">
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors lg:hidden"
@@ -162,7 +171,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                 </button>
                 <div className="flex flex-col items-center">
                     {/* Logo del colegio */}
-                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-3 shadow-lg p-2">
+                    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-3 border-2 border-escuela/30 shadow-lg p-3 transition-transform hover:scale-110 cursor-pointer">
                         <img src="/src/assets/logo/Logo_escuelita.svg" alt="Logo Escuelita" className="w-full h-full object-contain" />
                     </div>
                     {/* Nombre del colegio */}
@@ -180,13 +189,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                                 <>
                                     <button
                                         onClick={() => toggleModule(module.name)}
-                                        className={`w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-primary/50 transition-all duration-200 group ${
-                                            expandedModules.includes(module.name) ? 'bg-primary/40 shadow-sm' : ''
+                                        className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 group relative ${
+                                            isModuleActive(module) 
+                                                ? 'border-l-4 border-white' 
+                                                : expandedModules.includes(module.name) 
+                                                    ? 'bg-escuela/40 shadow-sm hover:bg-escuela/50' 
+                                                    : 'hover:bg-escuela/50'
                                         }`}
                                     >
                                         <div className="flex items-center space-x-3 min-w-0 flex-1">
-                                            <IconComponent className="w-5 h-5 flex-shrink-0 text-white/90" />
-                                            <span className="text-sm font-semibold truncate">{module.name}</span>
+                                            <IconComponent className="w-5 h-5 flex-shrink-0 transition-colors text-white/90" />
+                                            <span className="text-sm font-semibold truncate transition-colors text-white">{module.name}</span>
                                         </div>
                                         <div>
                                             <svg 
@@ -202,19 +215,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                                         </div>
                                     </button>
                                     {expandedModules.includes(module.name) && (
-                                        <div className="ml-4 mt-1 space-y-0.5 border-l-2 border-primary/40 w-full">
+                                        <div className="ml-4 mt-1 space-y-0.5 border-l-2 border-escuela/40 w-full">
                                             {module.subItems.map((subItem) => {
                                                 const SubIconComponent = subItem.icon;
+                                                const subItemActive = isActive(subItem.path);
                                                 return (
                                                     <Link
                                                         key={subItem.path}
                                                         to={subItem.path}
-                                                        className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-primary/40 transition-all duration-150 text-sm ml-2 w-full group"
+                                                        className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-150 text-sm ml-2 w-full group relative ${
+                                                            subItemActive 
+                                                                ? 'border-l-4 border-white' 
+                                                                : 'hover:bg-escuela/40'
+                                                        }`}
                                                     >
                                                         {SubIconComponent && (
-                                                            <SubIconComponent className="w-4 h-4 flex-shrink-0 text-white/70 group-hover:text-white/90 transition-colors" />
+                                                            <SubIconComponent className="w-4 h-4 flex-shrink-0 transition-colors text-white/70 group-hover:text-white/90" />
                                                         )}
-                                                        <span className="font-medium truncate text-white/80 group-hover:text-white transition-colors">{subItem.name}</span>
+                                                        <span className="font-medium truncate transition-colors text-white/80 group-hover:text-white">{subItem.name}</span>
                                                     </Link>
                                                 );
                                             })}
@@ -224,10 +242,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                             ) : (
                                 <Link
                                     to={module.path || '#'}
-                                    className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-primary/50 transition-all duration-200 group w-full"
+                                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group w-full relative ${
+                                        isActive(module.path) 
+                                            ? 'border-l-4 border-white' 
+                                            : 'hover:bg-escuela/50'
+                                    }`}
                                 >
-                                    <IconComponent className="w-5 h-5 flex-shrink-0 text-white/90" />
-                                    <span className="text-sm font-semibold truncate">{module.name}</span>
+                                    <IconComponent className="w-5 h-5 flex-shrink-0 transition-colors text-white/90" />
+                                    <span className="text-sm font-semibold truncate transition-colors text-white">{module.name}</span>
                                 </Link>
                             )}
                         </div>

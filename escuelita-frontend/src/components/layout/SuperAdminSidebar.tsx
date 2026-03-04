@@ -13,7 +13,7 @@ import {
     X
 } from 'lucide-react';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 interface SuperAdminSidebarProps {
     isOpen: boolean;
@@ -28,7 +28,21 @@ interface MenuItem {
 }
 
 const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }) => {
+    const location = useLocation();
     const [expandedModules, setExpandedModules] = useState<string[]>(['dashboard']);
+
+    const isActive = (path?: string) => {
+        if (!path) return false;
+        return location.pathname === path;
+    };
+
+    const isModuleActive = (module: MenuItem) => {
+        if (module.path) return isActive(module.path);
+        if (module.subItems) {
+            return module.subItems.some(sub => location.pathname === sub.path);
+        }
+        return false;
+    };
 
     const menuModules: MenuItem[] = [
         { 
@@ -81,7 +95,7 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }
 
     return (
         <aside 
-            className={`bg-primary-dark text-text-light fixed left-0 top-0 bottom-0 z-50 shadow-xl sidebar-scroll transition-transform duration-300 w-72 ${
+            className={`bg-primary-dark text-text-light fixed left-0 top-0 bottom-0 z-50 shadow-xl sidebar-scroll-admin transition-transform duration-300 w-72 ${
                 isOpen ? 'translate-x-0' : '-translate-x-full'
             }`}
             style={{
@@ -125,13 +139,17 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }
                                 <>
                                     <button
                                         onClick={() => toggleModule(module.name)}
-                                        className={`w-full flex items-center justify-between px-4 py-3 rounded-lg hover:bg-primary/50 transition-all duration-200 group ${
-                                            expandedModules.includes(module.name) ? 'bg-primary/40 shadow-sm' : ''
+                                        className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 group relative ${
+                                            isModuleActive(module) 
+                                                ? 'border-l-4 border-white' 
+                                                : expandedModules.includes(module.name) 
+                                                    ? 'bg-primary/40 shadow-sm hover:bg-primary/50' 
+                                                    : 'hover:bg-primary/50'
                                         }`}
                                     >
                                         <div className="flex items-center space-x-3 min-w-0 flex-1">
-                                            <IconComponent className="w-5 h-5 flex-shrink-0 text-white/90" />
-                                            <span className="text-sm font-semibold truncate">{module.name}</span>
+                                            <IconComponent className="w-5 h-5 flex-shrink-0 transition-colors text-white/90" />
+                                            <span className="text-sm font-semibold truncate transition-colors text-white">{module.name}</span>
                                         </div>
                                         <div>
                                             <svg 
@@ -150,16 +168,21 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }
                                         <div className="ml-4 mt-1 space-y-0.5 border-l-2 border-primary/40 w-full">
                                             {module.subItems.map((subItem) => {
                                                 const SubIconComponent = subItem.icon;
+                                                const subItemActive = isActive(subItem.path);
                                                 return (
                                                     <Link
                                                         key={subItem.path}
                                                         to={subItem.path}
-                                                        className="flex items-center space-x-3 px-4 py-2.5 rounded-lg hover:bg-primary/40 transition-all duration-150 text-sm ml-2 w-full group"
+                                                        className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-150 text-sm ml-2 w-full group relative ${
+                                                            subItemActive 
+                                                                ? 'border-l-4 border-white' 
+                                                                : 'hover:bg-primary/40'
+                                                        }`}
                                                     >
                                                         {SubIconComponent && (
-                                                            <SubIconComponent className="w-4 h-4 flex-shrink-0 text-white/70 group-hover:text-white/90 transition-colors" />
+                                                            <SubIconComponent className="w-4 h-4 flex-shrink-0 transition-colors text-white/70 group-hover:text-white/90" />
                                                         )}
-                                                        <span className="font-medium truncate text-white/80 group-hover:text-white transition-colors">{subItem.name}</span>
+                                                        <span className="font-medium truncate transition-colors text-white/80 group-hover:text-white">{subItem.name}</span>
                                                     </Link>
                                                 );
                                             })}
@@ -169,10 +192,14 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }
                             ) : (
                                 <Link
                                     to={module.path || '#'}
-                                    className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-primary/50 transition-all duration-200 group w-full"
+                                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group w-full relative ${
+                                        isActive(module.path) 
+                                            ? 'border-l-4 border-white' 
+                                            : 'hover:bg-primary/50'
+                                    }`}
                                 >
-                                    <IconComponent className="w-5 h-5 flex-shrink-0 text-white/90" />
-                                    <span className="text-sm font-semibold truncate">{module.name}</span>
+                                    <IconComponent className="w-5 h-5 flex-shrink-0 transition-colors text-white/90" />
+                                    <span className="text-sm font-semibold truncate transition-colors text-white">{module.name}</span>
                                 </Link>
                             )}
                         </div>

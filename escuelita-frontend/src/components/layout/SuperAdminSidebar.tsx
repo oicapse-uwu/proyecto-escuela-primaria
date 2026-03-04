@@ -141,19 +141,15 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }
                                         onClick={() => toggleModule(module.name)}
                                         className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 group relative ${
                                             isModuleActive(module) 
-                                                ? 'bg-activeEscuela/20 shadow-md border-l-4 border-activeEscuela' 
+                                                ? 'border-l-4 border-white' 
                                                 : expandedModules.includes(module.name) 
                                                     ? 'bg-primary/40 shadow-sm hover:bg-primary/50' 
                                                     : 'hover:bg-primary/50'
                                         }`}
                                     >
                                         <div className="flex items-center space-x-3 min-w-0 flex-1">
-                                            <IconComponent className={`w-5 h-5 flex-shrink-0 transition-colors ${
-                                                isModuleActive(module) ? 'text-activeEscuela' : 'text-white/90'
-                                            }`} />
-                                            <span className={`text-sm font-semibold truncate transition-colors ${
-                                                isModuleActive(module) ? 'text-activeEscuela-light' : 'text-white'
-                                            }`}>{module.name}</span>
+                                            <IconComponent className="w-5 h-5 flex-shrink-0 transition-colors text-white/90" />
+                                            <span className="text-sm font-semibold truncate transition-colors text-white">{module.name}</span>
                                         </div>
                                         <div>
                                             <svg 
@@ -169,9 +165,7 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }
                                         </div>
                                     </button>
                                     {expandedModules.includes(module.name) && (
-                                        <div className={`ml-4 mt-1 space-y-0.5 border-l-2 w-full ${
-                                            isModuleActive(module) ? 'border-activeEscuela/60' : 'border-primary/40'
-                                        }`}>
+                                        <div className="ml-4 mt-1 space-y-0.5 border-l-2 border-primary/40 w-full">
                                             {module.subItems.map((subItem) => {
                                                 const SubIconComponent = subItem.icon;
                                                 const subItemActive = isActive(subItem.path);
@@ -181,18 +175,14 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }
                                                         to={subItem.path}
                                                         className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-150 text-sm ml-2 w-full group relative ${
                                                             subItemActive 
-                                                                ? 'bg-activeEscuela/20 shadow-md border-l-4 border-activeEscuela' 
+                                                                ? 'border-l-4 border-white' 
                                                                 : 'hover:bg-primary/40'
                                                         }`}
                                                     >
                                                         {SubIconComponent && (
-                                                            <SubIconComponent className={`w-4 h-4 flex-shrink-0 transition-colors ${
-                                                                subItemActive ? 'text-activeEscuela' : 'text-white/70 group-hover:text-white/90'
-                                                            }`} />
+                                                            <SubIconComponent className="w-4 h-4 flex-shrink-0 transition-colors text-white/70 group-hover:text-white/90" />
                                                         )}
-                                                        <span className={`font-medium truncate transition-colors ${
-                                                            subItemActive ? 'text-activeEscuela-light font-semibold' : 'text-white/80 group-hover:text-white'
-                                                        }`}>{subItem.name}</span>
+                                                        <span className="font-medium truncate transition-colors text-white/80 group-hover:text-white">{subItem.name}</span>
                                                     </Link>
                                                 );
                                             })}
@@ -204,16 +194,12 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }
                                     to={module.path || '#'}
                                     className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group w-full relative ${
                                         isActive(module.path) 
-                                            ? 'bg-activeEscuela/20 shadow-md border-l-4 border-activeEscuela' 
+                                            ? 'border-l-4 border-white' 
                                             : 'hover:bg-primary/50'
                                     }`}
                                 >
-                                    <IconComponent className={`w-5 h-5 flex-shrink-0 transition-colors ${
-                                        isActive(module.path) ? 'text-activeEscuela' : 'text-white/90'
-                                    }`} />
-                                    <span className={`text-sm font-semibold truncate transition-colors ${
-                                        isActive(module.path) ? 'text-activeEscuela-light' : 'text-white'
-                                    }`}>{module.name}</span>
+                                    <IconComponent className="w-5 h-5 flex-shrink-0 transition-colors text-white/90" />
+                                    <span className="text-sm font-semibold truncate transition-colors text-white">{module.name}</span>
                                 </Link>
                             )}
                         </div>

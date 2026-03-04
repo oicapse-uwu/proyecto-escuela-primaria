@@ -152,7 +152,9 @@ const AlumnoDetallePage: React.FC = () => {
             setEditMode(false);
             await cargarDatos();
         } catch (error: any) {
-            toast.error(error?.response?.data?.message || 'Error al actualizar alumno');
+            const data = error?.response?.data;
+            const errMsg = typeof data === 'string' ? data : (data?.message || 'Error al actualizar alumno');
+            toast.error(errMsg);
         }
     };
 

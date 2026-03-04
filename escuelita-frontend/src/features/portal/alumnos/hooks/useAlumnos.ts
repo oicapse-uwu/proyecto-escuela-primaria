@@ -75,11 +75,17 @@ export const useAlumnos = (): UseAlumnosReturn => {
             const alumnoCreado = await crearAlumno(nuevoAlumno);
             setAlumnos(prev => [...prev, alumnoCreado]);
             setAlumno(alumnoCreado);
-        } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'Error al crear alumno';
+        } catch (err: any) {
+            let errorMessage = 'Error al crear alumno';
+            if (err.response?.data) {
+                // If the backend returned a plain string error
+                errorMessage = typeof err.response.data === 'string' ? err.response.data : (err.response.data.message || 'Error al crear alumno');
+            } else if (err instanceof Error) {
+                errorMessage = err.message;
+            }
             setError(errorMessage);
             console.error('Error al crear alumno:', err);
-            throw err;
+            throw new Error(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -95,11 +101,16 @@ export const useAlumnos = (): UseAlumnosReturn => {
                 prev.map(a => (a.idAlumno === alumnoModificado.idAlumno ? alumnoModificado : a))
             );
             setAlumno(alumnoModificado);
-        } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'Error al actualizar alumno';
+        } catch (err: any) {
+            let errorMessage = 'Error al actualizar alumno';
+            if (err.response?.data) {
+                errorMessage = typeof err.response.data === 'string' ? err.response.data : (err.response.data.message || 'Error al actualizar alumno');
+            } else if (err instanceof Error) {
+                errorMessage = err.message;
+            }
             setError(errorMessage);
             console.error('Error al actualizar alumno:', err);
-            throw err;
+            throw new Error(errorMessage);
         } finally {
             setLoading(false);
         }

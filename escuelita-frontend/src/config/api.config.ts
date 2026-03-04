@@ -94,6 +94,13 @@ export const API_ENDPOINTS = {
     REQUISITOS_DOCUMENTOS: '/restful/requisitosdocumentos',
     DOCUMENTOS_ALUMNO: '/restful/documentosalumno',
     CURSOS: '/restful/cursos',
+
+    // endpoints de infraestructura
+    ANIO_ESCOLAR: '/restful/anioescolar',
+    PERIODOS: '/restful/periodos',
+    GRADOS: '/restful/grados',
+    SECCIONES: '/restful/secciones',
+    AULAS: '/restful/aulas',
 };
 
 // Configuración adicional de la aplicación

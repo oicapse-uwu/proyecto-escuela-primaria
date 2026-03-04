@@ -9,6 +9,8 @@ import {
   UsuariosRoutes
 } from './features/backoffice';
 import AlumnosRoutes from './features/portal/alumnos/routes/AlumnosRoutes';
+import AlumnosRoutes from './features/portal/alumnos/routes/AlumnosRoutes';
+import InfraestructuraRoutes from './features/portal/infraestructura/routes/InfraestructuraRoutes';
 import ApoderadosRoutes from './features/portal/apoderados/routes/apoderados.routes';
 import MatriculasRoutes from './features/portal/matriculas/routes/matriculas.routes';
 import UsuariosPortalRoutes from './features/portal/usuarios/routes/UsuariosPortalRoutes';
@@ -63,9 +65,12 @@ function App() {
             
             {/* Módulos del Portal Escuela */}
             <Route path="alumnos/*" element={<AlumnosRoutes />} />
-            <Route path="configuracion/usuarios/*" element={<UsuariosPortalRoutes />} />
-            <Route path="apoderados/*" element={<ApoderadosRoutes />} />
-            <Route path="matriculas/*" element={<MatriculasRoutes />} />
+          {/* Módulos del Portal Escuela */}
+          <Route path="alumnos/*" element={<AlumnosRoutes />} />
+          <Route path="infraestructura/*" element={<InfraestructuraRoutes />} />
+          <Route path="configuracion/usuarios/*" element={<UsuariosPortalRoutes />} />
+          <Route path="apoderados/*" element={<ApoderadosRoutes />} />
+          <Route path="matriculas/*" element={<MatriculasRoutes />} />
             {/* <Route path="evaluaciones/*" element={<EvaluacionesRoutes />} /> */}
             {/* <Route path="pagos/*" element={<PagosRoutes />} /> */}
             {/* etc... */}

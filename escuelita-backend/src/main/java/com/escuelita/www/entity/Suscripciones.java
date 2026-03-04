@@ -27,7 +27,7 @@ import jakarta.persistence.Table;
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
     "idSuscripcion", "limiteAlumnosContratado", "limiteSedesContratadas", 
-    "precioAcordado", "fechaInicio", "fechaVencimiento",
+    "tipoDistribucionLimite", "precioAcordado", "fechaInicio", "fechaVencimiento",
     "idInstitucion", "idPlan", "idCiclo", "idEstado", "estado"
 })
 public class Suscripciones {
@@ -40,6 +40,8 @@ public class Suscripciones {
     private Integer limiteAlumnosContratado;
     @Column(name = "limite_sedes_contratadas")
     private Integer limiteSedesContratadas;
+    @Column(name = "tipo_distribucion_limite", length = 20)
+    private String tipoDistribucionLimite = "EQUITATIVA";
     @Column(name = "precio_acordado")
     private BigDecimal precioAcordado;
     @Column(name = "fecha_inicio")
@@ -92,6 +94,12 @@ public class Suscripciones {
     public void setLimiteSedesContratadas(Integer limiteSedesContratadas) {
         this.limiteSedesContratadas = limiteSedesContratadas;
     }
+    public String getTipoDistribucionLimite() {
+        return tipoDistribucionLimite;
+    }
+    public void setTipoDistribucionLimite(String tipoDistribucionLimite) {
+        this.tipoDistribucionLimite = tipoDistribucionLimite;
+    }
     public BigDecimal getPrecioAcordado() {
         return precioAcordado;
     }
@@ -143,7 +151,9 @@ public class Suscripciones {
     @Override
     public String toString() {
         return "Suscripciones [idSuscripcion=" + idSuscripcion + ", limiteAlumnosContratado=" + limiteAlumnosContratado
-                + ", limiteSedesContratadas=" + limiteSedesContratadas + ", precioAcordado=" + precioAcordado
+                + ", limiteSedesContratadas=" + limiteSedesContratadas 
+                + ", tipoDistribucionLimite=" + tipoDistribucionLimite
+                + ", precioAcordado=" + precioAcordado
                 + ", fechaInicio=" + fechaInicio + ", fechaVencimiento=" + fechaVencimiento 
                 + ", idInstitucion=" + idInstitucion + ", idPlan=" + idPlan + ", idCiclo=" 
                 + idCiclo + ", idEstado=" + idEstado + ", estado=" + estado + "]";

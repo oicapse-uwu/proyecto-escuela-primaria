@@ -1,5 +1,5 @@
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
-import type { Alumno, AlumnoDTO } from '../types';
+import type { Alumno, AlumnoDTO, Sede, TipoDocumento } from '../types';
 
 const ENDPOINT = API_ENDPOINTS.ALUMNOS;
 
@@ -35,5 +35,17 @@ export const actualizarAlumno = async (alumno: AlumnoDTO): Promise<Alumno> => {
 // Elimina un alumno por ID
 export const eliminarAlumno = async (id: number): Promise<string> => {
     const response = await api.delete<string>(`${ENDPOINT}/${id}`);
+    return response.data;
+};
+
+// Obtiene todas las sedes
+export const obtenerSedes = async (): Promise<Sede[]> => {
+    const response = await api.get<Sede[]>(API_ENDPOINTS.SEDES);
+    return response.data;
+};
+
+// Obtiene todos los tipos de documento
+export const obtenerTiposDocumento = async (): Promise<TipoDocumento[]> => {
+    const response = await api.get<TipoDocumento[]>(API_ENDPOINTS.TIPOS_DOCUMENTO);
     return response.data;
 };

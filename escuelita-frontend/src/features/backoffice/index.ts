@@ -3,7 +3,8 @@
 export * from './dashboard';
 export * from './instituciones';
 export * from './reportes';
-export * from './suscripciones';
+export * from './sedes';
 export * from './usuarios';
+export * from './suscripciones';
 
 // Agregar más features aquí según se vayan implementando

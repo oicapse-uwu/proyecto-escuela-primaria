@@ -18,7 +18,7 @@ export const obtenerInstitucionPorId = async (id: number): Promise<Institucion> 
 
 // Crear nueva institución
 export const crearInstitucion = async (institucion: InstitucionDTO): Promise<Institucion> => {
-    // Limpiar campos de fecha vacíos y NO enviar idInstitucion
+    // NO enviar idInstitucion en creación
     const dataToSend = {
         nombre: institucion.nombre,
         codModular: institucion.codModular,
@@ -26,10 +26,12 @@ export const crearInstitucion = async (institucion: InstitucionDTO): Promise<Ins
         resolucionCreacion: institucion.resolucionCreacion,
         nombreDirector: institucion.nombreDirector,
         logoPath: institucion.logoPath || null,
-        estadoSuscripcion: institucion.estadoSuscripcion,
-        fechaInicioSuscripcion: institucion.fechaInicioSuscripcion && institucion.fechaInicioSuscripcion.trim() !== '' ? institucion.fechaInicioSuscripcion : null,
-        fechaVencimientoLicencia: institucion.fechaVencimientoLicencia && institucion.fechaVencimientoLicencia.trim() !== '' ? institucion.fechaVencimientoLicencia : null,
-        planContratado: institucion.planContratado
+        ruc: institucion.ruc || null,
+        razonSocial: institucion.razonSocial || null,
+        domicilioFiscal: institucion.domicilioFiscal || null,
+        representanteLegal: institucion.representanteLegal || null,
+        correoFacturacion: institucion.correoFacturacion || null,
+        telefonoFacturacion: institucion.telefonoFacturacion || null
     };
     
     console.log('Datos a enviar al crear:', dataToSend);
@@ -40,7 +42,6 @@ export const crearInstitucion = async (institucion: InstitucionDTO): Promise<Ins
 
 // Actualizar institución existente
 export const actualizarInstitucion = async (institucion: InstitucionDTO): Promise<Institucion> => {
-    // Limpiar campos de fecha vacíos
     const dataToSend = {
         idInstitucion: institucion.idInstitucion,
         nombre: institucion.nombre,
@@ -49,10 +50,12 @@ export const actualizarInstitucion = async (institucion: InstitucionDTO): Promis
         resolucionCreacion: institucion.resolucionCreacion,
         nombreDirector: institucion.nombreDirector,
         logoPath: institucion.logoPath || null,
-        estadoSuscripcion: institucion.estadoSuscripcion,
-        fechaInicioSuscripcion: institucion.fechaInicioSuscripcion && institucion.fechaInicioSuscripcion.trim() !== '' ? institucion.fechaInicioSuscripcion : null,
-        fechaVencimientoLicencia: institucion.fechaVencimientoLicencia && institucion.fechaVencimientoLicencia.trim() !== '' ? institucion.fechaVencimientoLicencia : null,
-        planContratado: institucion.planContratado
+        ruc: institucion.ruc || null,
+        razonSocial: institucion.razonSocial || null,
+        domicilioFiscal: institucion.domicilioFiscal || null,
+        representanteLegal: institucion.representanteLegal || null,
+        correoFacturacion: institucion.correoFacturacion || null,
+        telefonoFacturacion: institucion.telefonoFacturacion || null
     };
     
     console.log('Datos a enviar al actualizar:', dataToSend);

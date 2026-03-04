@@ -3,25 +3,28 @@ package com.escuelita.www.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import org.springframework.http.ResponseEntity;
-
-import org.springframework.web.bind.annotation.*;
 
 import com.escuelita.www.entity.Modulos;
 import com.escuelita.www.entity.Permisos;
 import com.escuelita.www.entity.RolModuloPermiso;
 import com.escuelita.www.entity.RolModuloPermisoDTO;
 import com.escuelita.www.entity.Roles;
-
 import com.escuelita.www.repository.ModulosRepository;
 import com.escuelita.www.repository.PermisosRepository;
 import com.escuelita.www.repository.RolesRepository;
-
+import com.escuelita.www.repository.UsuariosRepository;
 import com.escuelita.www.service.IRolModuloPermisoService;
 
 @RestController
@@ -36,10 +39,27 @@ public class RolModuloPermisoController {
     private ModulosRepository repoModulos;
     @Autowired
     private PermisosRepository repoPermisos;
+    @Autowired
+    private UsuariosRepository repoUsuarios;
 
     @GetMapping("/rolmodulopermiso")
     public List<RolModuloPermiso> buscarTodos() {
         return serviceRmp.buscarTodos();
+    }
+    @GetMapping("/rolmodulopermiso/sede/{idSede}")
+    public List<RolModuloPermiso> buscarPorSede(@PathVariable Long idSede) {
+        List<Long> roleIds = repoUsuarios.findByIdSedeIdSede(idSede).stream()
+            .map(usuario -> usuario.getIdRol())
+            .filter(rol -> rol != null)
+            .map(rol -> rol.getIdRol())
+            .distinct()
+            .collect(Collectors.toList());
+
+        if (roleIds.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+
+        return serviceRmp.buscarPorRoles(roleIds);
     }
     @PostMapping("/rolmodulopermiso")
     public ResponseEntity<?> guardar(@RequestBody RolModuloPermisoDTO dto) {

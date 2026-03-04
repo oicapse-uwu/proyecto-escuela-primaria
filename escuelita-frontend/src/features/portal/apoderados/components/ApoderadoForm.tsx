@@ -1,0 +1,318 @@
+import { Briefcase, FileText, IdCard, Mail, Phone, User } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
+import type { Apoderado, ApoderadoFormData, TipoDocumento } from '../types';
+
+interface ApoderadoFormProps {
+    apoderado?: Apoderado | null;
+    tiposDocumento: TipoDocumento[];
+    onSubmit: (data: ApoderadoFormData) => Promise<void>;
+    onCancel: () => void;
+    isLoading?: boolean;
+}
+
+const ApoderadoForm: React.FC<ApoderadoFormProps> = ({ 
+    apoderado, 
+    tiposDocumento,
+    onSubmit, 
+    onCancel, 
+    isLoading = false 
+}) => {
+    const [documentoError, setDocumentoError] = useState<string>('');
+    const [formData, setFormData] = useState<ApoderadoFormData>({
+        idSede: 0,
+        idTipoDoc: 0,
+        numeroDocumento: '',
+        nombres: '',
+        apellidos: '',
+        telefonoPrincipal: '',
+        correo: '',
+        lugarTrabajo: ''
+    });
+
+    const tipoDocumentoSeleccionado = useMemo(
+        () => tiposDocumento.find(t => t.idDocumento === formData.idTipoDoc),
+        [tiposDocumento, formData.idTipoDoc]
+    );
+
+    const requiereSoloNumeros = useMemo(() => {
+        const abrev = (tipoDocumentoSeleccionado?.abreviatura || '').toUpperCase();
+        return abrev === 'DNI' || abrev === 'RUC';
+    }, [tipoDocumentoSeleccionado]);
+
+    const validarDocumento = (numero: string, idTipo: number): string => {
+        if (!idTipo || !numero) return '';
+        const tipo = tiposDocumento.find(t => t.idDocumento === idTipo);
+        if (!tipo || !tipo.longitudMaxima) return '';
+        const abrev = (tipo.abreviatura || '').toUpperCase();
+        if (tipo.eslongitudExacta === 1 && numero.length !== tipo.longitudMaxima)
+            return `Debe tener exactamente ${tipo.longitudMaxima} caracteres.`;
+        if (tipo.eslongitudExacta !== 1 && numero.length > tipo.longitudMaxima)
+            return `No debe superar ${tipo.longitudMaxima} caracteres.`;
+        if (abrev === 'DNI' && !/^\d{8}$/.test(numero))
+            return 'El DNI debe contener exactamente 8 dígitos numéricos.';
+        if (abrev === 'RUC' && !/^\d{11}$/.test(numero))
+            return 'El RUC debe contener exactamente 11 dígitos numéricos.';
+        return '';
+    };
+
+    useEffect(() => {
+        if (apoderado) {
+            setFormData({
+                idApoderado: apoderado.idApoderado,
+                idSede: apoderado.idSede.idSede,
+                idTipoDoc: apoderado.idTipoDoc.idDocumento,
+                numeroDocumento: apoderado.numeroDocumento,
+                nombres: apoderado.nombres,
+                apellidos: apoderado.apellidos,
+                telefonoPrincipal: apoderado.telefonoPrincipal,
+                correo: apoderado.correo || '',
+                lugarTrabajo: apoderado.lugarTrabajo || ''
+            });
+        }
+    }, [apoderado]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        if (name === 'idTipoDoc') {
+            const num = Number(value);
+            setFormData(prev => ({ ...prev, idTipoDoc: num, numeroDocumento: '' }));
+            setDocumentoError('');
+            return;
+        }
+        const valorProcesado =
+            (name === 'numeroDocumento' && requiereSoloNumeros) || name === 'telefonoPrincipal'
+                ? value.replace(/\D/g, '')
+                : value;
+        setFormData(prev => ({ ...prev, [name]: valorProcesado }));
+        if (name === 'numeroDocumento') {
+            setDocumentoError(validarDocumento(valorProcesado, formData.idTipoDoc));
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        // Validaciones
+        if (!formData.idTipoDoc || formData.idTipoDoc === 0) {
+            toast.error('Debe seleccionar un tipo de documento');
+            return;
+        }
+        if (!formData.numeroDocumento.trim()) {
+            toast.error('El número de documento es obligatorio');
+            return;
+        }
+        const errDoc = validarDocumento(formData.numeroDocumento, formData.idTipoDoc);
+        if (errDoc) {
+            setDocumentoError(errDoc);
+            toast.error(errDoc);
+            return;
+        }
+        if (!formData.nombres.trim()) {
+            toast.error('El nombre es obligatorio');
+            return;
+        }
+        if (!formData.apellidos.trim()) {
+            toast.error('Los apellidos son obligatorios');
+            return;
+        }
+        if (!formData.telefonoPrincipal.trim()) {
+            toast.error('El teléfono principal es obligatorio');
+            return;
+        }
+        
+        // Validar formato de correo si se proporciona
+        if (formData.correo && formData.correo.trim() !== '') {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(formData.correo)) {
+                toast.error('El formato del correo electrónico no es válido');
+                return;
+            }
+        }
+        
+        try {
+            await onSubmit({
+                ...formData,
+                idSede: Number(formData.idSede),
+                idTipoDoc: Number(formData.idTipoDoc)
+            });
+        } catch (error) {
+            console.error('Error en handleSubmit:', error);
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+            {/* Información Básica */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                {/* Tipo de Documento */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <FileText className="inline w-4 h-4 mr-1" />
+                        Tipo de Documento <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                        name="idTipoDoc"
+                        value={formData.idTipoDoc}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                    >
+                        <option value={0}>Seleccione tipo</option>
+                        {tiposDocumento.map(tipo => (
+                            <option key={tipo.idDocumento} value={tipo.idDocumento}>
+                                {tipo.descripcion}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Número de Documento */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <IdCard className="inline w-4 h-4 mr-1" />
+                        Número de Documento <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        name="numeroDocumento"
+                        value={formData.numeroDocumento}
+                        onChange={handleChange}
+                        inputMode={requiereSoloNumeros ? 'numeric' : 'text'}
+                        maxLength={tipoDocumentoSeleccionado?.longitudMaxima ?? 20}
+                        disabled={!formData.idTipoDoc}
+                        className={`w-full px-3 py-2.5 text-base border rounded-lg focus:ring-2 transition-colors ${
+                            documentoError
+                                ? 'border-red-500 focus:ring-red-500 bg-red-50'
+                                : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                        } ${!formData.idTipoDoc ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                        placeholder={tipoDocumentoSeleccionado ? `Ej: ${'0'.repeat(tipoDocumentoSeleccionado.longitudMaxima ?? 8)}` : 'Seleccione tipo primero'}
+                        required
+                    />
+                    {tipoDocumentoSeleccionado?.longitudMaxima && (
+                        <p className={`mt-1 text-xs ${documentoError ? 'text-red-600' : 'text-gray-500'}`}>
+                            {tipoDocumentoSeleccionado.eslongitudExacta === 1
+                                ? `Exactamente ${tipoDocumentoSeleccionado.longitudMaxima} caracteres`
+                                : `Máximo ${tipoDocumentoSeleccionado.longitudMaxima} caracteres`}
+                            {requiereSoloNumeros ? ' · Solo números' : ''}
+                        </p>
+                    )}
+                    {documentoError && <p className="mt-1 text-xs text-red-600">{documentoError}</p>}
+                </div>
+
+                {/* Nombres */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <User className="inline w-4 h-4 mr-1" />
+                        Nombres <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        name="nombres"
+                        value={formData.nombres}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Ej: Juan Carlos"
+                        maxLength={100}
+                        required
+                    />
+                </div>
+
+                {/* Apellidos */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <User className="inline w-4 h-4 mr-1" />
+                        Apellidos <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        name="apellidos"
+                        value={formData.apellidos}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Ej: García López"
+                        maxLength={100}
+                        required
+                    />
+                </div>
+
+                {/* Teléfono Principal */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <Phone className="inline w-4 h-4 mr-1" />
+                        Teléfono Principal <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="tel"
+                        name="telefonoPrincipal"
+                        value={formData.telefonoPrincipal}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Ej: 987654321"
+                        inputMode="numeric"
+                        maxLength={9}
+                        required
+                    />
+                </div>
+
+                {/* Correo Electrónico */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <Mail className="inline w-4 h-4 mr-1" />
+                        Correo Electrónico
+                    </label>
+                    <input
+                        type="email"
+                        name="correo"
+                        value={formData.correo}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="ejemplo@correo.com"
+                        maxLength={100}
+                    />
+                </div>
+
+                {/* Lugar de Trabajo */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <Briefcase className="inline w-4 h-4 mr-1" />
+                        Lugar de Trabajo
+                    </label>
+                    <input
+                        type="text"
+                        name="lugarTrabajo"
+                        value={formData.lugarTrabajo}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Ej: Empresa ABC"
+                        maxLength={100}
+                    />
+                </div>
+            </div>
+
+            {/* Botones de Acción */}
+            <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4 border-t">
+                <button
+                    type="button"
+                    onClick={onCancel}
+                    className="w-full sm:w-auto px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 
+                             transition-colors duration-200 font-medium order-2 sm:order-1"
+                    disabled={isLoading}
+                >
+                    Cancelar
+                </button>
+                <button
+                    type="submit"
+                    className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
+                             transition-colors duration-200 font-medium disabled:opacity-50 
+                             disabled:cursor-not-allowed order-1 sm:order-2"
+                    disabled={isLoading}
+                >
+                    {isLoading ? 'Guardando...' : apoderado ? 'Actualizar' : 'Crear'}
+                </button>
+            </div>
+        </form>
+    );
+};
+
+export default ApoderadoForm;

@@ -40,7 +40,7 @@ const EscuelaLayout: React.FC = () => {
             
             {/* Main Content Area */}
             <main 
-                className={`flex-1 mt-16 lg:mt-[4.5rem] transition-all duration-300 ${
+                className={`flex-1 min-w-0 overflow-x-hidden mt-16 lg:mt-[4.5rem] transition-all duration-300 ${
                     sidebarOpen ? 'lg:ml-72' : 'lg:ml-0'
                 }`}
             >

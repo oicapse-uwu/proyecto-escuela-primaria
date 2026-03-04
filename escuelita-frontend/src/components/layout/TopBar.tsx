@@ -1,5 +1,5 @@
 import { Bell, Building2, ChevronDown, LogOut, Menu, User } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { adminAuthService } from '../../services/adminAuth.service';
 import { escuelaAuthService } from '../../services/escuelaAuth.service';
@@ -12,6 +12,7 @@ const TopBar: React.FC<TopBarProps> = ({ onToggleSidebar }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [showDropdown, setShowDropdown] = useState(false);
+    const [, forceUpdate] = useState(0);
     
     // Determinar si es ruta de admin o escuela
     const isAdminRoute = location.pathname.startsWith('/admin');
@@ -20,6 +21,13 @@ const TopBar: React.FC<TopBarProps> = ({ onToggleSidebar }) => {
     const user = isAdminRoute 
         ? adminAuthService.getCurrentUser()
         : escuelaAuthService.getCurrentUser();
+
+    // Escuchar cambios en el usuario admin (ej: foto de perfil)
+    useEffect(() => {
+        const handler = () => forceUpdate(n => n + 1);
+        window.addEventListener('adminUserUpdated', handler);
+        return () => window.removeEventListener('adminUserUpdated', handler);
+    }, []);
 
     const handleLogout = () => {
         if (isAdminRoute) {
@@ -70,8 +78,22 @@ const TopBar: React.FC<TopBarProps> = ({ onToggleSidebar }) => {
                                     onClick={() => setShowDropdown(!showDropdown)}
                                     className="flex items-center space-x-2 lg:space-x-3 px-2 lg:px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
                                 >
-                                    <div className="w-8 h-8 lg:w-10 lg:h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                                        <User className="w-4 h-4 lg:w-5 lg:h-5 text-primary" />
+                                    <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-full overflow-hidden flex-shrink-0 bg-primary/10 flex items-center justify-center">
+                                        {(user as any).fotoUrl ? (
+                                            <img
+                                                src={`${import.meta.env.VITE_API_BASE_URL || 'http://primaria.spring.informaticapp.com:4040'}${(user as any).fotoUrl}`}
+                                                alt="Avatar"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (user as any).fotoPerfil ? (
+                                            <img
+                                                src={`${import.meta.env.VITE_API_BASE_URL || 'http://primaria.spring.informaticapp.com:4040'}${(user as any).fotoPerfil}`}
+                                                alt="Avatar"
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <User className="w-4 h-4 lg:w-5 lg:h-5 text-primary" />
+                                        )}
                                     </div>
                                     <div className="text-left hidden md:block">
                                         <p className="text-sm font-semibold text-gray-900">

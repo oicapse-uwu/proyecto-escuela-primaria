@@ -21,8 +21,9 @@ public interface RolModuloPermisoRepository extends JpaRepository<RolModuloPermi
 	@Query("SELECT rmp FROM RolModuloPermiso rmp WHERE rmp.idRol.idRol = :idRol ORDER BY rmp.idModulo.orden ASC")
 	List<RolModuloPermiso> findByIdRolOrdenado(@Param("idRol") Long idRol);
 	
-	// Obtener solo asignaciones ACTIVAS (estado=1)
-	@Query("SELECT rmp FROM RolModuloPermiso rmp WHERE rmp.idRol.idRol = :idRol AND rmp.estado = 1 ORDER BY rmp.idModulo.orden ASC")
+	// Obtener TODAS las asignaciones (activas e inactivas) ordenadas por módulo
+	// IMPORTANTE: No filtramos por estado=1 porque necesitamos desactivar los inactivos también
+	@Query("SELECT rmp FROM RolModuloPermiso rmp WHERE rmp.idRol.idRol = :idRol ORDER BY rmp.idModulo.orden ASC")
 	List<RolModuloPermiso> findByIdRolActivos(@Param("idRol") Long idRol);
 	
 	// Búsqueda para detectar combinaciones duplicadas (rol-módulo-permiso)

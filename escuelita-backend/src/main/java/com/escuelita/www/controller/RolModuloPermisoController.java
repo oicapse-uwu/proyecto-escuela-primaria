@@ -147,12 +147,16 @@ public class RolModuloPermisoController {
         List<Modulos> modulos = repoModulos.findAll();
         System.out.println("📊 Total módulos en BD: " + modulos.size());
         
-        // Obtener SOLO las asignaciones ACTIVAS (estado=1)
+        // Obtener TODAS las asignaciones (activas e inactivas) para mostrar el estado actual
         List<RolModuloPermiso> asignaciones = repoRolModuloPermiso.findByIdRolActivos(idRol);
-        System.out.println("🔍 Asignaciones ACTIVAS encontradas para rol " + idRol + ": " + asignaciones.size());
+        // Filtrar solo las activas (estado=1) para mostrar
+        List<RolModuloPermiso> asignacionesActivas = asignaciones.stream()
+            .filter(a -> a.getEstado() == 1)
+            .collect(java.util.stream.Collectors.toList());
+        System.out.println("🔍 Asignaciones ACTIVAS encontradas para rol " + idRol + ": " + asignacionesActivas.size() + " (Total registros: " + asignaciones.size() + ")");
         
         // Imprimir cada asignación activa encontrada
-        for (RolModuloPermiso rmp : asignaciones) {
+        for (RolModuloPermiso rmp : asignacionesActivas) {
             System.out.println("  ✓ Módulo " + rmp.getIdModulo().getNombre() + " -> Permiso " + rmp.getIdPermiso().getNombre());
         }
 
@@ -237,15 +241,18 @@ public class RolModuloPermisoController {
             Roles rol = rolOpt.get();
             System.out.println("✓ Rol encontrado: " + rol.getNombre());
             
-            System.out.println("\n🔄 PASO 1: Desactivando asignaciones ACTIVAS...");
+            System.out.println("\n🔄 PASO 1: Buscar TODAS las asignaciones previas (activas e inactivas)...");
             List<RolModuloPermiso> asignacionesActuales = repoRolModuloPermiso.findByIdRolActivos(idRol);
-            System.out.println("📊 Encontradas: " + asignacionesActuales.size());
+            System.out.println("📊 Encontradas: " + asignacionesActuales.size() + " registros (se desactivarán todos)");
             
+            // SOFT DELETE: Marcar TODAS como inactivas (incluyendo las que ya lo son)
             for (RolModuloPermiso rmp : asignacionesActuales) {
-                rmp.setEstado(0);
-                serviceRmp.modificar(rmp);
+                if (rmp.getEstado() == 1) {
+                    rmp.setEstado(0);
+                    serviceRmp.modificar(rmp);
+                }
             }
-            System.out.println("✅ Desactivadas");
+            System.out.println("✅ Desactivadas (ahora se puede reinsertar sin conflictos duplicados)");
 
             int totalAsignacionesCreadas = 0;
             int totalReactivados = 0;

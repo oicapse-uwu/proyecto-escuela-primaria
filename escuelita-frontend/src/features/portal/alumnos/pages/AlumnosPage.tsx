@@ -159,9 +159,10 @@ const AlumnosPage: React.FC = () => {
             }
             setShowModal(false);
             setAlumnoEditar(null);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error al guardar alumno:', error);
-            toast.error(alumnoEditar ? 'Error al actualizar alumno' : 'Error al crear alumno');
+            const errorMessage = error.message || (alumnoEditar ? 'Error al actualizar alumno' : 'Error al crear alumno');
+            toast.error(errorMessage);
         }
     };
 

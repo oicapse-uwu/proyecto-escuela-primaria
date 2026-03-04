@@ -213,29 +213,23 @@ public class RolModuloPermisoController {
         }
 
         try {
-            System.out.println("🔄 PASO 1: Limpiando registros con estado=0 (hard delete para no bloquear constraint)...");
-            // Eliminar FÍSICAMENTE los registros borrados lógicamente (estado=0)
-            // para no bloquear el constraint UNIQUE al insertar nuevos
-            repoRolModuloPermiso.deleteByIdRol_IdRolAndEstadoCero(idRol);
-            System.out.println("✅ Registros borrados lógicamente limpiados");
-
-            System.out.println("🔄 PASO 2: Marcando asignaciones ACTIVAS como eliminadas (soft delete)...");
-            // PASO 2: Obtener SOLO asignaciones ACTIVAS (estado=1)
+            System.out.println("🔄 PASO 1: Soft delete de asignaciones ACTIVAS (estado=1)...");
+            // Solo obtener y marcar como eliminadas las asignaciones ACTIVAS
             List<RolModuloPermiso> asignacionesActuales = repoRolModuloPermiso.findByIdRolActivos(idRol);
             System.out.println("📊 Asignaciones ACTIVAS encontradas: " + asignacionesActuales.size());
             
-            // Soft delete - marcar como estado=0
             for (RolModuloPermiso rmp : asignacionesActuales) {
-                rmp.setEstado(0);  
+                rmp.setEstado(0);
                 serviceRmp.modificar(rmp);
             }
-            System.out.println("✅ Asignaciones activas marcadas como eliminadas");
+            System.out.println("✅ Soft delete de asignaciones activas completado");
 
-            // PASO 3: Crear nuevas asignaciones basadas en la solicitud
+            // PASO 2: Crear nuevas asignaciones basadas en la solicitud
             Roles rol = rolOpt.get();
             System.out.println("✅ Creando nuevas asignaciones. Módulos a procesar: " + dto.getModulos().size());
             
             int totalAsignacionesCreadas = 0;
+            int totalReactivados = 0;
             
             for (ModuloPermisosActualizarDTO moduloDTO : dto.getModulos()) {
                 if (moduloDTO.getIdModulo() == null || moduloDTO.getIdPermisos() == null) {
@@ -259,19 +253,34 @@ public class RolModuloPermisoController {
                         continue;
                     }
 
-                    RolModuloPermiso rmp = new RolModuloPermiso();
-                    rmp.setIdRol(rol);
-                    rmp.setIdModulo(modulo);
-                    rmp.setIdPermiso(permisoOpt.get());
-                    rmp.setEstado(1);
-                    serviceRmp.guardar(rmp);
-                    System.out.println("✨ Nuevo: rol=" + idRol + ", mod=" + moduloDTO.getIdModulo() + ", perm=" + idPermiso);
-                    totalAsignacionesCreadas++;
+                    // Buscar si ya existe (activo o eliminado)
+                    List<RolModuloPermiso> existentes = repoRolModuloPermiso
+                        .findByIdRol_IdRolAndIdModulo_IdModuloAndIdPermiso_IdPermiso(
+                            idRol, moduloDTO.getIdModulo(), idPermiso);
+                    
+                    if (!existentes.isEmpty()) {
+                        // Existe, reactivarlo (estado=0 → estado=1)
+                        RolModuloPermiso existente = existentes.get(0);
+                        existente.setEstado(1);
+                        serviceRmp.modificar(existente);
+                        System.out.println("♻️ Reactivado: rol=" + idRol + ", mod=" + moduloDTO.getIdModulo() + ", perm=" + idPermiso);
+                        totalReactivados++;
+                    } else {
+                        // No existe, crear nuevo
+                        RolModuloPermiso rmp = new RolModuloPermiso();
+                        rmp.setIdRol(rol);
+                        rmp.setIdModulo(modulo);
+                        rmp.setIdPermiso(permisoOpt.get());
+                        rmp.setEstado(1);
+                        serviceRmp.guardar(rmp);
+                        System.out.println("✨ Nuevo: rol=" + idRol + ", mod=" + moduloDTO.getIdModulo() + ", perm=" + idPermiso);
+                        totalAsignacionesCreadas++;
+                    }
                 }
             }
 
-            System.out.println("✅ Actualización completada. Total asignaciones nuevas: " + totalAsignacionesCreadas);
-            return ResponseEntity.ok("{\"mensaje\": \"Matriz del rol actualizada correctamente\", \"actualizadas\": " + totalAsignacionesCreadas + "}");
+            System.out.println("✅ Actualización completada. Nuevos: " + totalAsignacionesCreadas + ", Reactivados: " + totalReactivados);
+            return ResponseEntity.ok("{\"mensaje\": \"Matriz del rol actualizada correctamente\", \"nuevos\": " + totalAsignacionesCreadas + ", \"reactivados\": " + totalReactivados + "}");
         } catch (Exception e) {
             System.err.println("❌ Error al actualizar matriz: " + e.getMessage());
             e.printStackTrace();

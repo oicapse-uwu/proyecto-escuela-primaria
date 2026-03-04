@@ -28,10 +28,4 @@ public interface RolModuloPermisoRepository extends JpaRepository<RolModuloPermi
 	// Búsqueda para detectar combinaciones duplicadas (rol-módulo-permiso)
 	List<RolModuloPermiso> findByIdRol_IdRolAndIdModulo_IdModuloAndIdPermiso_IdPermiso(
 		Long idRol, Long idModulo, Long idPermiso);
-	
-	// Hard delete de registros borrados lógicamente (estado=0) para limpiar constraint UNIQUE
-	@Modifying
-	@Transactional
-	@Query(value = "DELETE FROM rol_modulo_permiso WHERE id_rol = :idRol AND estado = 0", nativeQuery = true)
-	void deleteByIdRol_IdRolAndEstadoCero(@Param("idRol") Long idRol);
 }

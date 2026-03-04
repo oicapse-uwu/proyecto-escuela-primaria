@@ -30,4 +30,18 @@ public interface RolModuloPermisoRepository extends JpaRepository<RolModuloPermi
 	@Query(value = "SELECT * FROM rol_modulo_permiso WHERE id_rol = :idRol AND id_modulo = :idModulo AND id_permiso = :idPermiso", nativeQuery = true)
 	List<RolModuloPermiso> findByIdRol_IdRolAndIdModulo_IdModuloAndIdPermiso_IdPermiso(
 		@Param("idRol") Long idRol, @Param("idModulo") Long idModulo, @Param("idPermiso") Long idPermiso);
+
+	// ✅ VALIDACIÓN DE PERMISOS EN BACKEND
+	// Usado por @RequierePermiso annotation
+	// Verifica si un rol tiene un permiso específico en un módulo
+	@Query(value = "SELECT COUNT(*) > 0 FROM rol_modulo_permiso rmp " +
+		"INNER JOIN modulos m ON rmp.id_modulo = m.id_modulo " +
+		"INNER JOIN permisos p ON rmp.id_permiso = p.id_permiso " +
+		"WHERE rmp.id_rol = :idRol AND m.id_modulo = :idModulo AND p.codigo = :codigo AND rmp.estado = :estado",
+		nativeQuery = true)
+	boolean existsByIdRol_IdRolAndIdModulo_IdModuloAndIdPermiso_CodigoAndEstado(
+		@Param("idRol") Integer idRol, 
+		@Param("idModulo") Integer idModulo, 
+		@Param("codigo") String codigo,
+		@Param("estado") Integer estado);
 }

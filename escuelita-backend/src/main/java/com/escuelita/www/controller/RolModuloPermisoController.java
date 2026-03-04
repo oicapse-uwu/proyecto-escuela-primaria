@@ -195,116 +195,129 @@ public class RolModuloPermisoController {
      */
     @PostMapping("/roles/{idRol}/matriz-completa")
     public ResponseEntity<?> actualizarMatrizCompleta(@PathVariable Long idRol, 
-                                                      @RequestBody ActualizarMatrizRolDTO dto) {
-        System.out.println("📥 Recibiendo actualización de matriz para rol: " + idRol);
-        System.out.println("📦 DTO recibido: " + (dto != null ? "presente" : "nulo"));
+                                                      @RequestBody(required = false) ActualizarMatrizRolDTO dto) {
+        System.out.println("\n========== ACTUALIZAR MATRIZ COMPLETA ==========");
+        System.out.println("📥 Rol ID: " + idRol);
+        System.out.println("📦 DTO: " + (dto != null ? "Presente" : "NULO"));
         
         if (dto == null) {
+            System.out.println("❌ ERROR: DTO es nulo");
             return ResponseEntity.badRequest().body("Error: DTO es nulo");
         }
         
+        System.out.println("📋 Módulos en DTO: " + (dto.getModulos() != null ? dto.getModulos().size() : "NULL"));
+        
         if (dto.getModulos() == null || dto.getModulos().isEmpty()) {
-            // Es válido que no haya módulos seleccionados (se eliminan todos)
-            System.out.println("⚠️ Lista de módulos vacía o nula - se desasignarán todos los permisos");
+            System.out.println("⚠️ Sin módulos - se desasignarán todos los permisos");
         }
 
         Optional<Roles> rolOpt = repoRoles.findById(idRol);
         if (rolOpt.isEmpty()) {
+            System.out.println("❌ Rol no encontrado: " + idRol);
             return ResponseEntity.badRequest().body("Error: Rol no encontrado con ID: " + idRol);
         }
 
         try {
-            System.out.println("🔄 PASO 1: Soft delete de asignaciones ACTIVAS (estado=1)...");
+            Roles rol = rolOpt.get();
+            System.out.println("✓ Rol encontrado: " + rol.getNombre());
+            
+            System.out.println("\n🔄 PASO 1: Desactivando asignaciones ACTIVAS...");
             List<RolModuloPermiso> asignacionesActuales = repoRolModuloPermiso.findByIdRolActivos(idRol);
-            System.out.println("📊 Asignaciones ACTIVAS encontradas: " + asignacionesActuales.size());
+            System.out.println("📊 Encontradas: " + asignacionesActuales.size());
             
             for (RolModuloPermiso rmp : asignacionesActuales) {
                 rmp.setEstado(0);
                 serviceRmp.modificar(rmp);
-                System.out.println("  ❌ Desactivado: rol=" + idRol + ", mod=" + rmp.getIdModulo().getIdModulo() + ", perm=" + rmp.getIdPermiso().getIdPermiso());
             }
-            System.out.println("✅ Soft delete de asignaciones activas completado");
+            System.out.println("✅ Desactivadas");
 
-            // PASO 2: Crear nuevas asignaciones basadas en la solicitud
-            Roles rol = rolOpt.get();
             int totalAsignacionesCreadas = 0;
             int totalReactivados = 0;
             
             if (dto.getModulos() != null && !dto.getModulos().isEmpty()) {
-                System.out.println("✅ Creando nuevas asignaciones. Módulos a procesar: " + dto.getModulos().size());
+                System.out.println("\n🔄 PASO 2: Procesando " + dto.getModulos().size() + " módulos...");
                 
                 for (ModuloPermisosActualizarDTO moduloDTO : dto.getModulos()) {
-                    if (moduloDTO.getIdModulo() == null || moduloDTO.getIdPermisos() == null) {
-                        System.out.println("⚠️ Módulo o permisos nulos, saltando...");
+                    if (moduloDTO == null || moduloDTO.getIdModulo() == null) {
+                        System.out.println("  ⚠️ ModuloDTO nulo, saltando");
                         continue;
                     }
                     
-                    if (moduloDTO.getIdPermisos().isEmpty()) {
-                        System.out.println("⚠️ Sin permisos para módulo " + moduloDTO.getIdModulo() + ", saltando...");
+                    Long idModulo = moduloDTO.getIdModulo();
+                    List<Long> idPermisos = moduloDTO.getIdPermisos();
+                    
+                    if (idPermisos == null || idPermisos.isEmpty()) {
+                        System.out.println("  ⚠️ Módulo " + idModulo + " sin permisos, saltando");
                         continue;
                     }
                     
-                    Optional<Modulos> moduloOpt = repoModulos.findById(moduloDTO.getIdModulo());
+                    Optional<Modulos> moduloOpt = repoModulos.findById(idModulo);
                     if (moduloOpt.isEmpty()) {
-                        System.out.println("⚠️ Módulo no encontrado: " + moduloDTO.getIdModulo());
+                        System.out.println("  ❌ Módulo no existe: " + idModulo);
                         continue;
                     }
 
                     Modulos modulo = moduloOpt.get();
-                    System.out.println("📝 Procesando módulo: " + modulo.getNombre() + " (" + moduloDTO.getIdModulo() + ") con " + moduloDTO.getIdPermisos().size() + " permisos");
+                    System.out.println("  📍 " + modulo.getNombre() + " (" + idPermisos.size() + " permisos)");
                     
-                    for (Long idPermiso : moduloDTO.getIdPermisos()) {
-                        Optional<Permisos> permisoOpt = repoPermisos.findById(idPermiso);
-                        if (permisoOpt.isEmpty()) {
-                            System.out.println("⚠️ Permiso no encontrado: " + idPermiso);
-                            continue;
-                        }
-
-                        // Verificar si ya existe (incluyendo inactivos)
-                        List<RolModuloPermiso> existentes = repoRolModuloPermiso
-                            .findByIdRol_IdRolAndIdModulo_IdModuloAndIdPermiso_IdPermiso(
-                                idRol, moduloDTO.getIdModulo(), idPermiso);
-                        
-                        if (!existentes.isEmpty()) {
-                            // Reactivar si estaba inactivo
-                            RolModuloPermiso existente = existentes.get(0);
-                            if (existente.getEstado() == 0) {
-                                existente.setEstado(1);
-                                serviceRmp.modificar(existente);
-                                System.out.println("♻️ Reactivado: rol=" + idRol + ", mod=" + moduloDTO.getIdModulo() + ", perm=" + idPermiso);
-                                totalReactivados++;
-                            } else {
-                                // Ya estaba activo, no hacer nada
-                                System.out.println("⏸️ Ya estaba activo: rol=" + idRol + ", mod=" + moduloDTO.getIdModulo() + ", perm=" + idPermiso);
+                    for (Long idPermiso : idPermisos) {
+                        try {
+                            Optional<Permisos> permisoOpt = repoPermisos.findById(idPermiso);
+                            if (permisoOpt.isEmpty()) {
+                                System.out.println("    ⚠️ Permiso no existe: " + idPermiso);
+                                continue;
                             }
-                        } else {
-                            // Crear nuevo
-                            RolModuloPermiso rmp = new RolModuloPermiso();
-                            rmp.setIdRol(rol);
-                            rmp.setIdModulo(modulo);
-                            rmp.setIdPermiso(permisoOpt.get());
-                            rmp.setEstado(1);
-                            serviceRmp.guardar(rmp);
-                            System.out.println("✨ Nuevo: rol=" + idRol + ", mod=" + moduloDTO.getIdModulo() + ", perm=" + idPermiso);
-                            totalAsignacionesCreadas++;
+
+                            List<RolModuloPermiso> existentes = repoRolModuloPermiso
+                                .findByIdRol_IdRolAndIdModulo_IdModuloAndIdPermiso_IdPermiso(
+                                    idRol, idModulo, idPermiso);
+                            
+                            if (!existentes.isEmpty()) {
+                                RolModuloPermiso existente = existentes.get(0);
+                                if (existente.getEstado() == 0) {
+                                    existente.setEstado(1);
+                                    serviceRmp.modificar(existente);
+                                    totalReactivados++;
+                                }
+                            } else {
+                                RolModuloPermiso rmp = new RolModuloPermiso();
+                                rmp.setIdRol(rol);
+                                rmp.setIdModulo(modulo);
+                                rmp.setIdPermiso(permisoOpt.get());
+                                rmp.setEstado(1);
+                                serviceRmp.guardar(rmp);
+                                totalAsignacionesCreadas++;
+                            }
+                        } catch (Exception e) {
+                            System.out.println("    ❌ Error con permiso " + idPermiso + ": " + e.getMessage());
                         }
                     }
                 }
             }
 
-            System.out.println("✅ Actualización completada. Nuevos: " + totalAsignacionesCreadas + ", Reactivados: " + totalReactivados);
+            System.out.println("\n✅ ÉXITO: " + totalAsignacionesCreadas + " nuevos, " + totalReactivados + " reactivados");
             
-            // Retornar un Map en lugar de String JSON para que Axios lo parsee correctamente
             Map<String, Object> respuesta = new java.util.HashMap<>();
-            respuesta.put("mensaje", "Matriz del rol actualizada correctamente");
+            respuesta.put("mensaje", "Matriz actualizada");
             respuesta.put("nuevos", totalAsignacionesCreadas);
             respuesta.put("reactivados", totalReactivados);
             
+            System.out.println("=============================================\n");
             return ResponseEntity.ok(respuesta);
+            
         } catch (Exception e) {
-            System.err.println("❌ Error al actualizar matriz: " + e.getMessage());
+            System.err.println("\n❌ ERROR EN ACTUALIZACIÓN");
+            System.err.println("Tipo: " + e.getClass().getSimpleName());
+            System.err.println("Mensaje: " + e.getMessage());
+            if (e.getCause() != null) {
+                System.err.println("Causa: " + e.getCause().getMessage());
+            }
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Error interno: " + e.getClass().getSimpleName() + " - " + e.getMessage());
+            System.err.println("=============================================\n");
+            
+            return ResponseEntity.status(500).body(
+                "Error: " + e.getClass().getSimpleName() + " - " + e.getMessage()
+            );
         }
     }
 }

@@ -12,8 +12,10 @@ interface MatrizRolEditorProps {
 const MatrizRolEditor: React.FC<MatrizRolEditorProps> = ({ matriz, isLoading, onGuardar, isSaving }) => {
     const [permisosSeleccionados, setPermisosSeleccionados] = useState<Map<number, Set<number>>>(new Map());
     const [modulosExpandidos, setModulosExpandidos] = useState<Set<number>>(new Set());
+    const [stateVersion, setStateVersion] = useState(0);
 
     React.useEffect(() => {
+        console.log('🔄 Inicializando estado para rol, matriz:', matriz?.idRol, 'modulos:', matriz?.modulos.length);
         if (matriz) {
             const inicial = new Map<number, Set<number>>();
             matriz.modulos.forEach(modulo => {
@@ -21,12 +23,14 @@ const MatrizRolEditor: React.FC<MatrizRolEditorProps> = ({ matriz, isLoading, on
                 modulo.permisos.forEach(permiso => {
                     if (permiso.asignado) {
                         permisosModulo.add(permiso.idPermiso);
+                        console.log(`  ✓ Permiso asignado: ${modulo.nombreModulo} -> ${permiso.nombre} (${permiso.idPermiso})`);
                     }
                 });
                 inicial.set(modulo.idModulo, permisosModulo);
             });
             setPermisosSeleccionados(inicial);
             setModulosExpandidos(new Set(matriz.modulos.map(m => m.idModulo)));
+            setStateVersion(v => v + 1); // Forzar re-render
         }
     }, [matriz]);
 
@@ -77,7 +81,19 @@ const MatrizRolEditor: React.FC<MatrizRolEditorProps> = ({ matriz, isLoading, on
             idPermisos: Array.from(permisos)
         }));
 
-        await onGuardar(payload);
+        console.log('💾 Guardando matriz. Payload:', JSON.stringify(payload, null, 2));
+        
+        // Validar que hay al menos un permiso
+        const totalPermisos = payload.reduce((sum, mod) => sum + mod.idPermisos.length, 0);
+        if (totalPermisos === 0) {
+            console.warn('⚠️ No hay permisos seleccionados');
+        }
+
+        try {
+            await onGuardar(payload);
+        } catch (err) {
+            console.error('❌ Error al guardar:', err);
+        }
     };
 
     if (isLoading) {

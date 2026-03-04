@@ -72,22 +72,22 @@ const UsuariosPage: React.FC = () => {
 
     const handleSubmit = async (payload: UsuarioPortalDTO) => {
         try {
+            let usuarioGuardado: UsuarioPortal | null = null;
+            
             if (usuarioEditar?.idUsuario) {
                 await actualizarUsuario({ ...payload, idUsuario: usuarioEditar.idUsuario });
+                usuarioGuardado = usuarioEditar;
             } else {
-                await crearUsuario(payload);
+                usuarioGuardado = await crearUsuario(payload);
             }
 
             setShowForm(false);
             setUsuarioEditar(null);
 
             // Después de guardar, si tiene rol asignado, mostrar editor de módulos
-            if (payload.idRol) {
-                const usuarioGuardado = usuarios.find(u => u.idRol?.idRol === payload.idRol && u.idSede?.idSede === payload.idSede);
-                if (usuarioGuardado) {
-                    setUsuarioEditarModulos(usuarioGuardado);
-                    setShowModulosEditor(true);
-                }
+            if (payload.idRol && usuarioGuardado) {
+                setUsuarioEditarModulos(usuarioGuardado);
+                setShowModulosEditor(true);
             }
         } catch (err: any) {
             window.alert(getApiErrorMessage(err));

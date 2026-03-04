@@ -147,12 +147,20 @@ const MatrizRolesPage: React.FC = () => {
                                 </button>
                             </div>
                         )}
-                        <MatrizRolEditor
-                            matriz={matriz}
-                            isLoading={isLoading}
-                            onGuardar={handleGuardarMatriz}
-                            isSaving={isSaving}
-                        />
+                        {rolSeleccionado ? (
+                            <MatrizRolEditor
+                                key={`matriz-${rolSeleccionado.idRol}`}
+                                matriz={matriz}
+                                isLoading={isLoading}
+                                onGuardar={handleGuardarMatriz}
+                                isSaving={isSaving}
+                            />
+                        ) : (
+                            <div className="text-center py-12">
+                                <Shield className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                <p className="text-gray-500 text-lg">Selecciona un rol para editar sus permisos</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

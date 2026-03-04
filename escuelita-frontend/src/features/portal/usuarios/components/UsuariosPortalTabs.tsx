@@ -3,7 +3,9 @@ import { NavLink } from 'react-router-dom';
 
 const tabs = [
     { to: '/escuela/configuracion/usuarios', label: 'Usuarios' },
-    { to: '/escuela/configuracion/usuarios/roles', label: 'Roles' },
+    // Roles no se muestra aquí porque los roles globales se crean solo en el SuperAdmin (backoffice/roles)
+    // El IE Admin solo selecciona roles existentes al crear usuarios
+    // { to: '/escuela/configuracion/usuarios/roles', label: 'Roles' },
     { to: '/escuela/configuracion/usuarios/permisos', label: 'Permisos' }
 ];
 

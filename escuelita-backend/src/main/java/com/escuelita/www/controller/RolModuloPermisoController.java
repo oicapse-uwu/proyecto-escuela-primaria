@@ -132,15 +132,29 @@ public class RolModuloPermisoController {
      */
     @GetMapping("/roles/{idRol}/matriz-completa")
     public ResponseEntity<?> obtenerMatrizCompleta(@PathVariable Long idRol) {
+        System.out.println("\n========== OBTENER MATRIZ COMPLETA ==========");
+        System.out.println("📥 Solicitada matriz para rol ID: " + idRol);
+        
         Optional<Roles> rolOpt = repoRoles.findById(idRol);
         if (rolOpt.isEmpty()) {
+            System.out.println("❌ Rol no encontrado: " + idRol);
             return ResponseEntity.badRequest().body("Rol no encontrado");
         }
 
         Roles rol = rolOpt.get();
+        System.out.println("✓ Rol encontrado: " + rol.getNombre());
+        
         List<Modulos> modulos = repoModulos.findAll();
-        // 🔴 IMPORTANTE: Usar findByIdRolActivos que SOLO obtiene estado=1
+        System.out.println("📊 Total módulos en BD: " + modulos.size());
+        
+        // Obtener SOLO las asignaciones ACTIVAS (estado=1)
         List<RolModuloPermiso> asignaciones = repoRolModuloPermiso.findByIdRolActivos(idRol);
+        System.out.println("🔍 Asignaciones ACTIVAS encontradas para rol " + idRol + ": " + asignaciones.size());
+        
+        // Imprimir cada asignación activa encontrada
+        for (RolModuloPermiso rmp : asignaciones) {
+            System.out.println("  ✓ Módulo " + rmp.getIdModulo().getNombre() + " -> Permiso " + rmp.getIdPermiso().getNombre());
+        }
 
         // Crear mapa de permisos asignados: modulo_id -> permiso_id
         Map<Long, Map<Long, Boolean>> permisosAsignados = new LinkedHashMap<>();
@@ -185,6 +199,8 @@ public class RolModuloPermisoController {
         }
 
         MatrizRolDTO respuesta = new MatrizRolDTO(rol.getIdRol(), rol.getNombre(), modulosDTO);
+        System.out.println("✅ Retornando matriz con " + modulosDTO.size() + " módulos");
+        System.out.println("==============================================\n");
         return ResponseEntity.ok(respuesta);
     }
 

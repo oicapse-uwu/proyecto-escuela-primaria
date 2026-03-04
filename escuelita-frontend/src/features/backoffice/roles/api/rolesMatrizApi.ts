@@ -5,9 +5,14 @@ const ROLES_BASE_URL = API_ENDPOINTS.ROLES;
 
 /**
  * Obtiene la matriz completa de un rol (todos los módulos y permisos)
+ * Con caché bypass para asegurar datos frescos
  */
 export const obtenerMatrizRol = async (idRol: number): Promise<MatrizRol> => {
-    const response = await api.get<MatrizRol>(`${ROLES_BASE_URL}/${idRol}/matriz-completa`);
+    console.log(`📥 Obteniendo matriz para rol: ${idRol}`);
+    const response = await api.get<MatrizRol>(`${ROLES_BASE_URL}/${idRol}/matriz-completa`, {
+        params: { _t: Date.now() } // Cache busting - fuerza siempre ir al servidor
+    });
+    console.log(`✓ Matriz obtenida para rol ${idRol}:`, response.data?.modulos?.length || 0, 'módulos');
     return response.data;
 };
 

@@ -21,9 +21,7 @@ public interface RolModuloPermisoRepository extends JpaRepository<RolModuloPermi
 	@Query("SELECT rmp FROM RolModuloPermiso rmp WHERE rmp.idRol.idRol = :idRol ORDER BY rmp.idModulo.orden ASC")
 	List<RolModuloPermiso> findByIdRolOrdenado(@Param("idRol") Long idRol);
 	
-	// DELETE REAL (no soft delete) para limpiar registros con estado=0 al actualizar matriz
-	@Modifying
-	@Transactional
-	@Query(value = "DELETE FROM rol_modulo_permiso WHERE id_rol = :idRol", nativeQuery = true)
-	void deleteByIdRol(@Param("idRol") Long idRol);
+	// Búsqueda para detectar combinaciones duplicadas (rol-módulo-permiso)
+	List<RolModuloPermiso> findByIdRol_IdRolAndIdModulo_IdModuloAndIdPermiso_IdPermiso(
+		Long idRol, Long idModulo, Long idPermiso);
 }

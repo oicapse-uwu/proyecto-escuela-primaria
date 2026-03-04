@@ -189,7 +189,8 @@ public class RolModuloPermisoController {
 
     /**
      * FASE 2: SuperAdmin actualiza la MATRIZ COMPLETA de un rol en LOTE
-     * Recibe la nueva configuración y actualiza todas las relaciones
+     * Estrategia: SOFT DELETE (estado=0) los anteriores, luego INSERTAR los nuevos
+     * Ignora duplicados en lugar de fallar
      */
     @PostMapping("/roles/{idRol}/matriz-completa")
     public ResponseEntity<?> actualizarMatrizCompleta(@PathVariable Long idRol, 
@@ -211,25 +212,24 @@ public class RolModuloPermisoController {
         }
 
         try {
-            System.out.println("🔄 Eliminando asignaciones anteriores (DELETE REAL, no soft delete)...");
-            // Eliminar TODAS las asignaciones previas del rol (hard delete para evitar constraint duplicity)
-            // Usando Named Query o Query nativa para DELETE REAL
+            System.out.println("🔄 Marcando asignaciones anteriores como eliminadas (soft delete)...");
+            // PASO 1: Soft delete - marcar como estado=0 las asignaciones anteriores
             List<RolModuloPermiso> asignacionesActuales = serviceRmp.buscarPorRolId(idRol);
             System.out.println("📊 Asignaciones actuales encontradas: " + asignacionesActuales.size());
             
-            // Hard delete - elimina físicamente de la BD
             for (RolModuloPermiso rmp : asignacionesActuales) {
-                repoRolModuloPermiso.deleteById(rmp.getIdRmp());  // Esto hace soft delete
+                rmp.setEstado(0);  // Soft delete
+                serviceRmp.modificar(rmp);
             }
-            
-            // Ejecutar delete real para limpiar registros con estado=0 de la BD
-            repoRolModuloPermiso.deleteByIdRol(idRol);
+            System.out.println("✅ Soft delete completado");
 
-            // Crear nuevas asignaciones basadas en la solicitud
+            // PASO 2: Crear nuevas asignaciones basadas en la solicitud
             Roles rol = rolOpt.get();
             System.out.println("✅ Creando nuevas asignaciones. Módulos a procesar: " + dto.getModulos().size());
             
             int totalAsignacionesCreadas = 0;
+            int totalDuplicados = 0;
+            
             for (ModuloPermisosActualizarDTO moduloDTO : dto.getModulos()) {
                 if (moduloDTO.getIdModulo() == null || moduloDTO.getIdPermisos() == null) {
                     System.out.println("⚠️ Módulo o permisos nulos, saltando...");
@@ -252,18 +252,39 @@ public class RolModuloPermisoController {
                         continue;
                     }
 
-                    RolModuloPermiso rmp = new RolModuloPermiso();
-                    rmp.setIdRol(rol);
-                    rmp.setIdModulo(modulo);
-                    rmp.setIdPermiso(permisoOpt.get());
-                    rmp.setEstado(1); // Asegurar estado activo
-                    serviceRmp.guardar(rmp);
-                    totalAsignacionesCreadas++;
+                    // Verificar si ya existe UNA asignación igual (incluso si está marcada como eliminada)
+                    List<RolModuloPermiso> existentes = repoRolModuloPermiso
+                        .findByIdRol_IdRolAndIdModulo_IdModuloAndIdPermiso_IdPermiso(
+                            idRol, moduloDTO.getIdModulo(), idPermiso);
+                    
+                    if (!existentes.isEmpty()) {
+                        // Si existe, reactivarlo (caso de toggle)
+                        RolModuloPermiso existente = existentes.get(0);
+                        if (existente.getEstado() == 0) {
+                            existente.setEstado(1);
+                            serviceRmp.modificar(existente);
+                            System.out.println("♻️ Reactivado permiso: " + idPermiso + " en módulo: " + moduloDTO.getIdModulo());
+                            totalAsignacionesCreadas++;
+                        } else {
+                            System.out.println("⏭️ Duplicado ignorado (ya activo): rol=" + idRol + ", mod=" + moduloDTO.getIdModulo() + ", perm=" + idPermiso);
+                            totalDuplicados++;
+                        }
+                    } else {
+                        // Si no existe, crear nuevo
+                        RolModuloPermiso rmp = new RolModuloPermiso();
+                        rmp.setIdRol(rol);
+                        rmp.setIdModulo(modulo);
+                        rmp.setIdPermiso(permisoOpt.get());
+                        rmp.setEstado(1);
+                        serviceRmp.guardar(rmp);
+                        System.out.println("✨ Nuevo permiso creado: " + idPermiso + " en módulo: " + moduloDTO.getIdModulo());
+                        totalAsignacionesCreadas++;
+                    }
                 }
             }
 
-            System.out.println("✅ Actualización completada. Total asignaciones creadas: " + totalAsignacionesCreadas);
-            return ResponseEntity.ok("{\"mensaje\": \"Matriz del rol actualizada correctamente. Asignaciones: " + totalAsignacionesCreadas + "\"}");
+            System.out.println("✅ Actualización completada. Asignaciones creadas: " + totalAsignacionesCreadas + ", Duplicados: " + totalDuplicados);
+            return ResponseEntity.ok("{\"mensaje\": \"Matriz del rol actualizada correctamente\", \"actualizadas\": " + totalAsignacionesCreadas + ", \"duplicados\": " + totalDuplicados + "}");
         } catch (Exception e) {
             System.err.println("❌ Error al actualizar matriz: " + e.getMessage());
             e.printStackTrace();

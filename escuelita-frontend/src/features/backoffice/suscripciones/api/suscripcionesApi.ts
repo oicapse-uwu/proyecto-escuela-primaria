@@ -81,9 +81,14 @@ export const createPagoCajaApi = async (pago: PagoCajaDTO): Promise<void> => {
 
 // Obtener suscripción por institución
 export const getSuscripcionPorInstitucionApi = async (idInstitucion: number): Promise<Suscripcion | null> => {
-    const suscripciones = await getSuscripcionesApi();
-    const suscripcion = suscripciones.find(
-        s => s.idInstitucion?.idInstitucion === idInstitucion && s.estado === 1
-    );
-    return suscripcion || null;
+    try {
+        const suscripciones = await getSuscripcionesApi();
+        const suscripcion = suscripciones.find(
+            s => s.idInstitucion?.idInstitucion === idInstitucion && s.estado === 1
+        );
+        return suscripcion || null;
+    } catch (error) {
+        console.error('Error al obtener suscripción por institución:', error);
+        return null;
+    }
 };

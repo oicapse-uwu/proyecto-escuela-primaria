@@ -4,6 +4,7 @@ package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import jakarta.persistence.Column;
@@ -18,8 +19,8 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE super_admins SET estado=0 WHERE id_admin=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idAdmin", "nombres", "apellidos", "correo", 
-    "usuario", "password", "rolPlataforma", "estado"
+    "idAdmin", "nombres", "apellidos", "correo",
+    "usuario", "password", "rolPlataforma", "fotoUrl", "estado"
 })
 public class SuperAdmins {
     @Id
@@ -34,6 +35,9 @@ public class SuperAdmins {
     private String password;
     @Column(name = "rol_plataforma")
     private String rolPlataforma = "SUPER_ADMIN";
+
+    @Column(name = "foto_url", length = 255)
+    private String fotoUrl;
 
     private Integer estado = 1;
 
@@ -93,10 +97,16 @@ public class SuperAdmins {
     public void setEstado(Integer estado) {
         this.estado = estado;
     }
+    public String getFotoUrl() {
+        return fotoUrl;
+    }
+    public void setFotoUrl(String fotoUrl) {
+        this.fotoUrl = fotoUrl;
+    }
     @Override
     public String toString() {
         return "SuperAdmins [idAdmin=" + idAdmin + ", nombres=" + nombres + ", apellidos=" + apellidos + ", correo="
                 + correo + ", usuario=" + usuario + ", password=" + password + ", rolPlataforma=" + rolPlataforma
-                + ", estado=" + estado + "]";
+                + ", fotoUrl=" + fotoUrl + ", estado=" + estado + "]";
     }
 }

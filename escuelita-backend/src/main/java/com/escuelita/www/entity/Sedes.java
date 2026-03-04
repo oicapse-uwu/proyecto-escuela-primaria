@@ -23,8 +23,9 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE sedes SET estado=0 WHERE id_sede=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idSede", "nombreSede", "direccion", "distrito", "provincia", 
-    "departamento", "ugel", "telefono", "correoInstitucional", "idInstitucion", "estado"
+    "idSede", "nombreSede", "codigoEstablecimiento", "esSedePrincipal",
+    "direccion", "distrito", "provincia", "departamento", "ugel", 
+    "telefono", "correoInstitucional", "idInstitucion", "estado"
 })
 public class Sedes {
     @Id
@@ -34,6 +35,10 @@ public class Sedes {
     
     @Column(name = "nombre_sede", length = 100)
     private String nombreSede;
+    @Column(name = "codigo_establecimiento", length = 4)
+    private String codigoEstablecimiento = "0000";
+    @Column(name = "es_sede_principal")
+    private Boolean esSedePrincipal = false;
     @Column(length = 255)
     private String direccion;
     @Column(length = 100)
@@ -74,6 +79,18 @@ public class Sedes {
     }
     public void setNombreSede(String nombreSede) {
         this.nombreSede = nombreSede;
+    }
+    public String getCodigoEstablecimiento() {
+        return codigoEstablecimiento;
+    }
+    public void setCodigoEstablecimiento(String codigoEstablecimiento) {
+        this.codigoEstablecimiento = codigoEstablecimiento;
+    }
+    public Boolean getEsSedePrincipal() {
+        return esSedePrincipal;
+    }
+    public void setEsSedePrincipal(Boolean esSedePrincipal) {
+        this.esSedePrincipal = esSedePrincipal;
     }
     public String getDireccion() {
         return direccion;
@@ -131,10 +148,10 @@ public class Sedes {
     }
     @Override
     public String toString() {
-        return "Sedes [idSede=" + idSede + ", nombreSede=" + nombreSede + ", direccion=" 
-                + direccion + ", distrito=" + distrito + ", provincia=" + provincia
-                + ", departamento=" + departamento + ", ugel=" + ugel + ", telefono=" + telefono
-                + ", correoInstitucional=" + correoInstitucional 
-                + ", idInstitucion=" + idInstitucion + ", estado=" + estado + "]";
+        return "Sedes [idSede=" + idSede + ", nombreSede=" + nombreSede + ", codigoEstablecimiento="
+                + codigoEstablecimiento + ", esSedePrincipal=" + esSedePrincipal + ", direccion=" + direccion
+                + ", distrito=" + distrito + ", provincia=" + provincia + ", departamento=" + departamento + ", ugel="
+                + ugel + ", telefono=" + telefono + ", correoInstitucional=" + correoInstitucional + ", idInstitucion="
+                + idInstitucion + ", estado=" + estado + "]";
     }
 }

@@ -1,12 +1,17 @@
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import PrivateRoute from './components/common/PrivateRoute';
-import { Dashboard } from './features/backoffice';
-import InstitucionesRoutes from './features/backoffice/instituciones/routes/InstitucionesRoutes';
-import ReportesRoutes from './features/backoffice/reportes/routes/ReportesRoutes';
-import SuscripcionesRoutes from './features/backoffice/suscripciones/routes/SuscripcionesRoutes';
-import UsuariosRoutes from './features/backoffice/usuarios/routes/UsuariosRoutes';
+import {
+    Dashboard,
+    InstitucionesRoutes,
+    ReportesRoutes,
+    SedesRoutes,
+    SuscripcionesRoutes,
+    UsuariosRoutes
+} from './features/backoffice';
 import AlumnosRoutes from './features/portal/alumnos/routes/AlumnosRoutes';
 import UsuariosPortalRoutes from './features/portal/usuarios/routes/UsuariosPortalRoutes';
+import ApoderadosRoutes from './features/portal/apoderados/routes/apoderados.routes';
+import MatriculasRoutes from './features/portal/matriculas/routes/matriculas.routes';
 import EscuelaLayout from './layouts/EscuelaLayout';
 import SuperAdminLayout from './layouts/SuperAdminLayout';
 import DashboardEscuela from './pages/DashboardEscuela';
@@ -36,6 +41,7 @@ function App() {
             
             {/* Módulos del Backoffice */}
             <Route path="instituciones/*" element={<InstitucionesRoutes />} />
+            <Route path="sedes/*" element={<SedesRoutes />} />
             <Route path="suscripciones/*" element={<SuscripcionesRoutes />} />
             <Route path="usuarios/*" element={<UsuariosRoutes />} />
             <Route path="reportes/*" element={<ReportesRoutes />} />
@@ -55,10 +61,12 @@ function App() {
             <Route index element={<Navigate to="/escuela/dashboard" replace />} />
             <Route path="dashboard" element={<DashboardEscuela />} />
             
-            {/* Rutas futuras para módulos de escuela */}
+            {/* Módulos del Portal Escuela */}
             <Route path="alumnos/*" element={<AlumnosRoutes />} />
             <Route path="configuracion/usuarios/*" element={<UsuariosPortalRoutes />} />
             {/* <Route path="matriculas/*" element={<MatriculasRoutes />} /> */}
+            <Route path="apoderados/*" element={<ApoderadosRoutes />} />
+            <Route path="matriculas/*" element={<MatriculasRoutes />} />
             {/* <Route path="evaluaciones/*" element={<EvaluacionesRoutes />} /> */}
             {/* <Route path="pagos/*" element={<PagosRoutes />} /> */}
             {/* etc... */}

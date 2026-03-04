@@ -31,6 +31,7 @@ import com.escuelita.www.entity.ModuloPermisosActualizarDTO;
 import com.escuelita.www.repository.ModulosRepository;
 import com.escuelita.www.repository.PermisosRepository;
 import com.escuelita.www.repository.RolesRepository;
+import com.escuelita.www.repository.RolModuloPermisoRepository;
 import com.escuelita.www.repository.UsuariosRepository;
 import com.escuelita.www.service.IRolModuloPermisoService;
 
@@ -48,6 +49,8 @@ public class RolModuloPermisoController {
     private PermisosRepository repoPermisos;
     @Autowired
     private UsuariosRepository repoUsuarios;
+    @Autowired
+    private RolModuloPermisoRepository repoRolModuloPermiso;
 
     @GetMapping("/rolmodulopermiso")
     public List<RolModuloPermiso> buscarTodos() {
@@ -208,14 +211,19 @@ public class RolModuloPermisoController {
         }
 
         try {
-            System.out.println("🔄 Eliminando asignaciones anteriores...");
-            // Eliminar todas las asignaciones previas del rol
+            System.out.println("🔄 Eliminando asignaciones anteriores (DELETE REAL, no soft delete)...");
+            // Eliminar TODAS las asignaciones previas del rol (hard delete para evitar constraint duplicity)
+            // Usando Named Query o Query nativa para DELETE REAL
             List<RolModuloPermiso> asignacionesActuales = serviceRmp.buscarPorRolId(idRol);
             System.out.println("📊 Asignaciones actuales encontradas: " + asignacionesActuales.size());
             
+            // Hard delete - elimina físicamente de la BD
             for (RolModuloPermiso rmp : asignacionesActuales) {
-                serviceRmp.eliminar(rmp.getIdRmp());
+                repoRolModuloPermiso.deleteById(rmp.getIdRmp());  // Esto hace soft delete
             }
+            
+            // Ejecutar delete real para limpiar registros con estado=0 de la BD
+            repoRolModuloPermiso.deleteByIdRol(idRol);
 
             // Crear nuevas asignaciones basadas en la solicitud
             Roles rol = rolOpt.get();
@@ -248,6 +256,7 @@ public class RolModuloPermisoController {
                     rmp.setIdRol(rol);
                     rmp.setIdModulo(modulo);
                     rmp.setIdPermiso(permisoOpt.get());
+                    rmp.setEstado(1); // Asegurar estado activo
                     serviceRmp.guardar(rmp);
                     totalAsignacionesCreadas++;
                 }

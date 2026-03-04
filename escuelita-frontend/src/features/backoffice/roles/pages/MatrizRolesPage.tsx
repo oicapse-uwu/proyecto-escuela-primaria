@@ -3,13 +3,15 @@ import React, { useMemo, useState } from 'react';
 import { Toaster } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
 import MatrizRolEditor from '../components/MatrizRolEditor';
+import CrearRolModal from '../components/CrearRolModal';
 import { useMatrizRol } from '../hooks/useMatrizRol';
 import { useRoles } from '../../usuarios/hooks/useRoles';
 import type { Rol } from '../../usuarios/types';
 
 const MatrizRolesPage: React.FC = () => {
-    const { roles, isLoading: rolesLoading } = useRoles();
+    const { roles, isLoading: rolesLoading, cargarRoles } = useRoles();
     const [rolSeleccionado, setRolSeleccionado] = useState<Rol | null>(null);
+    const [isCrearRolOpen, setIsCrearRolOpen] = useState(false);
     const { matriz, isLoading, isSaving, actualizarMatriz } = useMatrizRol(rolSeleccionado?.idRol ?? null);
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -27,6 +29,12 @@ const MatrizRolesPage: React.FC = () => {
             idRol: rolSeleccionado.idRol,
             modulos: permisos
         });
+    };
+
+    const handleRolCreado = () => {
+        // Recargar lista de roles
+        cargarRoles();
+        setRolSeleccionado(null);
     };
 
     return (
@@ -48,11 +56,18 @@ const MatrizRolesPage: React.FC = () => {
                 {/* Columna 1: Lista de Roles */}
                 <div className="lg:col-span-1">
                     <div className="bg-white rounded-lg shadow">
-                        <div className="p-4 border-b border-gray-200">
+                        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
                             <h2 className="font-semibold text-gray-800 flex items-center space-x-2">
                                 <Shield className="w-5 h-5 text-primary" />
                                 <span>Roles del Sistema</span>
                             </h2>
+                            <button
+                                onClick={() => setIsCrearRolOpen(true)}
+                                className="p-1.5 hover:bg-primary/10 rounded transition-colors text-primary hover:text-primary-dark"
+                                title="Crear nuevo rol"
+                            >
+                                <Plus className="w-5 h-5" />
+                            </button>
                         </div>
 
                         {rolesLoading ? (
@@ -104,6 +119,13 @@ const MatrizRolesPage: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Modal para crear nuevo rol */}
+            <CrearRolModal
+                isOpen={isCrearRolOpen}
+                onClose={() => setIsCrearRolOpen(false)}
+                onRolCreado={handleRolCreado}
+            />
         </div>
     );
 };

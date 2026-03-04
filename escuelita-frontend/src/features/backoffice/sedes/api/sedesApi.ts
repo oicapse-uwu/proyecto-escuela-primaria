@@ -66,3 +66,9 @@ export const eliminarSede = async (id: number): Promise<string> => {
     const response = await api.delete<string>(`${BASE_URL}/${id}`);
     return response.data;
 };
+
+// Obtener sedes por institución
+export const obtenerSedesPorInstitucion = async (idInstitucion: number): Promise<Sede[]> => {
+    const todasSedes = await obtenerTodasSedes();
+    return todasSedes.filter(sede => sede.idInstitucion.idInstitucion === idInstitucion);
+};

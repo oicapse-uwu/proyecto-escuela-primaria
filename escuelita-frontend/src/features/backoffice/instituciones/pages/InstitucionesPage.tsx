@@ -1,8 +1,12 @@
-import { Building2, Edit, Eye, Plus, Search, Trash2 } from 'lucide-react';
-import React, { useState } from 'react';
+import { Building2, Crown, Edit, FolderOpen, MapPin, Plus, Search, Trash2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
-import InstitucionDetailModal from '../components/InstitucionDetailModal';
+import { obtenerTodasSedes } from '../../sedes/api/sedesApi';
+import type { Sede } from '../../sedes/types';
+import { getSuscripcionesApi } from '../../suscripciones/api/suscripcionesApi';
+import type { Suscripcion } from '../../suscripciones/types';
 import InstitucionForm from '../components/InstitucionForm';
 import { useInstituciones } from '../hooks/useInstituciones';
 import type { Institucion, InstitucionFormData } from '../types';
@@ -10,6 +14,7 @@ import type { Institucion, InstitucionFormData } from '../types';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://primaria.spring.informaticapp.com:4040';
 
 const InstitucionesPage: React.FC = () => {
+    const navigate = useNavigate();
     const { 
         instituciones, 
         isLoading, 
@@ -20,10 +25,81 @@ const InstitucionesPage: React.FC = () => {
     
     const [showForm, setShowForm] = useState(false);
     const [institucionEditar, setInstitucionEditar] = useState<Institucion | null>(null);
-    const [institucionVer, setInstitucionVer] = useState<Institucion | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [sedes, setSedes] = useState<Sede[]>([]);
+    const [suscripciones, setSuscripciones] = useState<Suscripcion[]>([]);
+
+    // Cargar sedes y suscripciones al inicio
+    useEffect(() => {
+        const cargarDatos = async () => {
+            try {
+                const sedesData = await obtenerTodasSedes();
+                setSedes(sedesData);
+            } catch (error) {
+                console.error('Error al cargar sedes:', error);
+            }
+
+            try {
+                const suscripcionesData = await getSuscripcionesApi();
+                setSuscripciones(suscripcionesData);
+            } catch (error) {
+                console.error('Error al cargar suscripciones:', error);
+            }
+        };
+        cargarDatos();
+    }, []);
+
+    // Función para contar sedes por institución
+    const contarSedesPorInstitucion = (idInstitucion: number): number => {
+        return sedes.filter(sede => sede.idInstitucion?.idInstitucion === idInstitucion).length;
+    };
+
+    // Función para obtener suscripción de una institución
+    const getSuscripcionInstitucion = (idInstitucion: number): Suscripcion | undefined => {
+        return suscripciones.find(sus => sus.idInstitucion?.idInstitucion === idInstitucion);
+    };
+
+    // Función para obtener badge de estado
+    const getEstadoBadge = (nombreEstado?: string) => {
+        if (!nombreEstado) return null;
+        
+        const estados: Record<string, { bg: string; text: string; label: string }> = {
+            'Activa': { bg: 'bg-green-100', text: 'text-green-800', label: 'Activa' },
+            'Suspendida': { bg: 'bg-red-100', text: 'text-red-800', label: 'Suspendida' },
+            'Vencida': { bg: 'bg-orange-100', text: 'text-orange-800', label: 'Vencida' },
+            'Demo': { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Demo' },
+            'Pendiente': { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Pendiente' }
+        };
+
+        const config = estados[nombreEstado] || { bg: 'bg-gray-100', text: 'text-gray-800', label: nombreEstado };
+        
+        return (
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${config.bg} ${config.text}`}>
+                {config.label}
+            </span>
+        );
+    };
+
+    // Función para renderizar el plan con ícono
+    const renderPlan = (nombrePlan?: string, withIcon: boolean = false) => {
+        const plan = nombrePlan || 'Sin plan';
+        const tienePlan = nombrePlan && nombrePlan.toLowerCase() !== 'sin plan';
+        const colorClasses = tienePlan ? 'text-gray-900' : 'text-gray-400';
+        const iconColor = tienePlan ? 'text-amber-500' : 'text-gray-300';
+
+        if (withIcon) {
+            return (
+                <div className="flex items-center gap-1">
+                    <Crown className={`w-3.5 h-3.5 ${iconColor}`} />
+                    <span className={colorClasses}>{plan}</span>
+                </div>
+            );
+        }
+        
+        return <span className={colorClasses}>{plan}</span>;
+    };
 
     const normalizeText = (value?: string | number | null) =>
         String(value ?? '')
@@ -38,8 +114,7 @@ const InstitucionesPage: React.FC = () => {
 
         return (
             normalizeText(inst.nombre).includes(search) ||
-            normalizeText(inst.codModular).includes(search) ||
-            normalizeText(inst.nombreDirector).includes(search)
+            normalizeText(inst.codModular).includes(search)
         );
     });
 
@@ -140,7 +215,7 @@ const InstitucionesPage: React.FC = () => {
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 lg:w-5 lg:h-5" />
                     <input
                         type="text"
-                        placeholder="Buscar por nombre, código modular o director..."
+                        placeholder="Buscar por nombre o código modular..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-9 lg:pl-10 pr-4 py-2.5 text-sm lg:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
@@ -191,20 +266,30 @@ const InstitucionesPage: React.FC = () => {
                                     <span className="text-gray-500 font-medium">Cód. Modular:</span>
                                     <span className="text-gray-900 font-semibold">{institucion.codModular}</span>
                                 </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-gray-500 font-medium">Estado:</span>
+                                    {getEstadoBadge(getSuscripcionInstitucion(institucion.idInstitucion)?.idEstado?.nombre)}
+                                </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-500 font-medium">Director:</span>
-                                    <span className="text-gray-900 text-right truncate ml-2">{institucion.nombreDirector}</span>
+                                    <span className="text-gray-500 font-medium">Plan:</span>
+                                    <span className="font-semibold">
+                                        {renderPlan(getSuscripcionInstitucion(institucion.idInstitucion)?.idPlan?.nombrePlan)}
+                                    </span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-gray-500 font-medium">Sedes:</span>
+                                    <span className="text-gray-900 font-semibold">{contarSedesPorInstitucion(institucion.idInstitucion)}</span>
                                 </div>
                             </div>
                             
                             {/* Acciones */}
                             <div className="flex gap-2 pt-3 border-t border-gray-100">
                                 <button
-                                    onClick={() => setInstitucionVer(institucion)}
+                                    onClick={() => navigate(`/admin/instituciones/${institucion.idInstitucion}?tab=sedes`)}
                                     className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
                                 >
-                                    <Eye className="w-4 h-4" />
-                                    <span className="text-sm font-medium">Ver</span>
+                                    <FolderOpen className="w-4 h-4" />
+                                    <span className="text-sm font-medium">Sedes</span>
                                 </button>
                                 <button
                                     onClick={() => handleEditar(institucion)}
@@ -262,8 +347,14 @@ const InstitucionesPage: React.FC = () => {
                                     <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
                                         Cód. Modular
                                     </th>
-                                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
-                                        Director
+                                    <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
+                                        Estado
+                                    </th>
+                                    <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[130px]">
+                                        Plan
+                                    </th>
+                                    <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">
+                                        Sedes
                                     </th>
                                     <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 min-w-[120px]">
                                         Acciones
@@ -299,17 +390,28 @@ const InstitucionesPage: React.FC = () => {
                                         <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-900 min-w-[100px]">
                                             {institucion.codModular}
                                         </td>
-                                        <td className="px-3 py-3 text-xs text-gray-900 min-w-[150px]">
-                                            <div className="line-clamp-2">{institucion.nombreDirector}</div>
+                                        <td className="px-2 py-3 whitespace-nowrap text-center min-w-[100px]">
+                                            {getEstadoBadge(getSuscripcionInstitucion(institucion.idInstitucion)?.idEstado?.nombre)}
+                                        </td>
+                                        <td className="px-2 py-3 whitespace-nowrap text-xs min-w-[130px]">
+                                            {renderPlan(getSuscripcionInstitucion(institucion.idInstitucion)?.idPlan?.nombrePlan, true)}
+                                        </td>
+                                        <td className="px-2 py-3 whitespace-nowrap text-center min-w-[80px]">
+                                            <div className="flex items-center justify-center gap-1">
+                                                <MapPin className="w-3.5 h-3.5 text-blue-500" />
+                                                <span className="text-xs font-semibold text-gray-900">
+                                                    {contarSedesPorInstitucion(institucion.idInstitucion)}
+                                                </span>
+                                            </div>
                                         </td>
                                         <td className="px-2 py-3 whitespace-nowrap text-center sticky right-0 bg-white min-w-[120px]">
                                             <div className="flex items-center justify-center gap-1">
                                                 <button
-                                                    onClick={() => setInstitucionVer(institucion)}
+                                                    onClick={() => navigate(`/admin/instituciones/${institucion.idInstitucion}?tab=sedes`)}
                                                     className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                    title="Ver Detalle"
+                                                    title="Gestionar Sedes"
                                                 >
-                                                    <Eye className="w-4 h-4" />
+                                                    <FolderOpen className="w-4 h-4" />
                                                 </button>
                                                 <button
                                                     onClick={() => handleEditar(institucion)}
@@ -342,7 +444,8 @@ const InstitucionesPage: React.FC = () => {
                             onItemsPerPageChange={setItemsPerPage}
                         />
                     </div>
-                    </>                )}
+                    </>
+                )}
             </div>
 
             {/* Modal Form */}
@@ -355,13 +458,6 @@ const InstitucionesPage: React.FC = () => {
                 />
             )}
 
-            {/* Modal Detail */}
-            {institucionVer && (
-                <InstitucionDetailModal
-                    institucion={institucionVer}
-                    onClose={() => setInstitucionVer(null)}
-                />
-            )}
         </div>
     );
 };

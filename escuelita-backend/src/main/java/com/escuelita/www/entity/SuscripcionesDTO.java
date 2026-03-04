@@ -6,14 +6,15 @@ import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({
-    "idSuscripcion", "limiteAlumnosContratado", "limiteSedesContratadas", "precioAcordado",
-    "fechaInicio", "fechaVencimiento", "idInstitucion", "idPlan", "idCiclo", "idEstado", "estado"
+    "idSuscripcion", "limiteAlumnosContratado", "limiteSedesContratadas", "tipoDistribucionLimite",
+    "precioAcordado", "fechaInicio", "fechaVencimiento", "idInstitucion", "idPlan", "idCiclo", "idEstado", "estado"
 })
 public class SuscripcionesDTO {
 
     private Long idSuscripcion;
     private Integer limiteAlumnosContratado;
     private Integer limiteSedesContratadas;
+    private String tipoDistribucionLimite = "EQUITATIVA";
     private BigDecimal precioAcordado;
     private LocalDate fechaInicio;
     private LocalDate fechaVencimiento;
@@ -42,6 +43,12 @@ public class SuscripcionesDTO {
     }
     public void setLimiteSedesContratadas(Integer limiteSedesContratadas) {
         this.limiteSedesContratadas = limiteSedesContratadas;
+    }
+    public String getTipoDistribucionLimite() {
+        return tipoDistribucionLimite;
+    }
+    public void setTipoDistribucionLimite(String tipoDistribucionLimite) {
+        this.tipoDistribucionLimite = tipoDistribucionLimite;
     }
     public BigDecimal getPrecioAcordado() {
         return precioAcordado;

@@ -1,4 +1,4 @@
-import { Building2, Copy, FileText, Receipt, Upload, User, X } from 'lucide-react';
+import { Building2, Copy, FileText, Receipt, Upload, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { subirArchivo } from '../api/uploadApi';
@@ -23,7 +23,6 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
         codModular: '',
         tipoGestion: 'Pública',
         resolucionCreacion: '',
-        nombreDirector: '',
         logoPath: '',
         ruc: '',
         razonSocial: '',
@@ -38,6 +37,12 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
     const [uploadingFile, setUploadingFile] = useState(false);
     const [resolucionValida, setResolucionValida] = useState<boolean>(true);
     const [resolucionTouched, setResolucionTouched] = useState<boolean>(false);
+    
+    // Estados para la ventana flotante de ayuda
+    const [showHelperWindow, setShowHelperWindow] = useState(false);
+    const [helperPosition, setHelperPosition] = useState({ x: 650, y: 250 });
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
     // Regex para validar resolución con reglas específicas por tipo:
     // R.D. → solo DRELM
@@ -53,7 +58,6 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                 codModular: institucion.codModular,
                 tipoGestion: institucion.tipoGestion,
                 resolucionCreacion: institucion.resolucionCreacion,
-                nombreDirector: institucion.nombreDirector,
                 logoPath: institucion.logoPath || '',
                 ruc: institucion.ruc || '',
                 razonSocial: institucion.razonSocial || '',
@@ -115,8 +119,42 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
         setFormData(prev => ({ ...prev, resolucionCreacion: ejemplo }));
         setResolucionTouched(true);
         setResolucionValida(true);
+        setShowHelperWindow(false);
         toast.success('¡Ejemplo copiado! Ahora edita los valores', { duration: 2000 });
     };
+
+    // Handlers para la ventana arrastrable
+    const handleMouseDown = (e: React.MouseEvent) => {
+        setIsDragging(true);
+        setDragOffset({
+            x: e.clientX - helperPosition.x,
+            y: e.clientY - helperPosition.y
+        });
+    };
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            if (isDragging) {
+                setHelperPosition({
+                    x: e.clientX - dragOffset.x,
+                    y: e.clientY - dragOffset.y
+                });
+            }
+        };
+
+        const handleMouseUp = () => {
+            setIsDragging(false);
+        };
+
+        if (isDragging) {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+            return () => {
+                window.removeEventListener('mousemove', handleMouseMove);
+                window.removeEventListener('mouseup', handleMouseUp);
+            };
+        }
+    }, [isDragging, dragOffset]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -158,7 +196,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full overflow-hidden flex flex-col">
                 {/* Header */}
                 <div className="bg-gradient-to-r from-primary to-primary-light p-6 text-white flex justify-between items-center">
                     <h2 className="text-2xl font-bold flex items-center space-x-2">
@@ -175,7 +213,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="flex-1 flex flex-col overflow-hidden">
+                <form onSubmit={handleSubmit} className="flex flex-col">
                     {/* Tabs */}
                     <div className="bg-gray-50 border-b border-gray-200 px-6">
                         <div className="flex space-x-1">
@@ -218,8 +256,8 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                         </div>
                     </div>
 
-                    {/* Tab Content - Scrollable with fixed height */}
-                    <div className="overflow-y-auto p-6 h-[380px]">
+                    {/* Tab Content */}
+                    <div className="p-6 h-[350px] overflow-y-auto">
                         {/* Tab 1: Información Básica */}
                         {activeTab === 'basica' && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -285,6 +323,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                             name="resolucionCreacion"
                                             value={formData.resolucionCreacion}
                                             onChange={handleChange}
+                                            onFocus={() => setShowHelperWindow(true)}
                                             onBlur={() => setResolucionTouched(true)}
                                             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 transition-colors ${
                                                 resolucionTouched && !resolucionValida && formData.resolucionCreacion.trim() !== ''
@@ -294,24 +333,59 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                             placeholder="Ej: R.D. N° 1234-2024-DRELM"
                                         />
                                         
-                                        {/* Tooltip flotante con flecha */}
+                                        {/* Mensaje de error simple */}
                                         {resolucionTouched && !resolucionValida && formData.resolucionCreacion.trim() !== '' && (
-                                            <div className="absolute top-full right-0 mt-2 w-80 md:w-96 z-50">
-                                                {/* Flecha */}
-                                                <div className="absolute -top-2 right-4 w-4 h-4 bg-red-50 border-l border-t border-red-200 transform rotate-45"></div>
-                                                
-                                                {/* Contenido del tooltip */}
-                                                <div className="bg-red-50 border border-red-200 rounded-lg shadow-lg p-3">
-                                                    <p className="text-sm text-red-700 font-medium mb-2">
-                                                        ⚠️ Formato de resolución inválido
-                                                    </p>
-                                                    <p className="text-xs text-red-600 mb-2">
-                                                        Cada tipo de resolución tiene su instancia específica:
-                                                    </p>
-                                                    <p className="text-xs text-gray-600 mb-3 bg-blue-50 border border-blue-200 rounded p-2">
-                                                        👆 <span className="font-semibold">Haz clic en cualquier ejemplo</span> para copiarlo al campo y editarlo
-                                                    </p>
-                                                    <div className="text-xs space-y-3 max-h-64 overflow-y-auto">
+                                            <div className="absolute top-full left-0 mt-1 z-50">
+                                                <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-1.5">
+                                                    ⚠️ Formato inválido. Click en el campo para ver ejemplos.
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {(!resolucionTouched || resolucionValida || formData.resolucionCreacion.trim() === '') && (
+                                        <p className="mt-1 text-xs text-gray-500">
+                                            Click para ver formatos
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Ventana flotante arrastrable con ejemplos */}
+                        {showHelperWindow && (
+                            <div 
+                                className="fixed z-[9999] bg-white border-2 border-primary rounded-lg shadow-2xl"
+                                style={{
+                                    left: `${helperPosition.x}px`,
+                                    top: `${helperPosition.y}px`,
+                                    width: '380px',
+                                    maxHeight: '500px'
+                                }}
+                            >
+                                {/* Header arrastrable */}
+                                <div 
+                                    className="bg-gradient-to-r from-primary to-primary-light p-3 rounded-t-lg cursor-move flex justify-between items-center"
+                                    onMouseDown={handleMouseDown}
+                                >
+                                    <div className="flex items-center gap-2 text-white">
+                                        <FileText className="w-4 h-4" />
+                                        <span className="text-sm font-semibold">Formatos de Resolución</span>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowHelperWindow(false)}
+                                        className="text-white hover:bg-white/20 rounded p-1 transition-colors"
+                                        type="button"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                </div>
+
+                                {/* Contenido */}
+                                <div className="p-4 max-h-[420px] overflow-y-auto">
+                                    <p className="text-xs text-gray-600 mb-3 bg-blue-50 border border-blue-200 rounded p-2">
+                                        👆 <span className="font-semibold">Haz clic en un ejemplo</span> para copiarlo y editarlo
+                                    </p>
+                                    <div className="text-xs space-y-3">
                                                         {/* R.D. */}
                                                         <div 
                                                             onClick={() => copiarEjemplo('R.D. N° 1234-2024-DRELM')}
@@ -383,32 +457,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                                                 <Copy className="w-4 h-4 text-gray-400 group-hover:text-primary flex-shrink-0 ml-2" />
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
-                                    {(!resolucionTouched || resolucionValida || formData.resolucionCreacion.trim() === '') && (
-                                        <p className="mt-1 text-xs text-gray-500">
-                                            Ejemplo: R.D. N° 1234-2024-DRELM
-                                        </p>
-                                    )}
-                                </div>
-
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        <User className="inline w-4 h-4 mr-1" />
-                                        Nombre del Director *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="nombreDirector"
-                                        value={formData.nombreDirector}
-                                        onChange={handleChange}
-                                        required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                        placeholder="Ej: Juan Pérez García"
-                                    />
                                 </div>
                             </div>
                         )}
@@ -506,25 +555,19 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                         placeholder="Ej: 987654321"
                                     />
                                 </div>
-
-                                <div className="md:col-span-2 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                    <p className="text-sm text-blue-800">
-                                        💡 <strong>Nota:</strong> Los datos de facturación son opcionales en la creación, pero serán necesarios para emitir comprobantes de la suscripción.
-                                    </p>
-                                </div>
                             </div>
                         )}
 
                         {/* Tab 3: Logo */}
                         {activeTab === 'logo' && (
-                            <div className="max-w-2xl mx-auto">
+                            <div className="max-w-3xl mx-auto h-full flex flex-col justify-center">
                                 <div className="text-center mb-6">
                                     <h3 className="text-lg font-semibold text-gray-800 mb-2">Logo de la Institución</h3>
                                     <p className="text-sm text-gray-600">Sube el logo que representará a tu institución en el sistema</p>
                                 </div>
                                 
-                                <div className="flex flex-col items-center gap-6">
-                                    {/* Vista previa grande */}
+                                <div className="flex items-center gap-8 justify-center">
+                                    {/* Vista previa */}
                                     <div className="flex-shrink-0">
                                         {imagePreview ? (
                                             <div className="relative">
@@ -542,36 +585,32 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                     </div>
                                     
                                     {/* Input de archivo */}
-                                    <div className="w-full">
+                                    <div className="flex-1 max-w-md">
                                         <input
                                             type="file"
                                             accept="image/*"
                                             onChange={handleFileChange}
                                             className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-dark transition-all"
                                         />
-                                        <div className="mt-3 text-center">
+                                        <div className="mt-3">
                                             <p className="text-xs text-gray-500">
-                                                Formatos aceptados: JPG, PNG, GIF
-                                            </p>
-                                            <p className="text-xs text-gray-500">
-                                                Tamaño máximo: 5MB
+                                                Formatos aceptados: JPG, PNG, GIF - Tamáximo: 5MB
                                             </p>
                                         </div>
+                                        {imagePreview && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setImagePreview('');
+                                                    setSelectedFile(null);
+                                                    setFormData(prev => ({ ...prev, logoPath: '' }));
+                                                }}
+                                                className="mt-3 text-sm text-red-600 hover:text-red-700 underline"
+                                            >
+                                                Eliminar imagen
+                                            </button>
+                                        )}
                                     </div>
-
-                                    {imagePreview && (
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setImagePreview('');
-                                                setSelectedFile(null);
-                                                setFormData(prev => ({ ...prev, logoPath: '' }));
-                                            }}
-                                            className="text-sm text-red-600 hover:text-red-700 underline"
-                                        >
-                                            Eliminar imagen
-                                        </button>
-                                    )}
                                 </div>
                             </div>
                         )}

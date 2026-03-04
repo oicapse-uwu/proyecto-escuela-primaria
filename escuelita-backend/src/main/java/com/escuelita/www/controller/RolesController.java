@@ -33,7 +33,7 @@ public class RolesController {
     }
     @GetMapping("/roles/sede/{idSede}")
     public List<Roles> buscarPorSede(@PathVariable Long idSede) {
-        return repoUsuarios.findByIdSede_IdSede(idSede).stream()
+        return repoUsuarios.findByIdSedeIdSede(idSede).stream()
             .map(usuario -> usuario.getIdRol())
             .filter(rol -> rol != null)
             .collect(Collectors.toMap(Roles::getIdRol, rol -> rol, (a, b) -> a))

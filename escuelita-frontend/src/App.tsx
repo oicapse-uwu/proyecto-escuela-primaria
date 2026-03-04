@@ -1,17 +1,17 @@
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import PrivateRoute from './components/common/PrivateRoute';
 import {
-    Dashboard,
-    InstitucionesRoutes,
-    ReportesRoutes,
-    SedesRoutes,
-    SuscripcionesRoutes,
-    UsuariosRoutes
+  Dashboard,
+  InstitucionesRoutes,
+  ReportesRoutes,
+  SedesRoutes,
+  SuscripcionesRoutes,
+  UsuariosRoutes
 } from './features/backoffice';
 import AlumnosRoutes from './features/portal/alumnos/routes/AlumnosRoutes';
-import UsuariosPortalRoutes from './features/portal/usuarios/routes/UsuariosPortalRoutes';
 import ApoderadosRoutes from './features/portal/apoderados/routes/apoderados.routes';
 import MatriculasRoutes from './features/portal/matriculas/routes/matriculas.routes';
+import UsuariosPortalRoutes from './features/portal/usuarios/routes/UsuariosPortalRoutes';
 import EscuelaLayout from './layouts/EscuelaLayout';
 import SuperAdminLayout from './layouts/SuperAdminLayout';
 import DashboardEscuela from './pages/DashboardEscuela';
@@ -64,7 +64,6 @@ function App() {
             {/* Módulos del Portal Escuela */}
             <Route path="alumnos/*" element={<AlumnosRoutes />} />
             <Route path="configuracion/usuarios/*" element={<UsuariosPortalRoutes />} />
-            {/* <Route path="matriculas/*" element={<MatriculasRoutes />} /> */}
             <Route path="apoderados/*" element={<ApoderadosRoutes />} />
             <Route path="matriculas/*" element={<MatriculasRoutes />} />
             {/* <Route path="evaluaciones/*" element={<EvaluacionesRoutes />} /> */}

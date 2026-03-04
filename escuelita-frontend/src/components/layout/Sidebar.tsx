@@ -59,23 +59,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
             path: '/' 
         },
         {
-            name: 'Configuración',
-            icon: Settings,
-            subItems: [
-                { name: 'Institución', path: '/configuracion/institucion', icon: Building },
-                { name: 'Sedes', path: '/configuracion/sedes', icon: MapPin },
-                { name: 'Año Escolar', path: '/configuracion/anio-escolar', icon: Calendar },
-                { name: 'Periodos Académicos', path: '/configuracion/periodos', icon: CalendarDays },
-                { name: 'Usuarios y Roles', path: '/configuracion/usuarios', icon: UserCog },
-                { name: 'Tipos de Documento', path: '/configuracion/tipo-documentos', icon: FileType },
-            ]
-        },
-        {
             name: 'Infraestructura',
             icon: Building2,
             subItems: [
-                { name: 'Grados y Secciones', path: '/infraestructura/grados-secciones', icon: Layers },
-                { name: 'Aulas', path: '/infraestructura/aulas', icon: DoorOpen },
+                { name: 'Institución', path: '/escuela/infraestructura/institucion', icon: Building },
+                { name: 'Sedes', path: '/escuela/infraestructura/sedes', icon: MapPin },
+                { name: 'Año Escolar', path: '/escuela/infraestructura/anio-escolar', icon: Calendar },
+                { name: 'Periodos Académicos', path: '/escuela/infraestructura/periodos', icon: CalendarDays },
+                { name: 'Grados', path: '/escuela/infraestructura/grados', icon: Layers },
+                { name: 'Secciones', path: '/escuela/infraestructura/secciones', icon: Grid3x3 },
+                { name: 'Aulas', path: '/escuela/infraestructura/aulas', icon: DoorOpen },
+            ]
+        },
+        {
+            name: 'Configuración',
+            icon: Settings,
+            subItems: [
+                { name: 'Usuarios y Roles', path: '/configuracion/usuarios', icon: UserCog },
+                { name: 'Tipos de Documento', path: '/configuracion/tipo-documentos', icon: FileType },
             ]
         },
         {

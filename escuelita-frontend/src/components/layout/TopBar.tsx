@@ -1,4 +1,4 @@
-import { Bell, ChevronDown, LogOut, Menu, User } from 'lucide-react';
+import { Bell, Building2, ChevronDown, LogOut, Menu, User } from 'lucide-react';
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { adminAuthService } from '../../services/adminAuth.service';
@@ -43,7 +43,15 @@ const TopBar: React.FC<TopBarProps> = ({ onToggleSidebar }) => {
                         >
                             <Menu className="w-6 h-6" />
                         </button>
-                        {/* Aquí podrías agregar breadcrumbs o título de la página actual */}
+                        {/* Indicador de Sede (solo para escuelas) */}
+                        {!isAdminRoute && user?.sede && (
+                            <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 bg-primary/10 rounded-lg border border-primary/20">
+                                <Building2 className="w-4 h-4 text-primary" />
+                                <span className="text-sm font-medium text-primary">
+                                    {user.sede.nombreSede}
+                                </span>
+                            </div>
+                        )}
                     </div>
 
                     {/* Right side - User profile y notificaciones */}

@@ -7,6 +7,8 @@ import com.escuelita.www.entity.RolModuloPermiso;
 public interface IRolModuloPermisoService {
     List<RolModuloPermiso> buscarTodos();
     List<RolModuloPermiso> buscarPorRoles(List<Long> roleIds);
+    List<RolModuloPermiso> buscarPorRolId(Long idRol);
+    List<RolModuloPermiso> buscarPorRolIdOrdenado(Long idRol);
     RolModuloPermiso guardar(RolModuloPermiso rmp);
     RolModuloPermiso modificar(RolModuloPermiso rmp);
     Optional<RolModuloPermiso> buscarId(Long id);

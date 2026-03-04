@@ -1,10 +1,9 @@
-//CORRECTO
-
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,7 +11,7 @@ import jakarta.persistence.*;
 @SQLDelete(sql = "UPDATE permisos SET estado=0 WHERE id_permiso=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idPermiso", "nombre", "estado"
+    "idPermiso", "nombre", "codigo", "descripcion", "idModulo", "estado"
 })
 public class Permisos {
     @Id
@@ -21,6 +20,13 @@ public class Permisos {
     private Long idPermiso;
 
     private String nombre;
+    private String codigo;
+    private String descripcion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_modulo")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Modulos idModulo;
 
     private Integer estado = 1;
 
@@ -44,6 +50,24 @@ public class Permisos {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
+    public String getCodigo() {
+        return codigo;
+    }
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+    public String getDescripcion() {
+        return descripcion;
+    }
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    public Modulos getIdModulo() {
+        return idModulo;
+    }
+    public void setIdModulo(Modulos idModulo) {
+        this.idModulo = idModulo;
+    }
     public Integer getEstado() {
         return estado;
     }
@@ -52,6 +76,7 @@ public class Permisos {
     }
     @Override
     public String toString() {
-        return "Permisos [idPermiso=" + idPermiso + ", nombre=" + nombre + ", estado=" + estado + "]";
+        return "Permisos [idPermiso=" + idPermiso + ", nombre=" + nombre + ", codigo=" + codigo 
+                + ", descripcion=" + descripcion + ", idModulo=" + idModulo + ", estado=" + estado + "]";
     }
 }

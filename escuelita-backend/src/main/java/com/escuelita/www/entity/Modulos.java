@@ -12,7 +12,7 @@ import jakarta.persistence.*;
 @SQLDelete(sql = "UPDATE modulos SET estado=0 WHERE id_modulo=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idModulo", "nombre", "urlBase", "estado"
+    "idModulo", "nombre", "urlBase", "descripcion", "icono", "orden", "estado"
 })
 public class Modulos {
     @Id
@@ -23,6 +23,10 @@ public class Modulos {
     private String nombre;
     @Column(name = "url_base")
     private String urlBase;
+    
+    private String descripcion;
+    private String icono;
+    private Integer orden;
 
     private Integer estado = 1;
 
@@ -51,6 +55,24 @@ public class Modulos {
     public void setUrlBase(String urlBase) {
         this.urlBase = urlBase;
     }
+    public String getDescripcion() {
+        return descripcion;
+    }
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+    public String getIcono() {
+        return icono;
+    }
+    public void setIcono(String icono) {
+        this.icono = icono;
+    }
+    public Integer getOrden() {
+        return orden;
+    }
+    public void setOrden(Integer orden) {
+        this.orden = orden;
+    }
     public Integer getEstado() {
         return estado;
     }
@@ -59,7 +81,7 @@ public class Modulos {
     }
     @Override
     public String toString() {
-        return "Modulos [idModulo=" + idModulo + ", nombre=" + nombre + ", urlBase=" + urlBase + ", estado=" + estado
-                + "]";
+        return "Modulos [idModulo=" + idModulo + ", nombre=" + nombre + ", urlBase=" + urlBase 
+                + ", descripcion=" + descripcion + ", icono=" + icono + ", orden=" + orden + ", estado=" + estado + "]";
     }
 }

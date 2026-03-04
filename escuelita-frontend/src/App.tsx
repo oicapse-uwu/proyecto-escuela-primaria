@@ -4,6 +4,7 @@ import {
   Dashboard,
   InstitucionesRoutes,
   ReportesRoutes,
+  RolesRoutes,
   SedesRoutes,
   SuscripcionesRoutes,
   UsuariosRoutes
@@ -29,18 +30,28 @@ function App() {
         <Route path="/login" element={<Login />} /> {/* Super Admin Login */}
         <Route path="/escuela/login" element={<LoginEscuela />} /> {/* Escuela Login */}
 
-        {/* Rutas protegidas - Super Admin */}
-        <Route
-          path="/admin"
-          element={
-            <PrivateRoute>
-              <SuperAdminLayout />
-            </PrivateRoute>
-          }
-        >
-          {/* Dashboard por defecto */}
-          <Route index element={<Navigate to="/admin/dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
+          {/* Rutas protegidas - Super Admin */}
+          <Route
+            path="/admin"
+            element={
+              <PrivateRoute>
+                <SuperAdminLayout />
+              </PrivateRoute>
+            }
+          >
+            {/* Dashboard por defecto */}
+            <Route index element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            
+            {/* Módulos del Backoffice */}
+            <Route path="instituciones/*" element={<InstitucionesRoutes />} />
+            <Route path="roles/*" element={<RolesRoutes />} />
+            <Route path="sedes/*" element={<SedesRoutes />} />
+            <Route path="suscripciones/*" element={<SuscripcionesRoutes />} />
+            <Route path="usuarios/*" element={<UsuariosRoutes />} />
+            <Route path="reportes/*" element={<ReportesRoutes />} />
+            {/* etc... */}
+          </Route>
 
           {/* Módulos del Backoffice */}
           <Route path="instituciones/*" element={<InstitucionesRoutes />} />

@@ -1,17 +1,16 @@
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import PrivateRoute from './components/common/PrivateRoute';
 import {
-  Dashboard,
-  InstitucionesRoutes,
-  ReportesRoutes,
-  SedesRoutes,
-  SuscripcionesRoutes,
-  UsuariosRoutes
+    Dashboard,
+    InstitucionesRoutes,
+    ReportesRoutes,
+    SedesRoutes,
+    SuscripcionesRoutes,
+    UsuariosRoutes
 } from './features/backoffice';
 import AlumnosRoutes from './features/portal/alumnos/routes/AlumnosRoutes';
-import AlumnosRoutes from './features/portal/alumnos/routes/AlumnosRoutes';
-import InfraestructuraRoutes from './features/portal/infraestructura/routes/InfraestructuraRoutes';
 import ApoderadosRoutes from './features/portal/apoderados/routes/apoderados.routes';
+import InfraestructuraRoutes from './features/portal/infraestructura/routes/InfraestructuraRoutes';
 import MatriculasRoutes from './features/portal/matriculas/routes/matriculas.routes';
 import UsuariosPortalRoutes from './features/portal/usuarios/routes/UsuariosPortalRoutes';
 import EscuelaLayout from './layouts/EscuelaLayout';

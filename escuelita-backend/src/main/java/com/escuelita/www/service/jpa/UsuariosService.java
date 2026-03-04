@@ -25,6 +25,10 @@ public class UsuariosService implements IUsuariosService {
     }
     
     @Override
+    public List<Usuarios> buscarPorSede(Long idSede) {
+        return repoUsuarios.findByIdSede_IdSede(idSede);
+    }
+    @Override
     public Usuarios guardar(Usuarios usuarios) {
         SedeAccessHelper.validateSedeAccess(
             () -> usuarios.getIdSede() != null ? usuarios.getIdSede().getIdSede() : null

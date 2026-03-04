@@ -6,11 +6,12 @@ import UsoSistemaPage from '../pages/UsoSistemaPage.tsx';
 const ReportesRoutes = () => {
     return (
         <Routes>
-            <Route index element={<Navigate to="estadisticas" replace />} />
+            <Route index element={<Navigate to="ejecutivo" replace />} />
+            <Route path="ejecutivo" element={<EstadisticasGeneralesPage />} />
             <Route path="estadisticas" element={<EstadisticasGeneralesPage />} />
             <Route path="uso" element={<UsoSistemaPage />} />
             <Route path="ingresos" element={<IngresosPage />} />
-            <Route path="*" element={<Navigate to="estadisticas" replace />} />
+            <Route path="*" element={<Navigate to="ejecutivo" replace />} />
         </Routes>
     );
 };

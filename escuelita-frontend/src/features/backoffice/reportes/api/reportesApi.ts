@@ -5,6 +5,7 @@ import type {
     ReporteAlumno,
     ReporteInstitucion,
     ReportePagoCaja,
+    ReporteSede,
     ReporteSuperAdmin,
     ReporteSuscripcion,
     ReporteUsuarioSistema
@@ -27,6 +28,11 @@ export const obtenerUsuariosReporte = async (): Promise<ReporteUsuarioSistema[]>
 
 export const obtenerSuperAdminsReporte = async (): Promise<ReporteSuperAdmin[]> => {
     const response = await api.get<ReporteSuperAdmin[]>(API_ENDPOINTS.SUPER_ADMINS);
+    return response.data;
+};
+
+export const obtenerSedesReporte = async (): Promise<ReporteSede[]> => {
+    const response = await api.get<ReporteSede[]>(API_ENDPOINTS.SEDES);
     return response.data;
 };
 

@@ -35,7 +35,7 @@ const AlumnoForm: React.FC<AlumnoFormProps> = ({
         fotoUrl: '',
         observacionesSalud: '',
         tipoIngreso: '',
-        estadoAlumno: 'Activo'
+        estadoAlumno: 'ACTIVO'
     });
 
     const tipoDocumentoSeleccionado = useMemo(
@@ -80,7 +80,7 @@ const AlumnoForm: React.FC<AlumnoFormProps> = ({
                 fotoUrl: alumno.fotoUrl || '',
                 observacionesSalud: alumno.observacionesSalud || '',
                 tipoIngreso: alumno.tipoIngreso || '',
-                estadoAlumno: alumno.estadoAlumno || 'Activo'
+                estadoAlumno: alumno.estadoAlumno || 'ACTIVO'
             });
         }
     }, [alumno]);

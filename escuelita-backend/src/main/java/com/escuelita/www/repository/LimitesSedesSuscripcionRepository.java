@@ -16,15 +16,15 @@ public interface LimitesSedesSuscripcionRepository extends JpaRepository<Limites
     // Buscar todos los límites de una suscripción
     List<LimitesSedesSuscripcion> findByIdSuscripcion(Suscripciones suscripcion);
     
-    // Buscar todos los límites de una suscripción por ID
-    @Query("SELECT l FROM LimitesSedesSuscripcion l WHERE l.idSuscripcion.idSuscripcion = :idSuscripcion")
+    // Buscar todos los límites de una suscripción por ID (solo activos)
+    @Query("SELECT l FROM LimitesSedesSuscripcion l WHERE l.idSuscripcion.idSuscripcion = :idSuscripcion AND l.estado = 1")
     List<LimitesSedesSuscripcion> findByIdSuscripcionId(@Param("idSuscripcion") Long idSuscripcion);
     
     // Buscar límite específico de una sede en una suscripción
     Optional<LimitesSedesSuscripcion> findByIdSuscripcionAndIdSede(Suscripciones suscripcion, Sedes sede);
     
-    // Buscar por suscripción y sede usando IDs
-    @Query("SELECT l FROM LimitesSedesSuscripcion l WHERE l.idSuscripcion.idSuscripcion = :idSuscripcion AND l.idSede.idSede = :idSede")
+    // Buscar por suscripción y sede usando IDs (solo activos)
+    @Query("SELECT l FROM LimitesSedesSuscripcion l WHERE l.idSuscripcion.idSuscripcion = :idSuscripcion AND l.idSede.idSede = :idSede AND l.estado = 1")
     Optional<LimitesSedesSuscripcion> findByIdSuscripcionIdAndIdSedeId(@Param("idSuscripcion") Long idSuscripcion, @Param("idSede") Long idSede);
     
     // Eliminar todos los límites de una suscripción

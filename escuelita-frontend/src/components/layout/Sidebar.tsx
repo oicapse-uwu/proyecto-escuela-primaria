@@ -71,23 +71,23 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
             path: '/escuela/dashboard' 
         },
         {
-            name: 'Configuración',
-            icon: Settings,
-            subItems: [
-                { name: 'Institución', path: '/escuela/configuracion/institucion', icon: Building },
-                { name: 'Sedes', path: '/escuela/configuracion/sedes', icon: MapPin },
-                { name: 'Año Escolar', path: '/escuela/configuracion/anio-escolar', icon: Calendar },
-                { name: 'Periodos Académicos', path: '/escuela/configuracion/periodos', icon: CalendarDays },
-                { name: 'Usuarios y Roles', path: '/escuela/configuracion/usuarios', icon: UserCog },
-                { name: 'Tipos de Documento', path: '/escuela/configuracion/tipo-documentos', icon: FileType },
-            ]
-        },
-        {
             name: 'Infraestructura',
             icon: Building2,
             subItems: [
+                { name: 'Institución', path: '/escuela/infraestructura/institucion', icon: Building },
+                { name: 'Sedes', path: '/escuela/infraestructura/sedes', icon: MapPin },
+                { name: 'Año Escolar', path: '/escuela/infraestructura/anio-escolar', icon: Calendar },
+                { name: 'Periodos Académicos', path: '/escuela/infraestructura/periodos', icon: CalendarDays },
                 { name: 'Grados y Secciones', path: '/escuela/infraestructura/grados-secciones', icon: Layers },
                 { name: 'Aulas', path: '/escuela/infraestructura/aulas', icon: DoorOpen },
+            ]
+        },
+        {
+            name: 'Configuración',
+            icon: Settings,
+            subItems: [
+                { name: 'Usuarios y Roles', path: '/escuela/configuracion/usuarios', icon: UserCog },
+                { name: 'Tipos de Documento', path: '/escuela/configuracion/tipo-documentos', icon: FileType },
             ]
         },
         {

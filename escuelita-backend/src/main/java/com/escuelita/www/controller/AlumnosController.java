@@ -51,13 +51,18 @@ public class AlumnosController {
     }
     @PostMapping("/alumnos")
     public ResponseEntity<?> guardar(@RequestBody AlumnosDTO dto) {
+        System.out.println("🔍 Intentando crear alumno para sede ID: " + dto.getIdSede());
+        
         // 🔒 VALIDACIÓN DE LÍMITES POR SEDE
         // Solo validar si el alumno será ACTIVO
         if ("ACTIVO".equals(dto.getEstadoAlumno())) {
             Sedes sede = repoSedes.findById(dto.getIdSede()).orElse(null);
             if (sede == null) {
+                System.err.println("❌ Sede no encontrada: " + dto.getIdSede());
                 return ResponseEntity.badRequest().body("Sede no encontrada");
             }
+
+            System.out.println("📍 Sede encontrada: " + sede.getNombreSede() + " (Institución: " + sede.getIdInstitucion().getNombre() + ")");
 
             // Buscar suscripción activa de la institución
             Optional<Suscripciones> suscripcionOpt = repoSuscripciones
@@ -65,6 +70,8 @@ public class AlumnosController {
 
             if (suscripcionOpt.isPresent()) {
                 Suscripciones suscripcionActiva = suscripcionOpt.get();
+                System.out.println("📋 Suscripción activa encontrada: ID=" + suscripcionActiva.getIdSuscripcion() 
+                                 + ", Límite total=" + suscripcionActiva.getLimiteAlumnosContratado());
                 
                 // Buscar límite asignado a esta sede
                 Optional<LimitesSedesSuscripcion> limite = repoLimitesSedes
@@ -77,17 +84,29 @@ public class AlumnosController {
                     int limiteAsignado = limite.get().getLimiteAlumnosAsignado();
                     long alumnosActuales = repoAlumnos.countAlumnosActivosBySede(dto.getIdSede());
 
+                    System.out.println("🎯 Límite asignado a sede: " + limiteAsignado);
+                    System.out.println("👥 Alumnos activos actuales: " + alumnosActuales);
+
                     if (alumnosActuales >= limiteAsignado) {
-                        return ResponseEntity.badRequest().body(
-                            String.format(
-                                "No se puede crear el alumno. La sede '%s' ha alcanzado su límite de %d alumnos activos.",
-                                sede.getNombreSede(),
-                                limiteAsignado
-                            )
+                        String mensajeError = String.format(
+                            "No se puede crear el alumno. La sede '%s' ha alcanzado su límite de %d alumnos activos (%d actuales).",
+                            sede.getNombreSede(),
+                            limiteAsignado,
+                            alumnosActuales
                         );
+                        System.err.println("❌ " + mensajeError);
+                        return ResponseEntity.badRequest().body(mensajeError);
                     }
+                    
+                    System.out.println("✅ Validación OK: " + alumnosActuales + " < " + limiteAsignado);
+                } else {
+                    System.out.println("⚠️ No hay límite configurado para esta sede. Permitiendo creación.");
                 }
+            } else {
+                System.out.println("⚠️ No hay suscripción activa. Permitiendo creación.");
             }
+        } else {
+            System.out.println("ℹ️ Alumno no activo, saltando validación de límites");
         }
 
         // Proceder con la creación del alumno

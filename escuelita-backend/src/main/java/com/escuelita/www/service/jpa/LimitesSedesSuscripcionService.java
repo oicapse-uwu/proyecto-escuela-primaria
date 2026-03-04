@@ -63,10 +63,13 @@ public class LimitesSedesSuscripcionService implements ILimitesSedesSuscripcionS
     @Override
     @Transactional
     public void eliminarPorSuscripcion(Long idSuscripcion) {
-        Optional<Suscripciones> suscripcionOpt = repoSuscripciones.findById(idSuscripcion);
-        if (suscripcionOpt.isPresent()) {
-            repoLimites.deleteByIdSuscripcion(suscripcionOpt.get());
+        // Soft delete: marcar como inactivos (estado = 0) en lugar de borrar
+        List<LimitesSedesSuscripcion> limitesExistentes = repoLimites.findByIdSuscripcionId(idSuscripcion);
+        for (LimitesSedesSuscripcion limite : limitesExistentes) {
+            limite.setEstado(0);
+            repoLimites.save(limite);
         }
+        System.out.println("✅ Soft delete: " + limitesExistentes.size() + " límites marcados como inactivos");
     }
     
     @Override

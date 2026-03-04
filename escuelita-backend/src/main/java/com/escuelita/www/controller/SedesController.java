@@ -1,4 +1,3 @@
-// Revisado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -18,7 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.escuelita.www.entity.Institucion;
 import com.escuelita.www.entity.Sedes;
 import com.escuelita.www.entity.SedesDTO;
+import com.escuelita.www.entity.Suscripciones;
 import com.escuelita.www.repository.InstitucionRepository;
+import com.escuelita.www.repository.SedesRepository;
+import com.escuelita.www.repository.SuscripcionesRepository;
 import com.escuelita.www.service.ISedesService;
 
 @RestController
@@ -29,6 +31,10 @@ public class SedesController {
     private ISedesService serviceSedes;
     @Autowired
     private InstitucionRepository repoInstitucion;
+    @Autowired
+    private SedesRepository repoSedes;
+    @Autowired
+    private SuscripcionesRepository repoSuscripciones;
 
     @GetMapping("/sedes")
     public List<Sedes> buscarTodos() { 
@@ -36,25 +42,53 @@ public class SedesController {
     }
     @PostMapping("/sedes")
     public ResponseEntity<?> guardar(@RequestBody SedesDTO dto) {
-        Sedes sedes = new Sedes();
-        sedes.setNombreSede(dto.getNombreSede());
-        sedes.setCodigoEstablecimiento(dto.getCodigoEstablecimiento());
-        sedes.setEsSedePrincipal(dto.getEsSedePrincipal());
-        sedes.setDireccion(dto.getDireccion());
-        sedes.setDistrito(dto.getDistrito());
-        sedes.setProvincia(dto.getProvincia());
-        sedes.setDepartamento(dto.getDepartamento());
-        sedes.setUgel(dto.getUgel());
-        sedes.setTelefono(dto.getTelefono());
-        sedes.setCorreoInstitucional(dto.getCorreoInstitucional());
-        
-        Institucion institucion = repoInstitucion
-            .findById(dto.getIdInstitucion())
-            .orElse(null);
+        try {
+            // Obtener la institución
+            Institucion institucion = repoInstitucion
+                .findById(dto.getIdInstitucion())
+                .orElseThrow(() -> new Exception("Institución no encontrada"));
+            
+            // Validar que exista una suscripción activa
+            Optional<Suscripciones> suscripcionOpt = repoSuscripciones
+                .findSuscripcionActivaByInstitucionId(dto.getIdInstitucion());
+            
+            if (suscripcionOpt.isEmpty()) {
+                return ResponseEntity.badRequest()
+                    .body("La institución no tiene una suscripción activa");
+            }
+            
+            Suscripciones suscripcion = suscripcionOpt.get();
+            
+            // Contar cuántas sedes activas tiene la institución
+            Long sedesActuales = repoSedes.countSedesActivasByInstitucionId(dto.getIdInstitucion());
+            
+            // Validar que no se exceda el límite
+            if (sedesActuales >= suscripcion.getLimiteSedesContratadas()) {
+                return ResponseEntity.badRequest()
+                    .body("Ha alcanzado el límite de sedes permitidas (" + 
+                          suscripcion.getLimiteSedesContratadas() + 
+                          "). Contacte al administrador para ampliar su suscripción.");
+            }
+            
+            // Crear la sede
+            Sedes sedes = new Sedes();
+            sedes.setNombreSede(dto.getNombreSede());
+            sedes.setCodigoEstablecimiento(dto.getCodigoEstablecimiento());
+            sedes.setEsSedePrincipal(dto.getEsSedePrincipal());
+            sedes.setDireccion(dto.getDireccion());
+            sedes.setDistrito(dto.getDistrito());
+            sedes.setProvincia(dto.getProvincia());
+            sedes.setDepartamento(dto.getDepartamento());
+            sedes.setUgel(dto.getUgel());
+            sedes.setTelefono(dto.getTelefono());
+            sedes.setCorreoInstitucional(dto.getCorreoInstitucional());
+            sedes.setIdInstitucion(institucion);
 
-        sedes.setIdInstitucion(institucion);
-
-        return ResponseEntity.ok(serviceSedes.guardar(sedes));
+            return ResponseEntity.ok(serviceSedes.guardar(sedes));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body("Error al crear sede: " + e.getMessage());
+        }
     }
     @PutMapping("/sedes")
     public ResponseEntity<?> modificar(@RequestBody SedesDTO dto) {

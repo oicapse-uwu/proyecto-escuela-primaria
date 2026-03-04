@@ -191,40 +191,74 @@ public class RolModuloPermisoController {
     @PostMapping("/roles/{idRol}/matriz-completa")
     public ResponseEntity<?> actualizarMatrizCompleta(@PathVariable Long idRol, 
                                                       @RequestBody ActualizarMatrizRolDTO dto) {
+        System.out.println("📥 Recibiendo actualización de matriz para rol: " + idRol);
+        System.out.println("📦 DTO recibido: " + (dto != null ? "presente" : "nulo"));
+        
+        if (dto == null) {
+            return ResponseEntity.badRequest().body("Error: DTO es nulo");
+        }
+        
+        if (dto.getModulos() == null) {
+            return ResponseEntity.badRequest().body("Error: Lista de módulos es nula");
+        }
+
         Optional<Roles> rolOpt = repoRoles.findById(idRol);
         if (rolOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("Rol no encontrado");
+            return ResponseEntity.badRequest().body("Error: Rol no encontrado con ID: " + idRol);
         }
 
         try {
+            System.out.println("🔄 Eliminando asignaciones anteriores...");
             // Eliminar todas las asignaciones previas del rol
             List<RolModuloPermiso> asignacionesActuales = serviceRmp.buscarPorRolId(idRol);
+            System.out.println("📊 Asignaciones actuales encontradas: " + asignacionesActuales.size());
+            
             for (RolModuloPermiso rmp : asignacionesActuales) {
                 serviceRmp.eliminar(rmp.getIdRmp());
             }
 
             // Crear nuevas asignaciones basadas en la solicitud
             Roles rol = rolOpt.get();
+            System.out.println("✅ Creando nuevas asignaciones. Módulos a procesar: " + dto.getModulos().size());
+            
+            int totalAsignacionesCreadas = 0;
             for (ModuloPermisosActualizarDTO moduloDTO : dto.getModulos()) {
+                if (moduloDTO.getIdModulo() == null || moduloDTO.getIdPermisos() == null) {
+                    System.out.println("⚠️ Módulo o permisos nulos, saltando...");
+                    continue;
+                }
+                
                 Optional<Modulos> moduloOpt = repoModulos.findById(moduloDTO.getIdModulo());
-                if (moduloOpt.isEmpty()) continue;
+                if (moduloOpt.isEmpty()) {
+                    System.out.println("⚠️ Módulo no encontrado: " + moduloDTO.getIdModulo());
+                    continue;
+                }
 
                 Modulos modulo = moduloOpt.get();
+                System.out.println("📝 Procesando módulo: " + modulo.getNombre() + " con " + moduloDTO.getIdPermisos().size() + " permisos");
+                
                 for (Long idPermiso : moduloDTO.getIdPermisos()) {
                     Optional<Permisos> permisoOpt = repoPermisos.findById(idPermiso);
-                    if (permisoOpt.isEmpty()) continue;
+                    if (permisoOpt.isEmpty()) {
+                        System.out.println("⚠️ Permiso no encontrado: " + idPermiso);
+                        continue;
+                    }
 
                     RolModuloPermiso rmp = new RolModuloPermiso();
                     rmp.setIdRol(rol);
                     rmp.setIdModulo(modulo);
                     rmp.setIdPermiso(permisoOpt.get());
                     serviceRmp.guardar(rmp);
+                    totalAsignacionesCreadas++;
                 }
             }
 
-            return ResponseEntity.ok("{\"mensaje\": \"Matriz del rol actualizada correctamente\"}");
+            System.out.println("✅ Actualización completada. Total asignaciones creadas: " + totalAsignacionesCreadas);
+            return ResponseEntity.ok("{\"mensaje\": \"Matriz del rol actualizada correctamente. Asignaciones: " + totalAsignacionesCreadas + "\"}");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al actualizar matriz: " + e.getMessage());
+            System.err.println("❌ Error al actualizar matriz: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error interno: " + e.getClass().getSimpleName() + " - " + e.getMessage());
         }
     }
 }

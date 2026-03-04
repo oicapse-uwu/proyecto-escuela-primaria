@@ -15,6 +15,17 @@ export const obtenerMatrizRol = async (idRol: number): Promise<MatrizRol> => {
  * Actualiza la matriz de permisos de un rol en lote
  */
 export const actualizarMatrizRol = async (idRol: number, payload: ActualizarMatrizRolPayload): Promise<{ mensaje: string }> => {
-    const response = await api.post<{ mensaje: string }>(`${ROLES_BASE_URL}/${idRol}/matriz-completa`, payload);
-    return response.data;
+    console.log('📤 Enviando payload a backend:', { idRol, payload });
+    try {
+        const response = await api.post<{ mensaje: string }>(`${ROLES_BASE_URL}/${idRol}/matriz-completa`, payload);
+        console.log('✅ Respuesta del backend:', response.data);
+        return response.data;
+    } catch (error: any) {
+        console.error('❌ Error en actualización:', {
+            status: error.response?.status,
+            data: error.response?.data,
+            payload
+        });
+        throw error;
+    }
 };

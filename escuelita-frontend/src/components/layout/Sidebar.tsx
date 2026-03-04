@@ -32,8 +32,10 @@ import {
     Wallet,
     X
 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useModulosPermisos } from '../../hooks/useModulosPermisos';
+import { escuelaAuthService } from '../../services/escuelaAuth.service';
 
 interface SidebarProps {
     isOpen?: boolean;
@@ -47,9 +49,113 @@ interface MenuItem {
     subItems?: { name: string; path: string; icon?: LucideIcon }[];
 }
 
+// Mapeo de módulos del backend a items del menú
+const menuModulesConfig: Record<string, { icon: LucideIcon; subItems?: Record<string, { path: string; icon?: LucideIcon }> }> = {
+    'DASHBOARD': { icon: LayoutDashboard },
+    'CONFIGURACIÓN': { 
+        icon: Settings,
+        subItems: {
+            'Institución': { path: '/escuela/configuracion/institucion', icon: Building },
+            'Sedes': { path: '/escuela/configuracion/sedes', icon: MapPin },
+            'Año Escolar': { path: '/escuela/configuracion/anio-escolar', icon: Calendar },
+            'Periodos Académicos': { path: '/escuela/configuracion/periodos', icon: CalendarDays },
+            'Usuarios y Roles': { path: '/escuela/configuracion/usuarios', icon: UserCog },
+            'Tipos de Documento': { path: '/escuela/configuracion/tipo-documentos', icon: FileType },
+        }
+    },
+    'INFRAESTRUCTURA': {
+        icon: Building2,
+        subItems: {
+            'Grados y Secciones': { path: '/escuela/infraestructura/grados-secciones', icon: Layers },
+            'Aulas': { path: '/escuela/infraestructura/aulas', icon: DoorOpen },
+        }
+    },
+    'GESTIÓN ACADÉMICA': {
+        icon: GraduationCap,
+        subItems: {
+            'Áreas y Cursos': { path: '/escuela/academica/areas-cursos', icon: BookOpen },
+            'Malla Curricular': { path: '/escuela/academica/malla', icon: Grid3x3 },
+            'Docentes': { path: '/escuela/academica/docentes', icon: User },
+            'Especialidades': { path: '/escuela/academica/especialidades', icon: Briefcase },
+            'Asignación Docente': { path: '/escuela/academica/asignacion', icon: ClipboardList },
+            'Horarios': { path: '/escuela/academica/horarios', icon: Clock },
+        }
+    },
+    'ALUMNOS': {
+        icon: Users,
+        subItems: {
+            'Lista de Alumnos': { path: '/escuela/alumnos', icon: Users },
+            'Apoderados': { path: '/escuela/apoderados', icon: UserCheck },
+        }
+    },
+    'MATRÍCULAS': {
+        icon: ClipboardCheck,
+        subItems: {
+            'Gestionar Matrículas': { path: '/escuela/matriculas', icon: ClipboardList },
+            'Requisitos de Documentos': { path: '/escuela/matriculas/requisitos', icon: FileCheck },
+        }
+    },
+    'EVALUACIONES Y NOTAS': {
+        icon: FileText,
+        subItems: {
+            'Asistencias': { path: '/escuela/evaluaciones/asistencias', icon: CheckCircle },
+            'Evaluaciones': { path: '/escuela/evaluaciones/lista', icon: FileText },
+            'Calificaciones': { path: '/escuela/evaluaciones/calificaciones', icon: ClipboardCheck },
+            'Promedios': { path: '/escuela/evaluaciones/promedios', icon: TrendingUp },
+        }
+    },
+    'PAGOS Y PENSIONES': {
+        icon: Wallet,
+        subItems: {
+            'Conceptos de Pago': { path: '/escuela/pagos/conceptos', icon: DollarSign },
+            'Métodos de Pago': { path: '/escuela/pagos/metodos', icon: CreditCard },
+            'Registrar Pago': { path: '/escuela/pagos/registrar', icon: Receipt },
+            'Deudas por Alumno': { path: '/escuela/pagos/deudas', icon: BarChart3 },
+            'Reportes de Caja': { path: '/escuela/pagos/reportes', icon: TrendingUp },
+        }
+    },
+};
+
 const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
     const location = useLocation();
-    const [expandedModules, setExpandedModules] = useState<string[]>(['dashboard']);
+    const [expandedModules, setExpandedModules] = useState<string[]>([]);
+    const currentUser = escuelaAuthService.getCurrentUser();
+    const { modulosPermisos } = useModulosPermisos(currentUser?.idUsuario ?? null);
+
+    // Construir menú dinámico basado en los módulos del usuario
+    const menuModules = useMemo(() => {
+        const userModuleNames = new Set((modulosPermisos?.modulos ?? []).map(m => m.nombre.toUpperCase()));
+        const menu: MenuItem[] = [];
+
+        for (const [moduleName, config] of Object.entries(menuModulesConfig)) {
+            if (!userModuleNames.has(moduleName)) continue;
+
+            // Formatear nombre del módulo: "CONFIGURACIÓN" → "Configuración"
+            const displayName = moduleName
+                .split(' ')
+                .map(word => word.charAt(0) + word.slice(1).toLowerCase())
+                .join(' ');
+
+            const menuItem: MenuItem = {
+                name: displayName,
+                icon: config.icon,
+            };
+
+            if (config.subItems) {
+                menuItem.subItems = Object.entries(config.subItems).map(([subName, subConfig]) => ({
+                    name: subName,
+                    path: subConfig.path,
+                    icon: subConfig.icon,
+                }));
+            } else {
+                menuItem.path = displayName === 'Dashboard' ? '/escuela/dashboard' : undefined;
+            }
+
+            menu.push(menuItem);
+        }
+
+        return menu;
+    }, [modulosPermisos]);
 
     const isActive = (path?: string) => {
         if (!path) return false;
@@ -63,83 +169,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
         }
         return false;
     };
-
-    const menuModules: MenuItem[] = [
-        { 
-            name: 'Dashboard', 
-            icon: LayoutDashboard, 
-            path: '/escuela/dashboard' 
-        },
-        {
-            name: 'Configuración',
-            icon: Settings,
-            subItems: [
-                { name: 'Institución', path: '/escuela/configuracion/institucion', icon: Building },
-                { name: 'Sedes', path: '/escuela/configuracion/sedes', icon: MapPin },
-                { name: 'Año Escolar', path: '/escuela/configuracion/anio-escolar', icon: Calendar },
-                { name: 'Periodos Académicos', path: '/escuela/configuracion/periodos', icon: CalendarDays },
-                { name: 'Usuarios y Roles', path: '/escuela/configuracion/usuarios', icon: UserCog },
-                { name: 'Tipos de Documento', path: '/escuela/configuracion/tipo-documentos', icon: FileType },
-            ]
-        },
-        {
-            name: 'Infraestructura',
-            icon: Building2,
-            subItems: [
-                { name: 'Grados y Secciones', path: '/escuela/infraestructura/grados-secciones', icon: Layers },
-                { name: 'Aulas', path: '/escuela/infraestructura/aulas', icon: DoorOpen },
-            ]
-        },
-        {
-            name: 'Gestión Académica',
-            icon: GraduationCap,
-            subItems: [
-                { name: 'Áreas y Cursos', path: '/escuela/academica/areas-cursos', icon: BookOpen },
-                { name: 'Malla Curricular', path: '/escuela/academica/malla', icon: Grid3x3 },
-                { name: 'Docentes', path: '/escuela/academica/docentes', icon: User },
-                { name: 'Especialidades', path: '/escuela/academica/especialidades', icon: Briefcase },
-                { name: 'Asignación Docente', path: '/escuela/academica/asignacion', icon: ClipboardList },
-                { name: 'Horarios', path: '/escuela/academica/horarios', icon: Clock },
-            ]
-        },
-        {
-            name: 'Alumnos',
-            icon: Users,
-            subItems: [
-                { name: 'Lista de Alumnos', path: '/escuela/alumnos', icon: Users },
-                { name: 'Apoderados', path: '/escuela/apoderados', icon: UserCheck },
-            ]
-        },
-        {
-            name: 'Matrículas',
-            icon: ClipboardCheck,
-            subItems: [
-                { name: 'Gestionar Matrículas', path: '/escuela/matriculas', icon: ClipboardList },
-                { name: 'Requisitos de Documentos', path: '/escuela/matriculas/requisitos', icon: FileCheck },
-            ]
-        },
-        {
-            name: 'Evaluaciones y Notas',
-            icon: FileText,
-            subItems: [
-                { name: 'Asistencias', path: '/escuela/evaluaciones/asistencias', icon: CheckCircle },
-                { name: 'Evaluaciones', path: '/escuela/evaluaciones/lista', icon: FileText },
-                { name: 'Calificaciones', path: '/escuela/evaluaciones/calificaciones', icon: ClipboardCheck },
-                { name: 'Promedios', path: '/escuela/evaluaciones/promedios', icon: TrendingUp },
-            ]
-        },
-        {
-            name: 'Pagos y Pensiones',
-            icon: Wallet,
-            subItems: [
-                { name: 'Conceptos de Pago', path: '/escuela/pagos/conceptos', icon: DollarSign },
-                { name: 'Métodos de Pago', path: '/escuela/pagos/metodos', icon: CreditCard },
-                { name: 'Registrar Pago', path: '/escuela/pagos/registrar', icon: Receipt },
-                { name: 'Deudas por Alumno', path: '/escuela/pagos/deudas', icon: BarChart3 },
-                { name: 'Reportes de Caja', path: '/escuela/pagos/reportes', icon: TrendingUp },
-            ]
-        },
-    ];
 
     const toggleModule = (moduleName: string) => {
         setExpandedModules(prev => 

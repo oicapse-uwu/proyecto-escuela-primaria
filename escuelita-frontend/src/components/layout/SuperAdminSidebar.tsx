@@ -71,8 +71,12 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }
             subItems: [
                 { name: 'Super Admins', path: '/admin/usuarios/super-admins', icon: Shield },
                 { name: 'Administradores', path: '/admin/usuarios/administradores', icon: Users },
-                { name: 'Roles y Permisos', path: '/admin/usuarios/roles', icon: Settings },
             ]
+        },
+        {
+            name: 'Roles y Permisos',
+            icon: Settings,
+            path: '/admin/roles'
         },
         {
             name: 'Reportes',

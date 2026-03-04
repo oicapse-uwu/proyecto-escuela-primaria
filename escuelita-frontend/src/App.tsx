@@ -4,6 +4,7 @@ import {
   Dashboard,
   InstitucionesRoutes,
   ReportesRoutes,
+  RolesRoutes,
   SedesRoutes,
   SuscripcionesRoutes,
   UsuariosRoutes
@@ -41,6 +42,7 @@ function App() {
             
             {/* Módulos del Backoffice */}
             <Route path="instituciones/*" element={<InstitucionesRoutes />} />
+            <Route path="roles/*" element={<RolesRoutes />} />
             <Route path="sedes/*" element={<SedesRoutes />} />
             <Route path="suscripciones/*" element={<SuscripcionesRoutes />} />
             <Route path="usuarios/*" element={<UsuariosRoutes />} />

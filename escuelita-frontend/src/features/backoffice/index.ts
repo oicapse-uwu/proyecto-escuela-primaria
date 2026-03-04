@@ -3,6 +3,7 @@
 export * from './dashboard';
 export * from './instituciones';
 export * from './reportes';
+export * from './roles';
 export * from './sedes';
 export * from './usuarios';
 export * from './suscripciones';

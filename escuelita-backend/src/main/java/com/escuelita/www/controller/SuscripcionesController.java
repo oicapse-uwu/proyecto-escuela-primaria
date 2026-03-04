@@ -117,5 +117,33 @@ public class SuscripcionesController {
     public String eliminar(@PathVariable("id") Long id){
         serviceSuscripciones.eliminar(id);
         return "Suscripción eliminada correctamente";
-    }   
+    }
+    
+    @GetMapping("/suscripciones/por-institucion/{idInstitucion}")
+    public ResponseEntity<?> obtenerSuscripcionActivaPorInstitucion(@PathVariable("idInstitucion") Long idInstitucion) {
+        try {
+            // Verificar que la institución existe
+            if (!repoInstitucion.existsById(idInstitucion)) {
+                return ResponseEntity.badRequest()
+                    .body("Institución no encontrada");
+            }
+            
+            Optional<Suscripciones> suscripcionOpt = serviceSuscripciones.buscarTodos().stream()
+                .filter(s -> s.getIdInstitucion() != null 
+                    && s.getIdInstitucion().getIdInstitucion().equals(idInstitucion)
+                    && s.getIdEstado() != null 
+                    && "Activa".equals(s.getIdEstado().getNombre()))
+                .findFirst();
+            
+            if (suscripcionOpt.isEmpty()) {
+                return ResponseEntity.ok()
+                    .body(null); // Sin suscripción activa
+            }
+            
+            return ResponseEntity.ok(suscripcionOpt.get());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body("Error al obtener suscripción: " + e.getMessage());
+        }
+    }
 }

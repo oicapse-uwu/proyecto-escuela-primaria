@@ -92,7 +92,7 @@ const AlumnoDetallePage: React.FC = () => {
                 direccion: alumnoData.direccion || '',
                 telefonoContacto: alumnoData.telefonoContacto || '',
                 tipoIngreso: alumnoData.tipoIngreso || '',
-                estadoAlumno: alumnoData.estadoAlumno || 'Activo',
+                estadoAlumno: alumnoData.estadoAlumno || 'ACTIVO',
                 observacionesSalud: alumnoData.observacionesSalud || ''
             });
         } catch (error) {
@@ -152,7 +152,9 @@ const AlumnoDetallePage: React.FC = () => {
             setEditMode(false);
             await cargarDatos();
         } catch (error: any) {
-            toast.error(error?.response?.data?.message || 'Error al actualizar alumno');
+            const data = error?.response?.data;
+            const errMsg = typeof data === 'string' ? data : (data?.message || 'Error al actualizar alumno');
+            toast.error(errMsg);
         }
     };
 

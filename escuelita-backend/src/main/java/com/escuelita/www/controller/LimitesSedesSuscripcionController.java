@@ -230,14 +230,16 @@ public class LimitesSedesSuscripcionController {
                     .body(Map.of("error", "La suma de límites excede el límite total de la suscripción"));
             }
             
-            // Eliminar distribución anterior
+            // Desactivar distribución anterior (soft delete)
             servicioLimites.eliminarPorSuscripcion(idSuscripcion);
             
-            // Guardar nueva distribución
+            // Guardar nueva distribución (siempre crea nuevos registros después de desactivar los viejos)
             List<LimitesSedesSuscripcion> guardados = new ArrayList<>();
             for (LimitesSedesSuscripcion limite : limites) {
                 guardados.add(servicioLimites.guardar(limite));
             }
+            
+            System.out.println("✅ Distribución personalizada guardada: " + guardados.size() + " límites");
             
             return ResponseEntity.ok(Map.of(
                 "mensaje", "Distribución personalizada guardada exitosamente",

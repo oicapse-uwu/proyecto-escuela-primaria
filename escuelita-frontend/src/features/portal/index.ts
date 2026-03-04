@@ -11,3 +11,4 @@ export * from './usuarios';
 // export * from './consulta-asistencias';
 // export * from './consulta-pagos';
 // export * from './perfil-alumno';
+//export * from './docentes';

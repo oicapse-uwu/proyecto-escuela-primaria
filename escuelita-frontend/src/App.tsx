@@ -1,21 +1,17 @@
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import PrivateRoute from './components/common/PrivateRoute';
 import {
-    Dashboard,
-    InstitucionesRoutes,
-    ReportesRoutes,
-    SedesRoutes,
-    SuscripcionesRoutes,
-    UsuariosRoutes
+  Dashboard,
+  InstitucionesRoutes,
+  ReportesRoutes,
+  SedesRoutes,
+  SuscripcionesRoutes,
+  UsuariosRoutes
 } from './features/backoffice';
 import AlumnosRoutes from './features/portal/alumnos/routes/AlumnosRoutes';
 import ApoderadosRoutes from './features/portal/apoderados/routes/apoderados.routes';
-import MatriculasRoutes from './features/portal/matriculas/routes/matriculas.routes';
-import UsuariosPortalRoutes from './features/portal/usuarios/routes/UsuariosPortalRoutes';
-
 import AreasRoutes from './features/portal/areas/routes/areas.routes';
 import EspecialidadesRoutes from './features/portal/especialidades/routes/especialidades.routes';
-
 import InfraestructuraRoutes from './features/portal/infraestructura/routes/InfraestructuraRoutes';
 import MatriculasRoutes from './features/portal/matriculas/routes/matriculas.routes';
 import UsuariosPortalRoutes from './features/portal/usuarios/routes/UsuariosPortalRoutes';
@@ -70,6 +66,7 @@ function App() {
 
           {/* Módulos del Portal Escuela */}
           <Route path="alumnos/*" element={<AlumnosRoutes />} />
+          <Route path="infraestructura/*" element={<InfraestructuraRoutes />} />
           <Route path="configuracion/usuarios/*" element={<UsuariosPortalRoutes />} />
           <Route path="apoderados/*" element={<ApoderadosRoutes />} />
           <Route path="matriculas/*" element={<MatriculasRoutes />} />
@@ -82,54 +79,7 @@ function App() {
 
         {/* Redirección por defecto */}
         <Route path="/" element={<Navigate to="/escuela/login" replace />} />
-          {/* Rutas protegidas - Super Admin */}
-          <Route
-            path="/admin"
-            element={
-              <PrivateRoute>
-                <SuperAdminLayout />
-              </PrivateRoute>
-            }
-          >
-            {/* Dashboard por defecto */}
-            <Route index element={<Navigate to="/admin/dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            
-            {/* Módulos del Backoffice */}
-            <Route path="instituciones/*" element={<InstitucionesRoutes />} />
-            <Route path="sedes/*" element={<SedesRoutes />} />
-            <Route path="suscripciones/*" element={<SuscripcionesRoutes />} />
-            <Route path="usuarios/*" element={<UsuariosRoutes />} />
-            <Route path="reportes/*" element={<ReportesRoutes />} />
-            {/* etc... */}
-          </Route>
-
-          {/* Rutas protegidas - Escuela */}
-          <Route
-            path="/escuela"
-            element={
-              <PrivateRoute>
-                <EscuelaLayout />
-              </PrivateRoute>
-            }
-          >
-            {/* Dashboard por defecto */}
-            <Route index element={<Navigate to="/escuela/dashboard" replace />} />
-            <Route path="dashboard" element={<DashboardEscuela />} />
-            
-            {/* Módulos del Portal Escuela */}
-            <Route path="alumnos/*" element={<AlumnosRoutes />} />
-          {/* Módulos del Portal Escuela */}
-          <Route path="alumnos/*" element={<AlumnosRoutes />} />
-          <Route path="infraestructura/*" element={<InfraestructuraRoutes />} />
-          <Route path="configuracion/usuarios/*" element={<UsuariosPortalRoutes />} />
-          <Route path="apoderados/*" element={<ApoderadosRoutes />} />
-          <Route path="matriculas/*" element={<MatriculasRoutes />} />
-            {/* <Route path="evaluaciones/*" element={<EvaluacionesRoutes />} /> */}
-            {/* <Route path="pagos/*" element={<PagosRoutes />} /> */}
-            {/* etc... */}
-          </Route>
-
+        
         {/* Ruta 404 */}
         <Route path="*" element={<Navigate to="/escuela/login" replace />} />
       </Routes>

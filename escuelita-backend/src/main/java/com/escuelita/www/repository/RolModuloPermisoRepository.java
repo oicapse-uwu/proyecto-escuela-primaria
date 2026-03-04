@@ -25,9 +25,9 @@ public interface RolModuloPermisoRepository extends JpaRepository<RolModuloPermi
 	@Query("SELECT rmp FROM RolModuloPermiso rmp WHERE rmp.idRol.idRol = :idRol AND rmp.estado = 1 ORDER BY rmp.idModulo.orden ASC")
 	List<RolModuloPermiso> findByIdRolActivos(@Param("idRol") Long idRol);
 	
-	// 🔴 IMPORTANTE: Busca registros sin filtrar por estado
+	// 🔴 SQL NATIVO: Busca registros sin filtro de estado (ignora @Where automático)
 	// Necesita encontrar TODOS los registros (activos e inactivos) para el UPSERT
-	@Query("SELECT rmp FROM RolModuloPermiso rmp WHERE rmp.idRol.idRol = :idRol AND rmp.idModulo.idModulo = :idModulo AND rmp.idPermiso.idPermiso = :idPermiso")
+	@Query(value = "SELECT * FROM rol_modulo_permiso WHERE id_rol = :idRol AND id_modulo = :idModulo AND id_permiso = :idPermiso", nativeQuery = true)
 	List<RolModuloPermiso> findByIdRol_IdRolAndIdModulo_IdModuloAndIdPermiso_IdPermiso(
 		@Param("idRol") Long idRol, @Param("idModulo") Long idModulo, @Param("idPermiso") Long idPermiso);
 }

@@ -1,5 +1,7 @@
-import { User, Users, X } from 'lucide-react';
+import { ChevronDown, Search, User, Users, X } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
+import { useReniec } from '../../../../hooks/useReniec';
 import type { AdministradorFormData, Rol, Sede, TipoDocumento, UsuarioSistema } from '../types';
 
 interface AdministradorFormProps {
@@ -34,6 +36,7 @@ const AdministradorForm: React.FC<AdministradorFormProps> = ({
         idTipoDoc: 0
     });
     const [documentoError, setDocumentoError] = useState<string>('');
+    const { data: dataReniec, loading: loadingReniec, error: errorReniec, consultarDni } = useReniec();
 
     const tipoDocumentoSeleccionado = useMemo(
         () => tiposDocumento.find(item => item.idDocumento === formData.idTipoDoc),
@@ -96,6 +99,33 @@ const AdministradorForm: React.FC<AdministradorFormProps> = ({
         }
     }, [administrador]);
 
+    // Auto-llenar datos desde RENIEC
+    useEffect(() => {
+        if (dataReniec) {
+            setFormData(prev => ({
+                ...prev,
+                nombres: dataReniec.first_name,
+                apellidos: `${dataReniec.first_last_name} ${dataReniec.second_last_name}`
+            }));
+            toast.success('Datos obtenidos de RENIEC');
+        }
+    }, [dataReniec]);
+
+    // Mostrar error de RENIEC
+    useEffect(() => {
+        if (errorReniec) {
+            toast.error(errorReniec);
+        }
+    }, [errorReniec]);
+
+    const handleConsultarReniec = async () => {
+        if (!formData.numeroDocumento || formData.numeroDocumento.length !== 8) {
+            toast.error('Ingrese un DNI válido de 8 dígitos');
+            return;
+        }
+        await consultarDni(formData.numeroDocumento);
+    };
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         if (name === 'idSede' || name === 'idRol' || name === 'idTipoDoc') {
@@ -149,50 +179,74 @@ const AdministradorForm: React.FC<AdministradorFormProps> = ({
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Documento *</label>
-                            <select
-                                name="idTipoDoc"
-                                value={formData.idTipoDoc}
-                                onChange={handleChange}
-                                required
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                            >
-                                <option value={0}>Seleccione...</option>
-                                {tiposDocumento.map(item => (
-                                    <option key={item.idDocumento} value={item.idDocumento}>
-                                        {item.abreviatura} - {item.descripcion}
-                                    </option>
-                                ))}
-                            </select>
+                            <div className="relative">
+                                <select
+                                    name="idTipoDoc"
+                                    value={formData.idTipoDoc}
+                                    onChange={handleChange}
+                                    required
+                                    className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent truncate appearance-none bg-white cursor-pointer"
+                                >
+                                    <option value={0}>Seleccione...</option>
+                                    {tiposDocumento.map(item => (
+                                        <option key={item.idDocumento} value={item.idDocumento}>
+                                            {item.abreviatura} - {item.descripcion}
+                                        </option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                            </div>
+                            <div className="mt-1 h-4">
+                                {/* Espacio reservado para mensajes */}
+                            </div>
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Número de Documento *</label>
-                            <input
-                                type="text"
-                                name="numeroDocumento"
-                                value={formData.numeroDocumento}
-                                onChange={handleChange}
-                                required
-                                inputMode={requiereSoloNumeros ? 'numeric' : 'text'}
-                                maxLength={tipoDocumentoSeleccionado?.longitudMaxima}
-                                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 transition-colors ${
-                                    documentoError
-                                        ? 'border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50'
-                                        : 'border-gray-300 focus:ring-primary focus:border-transparent'
-                                }`}
-                                placeholder="Ej: 12345678"
-                            />
-                            {tipoDocumentoSeleccionado?.longitudMaxima ? (
-                                <p className={`mt-1 text-xs ${documentoError ? 'text-red-600' : 'text-gray-500'}`}>
-                                    {tipoDocumentoSeleccionado.esLongitudExacta === 1
-                                        ? `Requiere exactamente ${tipoDocumentoSeleccionado.longitudMaxima} caracteres.`
-                                        : `Máximo ${tipoDocumentoSeleccionado.longitudMaxima} caracteres.`}
-                                </p>
-                            ) : null}
-                            {requiereSoloNumeros ? (
-                                <p className="mt-1 text-xs text-gray-500">Este tipo de documento permite solo números.</p>
-                            ) : null}
-                            {documentoError ? <p className="mt-1 text-xs text-red-600">{documentoError}</p> : null}
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    name="numeroDocumento"
+                                    value={formData.numeroDocumento}
+                                    onChange={handleChange}
+                                    required
+                                    inputMode={requiereSoloNumeros ? 'numeric' : 'text'}
+                                    maxLength={tipoDocumentoSeleccionado?.longitudMaxima}
+                                    className={`flex-1 px-4 py-2 border rounded-lg focus:ring-2 transition-colors ${
+                                        documentoError
+                                            ? 'border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50'
+                                            : 'border-gray-300 focus:ring-primary focus:border-transparent'
+                                    }`}
+                                    placeholder="Ej: 12345678"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleConsultarReniec}
+                                    disabled={tipoDocumentoSeleccionado?.abreviatura?.toUpperCase() !== 'DNI' || !formData.numeroDocumento || formData.numeroDocumento.length !== 8 || loadingReniec}
+                                    className={`px-3 py-2 rounded-lg transition-colors flex items-center justify-center whitespace-nowrap ${
+                                        tipoDocumentoSeleccionado?.abreviatura?.toUpperCase() === 'DNI'
+                                            ? 'bg-green-600 text-white hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed'
+                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    }`}
+                                    title="Consultar en RENIEC"
+                                >
+                                    <Search className={`${loadingReniec ? 'w-5 h-5 animate-spin' : 'w-5 h-5'}`} />
+                                </button>
+                            </div>
+                            <div className="mt-1 min-h-[20px]">
+                                {documentoError ? (
+                                    <p className="text-xs text-red-600">{documentoError}</p>
+                                ) : tipoDocumentoSeleccionado?.longitudMaxima ? (
+                                    <p className="text-xs text-gray-500">
+                                        {tipoDocumentoSeleccionado.esLongitudExacta === 1
+                                            ? `Requiere exactamente ${tipoDocumentoSeleccionado.longitudMaxima} caracteres.`
+                                            : `Máximo ${tipoDocumentoSeleccionado.longitudMaxima} caracteres.`}
+                                        {requiereSoloNumeros ? ' · Solo números.' : ''}
+                                    </p>
+                                ) : (
+                                    <p className="text-xs text-transparent">Espacio reservado</p>
+                                )}
+                            </div>
                         </div>
 
                         <div>

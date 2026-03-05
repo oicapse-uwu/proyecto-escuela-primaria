@@ -1,6 +1,7 @@
-import { Briefcase, FileText, IdCard, Mail, Phone, User } from 'lucide-react';
+import { Briefcase, ChevronDown, FileText, IdCard, Mail, Phone, Search, User } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { useReniec } from '../../../../hooks/useReniec';
 import type { Apoderado, ApoderadoFormData, TipoDocumento } from '../types';
 
 interface ApoderadoFormProps {
@@ -29,6 +30,7 @@ const ApoderadoForm: React.FC<ApoderadoFormProps> = ({
         correo: '',
         lugarTrabajo: ''
     });
+    const { data: dataReniec, loading: loadingReniec, error: errorReniec, consultarDni } = useReniec();
 
     const tipoDocumentoSeleccionado = useMemo(
         () => tiposDocumento.find(t => t.idDocumento === formData.idTipoDoc),
@@ -71,6 +73,33 @@ const ApoderadoForm: React.FC<ApoderadoFormProps> = ({
             });
         }
     }, [apoderado]);
+
+    // Auto-llenar datos desde RENIEC
+    useEffect(() => {
+        if (dataReniec) {
+            setFormData(prev => ({
+                ...prev,
+                nombres: dataReniec.first_name,
+                apellidos: `${dataReniec.first_last_name} ${dataReniec.second_last_name}`
+            }));
+            toast.success('Datos obtenidos de RENIEC');
+        }
+    }, [dataReniec]);
+
+    // Mostrar error de RENIEC
+    useEffect(() => {
+        if (errorReniec) {
+            toast.error(errorReniec);
+        }
+    }, [errorReniec]);
+
+    const handleConsultarReniec = async () => {
+        if (!formData.numeroDocumento || formData.numeroDocumento.length !== 8) {
+            toast.error('Ingrese un DNI válido de 8 dígitos');
+            return;
+        }
+        await consultarDni(formData.numeroDocumento);
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -151,20 +180,26 @@ const ApoderadoForm: React.FC<ApoderadoFormProps> = ({
                         <FileText className="inline w-4 h-4 mr-1" />
                         Tipo de Documento <span className="text-red-500">*</span>
                     </label>
-                    <select
-                        name="idTipoDoc"
-                        value={formData.idTipoDoc}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        required
-                    >
-                        <option value={0}>Seleccione tipo</option>
-                        {tiposDocumento.map(tipo => (
-                            <option key={tipo.idDocumento} value={tipo.idDocumento}>
-                                {tipo.descripcion}
-                            </option>
-                        ))}
-                    </select>
+                    <div className="relative">
+                        <select
+                            name="idTipoDoc"
+                            value={formData.idTipoDoc}
+                            onChange={handleChange}
+                            className="w-full px-3 py-2.5 pr-9 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 truncate appearance-none bg-white cursor-pointer"
+                            required
+                        >
+                            <option value={0}>Seleccione tipo</option>
+                            {tiposDocumento.map(tipo => (
+                                <option key={tipo.idDocumento} value={tipo.idDocumento}>
+                                    {tipo.abreviatura} - {tipo.descripcion}
+                                </option>
+                            ))}
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                    </div>
+                    <div className="mt-1 h-4">
+                        {/* Espacio reservado para mensajes */}
+                    </div>
                 </div>
 
                 {/* Número de Documento */}
@@ -173,31 +208,51 @@ const ApoderadoForm: React.FC<ApoderadoFormProps> = ({
                         <IdCard className="inline w-4 h-4 mr-1" />
                         Número de Documento <span className="text-red-500">*</span>
                     </label>
-                    <input
-                        type="text"
-                        name="numeroDocumento"
-                        value={formData.numeroDocumento}
-                        onChange={handleChange}
-                        inputMode={requiereSoloNumeros ? 'numeric' : 'text'}
-                        maxLength={tipoDocumentoSeleccionado?.longitudMaxima ?? 20}
-                        disabled={!formData.idTipoDoc}
-                        className={`w-full px-3 py-2.5 text-base border rounded-lg focus:ring-2 transition-colors ${
-                            documentoError
-                                ? 'border-red-500 focus:ring-red-500 bg-red-50'
-                                : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
-                        } ${!formData.idTipoDoc ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                        placeholder={tipoDocumentoSeleccionado ? `Ej: ${'0'.repeat(tipoDocumentoSeleccionado.longitudMaxima ?? 8)}` : 'Seleccione tipo primero'}
-                        required
-                    />
-                    {tipoDocumentoSeleccionado?.longitudMaxima && (
-                        <p className={`mt-1 text-xs ${documentoError ? 'text-red-600' : 'text-gray-500'}`}>
-                            {tipoDocumentoSeleccionado.eslongitudExacta === 1
-                                ? `Exactamente ${tipoDocumentoSeleccionado.longitudMaxima} caracteres`
-                                : `Máximo ${tipoDocumentoSeleccionado.longitudMaxima} caracteres`}
-                            {requiereSoloNumeros ? ' · Solo números' : ''}
-                        </p>
-                    )}
-                    {documentoError && <p className="mt-1 text-xs text-red-600">{documentoError}</p>}
+                    <div className="flex gap-2">
+                        <input
+                            type="text"
+                            name="numeroDocumento"
+                            value={formData.numeroDocumento}
+                            onChange={handleChange}
+                            inputMode={requiereSoloNumeros ? 'numeric' : 'text'}
+                            maxLength={tipoDocumentoSeleccionado?.longitudMaxima ?? 20}
+                            disabled={!formData.idTipoDoc}
+                            className={`flex-1 px-3 py-2.5 text-base border rounded-lg focus:ring-2 transition-colors ${
+                                documentoError
+                                    ? 'border-red-500 focus:ring-red-500 bg-red-50'
+                                    : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                            } ${!formData.idTipoDoc ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                            placeholder={tipoDocumentoSeleccionado ? `Ej: ${'0'.repeat(tipoDocumentoSeleccionado.longitudMaxima ?? 8)}` : 'Seleccione tipo primero'}
+                            required
+                        />
+                        <button
+                            type="button"
+                            onClick={handleConsultarReniec}
+                            disabled={tipoDocumentoSeleccionado?.abreviatura?.toUpperCase() !== 'DNI' || !formData.numeroDocumento || formData.numeroDocumento.length !== 8 || loadingReniec}
+                            className={`px-3 py-2.5 rounded-lg transition-colors flex items-center justify-center whitespace-nowrap ${
+                                tipoDocumentoSeleccionado?.abreviatura?.toUpperCase() === 'DNI'
+                                    ? 'bg-green-600 text-white hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed'
+                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            }`}
+                            title="Consultar en RENIEC"
+                        >
+                            <Search className={`${loadingReniec ? 'w-5 h-5 animate-spin' : 'w-5 h-5'}`} />
+                        </button>
+                    </div>
+                    <div className="mt-1 min-h-[20px]">
+                        {documentoError ? (
+                            <p className="text-xs text-red-600">{documentoError}</p>
+                        ) : tipoDocumentoSeleccionado?.longitudMaxima ? (
+                            <p className="text-xs text-gray-500">
+                                {tipoDocumentoSeleccionado.eslongitudExacta === 1
+                                    ? `Exactamente ${tipoDocumentoSeleccionado.longitudMaxima} caracteres`
+                                    : `Máximo ${tipoDocumentoSeleccionado.longitudMaxima} caracteres`}
+                                {requiereSoloNumeros ? ' · Solo números' : ''}
+                            </p>
+                        ) : (
+                            <p className="text-xs text-transparent">Espacio reservado</p>
+                        )}
+                    </div>
                 </div>
 
                 {/* Nombres */}

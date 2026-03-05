@@ -1,3 +1,4 @@
+// Controlador para autenticación de Super Admins - NUEVO
 package com.escuelita.www.controller;
 
 import java.util.HashMap;
@@ -23,20 +24,16 @@ import com.escuelita.www.service.jpa.AdminAuthService;
 @RequestMapping("/auth/admin")
 @CrossOrigin(origins = "*")
 public class AdminAuthController {
-    
+
     @Autowired
     private AdminAuthService adminAuthService;
-    
     @Autowired
     private SuperAdminsRepository superAdminsRepository;
-    
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
-    
-    /**
-     * Login para Super Admins
-     * Endpoint: POST /auth/admin/login
-     */
+
+    // Login para Super Admins
+    // Endpoint: POST /auth/admin/login
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
@@ -48,13 +45,9 @@ public class AdminAuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
     }
-    
-    /**
-     * Registrar un nuevo Super Admin
-     * Endpoint: POST /auth/admin/register
-     * Body: { "nombres": "Juan", "apellidos": "Pérez", "correo": "email@test.com", 
-     *         "usuario": "admin", "contrasena": "mipassword" }
-     */
+
+    // Registrar un nuevo Super Admin
+    // Endpoint: POST /auth/admin/register
     @PostMapping("/register")
     public ResponseEntity<?> registerSuperAdmin(@RequestBody Map<String, String> request) {
         try {
@@ -64,19 +57,17 @@ public class AdminAuthController {
                 !request.containsKey("contrasena")) {
                 return ResponseEntity.badRequest().body(Map.of("mensaje", "Faltan campos requeridos"));
             }
-            
             // Verificar si el usuario ya existe
             if (superAdminsRepository.findByUsuario(request.get("usuario")).isPresent()) {
                 return ResponseEntity.badRequest().body(Map.of("mensaje", "El usuario ya existe"));
             }
-            
             // Crear nuevo super admin
             SuperAdmins admin = new SuperAdmins();
             admin.setNombres(request.get("nombres"));
             admin.setApellidos(request.get("apellidos"));
             admin.setCorreo(request.get("correo"));
             admin.setUsuario(request.get("usuario"));
-            
+
             // HASHEAR LA CONTRASEÑA AUTOMÁTICAMENTE
             String passwordHash = passwordEncoder.encode(request.get("contrasena"));
             admin.setPassword(passwordHash);

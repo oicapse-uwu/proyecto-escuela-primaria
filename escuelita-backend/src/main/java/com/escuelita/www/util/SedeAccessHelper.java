@@ -6,19 +6,17 @@ import java.util.function.Supplier;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-/**
- * Helper para simplificar el control de acceso por sede en los services.
- * Evita duplicar código en cada service.
- */
+/*
+    Helper para simplificar el control de acceso por sede en los services.
+    Evita duplicar código en cada service.
+*/
+
 public class SedeAccessHelper {
-    
-    /**
-     * Buscar todos los registros filtrando por sede si es necesario
-     * 
+
+    /** Buscar todos los registros filtrando por sede si es necesario
      * @param repository Repository a usar
      * @param findBySede Método del repository que filtra por sede
-     * @return Lista de registros (filtrada o completa según el usuario)
-     */
+     * @return Lista de registros (filtrada o completa según el usuario) */
     public static <T> List<T> findAllWithSedeFilter(
             JpaRepository<T, Long> repository,
             Supplier<List<T>> findBySede) {
@@ -33,13 +31,10 @@ public class SedeAccessHelper {
         // Usuario de escuela: solo su sede
         return findBySede.get();
     }
-    
-    /**
-     * Valida que una entidad pertenezca a la sede actual
-     * 
+
+    /** Valida que una entidad pertenezca a la sede actual
      * @param sedeIdGetter Función que obtiene el ID de sede de la entidad
-     * @throws SecurityException si intenta acceder a otra sede
-     */
+     * @throws SecurityException si intenta acceder a otra sede */
     public static void validateSedeAccess(Supplier<Long> sedeIdGetter) {
         Long sedeId = TenantContext.getSedeId();
         
@@ -51,11 +46,8 @@ public class SedeAccessHelper {
         }
     }
     
-    /**
-     * Asigna automáticamente la sede del usuario a una entidad
-     * 
-     * @param sedeIdSetter Consumer que establece el ID de sede en la entidad
-     */
+    /** Asigna automáticamente la sede del usuario a una entidad
+    * @param sedeIdSetter Consumer que establece el ID de sede en la entidad */
     public static void autoAssignSede(java.util.function.Consumer<Long> sedeIdSetter) {
         Long sedeId = TenantContext.getSedeId();
         
@@ -63,10 +55,8 @@ public class SedeAccessHelper {
             sedeIdSetter.accept(sedeId);
         }
     }
-    
-    /**
-     * Filtra un Optional validando que pertenezca a la sede actual
-     */
+
+    // Filtra un Optional validando que pertenezca a la sede actual
     public static <T> Optional<T> filterBySede(Optional<T> optional, Supplier<Long> sedeIdGetter) {
         Long sedeId = TenantContext.getSedeId();
         

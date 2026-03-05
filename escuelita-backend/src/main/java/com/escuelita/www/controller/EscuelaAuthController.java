@@ -1,3 +1,4 @@
+// Controlador para autenticación de usuarios - NUEVO
 package com.escuelita.www.controller;
 
 import java.util.HashMap;
@@ -20,15 +21,13 @@ import com.escuelita.www.service.jpa.EscuelaAuthService;
 @RequestMapping("/auth/escuela")
 @CrossOrigin(origins = "*")
 public class EscuelaAuthController {
-    
+
     @Autowired
     private EscuelaAuthService escuelaAuthService;
-    
-    /**
-     * Login para usuarios de escuela (profesores, secretarias, etc.)
-     * Endpoint: POST /auth/escuela/login
-     * Body: { "usuario": "ccajero", "contrasena": "123456" }
-     */
+
+    // Login para usuarios de escuela (profesores, secretarias, etc.)
+    // Endpoint: POST /auth/escuela/login
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
@@ -52,14 +51,13 @@ public class EscuelaAuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
     }
-    
-    /**
-     * Verificar token del usuario
-     * Endpoint: POST /auth/escuela/verify
-     */
+
+    // Verificar token del usuario
+    // Endpoint: POST /auth/escuela/verify
+
     @PostMapping("/verify")
     public ResponseEntity<?> verifyToken() {
-        // TODO: Implementar verificación de token JWT
+        // Verificacion del token se maneja en el filtro de seguridad, si llega aquí es porque el token es válido
         Map<String, Object> response = new HashMap<>();
         response.put("valid", true);
         response.put("message", "Token válido");

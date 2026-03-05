@@ -1,4 +1,4 @@
-// Revisado
+// MODIFICADO / Tiene filtro de búsqueda por sede
 package com.escuelita.www.controller;
 
 import java.util.List;

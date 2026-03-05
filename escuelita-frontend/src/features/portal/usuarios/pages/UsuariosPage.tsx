@@ -1,12 +1,10 @@
-import { Blocks, Building2, Edit, MapPin, Plus, Search, Shield, Trash2, Users, X } from 'lucide-react';
+import { Building2, Edit, MapPin, Plus, Search, Shield, Trash2, Users, X } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import Modal from '../../../../components/common/Modal';
 import Pagination from '../../../../components/common/Pagination';
 import UsuarioForm from '../components/UsuarioForm';
 import UsuariosPortalTabs from '../components/UsuariosPortalTabs';
-import ModulosUsuarioEditor from '../components/ModulosUsuarioEditor';
 import { useUsuariosPortal } from '../hooks/useUsuariosPortal';
-import { usePermisosPortal } from '../hooks/usePermisosPortal';
 import type { UsuarioPortal, UsuarioPortalDTO } from '../types';
 
 const getApiErrorMessage = (err: any): string => {
@@ -21,14 +19,12 @@ const getApiErrorMessage = (err: any): string => {
 
 const UsuariosPage: React.FC = () => {
     const { usuarios, roles, sedes, tiposDocumento, loading, error, crearUsuario, actualizarUsuario, eliminarUsuario, obtenerDetalleUsuario } = useUsuariosPortal();
-    const { asignaciones, modulos, permisos } = usePermisosPortal();
     const [search, setSearch] = useState('');
     const [showForm, setShowForm] = useState(false);
-    const [showModulosEditor, setShowModulosEditor] = useState(false);
     const [usuarioEditar, setUsuarioEditar] = useState<UsuarioPortal | null>(null);
-    const [usuarioEditarModulos, setUsuarioEditarModulos] = useState<UsuarioPortal | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(10);
+    
+    const itemsPerPage = 10;
 
     const totalRoles = useMemo(() => {
         return new Set(usuarios.map((item) => item.idRol?.idRol).filter(Boolean)).size;
@@ -36,18 +32,6 @@ const UsuariosPage: React.FC = () => {
 
     const sedeActualNombre = sedes[0]?.nombreSede || 'Sede no disponible';
     const institucionActualNombre = sedes[0]?.idInstitucion?.nombre || 'Institución no disponible';
-
-    // Obtener módulos-permisos del rol del usuario que está editando módulos
-    const modulosPermisoRolUsuario = useMemo(() => {
-        if (!usuarioEditarModulos?.idRol) return [];
-        return asignaciones
-            .filter(a => a.idRol?.idRol === usuarioEditarModulos.idRol?.idRol)
-            .map(a => ({
-                idModulo: a.idModulo?.idModulo || 0,
-                idPermiso: a.idPermiso?.idPermiso || 0
-            }))
-            .filter(item => item.idModulo > 0 && item.idPermiso > 0);
-    }, [usuarioEditarModulos?.idRol, asignaciones]);
 
     const usuariosFiltrados = useMemo(() => {
         const searchTerm = search.trim().toLowerCase();
@@ -70,25 +54,18 @@ const UsuariosPage: React.FC = () => {
         return usuariosFiltrados.slice(start, end);
     }, [currentPage, itemsPerPage, usuariosFiltrados]);
 
+    const totalPages = Math.ceil(usuariosFiltrados.length / itemsPerPage);
+
     const handleSubmit = async (payload: UsuarioPortalDTO) => {
         try {
-            let usuarioGuardado: UsuarioPortal | null = null;
-            
             if (usuarioEditar?.idUsuario) {
                 await actualizarUsuario({ ...payload, idUsuario: usuarioEditar.idUsuario });
-                usuarioGuardado = usuarioEditar;
             } else {
-                usuarioGuardado = await crearUsuario(payload);
+                await crearUsuario(payload);
             }
 
             setShowForm(false);
             setUsuarioEditar(null);
-
-            // Después de guardar, si tiene rol asignado, mostrar editor de módulos
-            if (payload.idRol && usuarioGuardado) {
-                setUsuarioEditarModulos(usuarioGuardado);
-                setShowModulosEditor(true);
-            }
         } catch (err: any) {
             window.alert(getApiErrorMessage(err));
         }
@@ -249,18 +226,6 @@ const UsuariosPage: React.FC = () => {
                                             >
                                                 <Edit className="w-4 h-4" />
                                             </button>
-                                            {item.idRol && (
-                                                <button
-                                                    className="text-purple-600 hover:text-purple-800"
-                                                    onClick={() => {
-                                                        setUsuarioEditarModulos(item);
-                                                        setShowModulosEditor(true);
-                                                    }}
-                                                    title="Editar módulos y permisos"
-                                                >
-                                                    <Blocks className="w-4 h-4" />
-                                                </button>
-                                            )}
                                             <button
                                                 className="text-red-600 hover:text-red-800"
                                                 onClick={() => handleEliminar(item.idUsuario)}
@@ -291,17 +256,6 @@ const UsuariosPage: React.FC = () => {
                                 >
                                     <Edit className="w-4 h-4" />
                                 </button>
-                                {item.idRol && (
-                                    <button
-                                        className="text-purple-600 hover:text-purple-800"
-                                        onClick={() => {
-                                            setUsuarioEditarModulos(item);
-                                            setShowModulosEditor(true);
-                                        }}
-                                    >
-                                        <Blocks className="w-4 h-4" />
-                                    </button>
-                                )}
                                 <button
                                     className="text-red-600 hover:text-red-800"
                                     onClick={() => handleEliminar(item.idUsuario)}
@@ -322,14 +276,8 @@ const UsuariosPage: React.FC = () => {
 
                 <Pagination
                     currentPage={currentPage}
-                    totalItems={usuariosFiltrados.length}
-                    itemsPerPage={itemsPerPage}
+                    totalPages={totalPages}
                     onPageChange={setCurrentPage}
-                    onItemsPerPageChange={(value) => {
-                        setItemsPerPage(value);
-                        setCurrentPage(1);
-                    }}
-                    itemsPerPageOptions={[5, 10, 20, 50]}
                 />
             </div>
 
@@ -348,30 +296,6 @@ const UsuariosPage: React.FC = () => {
                     }}
                     loading={loading}
                 />
-            </Modal>
-
-            {/* Modal: Editor de módulos del usuario */}
-            <Modal
-                isOpen={showModulosEditor}
-                onClose={() => {
-                    setShowModulosEditor(false);
-                    setUsuarioEditarModulos(null);
-                }}
-                title="Editar Módulos y Permisos del Usuario"
-                size="lg"
-            >
-                {usuarioEditarModulos && (
-                    <ModulosUsuarioEditor
-                        usuario={usuarioEditarModulos}
-                        modulos={modulos}
-                        permisos={permisos}
-                        rolModuloPermisos={modulosPermisoRolUsuario}
-                        onClose={() => {
-                            setShowModulosEditor(false);
-                            setUsuarioEditarModulos(null);
-                        }}
-                    />
-                )}
             </Modal>
         </div>
     );

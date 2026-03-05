@@ -1,4 +1,4 @@
-// Revisado
+// MODIFICADO - Obtiene los módulos y permisos asignados según el rol del usuario.
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -148,11 +148,10 @@ public class UsuariosController {
         return "Usuario desactivado correctamente";
     }
 
-    /**
-     * FASE 2: Usuario obtiene sus módulos y permisos según su rol
-     * Este endpoint es llamado por el FRONTEND al cargar la aplicación
-     * para determinar qué módulos y acciones el usuario puede hacer
-     */
+    // FASE 2: Usuario obtiene sus módulos y permisos según su rol
+
+    // Este endpoint es llamado por el FRONTEND al cargar la aplicación
+    // para determinar qué módulos y acciones el usuario puede hacer
     @GetMapping("/usuarios/{idUsuario}/modulos-permisos")
     public ResponseEntity<?> obtenerModulosPermisosUsuario(@PathVariable Long idUsuario) {
         Optional<Usuarios> usuarioOpt = serviceUsuarios.buscarId(idUsuario);
@@ -170,12 +169,10 @@ public class UsuariosController {
         // Obtener todas las asignaciones de rol-módulo-permiso del usuario
         List<com.escuelita.www.entity.RolModuloPermiso> asignaciones = 
             repoRolModuloPermiso.findByIdRol_IdRol(rol.getIdRol());
-
         // Agrupar por módulo
         Map<Long, List<com.escuelita.www.entity.RolModuloPermiso>> permisoPorModulo = 
             asignaciones.stream()
                 .collect(Collectors.groupingBy(rmp -> rmp.getIdModulo().getIdModulo()));
-
         // Construir lista de módulos con sus permisos
         List<ModuloAccesoDTO> modulosDTO = new java.util.ArrayList<>();
         
@@ -210,7 +207,6 @@ public class UsuariosController {
             m1.getOrden() != null ? m1.getOrden() : 999,
             m2.getOrden() != null ? m2.getOrden() : 999
         ));
-
         ModulosPermisosUsuarioDTO respuesta = new ModulosPermisosUsuarioDTO(
             usuario.getIdUsuario(),
             usuario.getNombres() + " " + usuario.getApellidos(),
@@ -218,7 +214,6 @@ public class UsuariosController {
             rol.getNombre(),
             modulosDTO
         );
-
         return ResponseEntity.ok(respuesta);
     }
 }

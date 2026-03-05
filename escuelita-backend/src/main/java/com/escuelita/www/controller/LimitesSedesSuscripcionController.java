@@ -1,3 +1,4 @@
+// NUEVO 
 package com.escuelita.www.controller;
 
 import java.util.ArrayList;
@@ -28,22 +29,19 @@ import com.escuelita.www.service.ILimitesSedesSuscripcionService;
 
 @RestController
 @RequestMapping("/api/limites-sedes")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*")
 public class LimitesSedesSuscripcionController {
     
     @Autowired
     private ILimitesSedesSuscripcionService servicioLimites;
-    
     @Autowired
     private SuscripcionesRepository repoSuscripciones;
-    
     @Autowired
     private SedesRepository repoSedes;
-    
-    /**
-     * GET /api/limites-sedes
-     * Listar todos los límites
-     */
+
+    // GET /api/limites-sedes
+
+    // Listar todos los límites
     @GetMapping
     public ResponseEntity<List<LimitesSedesSuscripcion>> listarTodos() {
         try {
@@ -54,11 +52,10 @@ public class LimitesSedesSuscripcionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-    
-    /**
-     * GET /api/limites-sedes/suscripcion/{idSuscripcion}
-     * Obtener límites de una suscripción específica
-     */
+
+    // GET /api/limites-sedes/suscripcion/{idSuscripcion}
+
+    // Obtener límites de una suscripción específica
     @GetMapping("/suscripcion/{idSuscripcion}")
     public ResponseEntity<List<LimitesSedesSuscripcion>> obtenerPorSuscripcion(@PathVariable Long idSuscripcion) {
         try {
@@ -69,11 +66,10 @@ public class LimitesSedesSuscripcionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-    
-    /**
-     * GET /api/limites-sedes/{id}
-     * Obtener un límite por ID
-     */
+
+    // GET /api/limites-sedes/{id}
+
+    // Obtener un límite por ID
     @GetMapping("/{id}")
     public ResponseEntity<LimitesSedesSuscripcion> obtenerPorId(@PathVariable Long id) {
         try {
@@ -85,11 +81,10 @@ public class LimitesSedesSuscripcionController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-    
-    /**
-     * POST /api/limites-sedes
-     * Crear un nuevo límite
-     */
+
+    // POST /api/limites-sedes
+
+    // Crear un nuevo límite
     @PostMapping
     public ResponseEntity<?> crear(@RequestBody LimitesSedesSuscripcionDTO dto) {
         try {
@@ -101,7 +96,6 @@ public class LimitesSedesSuscripcionController {
                 return ResponseEntity.badRequest()
                     .body(Map.of("error", "Suscripción o Sede no encontrada"));
             }
-            
             // Crear entidad
             LimitesSedesSuscripcion limite = new LimitesSedesSuscripcion();
             limite.setIdSuscripcion(suscripcionOpt.get());
@@ -118,11 +112,10 @@ public class LimitesSedesSuscripcionController {
                 .body(Map.of("error", e.getMessage()));
         }
     }
-    
-    /**
-     * PUT /api/limites-sedes/{id}
-     * Actualizar un límite existente
-     */
+
+    // PUT /api/limites-sedes/{id}
+
+    // Actualizar un límite existente
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody LimitesSedesSuscripcionDTO dto) {
         try {
@@ -151,11 +144,10 @@ public class LimitesSedesSuscripcionController {
                 .body(Map.of("error", e.getMessage()));
         }
     }
-    
-    /**
-     * DELETE /api/limites-sedes/{id}
-     * Eliminar un límite
-     */
+
+    // DELETE /api/limites-sedes/{id}
+
+    // Eliminar un límite
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
         try {
@@ -174,11 +166,10 @@ public class LimitesSedesSuscripcionController {
                 .body(Map.of("error", e.getMessage()));
         }
     }
-    
-    /**
-     * POST /api/limites-sedes/equitativa/{idSuscripcion}
-     * Generar distribución equitativa automática
-     */
+
+    // POST /api/limites-sedes/equitativa/{idSuscripcion}
+
+    // Generar distribución equitativa automática
     @PostMapping("/equitativa/{idSuscripcion}")
     public ResponseEntity<?> generarDistribucionEquitativa(@PathVariable Long idSuscripcion) {
         try {
@@ -193,11 +184,10 @@ public class LimitesSedesSuscripcionController {
                 .body(Map.of("error", e.getMessage()));
         }
     }
-    
-    /**
-     * POST /api/limites-sedes/personalizada/{idSuscripcion}
-     * Guardar distribución personalizada
-     */
+
+    // POST /api/limites-sedes/personalizada/{idSuscripcion}
+
+    // Guardar distribución personalizada
     @PostMapping("/personalizada/{idSuscripcion}")
     public ResponseEntity<?> guardarDistribucionPersonalizada(
             @PathVariable Long idSuscripcion,
@@ -223,16 +213,13 @@ public class LimitesSedesSuscripcionController {
                 
                 limites.add(limite);
             }
-            
             // Validar que no exceda el límite total
             if (!servicioLimites.validarLimitesPersonalizados(idSuscripcion, limites)) {
                 return ResponseEntity.badRequest()
                     .body(Map.of("error", "La suma de límites excede el límite total de la suscripción"));
             }
-            
             // Desactivar distribución anterior (soft delete)
             servicioLimites.eliminarPorSuscripcion(idSuscripcion);
-            
             // Guardar nueva distribución (siempre crea nuevos registros después de desactivar los viejos)
             List<LimitesSedesSuscripcion> guardados = new ArrayList<>();
             for (LimitesSedesSuscripcion limite : limites) {

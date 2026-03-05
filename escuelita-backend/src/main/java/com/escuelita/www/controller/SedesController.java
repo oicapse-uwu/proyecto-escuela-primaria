@@ -1,3 +1,14 @@
+/*
+    MODIFICADO - Limite de sedes por suscripcion, validacion al crear sede,
+    y mensaje de error si se excede el limite de sedes permitidas.
+        - Se agregó validación al crear una sede para verificar que la institución 
+        tenga una suscripción activa y que no se exceda el límite de sedes permitidas.
+        - Si la institución no tiene una suscripción activa, se devuelve un mensaje 
+        de error indicando que no puede crear sedes.
+        - Si la institución ha alcanzado el límite de sedes permitidas según 
+        su suscripción, se devuelve un mensaje de error indicando que ha alcanzado 
+        el límite y que debe contactar al administrador para ampliar su suscripción.
+*/
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -66,8 +77,8 @@ public class SedesController {
             if (sedesActuales >= suscripcion.getLimiteSedesContratadas()) {
                 return ResponseEntity.badRequest()
                     .body("Ha alcanzado el límite de sedes permitidas (" + 
-                          suscripcion.getLimiteSedesContratadas() + 
-                          "). Contacte al administrador para ampliar su suscripción.");
+                        suscripcion.getLimiteSedesContratadas() + 
+                        "). Contacte al administrador para ampliar su suscripción.");
             }
             
             // Crear la sede

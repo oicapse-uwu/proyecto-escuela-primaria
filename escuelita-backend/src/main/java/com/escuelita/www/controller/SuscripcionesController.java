@@ -1,4 +1,7 @@
-// Revisado
+/*
+    MODIFICADO - Validación al crear suscripción, 
+    mensaje de error si no se encuentra la institución o el plan.
+*/
 package com.escuelita.www.controller;
 
 import java.util.List;

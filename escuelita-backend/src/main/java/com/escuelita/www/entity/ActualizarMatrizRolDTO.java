@@ -12,19 +12,15 @@ public class ActualizarMatrizRolDTO {
         this.idRol = idRol;
         this.modulos = modulos;
     }
-
     public Long getIdRol() {
         return idRol;
     }
-
     public void setIdRol(Long idRol) {
         this.idRol = idRol;
     }
-
     public List<ModuloPermisosActualizarDTO> getModulos() {
         return modulos;
     }
-
     public void setModulos(List<ModuloPermisosActualizarDTO> modulos) {
         this.modulos = modulos;
     }

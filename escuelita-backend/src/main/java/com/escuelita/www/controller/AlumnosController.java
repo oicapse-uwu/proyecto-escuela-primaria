@@ -1,4 +1,7 @@
-// Revisado
+/*
+    MODIFICADO - Validacion de la existencia de la sede, 
+    que la suscripcion este vigente y la capacidad de alumnos
+*/
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -53,7 +56,7 @@ public class AlumnosController {
     public ResponseEntity<?> guardar(@RequestBody AlumnosDTO dto) {
         System.out.println("🔍 Intentando crear alumno para sede ID: " + dto.getIdSede());
         System.out.println("🟡 Estado del alumno recibido: '" + dto.getEstadoAlumno() + "'");
-        
+
         // 🔒 VALIDACIÓN DE LÍMITES POR SEDE
         // Solo validar si el alumno será ACTIVO (case-insensitive)
         if (dto.getEstadoAlumno() != null && dto.getEstadoAlumno().toUpperCase().equals("ACTIVO")) {
@@ -73,8 +76,8 @@ public class AlumnosController {
             if (suscripcionOpt.isPresent()) {
                 Suscripciones suscripcionActiva = suscripcionOpt.get();
                 System.out.println("📋 Suscripción activa encontrada: ID=" + suscripcionActiva.getIdSuscripcion() 
-                                 + ", Límite total=" + suscripcionActiva.getLimiteAlumnosContratado());
-                
+                                    + ", Límite total=" + suscripcionActiva.getLimiteAlumnosContratado());
+
                 // Buscar límite asignado a esta sede
                 Optional<LimitesSedesSuscripcion> limite = repoLimitesSedes
                     .findByIdSuscripcionIdAndIdSedeId(
@@ -99,7 +102,7 @@ public class AlumnosController {
                         System.err.println("❌ " + mensajeError);
                         return ResponseEntity.badRequest().body(mensajeError);
                     }
-                    
+
                     System.out.println("✅ Validación OK: " + alumnosActuales + " < " + limiteAsignado);
                 } else {
                     System.out.println("⚠️ No hay límite configurado para esta sede. Permitiendo creación.");

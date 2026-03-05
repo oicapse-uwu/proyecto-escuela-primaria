@@ -1,5 +1,4 @@
 //CORRECTO
-
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;
@@ -104,7 +103,7 @@ public class AlumnoApoderado {
     public String toString() {
         return "AlumnoApoderado [idAlumnoApoderado=" + idAlumnoApoderado + ", parentesco=" + parentesco
                 + ", esRepresentanteFinanciero=" + esRepresentanteFinanciero + ", viveConEstudiante="
-                + viveConEstudiante + ", idAlumno=" + idAlumno + ", idApoderado=" + idApoderado
-                + ", estado=" + estado + "]";
+                + viveConEstudiante + ", idAlumno=" + idAlumno + ", idApoderado=" + idApoderado + ", estado=" + estado
+                + "]";
     }
 }

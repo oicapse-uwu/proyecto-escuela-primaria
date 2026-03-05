@@ -1,3 +1,4 @@
+// NUEVO - Endpoint para generar hash de contraseña para super_admins
 package com.escuelita.www.controller;
 
 import java.util.HashMap;

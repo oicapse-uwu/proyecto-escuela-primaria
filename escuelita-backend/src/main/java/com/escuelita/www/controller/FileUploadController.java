@@ -1,3 +1,9 @@
+/* 
+    Controla la subida de archivos (imágenes, documentos) para la aplicación.
+    Permite subir logos de escuelas, documentos de alumnos y fotos de perfil.
+    Valida el tipo y tamaño de los archivos, los guarda en el servidor y 
+    devuelve información sobre el archivo subido. - NUEVO
+*/
 package com.escuelita.www.controller;
 
 import java.io.IOException;
@@ -28,10 +34,9 @@ public class FileUploadController {
     private static final String UPLOAD_DOCS_DIR = "uploads/documentos/";
     private static final String UPLOAD_PERFILES_DIR = "uploads/perfiles/";
     
-    /**
-     * Endpoint para subir imágenes/archivos
-     * POST /restful/files/upload
-     */
+    // Endpoint para subir imágenes/archivos
+
+    // POST /restful/files/upload
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
@@ -41,7 +46,6 @@ public class FileUploadController {
                 error.put("mensaje", "El archivo está vacío");
                 return ResponseEntity.badRequest().body(error);
             }
-            
             // Validar tipo de archivo (solo imágenes)
             String contentType = file.getContentType();
             if (contentType == null || !contentType.startsWith("image/")) {
@@ -49,20 +53,17 @@ public class FileUploadController {
                 error.put("mensaje", "Solo se permiten archivos de imagen");
                 return ResponseEntity.badRequest().body(error);
             }
-            
             // Validar tamaño (máximo 15MB)
             if (file.getSize() > 15 * 1024 * 1024) {
                 Map<String, String> error = new HashMap<>();
                 error.put("mensaje", "El archivo no debe superar los 15MB");
                 return ResponseEntity.badRequest().body(error);
             }
-            
             // Crear directorio si no existe
             Path uploadPath = Paths.get(UPLOAD_DIR);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
-            
             // Generar nombre único para el archivo
             String originalFilename = file.getOriginalFilename();
             String extension = "";
@@ -70,14 +71,12 @@ public class FileUploadController {
                 extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             }
             String uniqueFilename = UUID.randomUUID().toString() + extension;
-            
             // Guardar archivo
             Path filePath = uploadPath.resolve(uniqueFilename);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            
             // Construir URL del archivo
             String fileUrl = "/uploads/logos/" + uniqueFilename;
-            
+
             // Respuesta exitosa
             Map<String, Object> response = new HashMap<>();
             response.put("mensaje", "Archivo subido exitosamente");
@@ -96,10 +95,9 @@ public class FileUploadController {
         }
     }
 
-    /**
-     * Endpoint para subir documentos de alumnos (PDF, imágenes, Word)
-     * POST /restful/files/upload/document
-     */
+    // Endpoint para subir documentos de alumnos (PDF, imágenes, Word)
+
+    // POST /restful/files/upload/document
     @PostMapping("/upload/document")
     public ResponseEntity<?> uploadDocument(@RequestParam("file") MultipartFile file) {
         try {
@@ -162,10 +160,9 @@ public class FileUploadController {
         }
     }
 
-    /**
-     * Endpoint para subir fotos de perfil (alumnos, admins)
-     * POST /restful/files/upload/avatar
-     */
+    // Endpoint para subir fotos de perfil (alumnos, admins)
+
+    // POST /restful/files/upload/avatar
     @PostMapping("/upload/avatar")
     public ResponseEntity<?> uploadAvatar(@RequestParam("file") MultipartFile file) {
         try {

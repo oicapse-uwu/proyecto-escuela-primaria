@@ -80,17 +80,3 @@ export interface RolModuloPermisoDTO {
     idModulo: number;
     idPermiso: number;
 }
-export interface UsuarioModuloPermiso {
-    idUmp: number;
-    idUsuario: UsuarioPortal;
-    idModulo: Modulo;
-    idPermiso: Permiso;
-    estado?: number;
-}
-
-export interface UsuarioModuloPermisoDTO {
-    idUmp?: number;
-    idUsuario: number;
-    idModulo: number;
-    idPermiso: number;
-}

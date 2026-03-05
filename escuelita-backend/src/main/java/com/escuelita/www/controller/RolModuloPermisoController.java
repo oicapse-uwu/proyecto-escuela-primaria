@@ -1,4 +1,12 @@
-// Revisado
+/*
+    Este controlador maneja las relaciones entre Roles, Módulos y Permisos, 
+    incluyendo la obtención y actualización de la matriz completa 
+    de asignaciones para un rol específico. 
+    Se implementa una estrategia de "soft delete" para evitar 
+    conflictos de duplicados al actualizar en lote. 
+    Además, se agregan logs detallados para facilitar 
+    la depuración y seguimiento de las operaciones.
+*/
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -126,10 +134,9 @@ public class RolModuloPermisoController {
         return "Relación Rol-Módulo-Permiso eliminada correctamente";
     }
 
-    /**
-     * FASE 2: SuperAdmin obtiene la MATRIZ COMPLETA de un rol específico
-     * Retorna todos los módulos con todos los permisos + estado de asignación
-     */
+    // FASE 2: SuperAdmin obtiene la MATRIZ COMPLETA de un rol específico
+
+    // Retorna todos los módulos con todos los permisos + estado de asignación
     @GetMapping("/roles/{idRol}/matriz-completa")
     public ResponseEntity<?> obtenerMatrizCompleta(@PathVariable Long idRol) {
         System.out.println("\n========== OBTENER MATRIZ COMPLETA ==========");
@@ -208,11 +215,10 @@ public class RolModuloPermisoController {
         return ResponseEntity.ok(respuesta);
     }
 
-    /**
-     * FASE 2: SuperAdmin actualiza la MATRIZ COMPLETA de un rol en LOTE
-     * Estrategia: SOFT DELETE (estado=0) los anteriores, luego INSERTAR los nuevos
-     * Ignora duplicados en lugar de fallar
-     */
+    // FASE 2: SuperAdmin actualiza la MATRIZ COMPLETA de un rol en LOTE
+
+    // Estrategia: SOFT DELETE (estado=0) los anteriores, luego INSERTAR los nuevos
+    // Ignora duplicados en lugar de fallar
     @PostMapping("/roles/{idRol}/matriz-completa")
     public ResponseEntity<?> actualizarMatrizCompleta(@PathVariable Long idRol, 
                                                       @RequestBody(required = false) ActualizarMatrizRolDTO dto) {

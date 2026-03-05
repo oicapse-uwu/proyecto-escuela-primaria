@@ -1,17 +1,15 @@
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
 import type {
-    Modulo,
-    Permiso,
-    Rol,
-    RolDTO,
-    RolModuloPermiso,
-    RolModuloPermisoDTO,
-    Sede,
-    TipoDocumento,
-    UsuarioPortal,
-    UsuarioPortalDTO,
-    UsuarioModuloPermiso,
-    UsuarioModuloPermisoDTO
+  Modulo,
+  Permiso,
+  Rol,
+  RolDTO,
+  RolModuloPermiso,
+  RolModuloPermisoDTO,
+  Sede,
+  TipoDocumento,
+  UsuarioPortal,
+  UsuarioPortalDTO
 } from '../types';
 
 const USUARIOS_ENDPOINT = API_ENDPOINTS.USUARIOS;
@@ -145,21 +143,5 @@ export const actualizarRolModuloPermisoPortal = async (payload: RolModuloPermiso
 
 export const eliminarRolModuloPermisoPortal = async (idRmp: number): Promise<string> => {
     const response = await api.delete<string>(`${ROL_MODULO_PERMISO_ENDPOINT}/${idRmp}`);
-    return response.data;
-};
-/** USUARIO-MÓDULO-PERMISO: Permisos específicos por usuario */
-
-export const obtenerUsuarioModuloPermisoPortal = async (idUsuario: number): Promise<UsuarioModuloPermiso[]> => {
-    const response = await api.get<UsuarioModuloPermiso[]>(`/restful/usuario-modulo-permiso/usuario/${idUsuario}`);
-    return response.data;
-};
-
-export const crearUsuarioModuloPermisoPortal = async (payload: UsuarioModuloPermisoDTO): Promise<UsuarioModuloPermiso> => {
-    const response = await api.post<UsuarioModuloPermiso>('/restful/usuario-modulo-permiso', payload);
-    return response.data;
-};
-
-export const eliminarUsuarioModuloPermisoPortal = async (idUmp: number): Promise<string> => {
-    const response = await api.delete<string>(`/restful/usuario-modulo-permiso/${idUmp}`);
     return response.data;
 };

@@ -60,7 +60,6 @@ function App() {
           <Route path="usuarios/*" element={<UsuariosRoutes />} />
           <Route path="reportes/*" element={<ReportesRoutes />} />
           {/* etc... */}
-        </Route>
 
         {/* Rutas protegidas - Escuela */}
         <Route

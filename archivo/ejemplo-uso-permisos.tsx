@@ -13,10 +13,10 @@
  * 3. Mostrar/ocultar botones y funcionalidades
  */
 
- import { useState } from 'react';
-import { usePermisoModulo, usePermisosDelModulo } from '../../../hooks/usePermisoModulo';
-import { AccionesBotones, SoloConPermiso } from '../../../components/common/AccionesBotones';
-import { Plus, Edit2, Trash2 } from 'lucide-react';
+ import { Edit2, Plus, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { AccionesBotones, SoloConPermiso } from '../escuelita-frontend/src/components/common/AccionesBotones';
+import { usePermisoModulo, usePermisosDelModulo } from '../escuelita-frontend/src/hooks/usePermisoModulo';
 
 const MODULO_ALUMNOS = 5; // ID del módulo ALUMNOS en la BD
 

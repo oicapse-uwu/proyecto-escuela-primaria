@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { useModulosPermisos } from './useModulosPermisos';
-import { escuelaAuthService } from '../services/escuelaAuth.service';
 
 interface ModuloGuardProps {
     requiereModulo: number;
@@ -11,8 +10,11 @@ interface ModuloGuardProps {
 
 /**
  * Componente guard que protege contenido basado en módulos
- * - Para EscuelaUsuarios: Valida que tengan acceso al módulo específico
- * - Para AdminUsers: Permite acceso a todos los módulos (son super users)
+ * - Para rutas /escuela: Valida que el usuario tenga acceso al módulo específico
+ * - Para rutas /admin: Permite acceso a todos los módulos (son SuperAdmin)
+ * 
+ * IMPORTANTE: Si el usuario de IE cambia la URL a un módulo que no tiene,
+ * será bloqueado aquí (frontend) Y además el backend devuelverá 403 en las llamadas API
  */
 const ModuloGuard: React.FC<ModuloGuardProps> = ({ 
     requiereModulo,
@@ -22,25 +24,25 @@ const ModuloGuard: React.FC<ModuloGuardProps> = ({
 }) => {
     const { tieneModulo, isLoading } = useModulosPermisos(idUsuario);
     
-    // Detectar si el usuario es un admin (usuario de /admin route)
-    const esAdmin = useMemo(() => {
-        const user = escuelaAuthService.getCurrentUser();
-        // Si el usuario tiene un token en admin_token, es un admin
-        const isAdminToken = !!localStorage.getItem('admin_token');
-        return isAdminToken || (user && 'rol' in user);
+    // Detectar si estamos en ruta /admin (SuperAdmin) o /escuela (usuarios de IE)
+    const rutaActual = useMemo(() => {
+        return window.location.pathname;
     }, []);
+    
+    const esSuperAdmin = rutaActual.startsWith('/admin');
 
-    // Mientras se carga, mostrar fallback para no hacer flash de contenido
-    if (isLoading && !esAdmin) {
+    // Mientras se carga los módulos de un usuario de IE, mostrar fallback
+    if (isLoading && !esSuperAdmin) {
         return <>{fallback || null}</>;
     }
 
-    // Si es admin, permitir acceso a todo
-    if (esAdmin) {
+    // Si está en /admin, es SuperAdmin → permitir acceso a TODOS los módulos
+    if (esSuperAdmin) {
         return <>{children}</>;
     }
 
-    // Si es usuario de escuela, validar módulo
+    // Si está en /escuela, validar que tenga el módulo
+    // Si no tiene el módulo, mostrar fallback (normalmente redirige a dashboard)
     const tieneAcceso = tieneModulo(requiereModulo);
     
     return tieneAcceso ? (

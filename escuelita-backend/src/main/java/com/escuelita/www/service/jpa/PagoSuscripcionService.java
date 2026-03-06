@@ -249,24 +249,37 @@ public class PagoSuscripcionService implements IPagoSuscripcionService {
     @Override
     @Transactional
     public int generarPagosProgramados(Long idSuscripcion) throws Exception {
+        System.out.println("🔍 Iniciando generación de pagos para suscripción ID: " + idSuscripcion);
+        
         // Buscar suscripción
         Suscripciones suscripcion = suscripcionRepository.findById(idSuscripcion)
             .orElseThrow(() -> new Exception("Suscripción no encontrada"));
+        
+        System.out.println("✅ Suscripción encontrada: " + suscripcion.getIdSuscripcion());
         
         // Verificar que tenga ciclo de facturación
         if (suscripcion.getIdCiclo() == null) {
             throw new Exception("La suscripción no tiene ciclo de facturación definido");
         }
         
+        System.out.println("✅ Ciclo de facturación: " + suscripcion.getIdCiclo().getNombre() + " (" + suscripcion.getIdCiclo().getMesesDuracion() + " meses)");
+        
         // Eliminar pagos anteriores pendientes de esta suscripción (si existen)
         List<PagoSuscripcion> pagosPendientesAnteriores = pagoRepository.findBySuscripcionIdAndEstadoVerificacion(
             idSuscripcion, EstadoVerificacion.PENDIENTE
         );
-        pagoRepository.deleteAll(pagosPendientesAnteriores);
+        if (!pagosPendientesAnteriores.isEmpty()) {
+            System.out.println("🗑️ Eliminando " + pagosPendientesAnteriores.size() + " pagos pendientes anteriores");
+            pagoRepository.deleteAll(pagosPendientesAnteriores);
+        }
         
         LocalDate fechaInicio = suscripcion.getFechaInicio();
         LocalDate fechaVencimiento = suscripcion.getFechaVencimiento();
         Integer mesesDuracion = suscripcion.getIdCiclo().getMesesDuracion();
+        
+        System.out.println("📅 Fecha inicio: " + fechaInicio);
+        System.out.println("📅 Fecha vencimiento: " + fechaVencimiento);
+        System.out.println("📆 Meses duración ciclo: " + mesesDuracion);
         
         if (fechaInicio == null || fechaVencimiento == null || mesesDuracion == null) {
             throw new Exception("Datos incompletos en la suscripción");
@@ -276,15 +289,23 @@ public class PagoSuscripcionService implements IPagoSuscripcionService {
         long mesesTotales = java.time.temporal.ChronoUnit.MONTHS.between(fechaInicio, fechaVencimiento);
         int numeroPagos = (int) Math.ceil((double) mesesTotales / mesesDuracion);
         
+        System.out.println("🧮 Meses totales: " + mesesTotales);
+        System.out.println("🧮 Número de pagos a generar: " + numeroPagos);
+        
         if (numeroPagos <= 0) {
             numeroPagos = 1; // Al menos un pago
+            System.out.println("⚠️ Ajustando a mínimo 1 pago");
         }
         
         // Generar los pagos programados
         int pagosGenerados = 0;
         LocalDate fechaPagoActual = fechaInicio;
         
+        System.out.println("🔄 Iniciando generación de pagos...");
+        
         for (int i = 0; i < numeroPagos; i++) {
+            System.out.println("➡️ Generando pago " + (i + 1) + " de " + numeroPagos + " | Fecha: " + fechaPagoActual);
+            
             // Crear pago programado (sin comprobante)
             PagoSuscripcion pago = new PagoSuscripcion();
             pago.setSuscripcion(suscripcion);
@@ -295,25 +316,35 @@ public class PagoSuscripcionService implements IPagoSuscripcionService {
             pago.setObservaciones("Pago programado automáticamente - Período " + (i + 1) + " de " + numeroPagos);
             // El método de pago y comprobante se agregarán cuando se registre el pago real
             
-            // Guardar el pago para obtener el ID
-            PagoSuscripcion pagoGuardado = pagoRepository.save(pago);
-            
-            // Generar número de pago automáticamente
-            String numeroPago = String.format("PAGO-%05d", pagoGuardado.getIdPago());
-            pagoGuardado.setNumeroPago(numeroPago);
-            pagoRepository.save(pagoGuardado);
-            
-            pagosGenerados++;
+            try {
+                // Guardar el pago para obtener el ID
+                PagoSuscripcion pagoGuardado = pagoRepository.save(pago);
+                System.out.println("   ✅ Pago guardado con ID: " + pagoGuardado.getIdPago());
+                
+                // Generar número de pago automáticamente
+                String numeroPago = String.format("PAGO-%05d", pagoGuardado.getIdPago());
+                pagoGuardado.setNumeroPago(numeroPago);
+                pagoRepository.save(pagoGuardado);
+                System.out.println("   ✅ Número de pago asignado: " + numeroPago);
+                
+                pagosGenerados++;
+            } catch (Exception e) {
+                System.err.println("   ❌ Error al guardar pago: " + e.getMessage());
+                e.printStackTrace();
+                throw new Exception("Error al crear pago " + (i + 1) + ": " + e.getMessage());
+            }
             
             // Calcular siguiente fecha de pago
             fechaPagoActual = fechaPagoActual.plusMonths(mesesDuracion);
             
             // No generar pagos más allá de la fecha de vencimiento
             if (fechaPagoActual.isAfter(fechaVencimiento)) {
+                System.out.println("⏹️ Deteniendo generación: siguiente fecha (" + fechaPagoActual + ") supera el vencimiento (" + fechaVencimiento + ")");
                 break;
             }
         }
         
+        System.out.println("✅ Generación completada: " + pagosGenerados + " pagos creados");
         return pagosGenerados;
     }
     

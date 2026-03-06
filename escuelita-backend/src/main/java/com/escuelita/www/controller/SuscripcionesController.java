@@ -84,15 +84,23 @@ public class SuscripcionesController {
             Suscripciones suscripcionGuardada = serviceSuscripciones.guardar(suscripciones);
             
             // Generar pagos programados automáticamente
+            int pagosGenerados = 0;
+            String mensajeError = null;
             try {
-                int pagosGenerados = servicePagos.generarPagosProgramados(suscripcionGuardada.getIdSuscripcion());
+                pagosGenerados = servicePagos.generarPagosProgramados(suscripcionGuardada.getIdSuscripcion());
                 System.out.println("✅ Se generaron " + pagosGenerados + " pagos programados para la suscripción " + suscripcionGuardada.getIdSuscripcion());
             } catch (Exception e) {
-                System.err.println("⚠️ Error al generar pagos programados: " + e.getMessage());
-                // No interrumpimos el flujo, la suscripción ya fue creada
+                mensajeError = e.getMessage();
+                System.err.println("⚠️ Error al generar pagos programados: " + mensajeError);
+                e.printStackTrace(); // Imprimir stack trace completo
             }
             
-            return ResponseEntity.ok(suscripcionGuardada);
+            // Devolver respuesta con información de los pagos generados
+            return ResponseEntity.ok(Map.of(
+                "suscripcion", suscripcionGuardada,
+                "pagosGenerados", pagosGenerados,
+                "errorPagos", mensajeError != null ? mensajeError : "ninguno"
+            ));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body("Error al crear suscripción: " + e.getMessage());

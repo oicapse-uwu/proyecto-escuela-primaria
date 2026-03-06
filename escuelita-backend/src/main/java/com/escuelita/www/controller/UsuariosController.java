@@ -164,15 +164,15 @@ public class UsuariosController {
         }
 
         // Obtener lista de módulos asignados al rol del usuario
-        List<com.escuelita.www.entity.RolModulo> rolModulos = 
-            repoModuloAcceso.findAll().stream()
-                .filter(rm -> rm.getIdRol().getIdRol().equals(rol.getIdRol()) && rm.getEstado() == 1)
-                .collect(Collectors.toList());
+        List<com.escuelita.www.entity.RolModulo> rolModulos = repoModuloAcceso.findByIdRolAndEstado(rol.getIdRol());
         
         // Construir lista de módulos con permisos vacíos (compatible con DTO)
         List<ModuloAccesoDTO> modulosDTO = new java.util.ArrayList<>();
         
+        // Procesar módulos asignados al rol
         for (com.escuelita.www.entity.RolModulo rolModulo : rolModulos) {
+            if (rolModulo.getIdModulo() == null) continue;
+            
             Optional<com.escuelita.www.entity.Modulos> moduloOpt = repoModulos.findById(rolModulo.getIdModulo().getIdModulo());
             if (moduloOpt.isEmpty()) continue;
 

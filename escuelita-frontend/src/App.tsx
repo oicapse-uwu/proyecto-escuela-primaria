@@ -1,6 +1,5 @@
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import PrivateRoute from './components/common/PrivateRoute';
-import ModuloRoute from './components/common/ModuloRoute';
 import {
   Dashboard,
   InstitucionesRoutes,
@@ -73,72 +72,16 @@ function App() {
         >
           {/* Dashboard por defecto */}
           <Route index element={<Navigate to="/escuela/dashboard" replace />} />
-          <Route 
-            path="dashboard" 
-            element={
-              <ModuloRoute requiredModule={1}>
-                <DashboardEscuela />
-              </ModuloRoute>
-            } 
-          />
+          <Route path="dashboard" element={<DashboardEscuela />} />
 
-          {/* Módulos del Portal Escuela - Protegidos por módulo */}
-          <Route 
-            path="alumnos/*" 
-            element={
-              <ModuloRoute requiredModule={5}>
-                <AlumnosRoutes />
-              </ModuloRoute>
-            } 
-          />
-          <Route 
-            path="infraestructura/*" 
-            element={
-              <ModuloRoute requiredModule={3}>
-                <InfraestructuraRoutes />
-              </ModuloRoute>
-            } 
-          />
-          <Route 
-            path="configuracion/usuarios/*" 
-            element={
-              <ModuloRoute requiredModule={2}>
-                <UsuariosPortalRoutes />
-              </ModuloRoute>
-            } 
-          />
-          <Route 
-            path="apoderados/*" 
-            element={
-              <ModuloRoute requiredModule={5}>
-                <ApoderadosRoutes />
-              </ModuloRoute>
-            } 
-          />
-          <Route 
-            path="matriculas/*" 
-            element={
-              <ModuloRoute requiredModule={6}>
-                <MatriculasRoutes />
-              </ModuloRoute>
-            } 
-          />
-          <Route 
-            path="academica/areas-cursos/*" 
-            element={
-              <ModuloRoute requiredModule={4}>
-                <AreasRoutes />
-              </ModuloRoute>
-            } 
-          />
-          <Route 
-            path="academica/especialidades/*" 
-            element={
-              <ModuloRoute requiredModule={4}>
-                <EspecialidadesRoutes />
-              </ModuloRoute>
-            } 
-          />
+          {/* Módulos del Portal Escuela - Protegidos por backend con @RequireModulo */}
+          <Route path="alumnos/*" element={<AlumnosRoutes />} />
+          <Route path="infraestructura/*" element={<InfraestructuraRoutes />} />
+          <Route path="configuracion/usuarios/*" element={<UsuariosPortalRoutes />} />
+          <Route path="apoderados/*" element={<ApoderadosRoutes />} />
+          <Route path="matriculas/*" element={<MatriculasRoutes />} />
+          <Route path="academica/areas-cursos/*" element={<AreasRoutes />} />
+          <Route path="academica/especialidades/*" element={<EspecialidadesRoutes />} />
           {/* <Route path="evaluaciones/*" element={<EvaluacionesRoutes />} /> */}
           {/* <Route path="pagos/*" element={<PagosRoutes />} /> */}
           {/* etc... */}

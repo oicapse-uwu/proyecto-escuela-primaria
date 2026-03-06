@@ -24,6 +24,7 @@ import com.escuelita.www.repository.AlumnosRepository;
 import com.escuelita.www.repository.AnioEscolarRepository;
 import com.escuelita.www.repository.SeccionesRepository;
 import com.escuelita.www.service.IMatriculasService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -39,10 +40,12 @@ public class MatriculasController {
     private AnioEscolarRepository repoAnioEscolar;
 
     @GetMapping("/matriculas")
+    @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
     public List<Matriculas> buscarTodos() {
         return serviceMatriculas.buscarTodos(); 
     }
     @PostMapping("/matriculas")
+    @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
     public ResponseEntity<?> guardar(@RequestBody MatriculasDTO dto) {
         Matriculas matriculas = new Matriculas();
         matriculas.setCodigoMatricula(dto.getCodigoMatricula());
@@ -71,6 +74,7 @@ public class MatriculasController {
         return ResponseEntity.ok(serviceMatriculas.guardar(matriculas));
     }
     @PutMapping("/matriculas")
+    @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
     public ResponseEntity<?> modificar(@RequestBody MatriculasDTO dto) {
         if(dto.getIdMatricula() == null){
             return ResponseEntity.badRequest()
@@ -104,10 +108,12 @@ public class MatriculasController {
         return ResponseEntity.ok(serviceMatriculas.modificar(matriculas));
     }
     @GetMapping("/matriculas/{id}")
+    @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
     public Optional<Matriculas> buscarId(@PathVariable("id") Long id){
         return serviceMatriculas.buscarId(id);
     }
     @DeleteMapping("/matriculas/{id}")
+    @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
     public String eliminar(@PathVariable Long id){
         serviceMatriculas.eliminar(id);
         return "Matrícula eliminada correctamente";

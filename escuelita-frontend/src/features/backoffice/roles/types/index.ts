@@ -1,34 +1,20 @@
-// Types para el módulo de administración de Matriz de Roles y Permisos
+// Types para el módulo de administración simplificada de Roles y Módulos
+// Arquitectura: Solo módulos, sin permisos granulares
 
-export interface PermisoAsignado {
-    idPermiso: number;
-    nombre: string;
-    codigo: string;
-    descripcion: string;
-    asignado: boolean;
-}
-
-export interface MatrizModulo {
+export interface Modulo {
     idModulo: number;
-    nombreModulo: string;
+    nombre: string;
     descripcion: string;
     icono: string;
     orden: number;
-    permisos: PermisoAsignado[];
 }
 
-export interface MatrizRol {
+export interface RolModulosAsignacion {
     idRol: number;
-    nombreRol: string;
-    modulos: MatrizModulo[];
+    modulosAsignados: number[];  // Lista de IDs de módulos asignados
 }
 
-export interface ModuloPermisosActualizar {
-    idModulo: number;
-    idPermisos: number[];
-}
-
-export interface ActualizarMatrizRolPayload {
+export interface ActualizarRolModulosPayload {
     idRol: number;
-    modulos: ModuloPermisosActualizar[];
+    modulosAsignados: number[];
 }

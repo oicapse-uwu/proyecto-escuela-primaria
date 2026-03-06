@@ -22,6 +22,7 @@ import com.escuelita.www.entity.Matriculas;
 import com.escuelita.www.repository.EvaluacionesRepository;
 import com.escuelita.www.repository.MatriculasRepository;
 import com.escuelita.www.service.ICalificacionesService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -35,10 +36,12 @@ public class CalificacionesController {
     private MatriculasRepository repoMatriculas;
 
     @GetMapping("/calificaciones")
+    @RequireModulo(7)  // 7 = Módulo EVALUACIONES Y NOTAS
     public List<Calificaciones> buscarTodos() {
         return serviceCalificaciones.buscarTodos();
     }
     @PostMapping("/calificaciones")
+    @RequireModulo(7)  // 7 = Módulo EVALUACIONES Y NOTAS
     public ResponseEntity<?> guardar(@RequestBody CalificacionesDTO dto) {
         Calificaciones calificaciones = new Calificaciones();
         calificaciones.setNotaObtenida(dto.getNotaObtenida());
@@ -58,6 +61,7 @@ public class CalificacionesController {
         return ResponseEntity.ok(serviceCalificaciones.guardar(calificaciones));
     }
     @PutMapping("/calificaciones")
+    @RequireModulo(7)  // 7 = Módulo EVALUACIONES Y NOTAS
     public ResponseEntity<?> modificar(@RequestBody CalificacionesDTO dto) {
         if(dto.getIdCalificacion() == null) {
             return ResponseEntity.badRequest()
@@ -82,10 +86,13 @@ public class CalificacionesController {
         return ResponseEntity.ok(serviceCalificaciones.modificar(calificaciones));
     }
     @GetMapping("/calificaciones/{id}")
-    public Optional<Calificaciones> buscarId(@PathVariable("id") Long id) { 
-        return serviceCalificaciones.buscarId(id); 
+    @RequireModulo(7)  // 7 = Módulo EVALUACIONES Y NOTAS
+    public Optional<Calificaciones> buscarId(@PathVariable("id") Long id) {
+        return serviceCalificaciones.buscarId(id);
     }
+    
     @DeleteMapping("/calificaciones/{id}")
+    @RequireModulo(7)  // 7 = Módulo EVALUACIONES Y NOTAS
     public String eliminar(@PathVariable Long id) {
         serviceCalificaciones.eliminar(id);
         return "Calificación eliminada correctamente";

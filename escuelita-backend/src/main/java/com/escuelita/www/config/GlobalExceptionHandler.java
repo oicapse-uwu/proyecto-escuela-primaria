@@ -12,9 +12,7 @@ import org.springframework.web.context.request.WebRequest;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     
-    /**
-     * Maneja excepciones de seguridad (acceso denegado a módulos)
-     */
+    // Maneja excepciones de seguridad (acceso denegado a módulos)
     @ExceptionHandler(SecurityException.class)
     public ResponseEntity<Map<String, Object>> handleSecurityException(
             SecurityException ex, WebRequest request) {
@@ -29,9 +27,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
     }
     
-    /**
-     * Maneja otras excepciones no capturadas
-     */
+    //Maneja otras excepciones no capturadas
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGlobalException(
             Exception ex, WebRequest request) {

@@ -1,4 +1,4 @@
-// Sin tocar
+// Sin tocar - Con excepción por modulos
 package com.escuelita.www.controller;
 
 import java.util.List;

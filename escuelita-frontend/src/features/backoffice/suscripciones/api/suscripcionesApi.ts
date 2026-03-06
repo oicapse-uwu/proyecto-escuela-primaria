@@ -29,7 +29,9 @@ export const createSuscripcionApi = async (suscripcion: SuscripcionFormData): Pr
     };
     
     const response = await api.post(API_ENDPOINTS.SUSCRIPCIONES, dto);
-    return response.data;
+    // El backend devuelve { suscripcion: {...}, pagosGenerados: N, errorPagos: null }
+    // Extraemos solo la suscripción
+    return response.data.suscripcion || response.data;
 };
 
 // Actualizar una suscripción

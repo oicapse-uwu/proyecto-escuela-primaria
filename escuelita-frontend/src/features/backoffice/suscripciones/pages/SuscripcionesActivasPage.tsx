@@ -68,10 +68,18 @@ const SuscripcionesActivasPage: React.FC = () => {
     };
 
     const handleSubmit = async (suscripcionData: SuscripcionFormData) => {
-        if (suscripcionEditar) {
-            await actualizar(suscripcionEditar.idSuscripcion, suscripcionData);
-        } else {
-            await crear(suscripcionData);
+        try {
+            if (suscripcionEditar) {
+                await actualizar(suscripcionEditar.idSuscripcion, suscripcionData);
+            } else {
+                await crear(suscripcionData);
+            }
+            // Cerrar el modal después de crear/actualizar exitosamente
+            setShowForm(false);
+            setSuscripcionEditar(null);
+        } catch (error) {
+            // El error ya se muestra en el hook con toast
+            console.error('Error en handleSubmit:', error);
         }
     };
 

@@ -144,6 +144,17 @@ public class PagoSuscripcionService implements IPagoSuscripcionService {
             throw new Exception("Este pago ya tiene un comprobante registrado");
         }
         
+        // 🆕 VALIDAR QUE NO HAYA PAGOS ANTERIORES PENDIENTES (registro en orden cronológico)
+        List<PagoSuscripcion> todosPagos = pagoRepository.findBySuscripcionIdOrderByFechaPagoDesc(pago.getSuscripcion().getIdSuscripcion());
+        for (PagoSuscripcion otroPago : todosPagos) {
+            // Verificar si hay un pago con fecha anterior que aún no tiene comprobante
+            if (otroPago.getFechaPago().isBefore(pago.getFechaPago()) && 
+                otroPago.getComprobanteUrl() == null) {
+                throw new Exception("No puede registrar este pago. Primero debe registrar el pago correspondiente a " + 
+                    otroPago.getFechaPago() + " (" + otroPago.getNumeroPago() + ")");
+            }
+        }
+        
         // Obtener método de pago
         MetodosPago metodoPago = metodosPagoRepository.findById(dto.getIdMetodoPago())
             .orElseThrow(() -> new Exception("Método de pago no encontrado"));
@@ -392,7 +403,7 @@ public class PagoSuscripcionService implements IPagoSuscripcionService {
         
         // IDs de relaciones
         dto.setIdSuscripcion(pago.getSuscripcion().getIdSuscripcion());
-        dto.setIdMetodoPago(pago.getMetodoPago().getIdMetodo());
+        dto.setIdMetodoPago(pago.getMetodoPago() != null ? pago.getMetodoPago().getIdMetodo() : null);
         
         // Datos expandidos para UI
         if (pago.getSuscripcion() != null) {

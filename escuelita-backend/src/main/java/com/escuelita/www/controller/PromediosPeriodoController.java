@@ -24,6 +24,7 @@ import com.escuelita.www.repository.AsignacionDocenteRepository;
 import com.escuelita.www.repository.MatriculasRepository;
 import com.escuelita.www.repository.PeriodosRepository;
 import com.escuelita.www.service.IPromediosPeriodoService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -39,10 +40,12 @@ public class PromediosPeriodoController {
     private PeriodosRepository repoPeriodos;
 
     @GetMapping("/promediosperiodo")
+    @RequireModulo(7)  // 7 = Módulo EVALUACIONES Y NOTAS
     public List<PromediosPeriodo> buscarTodos() {
         return servicePromedios.buscarTodos();
     }
     @PostMapping("/promediosperiodo")
+    @RequireModulo(7)  // 7 = Módulo EVALUACIONES Y NOTAS
     public ResponseEntity<?> guardar(@RequestBody PromediosPeriodoDTO dto) {
         PromediosPeriodo promediosPeriodo = new PromediosPeriodo();
         promediosPeriodo.setNotaFinalArea(dto.getNotaFinalArea());
@@ -66,6 +69,7 @@ public class PromediosPeriodoController {
         return ResponseEntity.ok(servicePromedios.guardar(promediosPeriodo));
     }
     @PutMapping("/promediosperiodo")
+    @RequireModulo(7)  // 7 = Módulo EVALUACIONES Y NOTAS
     public ResponseEntity<?> modificar(@RequestBody PromediosPeriodoDTO dto) {
         if(dto.getIdPromedio() == null) {
             return ResponseEntity.badRequest()
@@ -94,10 +98,12 @@ public class PromediosPeriodoController {
         return ResponseEntity.ok(servicePromedios.modificar(promediosPeriodo));
     }
     @GetMapping("/promediosperiodo/{id}")
+    @RequireModulo(7)  // 7 = Módulo EVALUACIONES Y NOTAS
     public Optional<PromediosPeriodo> buscarId(@PathVariable("id") Long id) { 
         return servicePromedios.buscarId(id); 
     }
     @DeleteMapping("/promediosperiodo/{id}")
+    @RequireModulo(7)  // 7 = Módulo EVALUACIONES Y NOTAS
     public String eliminar(@PathVariable Long id) {
         servicePromedios.eliminar(id);
         return "Promedio de periodo eliminado correctamente";

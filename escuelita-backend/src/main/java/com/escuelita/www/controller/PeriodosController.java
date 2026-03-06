@@ -20,6 +20,7 @@ import com.escuelita.www.entity.Periodos;
 import com.escuelita.www.entity.PeriodosDTO;
 import com.escuelita.www.repository.AnioEscolarRepository;
 import com.escuelita.www.service.IPeriodosService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -31,10 +32,12 @@ public class PeriodosController {
     private AnioEscolarRepository repoAnioEscolar;
 
     @GetMapping("/periodos")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public List<Periodos> buscarTodos() {
         return servicePeriodos.buscarTodos(); 
     }
     @PostMapping("/periodos")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public ResponseEntity<?> guardar(@RequestBody PeriodosDTO dto) {
         Periodos periodos = new Periodos();
         periodos.setNombrePeriodo(dto.getNombrePeriodo());
@@ -50,6 +53,7 @@ public class PeriodosController {
         return ResponseEntity.ok(servicePeriodos.guardar(periodos));
     }
     @PutMapping("/periodos")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public ResponseEntity<?> modificar(@RequestBody PeriodosDTO dto) {
         if(dto.getIdPeriodo() == null){
             return ResponseEntity.badRequest()
@@ -70,10 +74,12 @@ public class PeriodosController {
         return ResponseEntity.ok(servicePeriodos.modificar(periodos));
     }
     @GetMapping("/periodos/{id}")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public Optional<Periodos> buscarId(@PathVariable("id") Long id){
         return servicePeriodos.buscarId(id);
     }
     @DeleteMapping("/periodos/{id}")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public String eliminar(@PathVariable Long id){
         servicePeriodos.eliminar(id);
         return "Periodo eliminado correctamente";

@@ -20,6 +20,7 @@ import com.escuelita.www.entity.AreasDTO;
 import com.escuelita.www.entity.Sedes;
 import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.service.IAreasService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -31,10 +32,12 @@ public class AreasController {
     private SedesRepository repoSedes;
 
     @GetMapping("/areas")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public List<Areas> buscarTodos() {
         return serviceAreas.buscarTodos();
     }
     @PostMapping("/areas")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public ResponseEntity<?> guardar(@RequestBody AreasDTO dto) {
         Areas areas = new Areas();
         areas.setNombreArea(dto.getNombreArea());
@@ -49,6 +52,7 @@ public class AreasController {
         return ResponseEntity.ok(serviceAreas.guardar(areas));
     }
     @PutMapping("/areas")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public ResponseEntity<?> modificar(@RequestBody AreasDTO dto) {
         if (dto.getIdArea() == null) {
             return ResponseEntity.badRequest()
@@ -64,14 +68,10 @@ public class AreasController {
             .orElse(null);
 
         areas.setIdSede(sedes);
-
         return ResponseEntity.ok(serviceAreas.modificar(areas));
     }
-    @GetMapping("/areas/{id}")
-    public Optional<Areas> buscarId(@PathVariable("id") Long id) {
-        return serviceAreas.buscarId(id);
-    }
     @DeleteMapping("/areas/{id}")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
     public String eliminar(@PathVariable Long id) {
         serviceAreas.eliminar(id);
         return "Área eliminada correctamente";

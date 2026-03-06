@@ -1,7 +1,6 @@
 import { Link2, Plus, Search, Trash2, X } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 import Pagination from '../../../../components/common/Pagination';
-import UsuariosPortalTabs from '../components/UsuariosPortalTabs';
 import { usePermisosPortal } from '../hooks/usePermisosPortal';
 
 const PermisosUsuariosPage: React.FC = () => {
@@ -57,8 +56,6 @@ const PermisosUsuariosPage: React.FC = () => {
 
     return (
         <div className="p-3 sm:p-4 lg:px-6 lg:py-4 space-y-4">
-            <UsuariosPortalTabs />
-
             <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-5 shadow-sm">
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center gap-2">
                     <Link2 className="w-6 h-6 text-primary" />

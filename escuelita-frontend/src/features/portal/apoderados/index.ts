@@ -17,4 +17,4 @@ export {
 export { useApoderados } from './hooks/useApoderados';
 
 // Routes
-export { apoderadosRoutes } from './routes/apoderados.routes';
+export { default as ApoderadosRoutes } from './routes/apoderados.routes';

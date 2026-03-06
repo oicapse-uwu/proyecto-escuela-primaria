@@ -25,13 +25,13 @@ import com.escuelita.www.entity.Usuarios;
 import com.escuelita.www.entity.UsuariosDTO;
 import com.escuelita.www.entity.ModulosPermisosUsuarioDTO;
 import com.escuelita.www.entity.ModuloAccesoDTO;
-import com.escuelita.www.entity.PermisoAccesoDTO;
 import com.escuelita.www.repository.RolesRepository;
 import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.repository.TipoDocumentosRepository;
 import com.escuelita.www.repository.ModulosRepository;
 import com.escuelita.www.repository.ModuloAccesoRepository;
 import com.escuelita.www.service.IUsuariosService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -51,14 +51,17 @@ public class UsuariosController {
     private ModuloAccesoRepository repoModuloAcceso; 
 
     @GetMapping("/usuarios")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public List<Usuarios> buscarTodos() {
         return serviceUsuarios.buscarTodos();
     }
     @GetMapping("/usuarios/sede/{idSede}")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public List<Usuarios> buscarPorSede(@PathVariable Long idSede) {
         return serviceUsuarios.buscarPorSede(idSede);
     }
     @PostMapping("/usuarios")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public ResponseEntity<?> guardar(@RequestBody UsuariosDTO dto) {
         Usuarios usuarios = new Usuarios();
         usuarios.setNumeroDocumento(dto.getNumeroDocumento());
@@ -86,6 +89,7 @@ public class UsuariosController {
         return ResponseEntity.ok(serviceUsuarios.guardar(usuarios));
     }
     @PutMapping("/usuarios")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public ResponseEntity<?> modificar(@RequestBody UsuariosDTO dto) {
         if(dto.getIdUsuario() == null) {
             return ResponseEntity.badRequest()
@@ -136,10 +140,12 @@ public class UsuariosController {
         return ResponseEntity.ok(serviceUsuarios.modificar(usuarios));
     }
     @GetMapping("/usuarios/{id}")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public Optional<Usuarios> buscarId(@PathVariable Long id) {
         return serviceUsuarios.buscarId(id);
     }
     @DeleteMapping("/usuarios/{id}")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public String eliminar(@PathVariable Long id) {
         serviceUsuarios.eliminar(id);
         return "Usuario desactivado correctamente";
@@ -148,7 +154,7 @@ public class UsuariosController {
     // FASE 2: Usuario obtiene sus módulos y permisos según su rol
 
     // Este endpoint es llamado por el FRONTEND al cargar la aplicación
-    // para determinar qué módulos y acciones el usuario puede hacer
+    // Retorna los MÓDULOS que el usuario puede acceder según su rol
     @GetMapping("/usuarios/{idUsuario}/modulos-permisos")
     public ResponseEntity<?> obtenerModulosPermisosUsuario(@PathVariable Long idUsuario) {
         Optional<Usuarios> usuarioOpt = serviceUsuarios.buscarId(idUsuario);
@@ -166,7 +172,7 @@ public class UsuariosController {
         // Obtener lista de módulos asignados al rol del usuario
         List<com.escuelita.www.entity.RolModulo> rolModulos = repoModuloAcceso.findByIdRolAndEstado(rol.getIdRol());
         
-        // Construir lista de módulos con permisos vacíos (compatible con DTO)
+        // Construir lista de módulos
         List<ModuloAccesoDTO> modulosDTO = new java.util.ArrayList<>();
         
         // Procesar módulos asignados al rol
@@ -178,16 +184,12 @@ public class UsuariosController {
 
             com.escuelita.www.entity.Modulos modulo = moduloOpt.get();
             
-            // En el nuevo sistema, retornamos módulos sin permisos granulares
-            List<PermisoAccesoDTO> permisosDTO = new java.util.ArrayList<>();
-            
             modulosDTO.add(new ModuloAccesoDTO(
                 modulo.getIdModulo(),
                 modulo.getNombre(),
                 modulo.getDescripcion(),
                 modulo.getIcono(),
-                modulo.getOrden(),
-                permisosDTO
+                modulo.getOrden()
             ));
         }
 

@@ -22,6 +22,7 @@ import com.escuelita.www.entity.Matriculas;
 import com.escuelita.www.repository.AsignacionDocenteRepository;
 import com.escuelita.www.repository.MatriculasRepository;
 import com.escuelita.www.service.IAsistenciasService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -35,10 +36,12 @@ public class AsistenciasController {
     private MatriculasRepository repoMatriculas;
 
     @GetMapping("/asistencias")
+    @RequireModulo(7)  // 7 = Módulo EVALUACIONES Y NOTAS
     public List<Asistencias> buscarTodos() {
         return serviceAsistencias.buscarTodos();
     }
     @PostMapping("/asistencias")
+    @RequireModulo(7)  // 7 = Módulo EVALUACIONES Y NOTAS
     public ResponseEntity<?> guardar(@RequestBody AsistenciasDTO dto) {
         Asistencias asistencias = new Asistencias();
         asistencias.setFecha(dto.getFecha());
@@ -58,6 +61,7 @@ public class AsistenciasController {
         return ResponseEntity.ok(serviceAsistencias.guardar(asistencias));
     }
     @PutMapping("/asistencias")
+    @RequireModulo(7)  // 7 = Módulo EVALUACIONES Y NOTAS
     public ResponseEntity<?> modificar(@RequestBody AsistenciasDTO dto) {
         if(dto.getIdAsistencia() == null) {
             return ResponseEntity.badRequest()
@@ -82,10 +86,12 @@ public class AsistenciasController {
         return ResponseEntity.ok(serviceAsistencias.modificar(asistencias));
     }
     @GetMapping("/asistencias/{id}")
+    @RequireModulo(7)  // 7 = Módulo EVALUACIONES Y NOTAS
     public Optional<Asistencias> buscarId(@PathVariable("id") Long id) { 
         return serviceAsistencias.buscarId(id); 
     }
     @DeleteMapping("/asistencias/{id}")
+    @RequireModulo(7)  // 7 = Módulo EVALUACIONES Y NOTAS
     public String eliminar(@PathVariable Long id) {
         serviceAsistencias.eliminar(id);
         return "Registro de asistencia eliminado correctamente";

@@ -22,6 +22,7 @@ import com.escuelita.www.entity.TipoDocumentos;
 import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.repository.TipoDocumentosRepository;
 import com.escuelita.www.service.IApoderadosService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -35,10 +36,12 @@ public class ApoderadosController {
     private SedesRepository repoSedes;
 
     @GetMapping("/apoderados")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public List<Apoderados> buscarTodos() {
         return serviceApoderados.buscarTodos(); 
     }
     @PostMapping("/apoderados")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public ResponseEntity<?> guardar(@RequestBody ApoderadosDTO dto) {
         Apoderados apoderados = new Apoderados();
         apoderados.setNombres(dto.getNombres());
@@ -61,6 +64,7 @@ public class ApoderadosController {
         return ResponseEntity.ok(serviceApoderados.guardar(apoderados));
     }
     @PutMapping("/apoderados")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public ResponseEntity<?> modificar(@RequestBody ApoderadosDTO dto) {
         if(dto.getIdApoderado() == null){
             return ResponseEntity.badRequest()
@@ -92,6 +96,7 @@ public class ApoderadosController {
         return serviceApoderados.buscarId(id);
     }
     @DeleteMapping("/apoderados/{id}")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public String eliminar(@PathVariable Long id){
         serviceApoderados.eliminar(id);
         return "Apoderado eliminado correctamente";

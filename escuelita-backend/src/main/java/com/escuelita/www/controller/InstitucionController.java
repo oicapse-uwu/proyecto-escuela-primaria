@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.escuelita.www.entity.Institucion;
 import com.escuelita.www.service.IInstitucionService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -24,24 +25,29 @@ public class InstitucionController {
     private IInstitucionService serviceInstitucion;
 
     @GetMapping("/institucion")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public List<Institucion> buscarTodos() {
         return serviceInstitucion.buscarTodos(); 
     }
     @PostMapping("/institucion")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public Institucion guardar(@RequestBody Institucion institucion) {
         serviceInstitucion.guardar(institucion);
         return institucion;
     }
     @PutMapping("/institucion")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public Institucion modificar(@RequestBody Institucion institucion) {
         serviceInstitucion.modificar(institucion);
         return institucion;
     }
     @GetMapping("/institucion/{id}")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public Optional<Institucion> buscarId(@PathVariable("id") Long id){
         return serviceInstitucion.buscarId(id);
     }
     @DeleteMapping("/institucion/{id}")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public String eliminar(@PathVariable Long id){
         serviceInstitucion.eliminar(id);
         return "Institución eliminada correctamente";

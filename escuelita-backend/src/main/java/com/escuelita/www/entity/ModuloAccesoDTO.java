@@ -1,25 +1,21 @@
 package com.escuelita.www.entity;
 
-import java.util.List;
-
 public class ModuloAccesoDTO {
     private Long idModulo;
     private String nombre;
     private String descripcion;
     private String icono;
     private Integer orden;
-    private List<PermisoAccesoDTO> permisos;
 
     public ModuloAccesoDTO() {}
 
     public ModuloAccesoDTO(Long idModulo, String nombre, String descripcion, 
-                          String icono, Integer orden, List<PermisoAccesoDTO> permisos) {
+                          String icono, Integer orden) {
         this.idModulo = idModulo;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.icono = icono;
         this.orden = orden;
-        this.permisos = permisos;
     }
 
     public Long getIdModulo() {
@@ -60,13 +56,5 @@ public class ModuloAccesoDTO {
 
     public void setOrden(Integer orden) {
         this.orden = orden;
-    }
-
-    public List<PermisoAccesoDTO> getPermisos() {
-        return permisos;
-    }
-
-    public void setPermisos(List<PermisoAccesoDTO> permisos) {
-        this.permisos = permisos;
     }
 }

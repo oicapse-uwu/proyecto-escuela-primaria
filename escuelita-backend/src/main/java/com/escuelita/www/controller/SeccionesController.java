@@ -22,6 +22,7 @@ import com.escuelita.www.entity.Sedes;
 import com.escuelita.www.repository.GradosRepository;
 import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.service.ISeccionesService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -35,10 +36,12 @@ public class SeccionesController {
     private SedesRepository repoSedes;
 
     @GetMapping("/secciones")
+    @RequireModulo(3)  // 3 = Módulo INFRAESTRUCTURA
     public List<Secciones> buscarTodos() {
         return serviceSecciones.buscarTodos(); 
     }
     @PostMapping("/secciones")
+    @RequireModulo(3)  // 3 = Módulo INFRAESTRUCTURA
     public ResponseEntity<?> guardar(@RequestBody SeccionesDTO dto) {
         Secciones secciones = new Secciones();
         secciones.setNombreSeccion(dto.getNombreSeccion());
@@ -57,6 +60,7 @@ public class SeccionesController {
         return ResponseEntity.ok(serviceSecciones.guardar(secciones));
     }
     @PutMapping("/secciones")
+    @RequireModulo(3)  // 3 = Módulo INFRAESTRUCTURA
     public ResponseEntity<?> modificar(@RequestBody SeccionesDTO dto) {
         if(dto.getIdSeccion() == null){
             return ResponseEntity.badRequest()
@@ -84,6 +88,7 @@ public class SeccionesController {
         return serviceSecciones.buscarId(id);
     }
     @DeleteMapping("/secciones/{id}")
+    @RequireModulo(3)  // 3 = Módulo INFRAESTRUCTURA
     public String eliminar(@PathVariable Long id){
         serviceSecciones.eliminar(id);
         return "Sección eliminada correctamente";

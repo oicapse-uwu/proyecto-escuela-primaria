@@ -51,8 +51,8 @@ public class PagoSuscripcion {
     @Column(name = "id_pago")
     private Long idPago;
     
-    @Column(name = "numero_pago", unique = true, nullable = false, length = 20)
-    private String numeroPago; // AUTOMÁTICO: PAGO-0001, PAGO-0002, etc. (se genera via trigger en DB)
+    @Column(name = "numero_pago", unique = true, length = 20)
+    private String numeroPago; // AUTOMÁTICO: PAGO-0001, PAGO-0002, etc. (se genera via trigger en DB o manualmente)
     
     // ========== RELACIONES ==========
     

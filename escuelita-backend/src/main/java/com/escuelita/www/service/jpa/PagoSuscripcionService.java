@@ -111,9 +111,15 @@ public class PagoSuscripcionService implements IPagoSuscripcionService {
         pago.setObservaciones(dto.getObservaciones());
         pago.setEstado(1); // Activo
         // NOTA: fechaRegistro se establece automáticamente via @PrePersist
-        // NOTA: numeroPago se genera automáticamente via trigger en DB
         
-        return pagoRepository.save(pago);
+        // Guardar el pago para obtener el ID
+        PagoSuscripcion pagoGuardado = pagoRepository.save(pago);
+        
+        // Generar número de pago automáticamente
+        String numeroPago = String.format("PAGO-%05d", pagoGuardado.getIdPago());
+        pagoGuardado.setNumeroPago(numeroPago);
+        
+        return pagoRepository.save(pagoGuardado);
     }
     
     /**
@@ -289,7 +295,14 @@ public class PagoSuscripcionService implements IPagoSuscripcionService {
             pago.setObservaciones("Pago programado automáticamente - Período " + (i + 1) + " de " + numeroPagos);
             // El método de pago y comprobante se agregarán cuando se registre el pago real
             
-            pagoRepository.save(pago);
+            // Guardar el pago para obtener el ID
+            PagoSuscripcion pagoGuardado = pagoRepository.save(pago);
+            
+            // Generar número de pago automáticamente
+            String numeroPago = String.format("PAGO-%05d", pagoGuardado.getIdPago());
+            pagoGuardado.setNumeroPago(numeroPago);
+            pagoRepository.save(pagoGuardado);
+            
             pagosGenerados++;
             
             // Calcular siguiente fecha de pago

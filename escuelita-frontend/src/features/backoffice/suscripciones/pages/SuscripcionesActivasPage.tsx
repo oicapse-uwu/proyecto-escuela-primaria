@@ -405,7 +405,6 @@ const SuscripcionesActivasPage: React.FC = () => {
                     planes={planes}
                     estadosSuscripcion={estadosSuscripcion}
                     ciclosFacturacion={ciclosFacturacion}
-                    metodosPago={metodosPago}
                     onSubmit={handleSubmit}
                     onCancel={() => setShowForm(false)}
                 />

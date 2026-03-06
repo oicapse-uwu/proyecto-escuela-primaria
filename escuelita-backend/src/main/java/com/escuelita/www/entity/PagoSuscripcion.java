@@ -62,9 +62,9 @@ public class PagoSuscripcion {
     private Suscripciones suscripcion;
     
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_metodo_pago", nullable = false)
+    @JoinColumn(name = "id_metodo_pago")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private MetodosPago metodoPago;
+    private MetodosPago metodoPago; // Nullable: se llena cuando se registra el pago real
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "verificado_por")
@@ -85,9 +85,9 @@ public class PagoSuscripcion {
     @Column(name = "banco", length = 100)
     private String banco; // Solo si método de pago es "Transferencia Bancaria"
     
-    // ========== COMPROBANTE (OBLIGATORIO) ==========
+    // ========== COMPROBANTE (Opcional - requerido al registrar pago) ==========
     
-    @Column(name = "comprobante_url", nullable = false, length = 500)
+    @Column(name = "comprobante_url", length = 500)
     private String comprobanteUrl; // Ruta del archivo del comprobante
     
     // ========== VERIFICACIÓN ==========

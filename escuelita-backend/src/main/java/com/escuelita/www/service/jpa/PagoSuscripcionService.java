@@ -192,6 +192,73 @@ public class PagoSuscripcionService implements IPagoSuscripcionService {
         return pagoRepository.save(pago);
     }
     
+    /**
+     * Generar pagos programados automáticamente según ciclo de facturación
+     */
+    @Override
+    @Transactional
+    public int generarPagosProgramados(Long idSuscripcion) throws Exception {
+        // Buscar suscripción
+        Suscripciones suscripcion = suscripcionRepository.findById(idSuscripcion)
+            .orElseThrow(() -> new Exception("Suscripción no encontrada"));
+        
+        // Verificar que tenga ciclo de facturación
+        if (suscripcion.getIdCiclo() == null) {
+            throw new Exception("La suscripción no tiene ciclo de facturación definido");
+        }
+        
+        // Eliminar pagos anteriores pendientes de esta suscripción (si existen)
+        List<PagoSuscripcion> pagosPendientesAnteriores = pagoRepository.findBySuscripcionIdAndEstadoVerificacion(
+            idSuscripcion, EstadoVerificacion.PENDIENTE
+        );
+        pagoRepository.deleteAll(pagosPendientesAnteriores);
+        
+        LocalDate fechaInicio = suscripcion.getFechaInicio();
+        LocalDate fechaVencimiento = suscripcion.getFechaVencimiento();
+        Integer mesesDuracion = suscripcion.getIdCiclo().getMesesDuracion();
+        
+        if (fechaInicio == null || fechaVencimiento == null || mesesDuracion == null) {
+            throw new Exception("Datos incompletos en la suscripción");
+        }
+        
+        // Calcular número total de pagos
+        long mesesTotales = java.time.temporal.ChronoUnit.MONTHS.between(fechaInicio, fechaVencimiento);
+        int numeroPagos = (int) Math.ceil((double) mesesTotales / mesesDuracion);
+        
+        if (numeroPagos <= 0) {
+            numeroPagos = 1; // Al menos un pago
+        }
+        
+        // Generar los pagos programados
+        int pagosGenerados = 0;
+        LocalDate fechaPagoActual = fechaInicio;
+        
+        for (int i = 0; i < numeroPagos; i++) {
+            // Crear pago programado (sin comprobante)
+            PagoSuscripcion pago = new PagoSuscripcion();
+            pago.setSuscripcion(suscripcion);
+            pago.setMontoPagado(suscripcion.getPrecioAcordado());
+            pago.setFechaPago(fechaPagoActual);
+            pago.setEstadoVerificacion(EstadoVerificacion.PENDIENTE);
+            pago.setEstado(1);
+            pago.setObservaciones("Pago programado automáticamente - Período " + (i + 1) + " de " + numeroPagos);
+            // El método de pago y comprobante se agregarán cuando se registre el pago real
+            
+            pagoRepository.save(pago);
+            pagosGenerados++;
+            
+            // Calcular siguiente fecha de pago
+            fechaPagoActual = fechaPagoActual.plusMonths(mesesDuracion);
+            
+            // No generar pagos más allá de la fecha de vencimiento
+            if (fechaPagoActual.isAfter(fechaVencimiento)) {
+                break;
+            }
+        }
+        
+        return pagosGenerados;
+    }
+    
     // ========== CONSULTAS ==========
     
     @Override

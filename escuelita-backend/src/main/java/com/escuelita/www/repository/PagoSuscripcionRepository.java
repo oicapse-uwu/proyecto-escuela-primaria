@@ -31,6 +31,12 @@ public interface PagoSuscripcionRepository extends JpaRepository<PagoSuscripcion
     @Query("SELECT p FROM PagoSuscripcion p WHERE p.suscripcion.idSuscripcion = :idSuscripcion AND p.estadoVerificacion = 'VERIFICADO'")
     List<PagoSuscripcion> findPagosVerificadosBySuscripcion(@Param("idSuscripcion") Long idSuscripcion);
     
+    /**
+     * Obtener pagos de una suscripción por estado de verificación
+     */
+    @Query("SELECT p FROM PagoSuscripcion p WHERE p.suscripcion.idSuscripcion = :idSuscripcion AND p.estadoVerificacion = :estado")
+    List<PagoSuscripcion> findBySuscripcionIdAndEstadoVerificacion(@Param("idSuscripcion") Long idSuscripcion, @Param("estado") EstadoVerificacion estado);
+    
     // ========== BÚSQUEDA POR ESTADO DE VERIFICACIÓN ==========
     
     /**

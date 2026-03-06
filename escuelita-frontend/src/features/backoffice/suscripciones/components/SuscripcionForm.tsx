@@ -2,7 +2,7 @@ import { CreditCard, Settings, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import SearchableSelect from '../../../../components/common/SearchableSelect';
 import type { Institucion } from '../../instituciones/types';
-import type { CicloFacturacion, EstadoSuscripcion, MetodoPago, Plan, Suscripcion, SuscripcionFormData } from '../types';
+import type { CicloFacturacion, EstadoSuscripcion, Plan, Suscripcion, SuscripcionFormData } from '../types';
 import DistribucionLimitesModal from './DistribucionLimitesModal';
 
 interface SuscripcionFormProps {
@@ -11,7 +11,6 @@ interface SuscripcionFormProps {
     planes: Plan[];
     estadosSuscripcion: EstadoSuscripcion[];
     ciclosFacturacion: CicloFacturacion[];
-    metodosPago: MetodoPago[];
     onSubmit: (data: SuscripcionFormData) => Promise<void>;
     onCancel: () => void;
 }
@@ -22,7 +21,6 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
     planes,
     estadosSuscripcion,
     ciclosFacturacion,
-    metodosPago,
     onSubmit, 
     onCancel 
 }) => {
@@ -96,8 +94,7 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
                 idInstitucion: suscripcionEditar.idInstitucion?.idInstitucion || 0,
                 idPlan: suscripcionEditar.idPlan?.idPlan || 0,
                 idCiclo: suscripcionEditar.idCiclo?.idCiclo || 0,
-                idEstado: suscripcionEditar.idEstado?.idEstado || 1,
-                idMetodoPago: 0
+                idEstado: suscripcionEditar.idEstado?.idEstado || 1
             });
             
             const plan = suscripcionEditar.idPlan ? planes.find(p => p.idPlan === suscripcionEditar.idPlan?.idPlan) : null;
@@ -109,7 +106,7 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
         const { name, value } = e.target;
         
         // Para campos numéricos
-        if (['limiteAlumnosContratado', 'limiteSedesContratadas', 'precioAcordado', 'idInstitucion', 'idPlan', 'idCiclo', 'idEstado', 'idMetodoPago'].includes(name)) {
+        if (['limiteAlumnosContratado', 'limiteSedesContratadas', 'precioAcordado', 'idInstitucion', 'idPlan', 'idCiclo', 'idEstado'].includes(name)) {
             const numValue = Number(value);
             setFormData(prev => ({ ...prev, [name]: numValue }));
             
@@ -171,10 +168,7 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
             alert('Debe seleccionar un ciclo de facturación');
             return;
         }
-        if (formData.idMetodoPago === 0) {
-            alert('Debe seleccionar un método de pago');
-            return;
-        }
+
         
         setIsSubmitting(true);
         try {
@@ -274,21 +268,6 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
                                         emptyMessage="No se encontraron planes"
                                     />
                                     </div>
-                                </div>
-
-                                {/* Método de Pago */}
-                                <div>
-                                    <SearchableSelect
-                                        value={formData.idMetodoPago}
-                                        onChange={(value) => setFormData(prev => ({ ...prev, idMetodoPago: Number(value) }))}
-                                        options={metodosPago}
-                                        getOptionId={(metodo) => metodo.idMetodo}
-                                        getOptionLabel={(metodo) => metodo.nombreMetodo}
-                                        label="Método de Pago"
-                                        placeholder="Seleccione método de pago..."
-                                        required
-                                        emptyMessage="No se encontraron métodos de pago"
-                                    />
                                 </div>
 
                                 {/* Estado Actual (Solo lectura en edición) */}

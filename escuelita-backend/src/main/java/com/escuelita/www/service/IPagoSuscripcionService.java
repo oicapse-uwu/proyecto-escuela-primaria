@@ -49,6 +49,13 @@ public interface IPagoSuscripcionService {
      */
     PagoSuscripcion rechazarPago(Long idPago, String motivo, Long idSuperAdmin) throws Exception;
     
+    /**
+     * Generar pagos programados automáticamente según el ciclo de facturación
+     * @param idSuscripcion ID de la suscripción
+     * @return Número de pagos generados
+     */
+    int generarPagosProgramados(Long idSuscripcion) throws Exception;
+    
     // ========== CONSULTAS ==========
     
     /**

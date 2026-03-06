@@ -62,7 +62,6 @@ export interface SuscripcionFormData {
     idPlan: number;
     idCiclo: number;
     idEstado: number;
-    idMetodoPago: number;
 }
 
 export interface SuscripcionDTO {

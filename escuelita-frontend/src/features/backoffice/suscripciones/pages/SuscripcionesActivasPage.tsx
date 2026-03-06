@@ -96,6 +96,14 @@ const SuscripcionesActivasPage: React.FC = () => {
         return `S/ ${parseFloat(price.toString()).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     };
 
+    const getTipoPago = (mesesDuracion: number | null | undefined) => {
+        if (!mesesDuracion) return { texto: 'N/A', clase: 'bg-gray-100 text-gray-600' };
+        if (mesesDuracion === 1) {
+            return { texto: 'Mensual', clase: 'bg-pink-100 text-pink-800' };
+        }
+        return { texto: 'Anual', clase: 'bg-purple-100 text-purple-800' };
+    };
+
     // Stats - con protección contra datos incompletos
     const statsActivas = suscripciones.filter(s => s.idEstado?.nombre === 'Activa').length;
     const statsVencidas = suscripciones.filter(s => s.idEstado?.nombre === 'Vencida').length;
@@ -236,6 +244,12 @@ const SuscripcionesActivasPage: React.FC = () => {
                                             <p className="font-semibold text-gray-900">{formatPrice(suscripcion.precioAcordado)}</p>
                                         </div>
                                         <div>
+                                            <p className="text-gray-500">Tipo</p>
+                                            <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getTipoPago(suscripcion.idCiclo?.mesesDuracion).clase}`}>
+                                                {getTipoPago(suscripcion.idCiclo?.mesesDuracion).texto}
+                                            </span>
+                                        </div>
+                                        <div>
                                             <p className="text-gray-500">Alumnos</p>
                                             <p className="font-medium text-gray-900">{suscripcion.limiteAlumnosContratado}</p>
                                         </div>
@@ -288,6 +302,9 @@ const SuscripcionesActivasPage: React.FC = () => {
                                         <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Precio
                                         </th>
+                                        <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Tipo
+                                        </th>
                                         <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Venc.
                                         </th>
@@ -326,6 +343,11 @@ const SuscripcionesActivasPage: React.FC = () => {
                                             </td>
                                             <td className="px-3 py-3 whitespace-nowrap text-xs font-semibold text-gray-900">
                                                 {formatPrice(suscripcion.precioAcordado)}
+                                            </td>
+                                            <td className="px-2 py-3 whitespace-nowrap text-center">
+                                                <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getTipoPago(suscripcion.idCiclo?.mesesDuracion).clase}`}>
+                                                    {getTipoPago(suscripcion.idCiclo?.mesesDuracion).texto}
+                                                </span>
                                             </td>
                                             <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-900">
                                                 {formatDate(suscripcion.fechaVencimiento)}

@@ -109,6 +109,86 @@ export interface PagoCajaDTO {
     idUsuario: number;
 }
 
+// ============= PAGOS DE SUSCRIPCIÓN (SUPER ADMIN) =============
+
+export type EstadoVerificacion = 'PENDIENTE' | 'VERIFICADO' | 'RECHAZADO';
+
+export interface PagoSuscripcion {
+    idPago: number;
+    numeroPago: string;
+    montoPagado: number;
+    fechaPago: string; // LocalDate
+    fechaRegistro: string; // LocalDateTime
+    numeroOperacion: string | null;
+    banco: string | null;
+    comprobanteUrl: string;
+    observaciones: string | null;
+    estadoVerificacion: EstadoVerificacion;
+    
+    // Relaciones expandidas (desde DTO)
+    idSuscripcion: number;
+    nombreInstitucion?: string;
+    codModular?: string;
+    
+    idMetodoPago: number;
+    nombreMetodoPago?: string;
+    
+    verificadoPor: number | null;
+    nombreVerificadoPor?: string;
+}
+
+export interface PagoSuscripcionDTO {
+    idPago?: number;
+    numeroPago?: string;
+    montoPagado: number;
+    fechaPago: string;
+    fechaRegistro?: string;
+    numeroOperacion?: string;
+    banco?: string;
+    comprobanteUrl?: string;
+    observaciones?: string;
+    estadoVerificacion?: EstadoVerificacion;
+    
+    idSuscripcion: number;
+    nombreInstitucion?: string;
+    codModular?: string;
+    
+    idMetodoPago: number;
+    nombreMetodoPago?: string;
+    
+    verificadoPor?: number;
+    nombreVerificadoPor?: string;
+}
+
+export interface PagoSuscripcionFormData {
+    montoPagado: number;
+    fechaPago: string;
+    numeroOperacion: string;
+    banco: string;
+    observaciones: string;
+    idSuscripcion: number;
+    idMetodoPago: number;
+}
+
+export interface VerificarPagoData {
+    idPago: number;
+    idSuperAdmin: number;
+}
+
+export interface RechazarPagoData {
+    idPago: number;
+    motivo: string;
+    idSuperAdmin: number;
+}
+
+export interface EstadisticasPagos {
+    totalPagos: number;
+    pendientes: number;
+    verificados: number;
+    rechazados: number;
+    totalRecaudado: number;
+}
+
 // ============= LÍMITES POR SEDE =============
 export interface LimiteSedeSuscripcion {
     idLimiteSede: number;

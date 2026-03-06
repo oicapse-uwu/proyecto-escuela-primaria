@@ -118,7 +118,71 @@ export default [TuModulo]Routes;
 
 ---
 
-## 📋 Checklist para cada Módulo
+## � ¿Cómo Funciona el Sistema de Permisos de Punta a Punta?
+
+### 1️⃣ **SuperAdmin asigna módulos a roles** (en `/admin`)
+   - SuperAdmin entra a `/admin/institucion` → Ve tabla de roles (PROFESOR, etc)
+   - Hace click en un rol → Ve lista de módulos
+   - Asigna módulos (ej: PROFESOR puede acceder a ALUMNOS, MATRÍCULAS, EVALUACIONES)
+   - Guarda en BD: tabla `rol_modulos` (idRol=2, idModulo=5,6,7)
+
+### 2️⃣ **Backend protege endpoints** (ya está hecho ✅)
+   - Todos los controladores tienen `@RequireModulo(X)`:
+   ```java
+   @GetMapping
+   @RequireModulo(5)  // Solo si usuario tiene acceso a ALUMNOS
+   public List<Alumno> buscar() { ... }
+   ```
+   - Si usuario intenta acceder sin permiso → **403 Forbidden**
+   - API consulta stored procedure: `validarAccesoModuloUsuario(idUsuario, idModulo)`
+
+### 3️⃣ **Frontend carga módulos disponibles** (Hook: `useModulosPermisos`)
+   - Usuario entra a `/escuela` → Se ejecuta `useModulosPermisos(idUsuario)`
+   - Hook hace petición a: `GET /restful/usuarios/{idUsuario}/modulos-permisos`
+   - Backend retorna JSON con módulos asignados:
+   ```json
+   {
+     "idUsuario": 30,
+     "nombreRol": "PROFESOR",
+     "modulos": [
+       { "idModulo": 5, "nombre": "ALUMNOS" },
+       { "idModulo": 6, "nombre": "MATRÍCULAS" },
+       { "idModulo": 7, "nombre": "EVALUACIONES Y NOTAS" }
+     ]
+   }
+   ```
+   - Los datos se guardan en **localStorage** (para robustez)
+   - Sidebar usa este hook para mostrar solo módulos disponibles
+
+### 4️⃣ **Frontend protege rutas** (ModuloGuard en routes)
+   - Usuario navega a `/escuela/alumnos` (Módulo 5)
+   - React renderiza `AlumnosRoutes.tsx` que está envuelto en `<ModuloGuard requiereModulo={5}>`
+   - ModuloGuard:
+     1. Carga datos del hook `useModulosPermisos`
+     2. Llama a `tieneModulo(5)` → busca en state/ref/localStorage
+     3. Si tiene acceso → muestra contenido del módulo ✅
+     4. Si NO tiene acceso → redirige a `/escuela/dashboard` ❌
+   
+### 5️⃣ **Si usuario intenta hackear (bypasear frontend)**
+   - Llama directamente a API endpoint
+   - Backend valida `@RequireModulo` en el controlador
+   - Si no tiene permiso → 403 Forbidden
+   - `api.config.ts` maneja automáticamente: limpia tokens y redirige a login
+
+**Síntesis:**
+```
+SuperAdmin asigna módulos → BD { rol_modulos }
+                                    ↓
+Usuario entra a /escuela → Frontend carga useModulosPermisos → localStorage
+                                    ↓
+Usuario navega a /escuela/alumnos → ModuloGuard valida tieneModulo(5)
+                                    ↓
+¿Tiene acceso? → SÍ: muestra contenido | NO: redirige a dashboard
+                                    ↓
+Si intenta hackear → Backend valida @RequireModulo → 403 si no tiene acceso
+```
+
+---
 
 Cuando implementes tu módulo, asegúrate de:
 
@@ -142,7 +206,7 @@ Cuando implementes tu módulo, asegúrate de:
 - [ ] La ruta importa el componente `Routes` del módulo correctamente
 
 ### 4. **Validación en Páginas** (Opcional pero recomendado)
-En tus páginas principales, puedes agregar validaciones adicionales:
+En tus páginas principales, puedes agregar validaciones adicionales usando el hook `useModulosPermisos`:
 
 ```typescript
 import { useModulosPermisos } from '../../../../hooks/useModulosPermisos';
@@ -150,18 +214,32 @@ import { escuelaAuthService } from '../../../../services/escuelaAuth.service';
 
 const MiPaginaPrincipal = () => {
   const currentUser = escuelaAuthService.getCurrentUser();
-  const { modulosPermisos, isLoading } = useModulosPermisos(currentUser?.idUsuario ?? null);
+  const { tieneModulo, isLoading } = useModulosPermisos(currentUser?.idUsuario ?? null);
   
-  if (isLoading) return <div>Cargando...</div>;
+  if (isLoading) return <div>Cargando módulos...</div>;
   
-  // Validación redundante (idealmente no es necesaria si ModuloGuard está en routes)
-  if (!modulosPermisos?.tieneModulo(7)) {
-    return <div>No tienes acceso a este módulo</div>;
-  }
+  // Útil para mostrar/ocultar opciones en base a módulos adicionales
+  const tieneEvaluaciones = tieneModulo(7);  // Retorna boolean
+  const tieneMatriculas = tieneModulo(6);
   
-  return <YourContent />;
+  return (
+    <div>
+      {tieneEvaluaciones && <button>Ver Evaluaciones</button>}
+      {tieneMatriculas && <button>Ver Matrículas</button>}
+      <YourContent />
+    </div>
+  );
 };
 ```
+
+**Notas sobre `useModulosPermisos`:**
+- `tieneModulo(idModulo)` → Retorna `boolean`
+- `modulosPermisos` → Objeto con array de módulos disponibles
+- `isLoading` → Mientras carga datos del servidor
+- `error` → Si hay error en la carga
+- `recargar()` → Función para refrescar permisos manualmente
+
+
 
 ### 5. **Manejo de Errores 403**
 El archivo `src/config/api.config.ts` ya maneja errores 403 automáticamente:
@@ -248,7 +326,119 @@ export default EvaluacionesRoutes;
 
 ---
 
-## 🔧 Backend - Información para Referencia
+---
+
+## ❌ Troubleshooting - Errores Comunes
+
+### Error: "No tienes acceso a este módulo" (módulo bloqueado)
+
+**Causa probable:** El ID del módulo en ModuloGuard es incorrecto.
+
+**Solución:**
+1. Revisa la tabla de módulos (arriba) y verifica el ID correcto
+2. En `routes/[TuModulo]Routes.tsx`, cambia:
+   ```typescript
+   // ❌ INCORRECTO
+   <ModuloGuard requiereModulo={99}>  // ID no existe
+   
+   // ✅ CORRECTO
+   <ModuloGuard requiereModulo={7}>   // ID valido para EVALUACIONES
+   ```
+3. Verifica que en `/admin` el rol esté asignado a ese módulo
+
+---
+
+### Error: API retorna 403 Forbidden
+
+**Significado:** El usuario no tiene permiso en ese módulo (validación backend).
+
+**Verificar:**
+1. En `/admin` → Asegúrate que el rol tiene asignado el módulo
+2. En backend, verifica que el controlador tiene `@RequireModulo(X)` con el ID correcto
+3. Llamadas API directas sin módulo asignado serán bloqueadas
+
+---
+
+### Error: "usuario es null" o "currentUser undefined"
+
+**Causa:** `escuelaAuthService.getCurrentUser()` no está retornando el usuario.
+
+**Solución:**
+```typescript
+// ❌ PROBLEMA
+const currentUser = escuelaAuthService.getCurrentUser();
+console.log(currentUser);  // undefined
+
+// ✅ SOLUCIÓN - Asegúrate de estar logueado en /escuela/login
+// Si estás en desarrollo, verifica que el token está en localStorage
+const currentUser = escuelaAuthService.getCurrentUser();
+if (!currentUser) {
+  console.log('No hay sesión activa');
+  return <Navigate to="/escuela/login" replace />;
+}
+```
+
+---
+
+### Error: "ModuloGuard not found" (import error)
+
+**Solución:**
+```typescript
+// ✅ Importa desde rutas correctas (ajusta según tu ubicación)
+import ModuloGuard from '../../../../hooks/ModuloGuard';  // Si estás en routes/
+import ModuloGuard from '../../../hooks/ModuloGuard';     // Si estás en una carpeta más arriba
+```
+
+Usa `ctrl+click` en VS Code para seguir la ruta correcta.
+
+---
+
+### Error: "Missing @ in imports" (no importaste escuelaAuthService)
+
+**Solución:**
+```typescript
+// ✅ Opción 1: Importar servicio en routes
+import { escuelaAuthService } from '../../../../services/escuelaAuth.service';
+
+// ✅ Opción 2: Si tienes contexto, usar context en lugar de servicio
+import { useAuth } from '../../context/AuthContext';  // Y usar hook en lugar
+```
+
+---
+
+## 🧪 Cómo Testear tu Módulo
+
+1. **Login como SuperAdmin**
+   - Usuario: `admin@admin.com`
+   - Contraseña: (la que tengas configurada)
+   - Ingresa a `/admin`
+
+2. **Asigna módulos a un rol**
+   - Vete a "Instituciones" → Selecciona una
+   - Click en "Roles"
+   - Click en el rol (ej: PROFESOR)
+   - Marca los módulos que quieres asignar
+   - Guarda
+
+3. **Login con ese rol**
+   - Logout del admin (`/admin`)
+   - Vete a `/escuela/login`
+   - Login con un usuario que tenga ese rol
+   - Verifica que ves el módulo en la sidebar
+
+4. **Entra al módulo**
+   - Click en el módulo en la sidebar
+   - Debe cargar tu contenido
+   - Si ves error 403, backend está bloqueando (verifica `@RequireModulo`)
+
+5. **Revisa los logs**
+   - Abre DevTools (F12) → Console
+   - Deberías ver logs de:
+     - `useModulosPermisos: Cargando módulos...`
+     - `tieneModulo: ✓ Encontrado en state`
+     - Etc.
+
+---
 
 Todos los controladores ya tienen `@RequireModulo(X)` implementado:
 

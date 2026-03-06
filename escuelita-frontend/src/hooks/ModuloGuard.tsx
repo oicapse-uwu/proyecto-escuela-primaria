@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { useModulosPermisos } from './useModulosPermisos';
+import { escuelaAuthService } from '../services/escuelaAuth.service';
 
 interface ModuloGuardProps {
     requiereModulo: number;
@@ -9,12 +10,12 @@ interface ModuloGuardProps {
 }
 
 /**
- * Componente guard que protege contenido basado en módulos
- * - Para rutas /escuela: Valida que el usuario tenga acceso al módulo específico
- * - Para rutas /admin: Permite acceso a todos los módulos (son SuperAdmin)
+ * Componente guard que protege contenido basado en módulos para usuarios de IE
  * 
- * IMPORTANTE: Si el usuario de IE cambia la URL a un módulo que no tiene,
- * será bloqueado aquí (frontend) Y además el backend devuelverá 403 en las llamadas API
+ * Lógica:
+ * 1. Administrador de IE → VER todos los módulos
+ * 2. Otros roles de IE (PROFESOR, etc) → Valida módulo específico
+ * 3. Si no cumple → BLOQUEAR
  */
 const ModuloGuard: React.FC<ModuloGuardProps> = ({ 
     requiereModulo,
@@ -22,34 +23,46 @@ const ModuloGuard: React.FC<ModuloGuardProps> = ({
     fallback,
     idUsuario 
 }) => {
-    const { tieneModulo, isLoading } = useModulosPermisos(idUsuario);
+    const { tieneModulo, modulosPermisos, isLoading } = useModulosPermisos(idUsuario);
     
-    // Detectar si estamos en ruta /admin (SuperAdmin) o /escuela (usuarios de IE)
-    const rutaActual = useMemo(() => {
-        return window.location.pathname;
+    // Detectar el rol y si tiene sede (es usuario de IE)
+    const { esAdministrador, tieneSede } = useMemo(() => {
+        const user = escuelaAuthService.getCurrentUser();
+        
+        // Un usuario de IE SIEMPRE tiene sede asignada
+        const hasSede = !!(user && 'sede' in user && user.sede);
+        
+        // Detectar si es Administrador comparando nombre de rol exacto
+        const isAdmin = user?.rol?.nombreRol?.toUpperCase() === 'ADMINISTRADOR';
+        
+        return {
+            esAdministrador: isAdmin,
+            tieneSede: hasSede
+        };
     }, []);
-    
-    const esSuperAdmin = rutaActual.startsWith('/admin');
 
-    // Mientras se carga los módulos de un usuario de IE, mostrar fallback
-    if (isLoading && !esSuperAdmin) {
-        return <>{fallback || null}</>;
+    // Si aún está cargando los módulos
+    // PERO si ya tenemos datos guardados, no mostrar fallback
+    if (isLoading && !modulosPermisos) {
+        return <>{fallback || <div>Cargando...</div>}</>;
     }
 
-    // Si está en /admin, es SuperAdmin → permitir acceso a TODOS los módulos
-    if (esSuperAdmin) {
+    // Si es Administrador → Permitir acceso a TODOS los módulos
+    if (esAdministrador && tieneSede) {
         return <>{children}</>;
     }
 
-    // Si está en /escuela, validar que tenga el módulo
-    // Si no tiene el módulo, mostrar fallback (normalmente redirige a dashboard)
-    const tieneAcceso = tieneModulo(requiereModulo);
-    
-    return tieneAcceso ? (
-        <>{children}</>
-    ) : (
-        <>{fallback || null}</>
-    );
+    // Si es otro rol de IE → Validar que tenga el módulo específico
+    if (tieneSede) {
+        const tieneAcceso = tieneModulo(requiereModulo);
+        
+        if (tieneAcceso) {
+            return <>{children}</>;
+        }
+    }
+
+    // Bloquear acceso
+    return <>{fallback || null}</>;
 };
 
 export default ModuloGuard;

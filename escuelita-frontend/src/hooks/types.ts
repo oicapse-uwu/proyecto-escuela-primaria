@@ -3,9 +3,9 @@
 export interface ModuloAcceso {
     idModulo: number;
     nombre: string;
-    descripcion: string;
-    icono: string;
-    orden: number;
+    descripcion?: string;  // Opcional - puede no venir del backend
+    icono?: string;        // Opcional
+    orden?: number;        // Opcional
 }
 
 export interface ModulosPermisosUsuario {

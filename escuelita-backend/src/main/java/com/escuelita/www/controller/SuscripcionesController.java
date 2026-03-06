@@ -72,9 +72,11 @@ public class SuscripcionesController {
             CiclosFacturacion ciclosFacturacion = repoCiclos
                 .findById(dto.getIdCiclo())
                 .orElse(null);
+            
+            // 🆕 FORZAR estado "Pendiente" (ID 5) al crear - será Activa al verificar primer pago
             EstadosSuscripcion estadosSuscripcion = repoEstados
-                .findById(dto.getIdEstado())
-                .orElse(null);
+                .findById(5L) // Estado "Pendiente"
+                .orElseThrow(() -> new Exception("Estado Pendiente no encontrado"));
 
             suscripciones.setIdInstitucion(institucion);
             suscripciones.setIdPlan(planes);

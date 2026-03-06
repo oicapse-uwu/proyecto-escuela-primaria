@@ -207,11 +207,33 @@ public class PagoSuscripcionService implements IPagoSuscripcionService {
         
         // ========== ACTUALIZAR ESTADO DE SUSCRIPCIÓN A ACTIVA ==========
         Suscripciones suscripcion = pago.getSuscripcion();
-        EstadosSuscripcion estadoActiva = estadosSuscripcionRepository.findById(1L) // 1 = ACTIVA
-            .orElseThrow(() -> new Exception("Estado ACTIVA no encontrado"));
         
-        suscripcion.setIdEstado(estadoActiva);
-        suscripcionRepository.save(suscripcion);
+        // Solo cambiar a Activa si está Pendiente Y el pago verificado cubre el mes actual
+        if (suscripcion.getIdEstado().getIdEstado() == 5L) { // 5 = PENDIENTE
+            LocalDate hoy = LocalDate.now();
+            LocalDate fechaInicioPeriodo = pago.getFechaPago();
+            Integer mesesDuracion = suscripcion.getIdCiclo() != null ? suscripcion.getIdCiclo().getMesesDuracion() : 1;
+            LocalDate fechaFinPeriodo = fechaInicioPeriodo.plusMonths(mesesDuracion);
+            
+            // Verificar si el pago verificado cubre el período actual
+            boolean cubrePeriodoActual = !hoy.isBefore(fechaInicioPeriodo) && hoy.isBefore(fechaFinPeriodo);
+            
+            if (cubrePeriodoActual) {
+                EstadosSuscripcion estadoActiva = estadosSuscripcionRepository.findById(1L) // 1 = ACTIVA
+                    .orElseThrow(() -> new Exception("Estado ACTIVA no encontrado"));
+                
+                suscripcion.setIdEstado(estadoActiva);
+                suscripcionRepository.save(suscripcion);
+                System.out.println("✅ Suscripción ID " + suscripcion.getIdSuscripcion() + 
+                    " activada tras verificar pago que cubre el período actual (" + 
+                    fechaInicioPeriodo + " a " + fechaFinPeriodo + ")");
+            } else {
+                System.out.println("⚠️ Pago verificado pero NO cubre el período actual. " +
+                    "Suscripción permanece en estado Pendiente. " +
+                    "Período del pago: " + fechaInicioPeriodo + " a " + fechaFinPeriodo + 
+                    " | Hoy: " + hoy);
+            }
+        }
         
         // TODO: Enviar notificación por email a la institución
         
@@ -297,10 +319,12 @@ public class PagoSuscripcionService implements IPagoSuscripcionService {
         }
         
         // Calcular número total de pagos
-        long mesesTotales = java.time.temporal.ChronoUnit.MONTHS.between(fechaInicio, fechaVencimiento);
+        // Agregar 1 día a fechaVencimiento para incluir el mes completo
+        LocalDate fechaVencimientoAjustada = fechaVencimiento.plusDays(1);
+        long mesesTotales = java.time.temporal.ChronoUnit.MONTHS.between(fechaInicio, fechaVencimientoAjustada);
         int numeroPagos = (int) Math.ceil((double) mesesTotales / mesesDuracion);
         
-        System.out.println("🧮 Meses totales: " + mesesTotales);
+        System.out.println("🧮 Meses totales (con ajuste): " + mesesTotales);
         System.out.println("🧮 Número de pagos a generar: " + numeroPagos);
         
         if (numeroPagos <= 0) {

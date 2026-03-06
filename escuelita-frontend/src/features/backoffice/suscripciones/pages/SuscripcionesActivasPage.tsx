@@ -1,6 +1,6 @@
 import { Building2, CreditCard, Edit, Plus, Search, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { Toaster, toast } from 'sonner';
+import { Toaster } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
 import { useInstituciones } from '../../instituciones/hooks/useInstituciones';
 import SuscripcionForm from '../components/SuscripcionForm';
@@ -126,13 +126,12 @@ const SuscripcionesActivasPage: React.FC = () => {
                         </p>
                     </div>
                     <button
-                            onClick={handleNueva}
-                            className="bg-primary text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md"
-                        >
-                            <Plus className="w-5 h-5" />
-                            <span>Nueva Suscripción</span>
-                        </button>
-                    </div>
+                        onClick={handleNueva}
+                        className="bg-primary text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md"
+                    >
+                        <Plus className="w-5 h-5" />
+                        <span>Nueva Suscripción</span>
+                    </button>
                 </div>
             </div>
 

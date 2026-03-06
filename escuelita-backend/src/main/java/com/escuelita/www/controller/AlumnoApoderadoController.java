@@ -22,6 +22,7 @@ import com.escuelita.www.entity.Apoderados;
 import com.escuelita.www.repository.AlumnosRepository;
 import com.escuelita.www.repository.ApoderadosRepository;
 import com.escuelita.www.service.IAlumnoApoderadoService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -35,10 +36,12 @@ public class AlumnoApoderadoController {
     private ApoderadosRepository repoApoderados;
 
     @GetMapping("/alumnoapoderado")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public List<AlumnoApoderado> buscarTodos() {
         return serviceAlumnoApoderado.buscarTodos(); 
     }
     @PostMapping("/alumnoapoderado")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public ResponseEntity<?> guardar(@RequestBody AlumnoApoderadoDTO dto) {
         AlumnoApoderado alumnoApoderado = new AlumnoApoderado();
         alumnoApoderado.setParentesco(dto.getParentesco());
@@ -58,6 +61,7 @@ public class AlumnoApoderadoController {
         return ResponseEntity.ok(serviceAlumnoApoderado.guardar(alumnoApoderado));
     }
     @PutMapping("/alumnoapoderado")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public ResponseEntity<?> modificar(@RequestBody AlumnoApoderadoDTO dto) {
         if(dto.getIdAlumnoApoderado() == null){
             return ResponseEntity.badRequest()
@@ -82,10 +86,12 @@ public class AlumnoApoderadoController {
         return ResponseEntity.ok(serviceAlumnoApoderado.modificar(alumnoApoderado));
     }
     @GetMapping("/alumnoapoderado/{id}")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public Optional<AlumnoApoderado> buscarId(@PathVariable("id") Long id){
         return serviceAlumnoApoderado.buscarId(id);
     }
     @DeleteMapping("/alumnoapoderado/{id}")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public String eliminar(@PathVariable Long id){
         serviceAlumnoApoderado.eliminar(id);
         return "Relación entre Alumno y Apoderado eliminada correctamente";

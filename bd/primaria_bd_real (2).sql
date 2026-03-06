@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 05-03-2026 a las 00:14:24
+-- Tiempo de generación: 06-03-2026 a las 07:42:15
 -- Versión del servidor: 10.11.16-MariaDB
 -- Versión de PHP: 8.4.18
 
@@ -20,6 +20,59 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `primaria_bd_real`
 --
+
+DELIMITER $$
+--
+-- Procedimientos
+--
+CREATE DEFINER=`primaria`@`localhost` PROCEDURE `validarAccesoModuloUsuario` (IN `p_idUsuario` BIGINT, IN `p_idModulo` BIGINT)   BEGIN
+  DECLARE v_idRol BIGINT DEFAULT NULL;
+  DECLARE v_existe INT DEFAULT 0;
+  
+  SELECT id_rol INTO v_idRol FROM usuarios WHERE id_usuario = p_idUsuario LIMIT 1;
+  
+  IF v_idRol IS NULL THEN
+    SELECT 0 as resultado;
+  ELSEIF v_idRol = 1 THEN
+    SELECT 1 as resultado;
+  ELSE
+    SELECT COALESCE((SELECT COUNT(*) FROM rol_modulo 
+                     WHERE id_rol = v_idRol 
+                     AND id_modulo = p_idModulo 
+                     AND estado = 1), 0) as resultado;
+  END IF;
+END$$
+
+CREATE DEFINER=`primaria`@`localhost` PROCEDURE `verificar_permiso_usuario` (IN `p_id_usuario` BIGINT(20), IN `p_codigo_permiso` VARCHAR(255), OUT `p_tiene_permiso` BOOLEAN)   BEGIN
+    DECLARE v_id_rol BIGINT(20);
+    DECLARE v_conteo INT;
+
+    -- 1. Obtenemos el ID del rol del usuario
+    SELECT id_rol INTO v_id_rol 
+    FROM usuarios 
+    WHERE id_usuario = p_id_usuario;
+
+    -- 2. Verificamos la excepción: si el rol es 1, siempre es TRUE
+    IF v_id_rol = 1 THEN
+        SET p_tiene_permiso = TRUE;
+    ELSE
+        -- 3. Buscamos si existe la relación entre el rol y el código del permiso
+        SELECT COUNT(*) INTO v_conteo
+        FROM rol_modulo_permiso rmp
+        INNER JOIN permisos p ON rmp.id_permiso = p.id_permiso
+        WHERE rmp.id_rol = v_id_rol 
+          AND p.codigo = p_codigo_permiso
+          AND rmp.estado = 1; -- Asumiendo que 1 es estado activo
+
+        IF v_conteo > 0 THEN
+            SET p_tiene_permiso = TRUE;
+        ELSE
+            SET p_tiene_permiso = FALSE;
+        END IF;
+    END IF;
+END$$
+
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -45,19 +98,6 @@ CREATE TABLE `alumnos` (
   `estado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `alumnos`
---
-
-INSERT INTO `alumnos` (`id_alumno`, `id_sede`, `id_tipo_doc`, `numero_documento`, `nombres`, `apellidos`, `fecha_nacimiento`, `genero`, `direccion`, `telefono_contacto`, `foto_url`, `observaciones_salud`, `tipo_ingreso`, `estado_alumno`, `estado`) VALUES
-(1, 1, 1, '88776655', 'Pedrito', 'Perez', '2015-05-10', 'M', 'Jr. Urano 901', '945687123', '', 'Saludable', 'Traslado', 'Activo', 1),
-(6, 1, 1, '88776896', 'Gabriel', 'Flores Huaman', '2015-05-11', 'M', NULL, NULL, NULL, NULL, NULL, NULL, 1),
-(7, 2, 1, '40240678', 'Intento2', 'gogogo', '2015-05-10', 'M', 'jr. rodriguez 213', '911111111', '', '', 'Nuevo', 'Activo', 1),
-(8, 2, 1, '70240692', 'Laurissa', 'Jaramillo Lozano', '2015-06-21', 'F', 'Jr. 9 de abril 331', '995533532', '/uploads/perfiles/53034ca3-9a0b-427d-9d88-8323f872ab79.jpg', 'Es alergica a los animales y la penisilina', 'Nuevo', 'Activo', 1),
-(21, 1, 1, '85623147', 'pipipi', 'fefeefee', '2004-06-05', 'F', '', '', '', '', '', 'Activo', 1),
-(22, 1, 1, '65432985', 'PROBANDOOOOO', 'NUEVO ALUMNO', '2013-06-04', 'M', 'av. tres de octubre', '', '', '', 'Nuevo', 'Activo', 1),
-(23, 1, 1, '25613548', 'okidoki', 'jajaj', '2016-06-07', 'M', '', '', '', '', '', 'Activo', 1);
-
 -- --------------------------------------------------------
 
 --
@@ -74,13 +114,6 @@ CREATE TABLE `alumno_apoderado` (
   `estado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `alumno_apoderado`
---
-
-INSERT INTO `alumno_apoderado` (`id_alum_apod`, `id_alumno`, `id_apoderado`, `parentesco`, `es_representante_financiero`, `vive_con_estudiante`, `estado`) VALUES
-(6, 8, 1, 'Madre', 1, 1, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -94,16 +127,6 @@ CREATE TABLE `anio_escolar` (
   `activo` int(11) DEFAULT NULL,
   `estado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `anio_escolar`
---
-
-INSERT INTO `anio_escolar` (`id_anio_escolar`, `id_sede`, `nombre_anio`, `activo`, `estado`) VALUES
-(1, 1, '2026', 1, 1),
-(2, 1, '2027', 1, 0),
-(4, 3, '2026', 1, 1),
-(5, 3, '2026', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -125,13 +148,6 @@ CREATE TABLE `apoderados` (
   `lugarTrabajo` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `apoderados`
---
-
-INSERT INTO `apoderados` (`id_apoderado`, `id_sede`, `id_tipo_doc`, `numero_documento`, `nombres`, `apellidos`, `telefono_principal`, `correo`, `lugar_trabajo`, `estado`, `lugarTrabajo`) VALUES
-(1, 2, 1, '40567812', 'Dailith', 'Lozano Balseca', '940123091', 'dailith@gmail.com', 'Empresa Independiente - Jr. 9 de Abril 331', 1, NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -145,13 +161,6 @@ CREATE TABLE `areas` (
   `descripcion` varchar(255) DEFAULT NULL,
   `estado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `areas`
---
-
-INSERT INTO `areas` (`id_area`, `id_sede`, `nombre_area`, `descripcion`, `estado`) VALUES
-(1, 1, 'Matemáticas', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -197,20 +206,6 @@ CREATE TABLE `aulas` (
   `capacidad` int(11) DEFAULT NULL,
   `estado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `aulas`
---
-
-INSERT INTO `aulas` (`id_aula`, `id_sede`, `nombre_aula`, `capacidad`, `estado`) VALUES
-(1, 1, 'Aula 101', 30, 1),
-(2, 1, 'Aula 102', 30, 1),
-(3, 1, 'Aula 103', 30, 1),
-(4, 1, 'Aula 104', 30, 1),
-(5, 1, 'Aula 105', 35, 0),
-(11, 3, 'aula 100', 30, 1),
-(12, 3, 'aula 200', 29, 1),
-(13, 3, 'Laboratorio 01', 30, 1);
 
 -- --------------------------------------------------------
 
@@ -265,17 +260,6 @@ CREATE TABLE `conceptos_pago` (
   `estado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `conceptos_pago`
---
-
-INSERT INTO `conceptos_pago` (`id_concepto`, `id_institucion`, `id_grado`, `nombre_concepto`, `monto`, `estado_concepto`, `estado`) VALUES
-(1, 1, NULL, 'Pensión Mensual Regular', 250.00, NULL, 1),
-(2, 1, NULL, 'Matrícula 2026', 150.00, NULL, 1),
-(3, 1, NULL, 'Pensión Abril', 250.00, NULL, 1),
-(4, 1, NULL, 'Materiales Educativos', 50.00, NULL, 1),
-(5, 1, NULL, 'Fondos Pre Promocion', 50.00, NULL, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -288,13 +272,6 @@ CREATE TABLE `cursos` (
   `nombre_curso` varchar(255) DEFAULT NULL,
   `estado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `cursos`
---
-
-INSERT INTO `cursos` (`id_curso`, `id_area`, `nombre_curso`, `estado`) VALUES
-(1, 1, 'Aritmética Básica', 1);
 
 -- --------------------------------------------------------
 
@@ -331,16 +308,6 @@ CREATE TABLE `documentos_alumno` (
   `observaciones` text DEFAULT NULL,
   `estado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `documentos_alumno`
---
-
-INSERT INTO `documentos_alumno` (`id_doc_alumno`, `id_alumno`, `id_requisito`, `ruta_archivo`, `fecha_subida`, `estado_revision`, `observaciones`, `estado`) VALUES
-(1, 1, 1, '/archivos/dni_pedrito.pdf', '2026-02-23 12:46:12', NULL, NULL, 0),
-(3, 1, 1, '/uploads/documentos/5c362c96-6069-4d83-895c-ec82c50271d3.docx', '2026-03-02 00:00:00', NULL, 'PRUEBA 1 PARA DUBIR DOCUMENTACION', 1),
-(4, 8, 3, '/uploads/documentos/70cce6cd-7159-4fd1-874b-ba0a63566745.docx', '2026-03-02 00:00:00', NULL, 'oño', 1),
-(5, 1, 2, '/uploads/documentos/a4e47111-ad05-40b5-9340-d431b86d8988.docx', '2026-03-02 00:00:00', NULL, 'uwu', 1);
 
 -- --------------------------------------------------------
 
@@ -386,7 +353,8 @@ INSERT INTO `estados_suscripcion` (`id_estado`, `nombre`, `estado`) VALUES
 (1, 'Activa', 1),
 (2, 'Vencida', 1),
 (3, 'Suspendida', 1),
-(4, 'Cancelada', 1);
+(4, 'Cancelada', 1),
+(5, 'Pendiente', 1);
 
 -- --------------------------------------------------------
 
@@ -417,24 +385,6 @@ CREATE TABLE `grados` (
   `nombre_grado` varchar(50) NOT NULL,
   `estado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `grados`
---
-
-INSERT INTO `grados` (`id_grado`, `id_sede`, `nombre_grado`, `estado`) VALUES
-(1, 1, 'Primer Grado', 1),
-(2, 1, 'Segundo Grado', 1),
-(7, 3, 'segundo grado', 0),
-(8, 3, 'tercer grado', 0),
-(9, 3, 'segundo grado', 0),
-(10, 3, 'Primer grado', 0),
-(11, 3, 'Primer grado', 1),
-(12, 3, 'segundo grado', 1),
-(13, 3, 'tercer grado', 1),
-(14, 3, 'cuarto grado', 1),
-(15, 3, 'quinto grado', 1),
-(16, 3, 'sexto grado', 1);
 
 -- --------------------------------------------------------
 
@@ -480,8 +430,7 @@ CREATE TABLE `institucion` (
 --
 
 INSERT INTO `institucion` (`id_institucion`, `nombre`, `cod_modular`, `tipo_gestion`, `resolucion_creacion`, `nombre_director`, `logo_path`, `correo_facturacion`, `domicilio_fiscal`, `razon_social`, `representante_legal`, `ruc`, `telefono_facturacion`, `estado`) VALUES
-(1, 'Colegio Primaria San Marcos', '1234567', 'Privada', 'R.M. N° 999-2004-UGEL-01', NULL, '/uploads/logos/3828afbe-21a3-4f69-bdfc-2acb298f6ece.jpg', 'judith09@gmail.com', 'AV. San jose 290', 'I.E San Marcos S.A.C', 'Judith Marianella Contreras Bernillaa', '96854721391', '944513416', 1),
-(2, 'Institucion Educativa Forever Kids', '1231234', 'PRIVADA', 'R.M. N° 999-2000-UGEL-01', 'Nikki Nicole Si O No', '/uploads/perfiles/f767ffba-6789-45dd-9b37-285b6f6ae4a4.png', 'rene@gmail.com', 'Jr. Urano 221 - San Juan de Lurigancho', 'Institucion Educativa Forever Kids', 'La ranita Rene', '12345678910', '960562286', 1);
+(30, 'Institución Educativa San Jose del Alto Mayo', '1234568', 'Pública', 'R.G.R. N° 5678-2024-GRE-SANMARTIN', NULL, '/uploads/logos/aab2bf06-8ad9-4a61-8890-f1418a014e5c.jpg', 'sanjose@gmail.com', 'Av. San Pedro 211', 'Institución Educativa San Jose del Alto Mayo', 'Judith Marianella Contreras Bernilla', '20123456781', '911001111', 1);
 
 -- --------------------------------------------------------
 
@@ -502,10 +451,7 @@ CREATE TABLE `limites_sedes_suscripcion` (
 --
 
 INSERT INTO `limites_sedes_suscripcion` (`id_limite_sede`, `estado`, `limite_alumnos_asignado`, `id_sede`, `id_suscripcion`) VALUES
-(7, 0, 2, 1, 14),
-(8, 0, 2, 2, 14),
-(9, 1, 2, 1, 14),
-(10, 1, 2, 2, 14);
+(11, 1, 5, 13, 27);
 
 -- --------------------------------------------------------
 
@@ -520,13 +466,6 @@ CREATE TABLE `malla_curricular` (
   `id_curso` bigint(20) UNSIGNED NOT NULL,
   `estado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `malla_curricular`
---
-
-INSERT INTO `malla_curricular` (`id_malla`, `id_anio`, `id_grado`, `id_curso`, `estado`) VALUES
-(1, 1, 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -572,10 +511,7 @@ INSERT INTO `metodos_pago` (`id_metodo`, `nombre_metodo`, `requiere_comprobante`
 (2, 'Yape', 1, 1),
 (3, 'Plin', 1, 1),
 (4, 'Transferencia Bancaria', 1, 1),
-(5, 'Tarjeta de Crédito / Débito', 1, 1),
-(6, 'Dale', 1, 1),
-(7, 'Transferencia BCP', 1, 1),
-(8, 'Trueque', 0, 1);
+(5, 'Tarjeta de Crédito / Débito', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -627,6 +563,60 @@ CREATE TABLE `pagos_caja` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `pagos_suscripcion`
+--
+
+CREATE TABLE `pagos_suscripcion` (
+  `id_pago` bigint(20) NOT NULL,
+  `banco` varchar(100) DEFAULT NULL,
+  `comprobante_url` varchar(500) DEFAULT NULL,
+  `estado` int(11) NOT NULL,
+  `estado_verificacion` enum('PENDIENTE','RECHAZADO','VERIFICADO') NOT NULL,
+  `fecha_pago` date NOT NULL,
+  `fecha_registro` datetime(6) NOT NULL,
+  `fecha_verificacion` datetime DEFAULT NULL,
+  `monto_pagado` decimal(10,2) NOT NULL,
+  `numero_operacion` varchar(100) DEFAULT NULL,
+  `numero_pago` varchar(20) DEFAULT NULL,
+  `observaciones` text DEFAULT NULL,
+  `id_metodo_pago` bigint(20) DEFAULT NULL,
+  `id_suscripcion` bigint(20) NOT NULL,
+  `verificado_por` bigint(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Volcado de datos para la tabla `pagos_suscripcion`
+--
+
+INSERT INTO `pagos_suscripcion` (`id_pago`, `banco`, `comprobante_url`, `estado`, `estado_verificacion`, `fecha_pago`, `fecha_registro`, `fecha_verificacion`, `monto_pagado`, `numero_operacion`, `numero_pago`, `observaciones`, `id_metodo_pago`, `id_suscripcion`, `verificado_por`) VALUES
+(44, NULL, '/uploads/comprobantes/suscripciones/381d14f1-a2ab-4994-9c1b-e788a1824594.jpg', 0, 'PENDIENTE', '2026-01-01', '2026-03-06 06:28:47.000000', NULL, 120.00, '000001', 'PAGO-00044', 'Pago programado automáticamente - Período 1 de 12', 2, 27, NULL),
+(45, NULL, '/uploads/comprobantes/suscripciones/682cc8a1-38c0-412c-8793-62075cdacd4d.jpg', 0, 'PENDIENTE', '2026-02-01', '2026-03-06 06:28:47.000000', NULL, 120.00, '000002', 'PAGO-00045', 'Pago programado automáticamente - Período 2 de 12', 3, 27, NULL),
+(46, NULL, '/uploads/comprobantes/suscripciones/ea18fff0-953d-4b1f-a49c-4250295db2c1.jpeg', 1, 'VERIFICADO', '2026-03-01', '2026-03-06 06:28:47.000000', '2026-03-06 06:32:15', 120.00, '000003', 'PAGO-00046', 'Pago programado automáticamente - Período 3 de 12', 1, 27, 1),
+(47, NULL, NULL, 0, 'PENDIENTE', '2026-04-01', '2026-03-06 06:28:47.000000', NULL, 120.00, NULL, 'PAGO-00047', 'Pago programado automáticamente - Período 4 de 12', NULL, 27, NULL),
+(48, NULL, NULL, 0, 'PENDIENTE', '2026-05-01', '2026-03-06 06:28:47.000000', NULL, 120.00, NULL, 'PAGO-00048', 'Pago programado automáticamente - Período 5 de 12', NULL, 27, NULL),
+(49, NULL, NULL, 0, 'PENDIENTE', '2026-06-01', '2026-03-06 06:28:47.000000', NULL, 120.00, NULL, 'PAGO-00049', 'Pago programado automáticamente - Período 6 de 12', NULL, 27, NULL),
+(50, NULL, NULL, 0, 'PENDIENTE', '2026-07-01', '2026-03-06 06:28:47.000000', NULL, 120.00, NULL, 'PAGO-00050', 'Pago programado automáticamente - Período 7 de 12', NULL, 27, NULL),
+(51, NULL, NULL, 0, 'PENDIENTE', '2026-08-01', '2026-03-06 06:28:47.000000', NULL, 120.00, NULL, 'PAGO-00051', 'Pago programado automáticamente - Período 8 de 12', NULL, 27, NULL),
+(52, NULL, NULL, 0, 'PENDIENTE', '2026-09-01', '2026-03-06 06:28:47.000000', NULL, 120.00, NULL, 'PAGO-00052', 'Pago programado automáticamente - Período 9 de 12', NULL, 27, NULL),
+(53, NULL, NULL, 0, 'PENDIENTE', '2026-10-01', '2026-03-06 06:28:47.000000', NULL, 120.00, NULL, 'PAGO-00053', 'Pago programado automáticamente - Período 10 de 12', NULL, 27, NULL),
+(54, NULL, NULL, 0, 'PENDIENTE', '2026-11-01', '2026-03-06 06:28:47.000000', NULL, 120.00, NULL, 'PAGO-00054', 'Pago programado automáticamente - Período 11 de 12', NULL, 27, NULL),
+(55, NULL, NULL, 0, 'PENDIENTE', '2026-12-01', '2026-03-06 06:28:47.000000', NULL, 120.00, NULL, 'PAGO-00055', 'Pago programado automáticamente - Período 12 de 12', NULL, 27, NULL),
+(56, NULL, NULL, 1, 'PENDIENTE', '2026-01-01', '2026-03-06 06:34:40.000000', NULL, 120.00, NULL, 'PAGO-00056', 'Pago programado automáticamente - Período 1 de 12', NULL, 27, NULL),
+(57, NULL, NULL, 1, 'PENDIENTE', '2026-02-01', '2026-03-06 06:34:40.000000', NULL, 120.00, NULL, 'PAGO-00057', 'Pago programado automáticamente - Período 2 de 12', NULL, 27, NULL),
+(58, NULL, NULL, 1, 'PENDIENTE', '2026-03-01', '2026-03-06 06:34:40.000000', NULL, 120.00, NULL, 'PAGO-00058', 'Pago programado automáticamente - Período 3 de 12', NULL, 27, NULL),
+(59, NULL, NULL, 1, 'PENDIENTE', '2026-04-01', '2026-03-06 06:34:40.000000', NULL, 120.00, NULL, 'PAGO-00059', 'Pago programado automáticamente - Período 4 de 12', NULL, 27, NULL),
+(60, NULL, NULL, 1, 'PENDIENTE', '2026-05-01', '2026-03-06 06:34:40.000000', NULL, 120.00, NULL, 'PAGO-00060', 'Pago programado automáticamente - Período 5 de 12', NULL, 27, NULL),
+(61, NULL, NULL, 1, 'PENDIENTE', '2026-06-01', '2026-03-06 06:34:40.000000', NULL, 120.00, NULL, 'PAGO-00061', 'Pago programado automáticamente - Período 6 de 12', NULL, 27, NULL),
+(62, NULL, NULL, 1, 'PENDIENTE', '2026-07-01', '2026-03-06 06:34:40.000000', NULL, 120.00, NULL, 'PAGO-00062', 'Pago programado automáticamente - Período 7 de 12', NULL, 27, NULL),
+(63, NULL, NULL, 1, 'PENDIENTE', '2026-08-01', '2026-03-06 06:34:40.000000', NULL, 120.00, NULL, 'PAGO-00063', 'Pago programado automáticamente - Período 8 de 12', NULL, 27, NULL),
+(64, NULL, NULL, 1, 'PENDIENTE', '2026-09-01', '2026-03-06 06:34:40.000000', NULL, 120.00, NULL, 'PAGO-00064', 'Pago programado automáticamente - Período 9 de 12', NULL, 27, NULL),
+(65, NULL, NULL, 1, 'PENDIENTE', '2026-10-01', '2026-03-06 06:34:40.000000', NULL, 120.00, NULL, 'PAGO-00065', 'Pago programado automáticamente - Período 10 de 12', NULL, 27, NULL),
+(66, NULL, NULL, 1, 'PENDIENTE', '2026-11-01', '2026-03-06 06:34:40.000000', NULL, 120.00, NULL, 'PAGO-00066', 'Pago programado automáticamente - Período 11 de 12', NULL, 27, NULL),
+(67, NULL, NULL, 1, 'PENDIENTE', '2026-12-01', '2026-03-06 06:34:40.000000', NULL, 120.00, NULL, 'PAGO-00067', 'Pago programado automáticamente - Período 12 de 12', NULL, 27, NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `pago_detalle`
 --
 
@@ -669,20 +659,6 @@ CREATE TABLE `periodos` (
   `estado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Volcado de datos para la tabla `periodos`
---
-
-INSERT INTO `periodos` (`id_periodo`, `id_anio`, `nombre_periodo`, `fecha_inicio`, `fecha_fin`, `estado`) VALUES
-(1, 1, 'Primer Bimestre', '2026-03-01', '2026-05-15', 1),
-(2, 1, 'Segundo Bimestre', '2026-05-20', '2026-07-15', 1),
-(3, 1, 'Tercer Bimestre', '2026-07-20', '2026-09-30', 1),
-(4, 1, 'Cuarto bimestre', '2026-10-01', '2026-12-18', 1),
-(7, 4, 'primer bimestre', '2026-03-16', '2026-05-29', 1),
-(8, 4, 'segundo bimestre', '2026-06-01', '2026-08-07', 1),
-(9, 4, 'tercer bimestre', '2026-08-10', '2026-10-30', 1),
-(10, 4, 'Cuarto bimestre', '2026-11-02', '2026-12-31', 1);
-
 -- --------------------------------------------------------
 
 --
@@ -697,45 +673,6 @@ CREATE TABLE `permisos` (
   `id_modulo` bigint(20) UNSIGNED DEFAULT NULL,
   `estado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `permisos`
---
-
-INSERT INTO `permisos` (`id_permiso`, `nombre`, `codigo`, `descripcion`, `id_modulo`, `estado`) VALUES
-(1, 'Ver Dashboard', 'VER_DASHBOARD', 'Acceder al panel principal', 1, 1),
-(2, 'Configurar Dashboard', 'CONFIGURAR_DASHBOARD', 'Personalizar widgets del dashboard', 1, 1),
-(3, 'Exportar Reportes', 'EXPORTAR_REPORTES', 'Descargar reportes en PDF/Excel', 1, 1),
-(4, 'Gestionar Usuarios', 'GESTIONAR_USUARIOS', 'Crear, editar y eliminar usuarios del sistema', 2, 1),
-(5, 'Gestionar Roles', 'GESTIONAR_ROLES', 'Crear y configurar roles (SuperAdmin)', 2, 1),
-(6, 'Gestionar Sedes', 'GESTIONAR_SEDES', 'Agregar y editar sedes de la institución', 2, 1),
-(7, 'Ver Configuración General', 'VER_CONFIGURACION', 'Acceder a ajustes generales', 2, 1),
-(8, 'Gestionar Aulas', 'GESTIONAR_AULAS', 'Crear y administrar aulas', 3, 1),
-(9, 'Gestionar Grados', 'GESTIONAR_GRADOS', 'Crear y configurar grados', 3, 1),
-(10, 'Gestionar Secciones', 'GESTIONAR_SECCIONES', 'Crear secciones por grado', 3, 1),
-(11, 'Gestionar Cursos', 'GESTIONAR_CURSOS', 'Crear y editar cursos', 4, 1),
-(12, 'Gestionar Horarios', 'GESTIONAR_HORARIOS', 'Crear y administrar horarios', 4, 1),
-(13, 'Gestionar Áreas', 'GESTIONAR_AREAS', 'Crear áreas académicas', 4, 1),
-(14, 'Administrar Malla Curricular', 'ADMINISTRAR_MALLA', 'Configurar malla curricular', 4, 1),
-(15, 'Ver Alumnos', 'VER_ALUMNOS', 'Listar estudiantes', 5, 1),
-(16, 'Crear Alumno', 'CREAR_ALUMNO', 'Registrar nuevo estudiante', 5, 1),
-(17, 'Editar Alumno', 'EDITAR_ALUMNO', 'Modificar datos del estudiante', 5, 1),
-(18, 'Eliminar Alumno', 'ELIMINAR_ALUMNO', 'Dar de baja a un estudiante', 5, 1),
-(19, 'Exportar Alumnos', 'EXPORTAR_ALUMNOS', 'Descargar listado de alumnos', 5, 1),
-(20, 'Ver Matrículas', 'VER_MATRICULAS', 'Consultar matrículas registradas', 6, 1),
-(21, 'Crear Matrícula', 'CREAR_MATRICULA', 'Registrar nueva matrícula', 6, 1),
-(22, 'Editar Matrícula', 'EDITAR_MATRICULA', 'Modificar datos de matrícula', 6, 1),
-(23, 'Eliminar Matrícula', 'ELIMINAR_MATRICULA', 'Anular matrícula', 6, 1),
-(24, 'Procesar Requisitos', 'PROCESAR_REQUISITOS', 'Validar documentos requeridos', 6, 1),
-(25, 'Ver Notas', 'VER_NOTAS', 'Consultar calificaciones', 7, 1),
-(26, 'Registrar Notas', 'REGISTRAR_NOTAS', 'Cargar y crear nuevas calificaciones', 7, 1),
-(27, 'Editar Notas', 'EDITAR_NOTAS', 'Modificar calificaciones existentes', 7, 1),
-(28, 'Eliminar Notas', 'ELIMINAR_NOTAS', 'Borrar calificaciones', 7, 1),
-(29, 'Exportar Notas', 'EXPORTAR_NOTAS', 'Descargar reportes de calificaciones', 7, 1),
-(30, 'Ver Pagos', 'VER_PAGOS', 'Consultar registro de pagos', 8, 1),
-(31, 'Registrar Pago', 'REGISTRAR_PAGO', 'Crear nuevo comprobante de pago', 8, 1),
-(32, 'Editar Pago', 'EDITAR_PAGO', 'Modificar comprobante de pago', 8, 1),
-(33, 'Generar Reportes de Pagos', 'GENERAR_REPORTES_PAGOS', 'Crear reportes de ingresos', 8, 1);
 
 -- --------------------------------------------------------
 
@@ -858,93 +795,49 @@ INSERT INTO `roles` (`id_rol`, `nombre`, `estado`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `rol_modulo`
+--
+
+CREATE TABLE `rol_modulo` (
+  `id_rol_modulo` bigint(20) UNSIGNED NOT NULL,
+  `id_rol` bigint(20) UNSIGNED NOT NULL,
+  `id_modulo` bigint(20) UNSIGNED NOT NULL,
+  `estado` int(11) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `rol_modulo`
+--
+
+INSERT INTO `rol_modulo` (`id_rol_modulo`, `id_rol`, `id_modulo`, `estado`) VALUES
+(12, 3, 1, 1),
+(13, 3, 8, 1),
+(14, 10, 3, 1),
+(32, 1, 1, 1),
+(33, 1, 2, 1),
+(34, 1, 3, 1),
+(35, 1, 4, 1),
+(36, 1, 5, 1),
+(37, 1, 6, 1),
+(38, 1, 7, 1),
+(39, 1, 8, 1),
+(40, 2, 4, 1),
+(41, 2, 7, 1),
+(42, 2, 6, 1);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `rol_modulo_permiso`
 --
 
 CREATE TABLE `rol_modulo_permiso` (
-  `id_rmp` bigint(20) UNSIGNED NOT NULL,
-  `id_rol` bigint(20) UNSIGNED NOT NULL,
-  `id_modulo` bigint(20) UNSIGNED NOT NULL,
-  `id_permiso` bigint(20) UNSIGNED NOT NULL,
-  `estado` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `rol_modulo_permiso`
---
-
-INSERT INTO `rol_modulo_permiso` (`id_rmp`, `id_rol`, `id_modulo`, `id_permiso`, `estado`) VALUES
-(20, 1, 1, 1, 1),
-(21, 1, 1, 2, 1),
-(22, 1, 1, 3, 1),
-(23, 1, 2, 4, 1),
-(25, 1, 2, 6, 1),
-(26, 1, 2, 7, 1),
-(27, 1, 3, 8, 1),
-(28, 1, 3, 9, 1),
-(29, 1, 3, 10, 1),
-(30, 1, 4, 11, 1),
-(31, 1, 4, 12, 1),
-(32, 1, 4, 13, 1),
-(33, 1, 4, 14, 1),
-(34, 1, 5, 15, 1),
-(35, 1, 5, 16, 1),
-(36, 1, 5, 17, 1),
-(37, 1, 5, 18, 1),
-(38, 1, 5, 19, 1),
-(39, 1, 6, 20, 1),
-(40, 1, 6, 21, 1),
-(41, 1, 6, 22, 1),
-(42, 1, 6, 23, 1),
-(43, 1, 6, 24, 1),
-(44, 1, 7, 25, 1),
-(45, 1, 7, 26, 1),
-(46, 1, 7, 27, 1),
-(47, 1, 7, 28, 1),
-(48, 1, 7, 29, 1),
-(49, 1, 8, 30, 1),
-(50, 1, 8, 31, 1),
-(51, 1, 8, 32, 1),
-(52, 1, 8, 33, 1),
-(65, 10, 3, 8, 1),
-(66, 10, 3, 9, 1),
-(67, 10, 3, 10, 1),
-(107, 3, 1, 1, 1),
-(108, 3, 1, 2, 1),
-(109, 3, 1, 3, 1),
-(110, 3, 8, 30, 1),
-(111, 3, 8, 31, 1),
-(112, 3, 8, 32, 1),
-(113, 3, 8, 33, 1),
-(284, 2, 4, 11, 0),
-(285, 2, 4, 12, 0),
-(286, 2, 4, 13, 0),
-(287, 2, 4, 14, 0),
-(288, 2, 5, 15, 1),
-(289, 2, 5, 16, 0),
-(290, 2, 5, 17, 1),
-(291, 2, 5, 18, 1),
-(292, 2, 5, 19, 1),
-(293, 2, 7, 25, 1),
-(294, 2, 7, 26, 1),
-(295, 2, 7, 27, 1),
-(296, 2, 7, 28, 1),
-(297, 2, 7, 29, 1),
-(298, 2, 1, 1, 1),
-(299, 2, 1, 2, 1),
-(300, 2, 1, 3, 1),
-(301, 2, 2, 4, 1),
-(302, 2, 2, 5, 1),
-(303, 2, 2, 6, 1),
-(304, 2, 2, 7, 1),
-(305, 2, 3, 8, 1),
-(306, 2, 3, 9, 1),
-(307, 2, 3, 10, 1),
-(308, 2, 6, 20, 1),
-(309, 2, 6, 21, 1),
-(310, 2, 6, 22, 1),
-(311, 2, 6, 23, 1),
-(312, 2, 6, 24, 1);
+  `id_rmp` bigint(20) NOT NULL,
+  `estado` int(11) DEFAULT NULL,
+  `id_modulo` bigint(20) DEFAULT NULL,
+  `id_permiso` bigint(20) DEFAULT NULL,
+  `id_rol` bigint(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
 
@@ -960,18 +853,6 @@ CREATE TABLE `secciones` (
   `vacantes` int(11) DEFAULT NULL,
   `estado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Volcado de datos para la tabla `secciones`
---
-
-INSERT INTO `secciones` (`id_seccion`, `id_grado`, `id_sede`, `nombre_seccion`, `vacantes`, `estado`) VALUES
-(1, 1, 1, 'A', 30, 1),
-(2, 1, 1, 'B', 30, 1),
-(8, 8, 3, 'B', 30, 1),
-(9, 7, 3, 'D', 30, 1),
-(10, 11, 3, 'A', 30, 1),
-(11, 11, 3, 'A', 30, 1);
 
 -- --------------------------------------------------------
 
@@ -1000,9 +881,8 @@ CREATE TABLE `sedes` (
 --
 
 INSERT INTO `sedes` (`id_sede`, `id_institucion`, `nombre_sede`, `direccion`, `distrito`, `provincia`, `departamento`, `ugel`, `telefono`, `correo_institucional`, `estado`, `codigo_establecimiento`, `es_sede_principal`) VALUES
-(1, 1, 'Sede Tarapoto', 'Av. Los Estudiantes 123', 'Tarapoto', 'Tarapoto', 'San Martin', 'UGEL 21', '987654321', 'sedetarapoto@gmail.com', 1, '0000', b'1'),
-(2, 1, 'Sede Lima', 'Av. Mariscal Caceres - Cuadra 12', 'La victoria', 'Lima', 'Lima', 'UGEL 03', '960321901', 'sedelima@gmail.com', 1, '0001', b'0'),
-(3, 2, 'Sede Forever', 'Jr. Urano 432', 'San Juan Lurigancho', 'Lima', 'Lima', 'UGEL 01', '909021000', 'forever@gmail.com', 1, '0000', b'1');
+(13, 30, 'Sede Judith', 'Jr. San Pedrito 231', 'Tarapoto', 'Tarapoto', 'San Martin', 'UGEL 21', '950345123', 'sedejudith@gmail.com', 1, '0000', b'1'),
+(14, 30, 'Sede Cristina', 'Jr. 9 de abril 331', 'Tarapoto', 'Tarapoto', 'San Martin', 'UGEL TARAPOTO', '960562285', 'cris@gmail.com', 1, '0000', b'0');
 
 -- --------------------------------------------------------
 
@@ -1060,8 +940,7 @@ CREATE TABLE `suscripciones` (
 --
 
 INSERT INTO `suscripciones` (`id_suscripcion`, `id_institucion`, `id_plan`, `id_ciclo`, `id_estado`, `limite_alumnos_contratado`, `limite_sedes_contratadas`, `precio_acordado`, `fecha_inicio`, `fecha_vencimiento`, `estado`, `tipo_distribucion_limite`) VALUES
-(14, 1, 3, 2, 1, 4, 2, 2500.00, '2026-01-01', '2030-01-01', 1, 'EQUITATIVA'),
-(15, 2, 3, 2, 1, 10, 2, 2000.00, '2026-01-01', '2026-12-31', 1, 'EQUITATIVA');
+(27, 30, 3, 1, 1, 10, 2, 120.00, '2026-01-01', '2027-01-01', 1, 'EQUITATIVA');
 
 -- --------------------------------------------------------
 
@@ -1163,28 +1042,9 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id_usuario`, `id_sede`, `id_rol`, `id_tipo_doc`, `numero_documento`, `apellidos`, `nombres`, `correo`, `usuario`, `contraseña`, `foto_perfil`, `estado`) VALUES
-(1, 2, 1, 1, '40240623', 'Lozano', 'Keyth', 'keyth@gmailcom', 'keloba', '$2a$10$FrF4G.mYTpwN4Jh43wrHkuyoQpbUOdu.FXPKdy4LqoIDOPzdQt9Fi', '', 1),
-(2, 1, 1, 1, '44513416', 'Contreras Bernilla', 'Secia Lizeth', 'lizetcont@gmail.com', 'seciaadmin', '$2a$10$eKzBkewN6PY/qYHF7MRGBeNGo7a2svfaaRJDvD6RN80ZlyMqthssm', '', 1),
-(19, 3, 1, 1, '12344321', 'Gonzales', 'Luis', 'luis@gmail.com', 'Lucho', '$2a$10$ricKcfSncs7hhyHAJgVl5OOhdqTThxYHqF0n.n0WC5oMfqWquSBJu', '', 1),
-(20, 1, 1, 1, '76868793', 'YF', 'Luis', 'luisalbertoyajahuancafernandez@gmail.com', 'Luis', '$2a$10$sBkjaSRp/l6bB9hY5sCHmeHYrpt4VmpUHQt2gLpsEWfQxiDMspiUi', '', 1),
-(21, 1, 2, 1, '98653147', 'Contreras Bernilla', 'Frank Edinson', 'francontr43@gmail.com', 'frankcontreras', '$2a$10$bmI.WZQ1H8AWhFa2PBcokOEtSIL.S7f.5EHGKzkgRK4g8M50994O2', NULL, 1),
-(22, 3, 1, 1, '11111112', 'nayanayana', 'Nay', 'nay@gmail.com', 'Nay', '$2a$10$Z5CC0IafLo5Vj5DSOCLKceCT5M/G4GtxwGBqy9kJitBhwNRdtgjz2', '', 1),
-(23, 1, 10, 1, '78956412', 'JUJUJU', 'JOJOJO', 'jajja@gmail.com', '04040404', '$2a$10$mnCaDhM6vm41GvkUxEorjePg9mFU7R3zC2L5MRU6rifhRZCbNhypm', NULL, 1),
-(24, 1, 1, 1, '72240942', 'Pepón', 'Pepito', 'pepinpepon@gmail.com', 'pepin', '$2a$10$GC8dMSISU3FA/SoZLwAxmOuEwWGn48Fqt68cwR0RNghN/sqjv4KBq', '', 1);
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `usuario_modulo_permiso`
---
-
-CREATE TABLE `usuario_modulo_permiso` (
-  `id_ump` bigint(20) NOT NULL,
-  `estado` int(11) DEFAULT NULL,
-  `id_modulo` bigint(20) DEFAULT NULL,
-  `id_permiso` bigint(20) DEFAULT NULL,
-  `id_usuario` bigint(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+(28, 13, 1, 1, '77219351', 'CONTRERAS BERNILLA', 'JUDITH MARIANELLA', 'judithmarianella@unsm.edu.pe', 'Mari', '$2a$10$TiE8MW0bA.myKhCCjopnBuqigDO4PKGYIuI.damjZfQYHJYrhHNeK', '', 1),
+(29, 14, 1, 1, '74654276', 'BERRU LOZANO', 'CRISTINA', 'cristina.berru2909@gmail.com', 'Cristina', '$2a$10$AKuKD0girXyJm1JNzspXceixP4qgnfnIAsK7fj3faq6QulVXmWF86', '', 1),
+(30, 13, 2, 1, '85632147', 'Contreras', 'Frank', 'frank@gmail.com', 'frank', '$2a$10$c50M5o28UIOZNPXiwhmb/.wkedKcvrtixcz15SE8QG4MHXeEhRO3y', NULL, 1);
 
 --
 -- Índices para tablas volcadas
@@ -1393,6 +1253,13 @@ ALTER TABLE `pagos_caja`
   ADD KEY `fk_pago_caja_usuario` (`id_usuario`);
 
 --
+-- Indices de la tabla `pagos_suscripcion`
+--
+ALTER TABLE `pagos_suscripcion`
+  ADD PRIMARY KEY (`id_pago`),
+  ADD UNIQUE KEY `UKl6ra7m0l20rwclg8hnnwx6ruk` (`numero_pago`);
+
+--
 -- Indices de la tabla `pago_detalle`
 --
 ALTER TABLE `pago_detalle`
@@ -1460,13 +1327,19 @@ ALTER TABLE `roles`
   ADD UNIQUE KEY `nombre` (`nombre`);
 
 --
+-- Indices de la tabla `rol_modulo`
+--
+ALTER TABLE `rol_modulo`
+  ADD PRIMARY KEY (`id_rol_modulo`),
+  ADD UNIQUE KEY `uk_rol_modulo` (`id_rol`,`id_modulo`),
+  ADD KEY `fk_rol_modulo_rol` (`id_rol`),
+  ADD KEY `fk_rol_modulo_modulo` (`id_modulo`);
+
+--
 -- Indices de la tabla `rol_modulo_permiso`
 --
 ALTER TABLE `rol_modulo_permiso`
-  ADD PRIMARY KEY (`id_rmp`),
-  ADD UNIQUE KEY `unique_rol_mod_per` (`id_rol`,`id_modulo`,`id_permiso`),
-  ADD KEY `fk_modulo` (`id_modulo`),
-  ADD KEY `fk_permiso` (`id_permiso`);
+  ADD PRIMARY KEY (`id_rmp`);
 
 --
 -- Indices de la tabla `secciones`
@@ -1530,13 +1403,6 @@ ALTER TABLE `usuarios`
   ADD UNIQUE KEY `uq_documento_usuario` (`id_tipo_doc`,`numero_documento`),
   ADD KEY `fk_usuario_sede` (`id_sede`),
   ADD KEY `fk_usuario_rol` (`id_rol`);
-
---
--- Indices de la tabla `usuario_modulo_permiso`
---
-ALTER TABLE `usuario_modulo_permiso`
-  ADD PRIMARY KEY (`id_ump`),
-  ADD UNIQUE KEY `UKf12lb4ig9mrrqoxbvm7pnmyy7` (`id_usuario`,`id_modulo`,`id_permiso`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -1660,13 +1526,13 @@ ALTER TABLE `horarios`
 -- AUTO_INCREMENT de la tabla `institucion`
 --
 ALTER TABLE `institucion`
-  MODIFY `id_institucion` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id_institucion` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT de la tabla `limites_sedes_suscripcion`
 --
 ALTER TABLE `limites_sedes_suscripcion`
-  MODIFY `id_limite_sede` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id_limite_sede` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `malla_curricular`
@@ -1697,6 +1563,12 @@ ALTER TABLE `modulos`
 --
 ALTER TABLE `pagos_caja`
   MODIFY `id_pago` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT de la tabla `pagos_suscripcion`
+--
+ALTER TABLE `pagos_suscripcion`
+  MODIFY `id_pago` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT de la tabla `pago_detalle`
@@ -1753,10 +1625,16 @@ ALTER TABLE `roles`
   MODIFY `id_rol` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
+-- AUTO_INCREMENT de la tabla `rol_modulo`
+--
+ALTER TABLE `rol_modulo`
+  MODIFY `id_rol_modulo` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+
+--
 -- AUTO_INCREMENT de la tabla `rol_modulo_permiso`
 --
 ALTER TABLE `rol_modulo_permiso`
-  MODIFY `id_rmp` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=313;
+  MODIFY `id_rmp` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `secciones`
@@ -1768,7 +1646,7 @@ ALTER TABLE `secciones`
 -- AUTO_INCREMENT de la tabla `sedes`
 --
 ALTER TABLE `sedes`
-  MODIFY `id_sede` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id_sede` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `super_admins`
@@ -1780,7 +1658,7 @@ ALTER TABLE `super_admins`
 -- AUTO_INCREMENT de la tabla `suscripciones`
 --
 ALTER TABLE `suscripciones`
-  MODIFY `id_suscripcion` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id_suscripcion` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT de la tabla `tipos_evaluacion`
@@ -1804,13 +1682,7 @@ ALTER TABLE `tipo_documentos`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
-
---
--- AUTO_INCREMENT de la tabla `usuario_modulo_permiso`
---
-ALTER TABLE `usuario_modulo_permiso`
-  MODIFY `id_ump` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_usuario` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- Restricciones para tablas volcadas
@@ -1985,12 +1857,11 @@ ALTER TABLE `promedios_periodo`
   ADD CONSTRAINT `fk_prom_periodo` FOREIGN KEY (`id_periodo`) REFERENCES `periodos` (`id_periodo`) ON DELETE CASCADE;
 
 --
--- Filtros para la tabla `rol_modulo_permiso`
+-- Filtros para la tabla `rol_modulo`
 --
-ALTER TABLE `rol_modulo_permiso`
-  ADD CONSTRAINT `fk_modulo` FOREIGN KEY (`id_modulo`) REFERENCES `modulos` (`id_modulo`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_permiso` FOREIGN KEY (`id_permiso`) REFERENCES `permisos` (`id_permiso`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_rol` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`) ON DELETE CASCADE;
+ALTER TABLE `rol_modulo`
+  ADD CONSTRAINT `fk_rol_modulo_modulo` FOREIGN KEY (`id_modulo`) REFERENCES `modulos` (`id_modulo`),
+  ADD CONSTRAINT `fk_rol_modulo_rol` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`);
 
 --
 -- Filtros para la tabla `secciones`

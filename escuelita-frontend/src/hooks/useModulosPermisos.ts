@@ -21,14 +21,14 @@ export const useModulosPermisos = (idUsuario: number | null) => {
             setModulosPermisos(data);
             
             // Guardar en localStorage para acceso rápido
-            localStorage.setItem(`usuario_permisos_${idUsuario}`, JSON.stringify(data));
+            localStorage.setItem(`usuario_modulos_${idUsuario}`, JSON.stringify(data));
         } catch (err: any) {
-            const mensaje = err.response?.data?.message || 'Error al cargar permisos del usuario';
+            const mensaje = err.response?.data?.message || 'Error al cargar módulos del usuario';
             setError(mensaje);
             toast.error(mensaje);
             
             // Intentar recuperar del cache
-            const cached = localStorage.getItem(`usuario_permisos_${idUsuario}`);
+            const cached = localStorage.getItem(`usuario_modulos_${idUsuario}`);
             if (cached) {
                 try {
                     setModulosPermisos(JSON.parse(cached));
@@ -46,14 +46,11 @@ export const useModulosPermisos = (idUsuario: number | null) => {
     }, [idUsuario]);
 
     /**
-     * Verifica si el usuario tiene un permiso específico
+     * Verifica si el usuario tiene acceso a un módulo específico
      */
-    const tienePermiso = (codigoPermiso: string): boolean => {
+    const tieneModulo = (idModulo: number): boolean => {
         if (!modulosPermisos) return false;
-        
-        return modulosPermisos.modulos.some(modulo =>
-            modulo.permisos.some(permiso => permiso.codigo === codigoPermiso)
-        );
+        return modulosPermisos.modulos.some(modulo => modulo.idModulo === idModulo);
     };
 
     /**
@@ -63,21 +60,12 @@ export const useModulosPermisos = (idUsuario: number | null) => {
         return modulosPermisos?.modulos.find(m => m.idModulo === idModulo) || null;
     };
 
-    /**
-     * Obtiene todos los permisos de un módulo
-     */
-    const obtenerPermisosModulo = (idModulo: number) => {
-        const modulo = obtenerModulo(idModulo);
-        return modulo?.permisos || [];
-    };
-
     return {
         modulosPermisos,
         isLoading,
         error,
-        tienePermiso,
+        tieneModulo,
         obtenerModulo,
-        obtenerPermisosModulo,
         recargar: cargarPermisos
     };
 };

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.escuelita.www.entity.RequisitosDocumentos;
 import com.escuelita.www.service.IRequisitosDocumentosService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -24,24 +25,29 @@ public class RequisitosDocumentosController {
     private IRequisitosDocumentosService serviceRequisitosDocumentos;
 
     @GetMapping("/requisitosdocumentos")
+    @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
     public List<RequisitosDocumentos> buscarTodos() {
         return serviceRequisitosDocumentos.buscarTodos(); 
     }
     @PostMapping("/requisitosdocumentos")
+    @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
     public RequisitosDocumentos guardar(@RequestBody RequisitosDocumentos requisitosDocumentos) {
         serviceRequisitosDocumentos.guardar(requisitosDocumentos);
         return requisitosDocumentos;
     }
     @PutMapping("/requisitosdocumentos")
+    @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
     public RequisitosDocumentos modificar(@RequestBody RequisitosDocumentos requisitosDocumentos) {
         serviceRequisitosDocumentos.modificar(requisitosDocumentos);
         return requisitosDocumentos;
     }
     @GetMapping("/requisitosdocumentos/{id}")
+    @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
     public Optional<RequisitosDocumentos> buscarId(@PathVariable("id") Long id){
         return serviceRequisitosDocumentos.buscarId(id);
     }
     @DeleteMapping("/requisitosdocumentos/{id}")
+    @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
     public String eliminar(@PathVariable Long id){
         serviceRequisitosDocumentos.eliminar(id);
         return "Requisito del documento perteneciente al Alumno eliminado";

@@ -1,11 +1,4 @@
-// Types para permisos y módulos del usuario
-
-export interface PermisoAcceso {
-    idPermiso: number;
-    nombre: string;
-    codigo: string;
-    descripcion: string;
-}
+// Types para módulos del usuario
 
 export interface ModuloAcceso {
     idModulo: number;
@@ -13,7 +6,6 @@ export interface ModuloAcceso {
     descripcion: string;
     icono: string;
     orden: number;
-    permisos: PermisoAcceso[];
 }
 
 export interface ModulosPermisosUsuario {

@@ -22,6 +22,7 @@ import com.escuelita.www.entity.RequisitosDocumentos;
 import com.escuelita.www.repository.AlumnosRepository;
 import com.escuelita.www.repository.RequisitosDocumentosRepository;
 import com.escuelita.www.service.IDocumentosAlumnoService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -35,10 +36,12 @@ public class DocumentosAlumnoController {
     private RequisitosDocumentosRepository repoRequisitosDocumentos;
 
     @GetMapping("/documentosalumno")
+    @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
     public List<DocumentosAlumno> buscarTodos() {
         return serviceDocumentosAlumno.buscarTodos(); 
     }
     @PostMapping("/documentosalumno")
+    @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
     public ResponseEntity<?> guardar(@RequestBody DocumentosAlumnoDTO dto) {
         DocumentosAlumno documentosAlumno = new DocumentosAlumno();
         documentosAlumno.setRutaArchivo(dto.getRutaArchivo());
@@ -59,6 +62,7 @@ public class DocumentosAlumnoController {
         return ResponseEntity.ok(serviceDocumentosAlumno.guardar(documentosAlumno));
     }
     @PutMapping("/documentosalumno")
+    @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
     public ResponseEntity<?> modificar(@RequestBody DocumentosAlumnoDTO dto) {
         if(dto.getIdDocumentoAlumno() == null) {
             return ResponseEntity.badRequest()
@@ -84,10 +88,12 @@ public class DocumentosAlumnoController {
         return ResponseEntity.ok(serviceDocumentosAlumno.modificar(documentosAlumno));
     }
     @GetMapping("/documentosalumno/{id}")
+    @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
     public Optional<DocumentosAlumno> buscarId(@PathVariable("id") Long id){
         return serviceDocumentosAlumno.buscarId(id);
     }
     @DeleteMapping("/documentosalumno/{id}")
+    @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
     public String eliminar(@PathVariable Long id){
         serviceDocumentosAlumno.eliminar(id);
         return "Documento del Alumno eliminado correctamente";

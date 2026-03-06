@@ -23,6 +23,7 @@ import com.escuelita.www.repository.UsuariosRepository;
 import com.escuelita.www.repository.ModuloAccesoRepository;
 import com.escuelita.www.repository.ModulosRepository;
 import com.escuelita.www.service.IRolesService;
+import com.escuelita.www.security.RequireModulo;
 import org.springframework.http.ResponseEntity;
 
 @RestController
@@ -38,10 +39,12 @@ public class RolesController {
     private ModulosRepository repoModulos;
 
     @GetMapping("/roles")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public List<Roles> buscarTodos() {
         return serviceRoles.buscarTodos(); 
     }
     @GetMapping("/roles/sede/{idSede}")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public List<Roles> buscarPorSede(@PathVariable Long idSede) {
         return repoUsuarios.findByIdSedeIdSede(idSede).stream()
             .map(usuario -> usuario.getIdRol())
@@ -52,20 +55,24 @@ public class RolesController {
             .collect(Collectors.toList());
     }
     @PostMapping("/roles")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public Roles guardar(@RequestBody Roles roles) {
         serviceRoles.guardar(roles);
         return roles;
     }
     @PutMapping("/roles")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public Roles modificar(@RequestBody Roles roles) {
         serviceRoles.modificar(roles);
         return roles;
     }
     @GetMapping("/roles/{id}")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public Optional<Roles> buscarId(@PathVariable("id") Long id){
         return serviceRoles.buscarId(id);
     }
     @DeleteMapping("/roles/{id}")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public String eliminar(@PathVariable Long id){
         serviceRoles.eliminar(id);
         return "Rol eliminado correctamente";

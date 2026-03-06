@@ -74,7 +74,7 @@ function App() {
           <Route index element={<Navigate to="/escuela/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardEscuela />} />
 
-          {/* Módulos del Portal Escuela - Protegidos por backend con @RequireModulo */}
+          {/* Módulos del Portal Escuela - Protegidos con ModuloGuard en frontend + @RequireModulo en backend */}
           <Route path="alumnos/*" element={<AlumnosRoutes />} />
           <Route path="infraestructura/*" element={<InfraestructuraRoutes />} />
           <Route path="configuracion/usuarios/*" element={<UsuariosPortalRoutes />} />

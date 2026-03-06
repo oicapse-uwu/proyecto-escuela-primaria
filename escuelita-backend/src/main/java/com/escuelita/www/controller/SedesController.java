@@ -33,6 +33,7 @@ import com.escuelita.www.repository.InstitucionRepository;
 import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.repository.SuscripcionesRepository;
 import com.escuelita.www.service.ISedesService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -48,10 +49,12 @@ public class SedesController {
     private SuscripcionesRepository repoSuscripciones;
 
     @GetMapping("/sedes")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public List<Sedes> buscarTodos() { 
         return serviceSedes.buscarTodos();
     }
     @PostMapping("/sedes")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public ResponseEntity<?> guardar(@RequestBody SedesDTO dto) {
         try {
             // Obtener la institución
@@ -102,6 +105,7 @@ public class SedesController {
         }
     }
     @PutMapping("/sedes")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public ResponseEntity<?> modificar(@RequestBody SedesDTO dto) {
         if(dto.getIdSede() == null){
             return ResponseEntity.badRequest()
@@ -129,10 +133,12 @@ public class SedesController {
         return ResponseEntity.ok(serviceSedes.modificar(sedes));
     }
     @GetMapping("/sedes/{id}")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public Optional<Sedes> buscarId(@PathVariable("id") Long id){ 
         return serviceSedes.buscarId(id); 
     }
     @DeleteMapping("/sedes/{id}")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public String eliminar(@PathVariable Long id){
         serviceSedes.eliminar(id);
         return "Sede eliminada correctamente";

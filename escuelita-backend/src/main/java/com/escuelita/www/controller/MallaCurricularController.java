@@ -24,6 +24,7 @@ import com.escuelita.www.repository.AnioEscolarRepository;
 import com.escuelita.www.repository.CursosRepository;
 import com.escuelita.www.repository.GradosRepository;
 import com.escuelita.www.service.IMallaCurricularService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -39,10 +40,12 @@ public class MallaCurricularController {
     private CursosRepository repoCursos;
 
     @GetMapping("/mallacurricular")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public List<MallaCurricular> buscarTodos() {
         return serviceMallaCurricular.buscarTodos();
     }
     @PostMapping("/mallacurricular")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public ResponseEntity<?> guardar(@RequestBody MallaCurricularDTO dto) {
         MallaCurricular mallaCurricular = new MallaCurricular();
 
@@ -63,6 +66,7 @@ public class MallaCurricularController {
         return ResponseEntity.ok(serviceMallaCurricular.guardar(mallaCurricular));
     }
     @PutMapping("/mallacurricular")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public ResponseEntity<?> modificar(@RequestBody MallaCurricularDTO dto) {
         if (dto.getIdMalla() == null) {
             return ResponseEntity.badRequest()
@@ -88,10 +92,12 @@ public class MallaCurricularController {
         return ResponseEntity.ok(serviceMallaCurricular.modificar(mallaCurricular));
     }
     @GetMapping("/mallacurricular/{id}")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public Optional<MallaCurricular> buscarId(@PathVariable("id") Long id) {
         return serviceMallaCurricular.buscarId(id);
     }
     @DeleteMapping("/mallacurricular/{id}")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public String eliminar(@PathVariable Long id){
         serviceMallaCurricular.eliminar(id);
         return "Malla curricular eliminada correctamente";

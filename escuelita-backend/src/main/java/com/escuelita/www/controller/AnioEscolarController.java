@@ -20,6 +20,7 @@ import com.escuelita.www.entity.AnioEscolarDTO;
 import com.escuelita.www.entity.Sedes;
 import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.service.IAnioEscolarService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -31,10 +32,12 @@ public class AnioEscolarController {
     private SedesRepository repoSedes;
 
     @GetMapping("/anioescolar")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public List<AnioEscolar> buscarTodos() {
         return serviceAnioEscolar.buscarTodos(); 
     }
     @PostMapping("/anioescolar")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public ResponseEntity<?> guardar(@RequestBody AnioEscolarDTO dto) {
         AnioEscolar anioEscolar = new AnioEscolar();
         anioEscolar.setNombreAnio(dto.getNombreAnio());
@@ -49,6 +52,7 @@ public class AnioEscolarController {
         return ResponseEntity.ok(serviceAnioEscolar.guardar(anioEscolar));
     }
     @PutMapping("/anioescolar")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public ResponseEntity<?> modificar(@RequestBody AnioEscolarDTO dto) {
         if(dto.getIdAnioEscolar() == null){
             return ResponseEntity.badRequest()
@@ -72,6 +76,7 @@ public class AnioEscolarController {
         return serviceAnioEscolar.buscarId(id);
     }
     @DeleteMapping("/anioescolar/{id}")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public String eliminar(@PathVariable Long id){
         serviceAnioEscolar.eliminar(id);
         return "Año escolar eliminado correctamente";

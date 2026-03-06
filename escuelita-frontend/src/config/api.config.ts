@@ -89,18 +89,28 @@ export const API_ENDPOINTS = {
     APODERADOS: '/restful/apoderados',
     ALUMNO_APODERADO: '/restful/alumnoapoderado',
     MATRICULAS: '/restful/matriculas',
-    SECCIONES: '/restful/secciones',
     ANIO_ESCOLAR: '/restful/anioescolar',
+    PERIODOS: '/restful/periodos',
     REQUISITOS_DOCUMENTOS: '/restful/requisitosdocumentos',
     DOCUMENTOS_ALUMNO: '/restful/documentosalumno',
     CURSOS: '/restful/cursos',
-
-    // endpoints de infraestructura
-    ANIO_ESCOLAR: '/restful/anioescolar',
-    PERIODOS: '/restful/periodos',
     GRADOS: '/restful/grados',
     SECCIONES: '/restful/secciones',
     AULAS: '/restful/aulas',
+    AREAS: '/restful/areas',
+    HORARIOS: '/restful/horarios',
+    ASIGNACION_DOCENTE: '/restful/asignaciondocente',
+    PERFIL_DOCENTE: '/restful/perfildocente',
+    MALLA_CURRICULAR: '/restful/mallacurricular',
+    ESPECIALIDADES: '/restful/especialidades',
+    CALIFICACIONES: '/restful/calificaciones',
+    PROMEDIOS: '/restful/promedios',
+    ASISTENCIAS: '/restful/asistencias',
+    TIPOS_NOTA: '/restful/tiposnota',
+    EVALUACIONES: '/restful/evaluaciones',
+    TIPOS_EVALUACION: '/restful/tiposevaluacion',
+    DEUDAS_ALUMNO: '/restful/deudasalumno',
+    CONCEPTOS_PAGO: '/restful/conceptospago',
 };
 
 // Configuración adicional de la aplicación

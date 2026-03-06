@@ -323,7 +323,12 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                             name="resolucionCreacion"
                                             value={formData.resolucionCreacion}
                                             onChange={handleChange}
-                                            onFocus={() => setShowHelperWindow(true)}
+                                            onFocus={() => {
+                                                // Solo mostrar la ventana de ayuda si el campo está vacío
+                                                if (formData.resolucionCreacion.trim() === '') {
+                                                    setShowHelperWindow(true);
+                                                }
+                                            }}
                                             onBlur={() => setResolucionTouched(true)}
                                             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 transition-colors ${
                                                 resolucionTouched && !resolucionValida && formData.resolucionCreacion.trim() !== ''

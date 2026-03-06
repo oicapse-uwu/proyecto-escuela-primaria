@@ -3,6 +3,7 @@ import {
     BarChart3,
     Building2,
     CreditCard,
+    DollarSign,
     FileText,
     LayoutDashboard,
     Package,
@@ -61,6 +62,7 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }
             subItems: [
                 { name: 'Planes Disponibles', path: '/admin/suscripciones/planes', icon: Package },
                 { name: 'Suscripciones Activas', path: '/admin/suscripciones/activas', icon: CreditCard },
+                { name: 'Pagos de Suscripciones', path: '/admin/suscripciones/pagos', icon: DollarSign },
                 { name: 'Facturación', path: '/admin/suscripciones/facturacion', icon: FileText },
                 { name: 'Pagos Pendientes', path: '/admin/suscripciones/pendientes', icon: TrendingUp },
             ]

@@ -1,29 +1,29 @@
 import { Calendar, CreditCard, DollarSign, FileText, FileUp, X } from 'lucide-react';
 import React, { useRef, useState } from 'react';
 import { toast } from 'sonner';
-import type { MetodoPago, PagoSuscripcionFormData, Suscripcion } from '../types';
+import type { MetodoPago, PagoSuscripcion, PagoSuscripcionFormData } from '../types';
 
 interface PagoSuscripcionFormProps {
-    suscripcion: Suscripcion;
+    pago: PagoSuscripcion;
     metodosPago: MetodoPago[];
     onSubmit: (data: PagoSuscripcionFormData, comprobante: File) => Promise<void>;
-    onCancel: () => void;
+    onClose: () => void;
 }
 
 const PagoSuscripcionForm: React.FC<PagoSuscripcionFormProps> = ({ 
-    suscripcion,
+    pago,
     metodosPago,
     onSubmit, 
-    onCancel 
+    onClose 
 }) => {
     const [formData, setFormData] = useState<PagoSuscripcionFormData>({
-        montoPagado: suscripcion.precioAcordado || 0,
-        fechaPago: new Date().toISOString().split('T')[0],
-        numeroOperacion: '',
-        banco: '',
-        observaciones: '',
-        idSuscripcion: suscripcion.idSuscripcion,
-        idMetodoPago: 0
+        montoPagado: pago.montoPagado || 0,
+        fechaPago: pago.fechaPago || new Date().toISOString().split('T')[0],
+        numeroOperacion: pago.numeroOperacion || '',
+        banco: pago.banco || '',
+        observaciones: pago.observaciones || '',
+        idSuscripcion: pago.idSuscripcion,
+        idMetodoPago: pago.idMetodoPago || 0
     });
 
     const [comprobante, setComprobante] = useState<File | null>(null);
@@ -122,28 +122,28 @@ const PagoSuscripcionForm: React.FC<PagoSuscripcionFormProps> = ({
                 {/* Header */}
                 <div className="sticky top-0 bg-indigo-600 text-white px-6 py-4 flex justify-between items-center rounded-t-lg z-10">
                     <div>
-                        <h2 className="text-xl font-bold">Registrar Pago de Suscripción</h2>
+                        <h2 className="text-xl font-bold">Registrar pago de Suscripción</h2>
                         <p className="text-indigo-100 text-sm mt-1">
-                            {suscripcion.idInstitucion?.nombre} - {suscripcion.idPlan?.nombrePlan}
+                            {pago.nombreInstitucion} - Pago #{pago.numeroPago}
                         </p>
                     </div>
-                    <button onClick={onCancel} className="text-white hover:bg-indigo-700 p-2 rounded">
+                    <button onClick={onClose} className="text-white hover:bg-indigo-700 p-2 rounded">
                         <X size={24} />
                     </button>
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                    {/* Información de la Suscripción */}
+                    {/* Información del Pago Programado */}
                     <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-                        <h3 className="font-semibold text-indigo-900 mb-2">Detalles de la Suscripción</h3>
+                        <h3 className="font-semibold text-indigo-900 mb-2">Detalles del Pago</h3>
                         <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
-                                <span className="text-gray-600">Precio Acordado:</span>
-                                <span className="font-bold text-indigo-600 ml-2">S/ {suscripcion.precioAcordado?.toFixed(2)}</span>
+                                <span className="text-gray-600">Monto Programado:</span>
+                                <span className="font-bold text-indigo-600 ml-2">S/ {pago.montoPagado?.toFixed(2)}</span>
                             </div>
                             <div>
-                                <span className="text-gray-600">Ciclo:</span>
-                                <span className="font-medium ml-2">{suscripcion.idCiclo?.nombre}</span>
+                                <span className="text-gray-600">Fecha de Pago:</span>
+                                <span className="font-medium ml-2">{pago.fechaPago}</span>
                             </div>
                         </div>
                     </div>
@@ -309,7 +309,7 @@ const PagoSuscripcionForm: React.FC<PagoSuscripcionFormProps> = ({
                     <div className="flex justify-end gap-3 pt-4 border-t">
                         <button
                             type="button"
-                            onClick={onCancel}
+                            onClick={onClose}
                             className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                             disabled={isSubmitting}
                         >

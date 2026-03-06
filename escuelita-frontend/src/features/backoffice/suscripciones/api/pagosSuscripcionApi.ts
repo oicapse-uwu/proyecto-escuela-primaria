@@ -76,6 +76,46 @@ export const registrarPagoApi = async (
 };
 
 /**
+ * Actualizar pago programado con comprobante
+ * @param idPago ID del pago a actualizar
+ * @param datos Datos del pago
+ * @param comprobante Archivo del comprobante (imagen o PDF)
+ */
+export const actualizarPagoProgramadoApi = async (
+    idPago: number,
+    datos: PagoSuscripcionFormData,
+    comprobante: File
+): Promise<PagoSuscripcion> => {
+    const formData = new FormData();
+    
+    // Agregar el JSON con los datos
+    const datosJson = JSON.stringify({
+        montoPagado: datos.montoPagado,
+        fechaPago: datos.fechaPago,
+        numeroOperacion: datos.numeroOperacion || null,
+        banco: datos.banco || null,
+        observaciones: datos.observaciones || null,
+        idSuscripcion: datos.idSuscripcion,
+        idMetodoPago: datos.idMetodoPago
+    });
+    
+    formData.append('datos', new Blob([datosJson], { type: 'application/json' }));
+    formData.append('comprobante', comprobante);
+    
+    const response = await api.put(
+        `${BASE_URL}/${idPago}/actualizar-comprobante`,
+        formData,
+        {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }
+    );
+    
+    return response.data.pago;
+};
+
+/**
  * Verificar (aprobar) un pago
  * @param idPago ID del pago
  * @param idSuperAdmin ID del super admin que verifica

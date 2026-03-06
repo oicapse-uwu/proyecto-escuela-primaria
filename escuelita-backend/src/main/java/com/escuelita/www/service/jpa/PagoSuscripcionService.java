@@ -117,6 +117,51 @@ public class PagoSuscripcionService implements IPagoSuscripcionService {
     }
     
     /**
+     * Actualizar un pago programado con comprobante
+     */
+    @Override
+    @Transactional
+    public PagoSuscripcion actualizarPagoProgramado(Long idPago, PagoSuscripcionDTO dto, MultipartFile comprobante) 
+            throws Exception {
+        
+        // Validar que se proporcionó el comprobante
+        if (comprobante == null || comprobante.isEmpty()) {
+            throw new Exception("El comprobante es obligatorio");
+        }
+        
+        // Buscar pago existente
+        PagoSuscripcion pago = pagoRepository.findById(idPago)
+            .orElseThrow(() -> new Exception("Pago no encontrado"));
+        
+        // Validar que esté en estado PENDIENTE sin comprobante (pago programado)
+        if (pago.getComprobanteUrl() != null) {
+            throw new Exception("Este pago ya tiene un comprobante registrado");
+        }
+        
+        // Obtener método de pago
+        MetodosPago metodoPago = metodosPagoRepository.findById(dto.getIdMetodoPago())
+            .orElseThrow(() -> new Exception("Método de pago no encontrado"));
+        
+        // Guardar comprobante en el servidor
+        String nombreArchivo = fileStorageService.guardarComprobanteSuscripcion(comprobante);
+        String urlComprobante = fileStorageService.obtenerUrlComprobante(nombreArchivo);
+        
+        // Actualizar datos del pago
+        pago.setMetodoPago(metodoPago);
+        pago.setMontoPagado(dto.getMontoPagado());
+        pago.setFechaPago(dto.getFechaPago());
+        pago.setNumeroOperacion(dto.getNumeroOperacion());
+        pago.setBanco(dto.getBanco());
+        pago.setComprobanteUrl(urlComprobante);
+        if (dto.getObservaciones() != null) {
+            pago.setObservaciones(dto.getObservaciones());
+        }
+        // El estado de verificación permanece PENDIENTE hasta que sea verificado
+        
+        return pagoRepository.save(pago);
+    }
+    
+    /**
      * Verificar un pago y actualizar estado de suscripción a ACTIVA
      */
     @Override

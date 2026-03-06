@@ -1,10 +1,12 @@
-import { CheckCircle, DollarSign, Eye, FileText, Filter, Search, XCircle } from 'lucide-react';
+import { CheckCircle, DollarSign, Eye, FileText, FileUp, Filter, Search, XCircle } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Toaster } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
+import PagoSuscripcionForm from '../components/PagoSuscripcionForm';
 import VerificarPagoModal from '../components/VerificarPagoModal';
 import { usePagosSuscripcion } from '../hooks/usePagosSuscripcion';
-import type { EstadoVerificacion, PagoSuscripcion } from '../types';
+import { useSuscripciones } from '../hooks/useSuscripciones';
+import type { EstadoVerificacion, PagoSuscripcion, PagoSuscripcionFormData } from '../types';
 
 const PagosSuscripcionesPage: React.FC = () => {
     const {
@@ -13,11 +15,15 @@ const PagosSuscripcionesPage: React.FC = () => {
         isLoading,
         fetchPagos,
         fetchEstadisticas,
+        actualizarPagoProgramado,
         verificar,
         rechazar
     } = usePagosSuscripcion();
+    
+    const { metodosPago } = useSuscripciones();
 
     const [selectedPago, setSelectedPago] = useState<PagoSuscripcion | null>(null);
+    const [pagoParaRegistrar, setPagoParaRegistrar] = useState<PagoSuscripcion | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterEstado, setFilterEstado] = useState<'todos' | EstadoVerificacion>('todos');
     const [currentPage, setCurrentPage] = useState(1);
@@ -67,8 +73,26 @@ const PagosSuscripcionesPage: React.FC = () => {
         setCurrentPage(1);
     }, [searchTerm, filterEstado]);
 
+    // Detectar si un pago necesita registro (PENDIENTE sin comprobante)
+    const necesitaRegistro = (pago: PagoSuscripcion): boolean => {
+        return pago.estadoVerificacion === 'PENDIENTE' && !pago.comprobanteUrl;
+    };
+
     const handleVerPago = (pago: PagoSuscripcion) => {
         setSelectedPago(pago);
+    };
+
+    const handleRegistrarPago = (pago: PagoSuscripcion) => {
+        setPagoParaRegistrar(pago);
+    };
+
+    const handleGuardarRegistro = async (formData: PagoSuscripcionFormData, comprobante: File) => {
+        if (!pagoParaRegistrar) return;
+        
+        await actualizarPagoProgramado(pagoParaRegistrar.idPago, formData, comprobante);
+        await fetchPagos();
+        await fetchEstadisticas();
+        setPagoParaRegistrar(null);
     };
 
     const handleVerificar = async (idPago: number) => {
@@ -293,14 +317,27 @@ const PagosSuscripcionesPage: React.FC = () => {
                                             </span>
                                         </td>
                                         <td className="px-4 py-3 whitespace-nowrap text-sm">
-                                            <button
-                                                onClick={() => handleVerPago(pago)}
-                                                className="text-indigo-600 hover:text-indigo-900 flex items-center gap-1"
-                                                title="Ver detalles y verificar"
-                                            >
-                                                <Eye size={18} />
-                                                <span>Ver</span>
-                                            </button>
+                                            <div className="flex items-center gap-2">
+                                                {necesitaRegistro(pago) ? (
+                                                    <button
+                                                        onClick={() => handleRegistrarPago(pago)}
+                                                        className="text-blue-600 hover:text-blue-900 flex items-center gap-1 font-medium"
+                                                        title="Registrar comprobante de pago"
+                                                    >
+                                                        <FileUp size={18} />
+                                                        <span>Registrar Pago</span>
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => handleVerPago(pago)}
+                                                        className="text-indigo-600 hover:text-indigo-900 flex items-center gap-1"
+                                                        title="Ver detalles y verificar"
+                                                    >
+                                                        <Eye size={18} />
+                                                        <span>Ver</span>
+                                                    </button>
+                                                )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
@@ -328,6 +365,16 @@ const PagosSuscripcionesPage: React.FC = () => {
                     onVerificar={handleVerificar}
                     onRechazar={handleRechazar}
                     onClose={() => setSelectedPago(null)}
+                />
+            )}
+
+            {/* Modal de Registro de Pago */}
+            {pagoParaRegistrar && (
+                <PagoSuscripcionForm
+                    pago={pagoParaRegistrar}
+                    metodosPago={metodosPago}
+                    onSubmit={handleGuardarRegistro}
+                    onClose={() => setPagoParaRegistrar(null)}
                 />
             )}
         </div>

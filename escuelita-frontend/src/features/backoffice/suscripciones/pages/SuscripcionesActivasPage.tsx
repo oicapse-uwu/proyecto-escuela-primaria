@@ -1,15 +1,16 @@
-import { Building2, CreditCard, Edit, Plus, Search, Trash2 } from 'lucide-react';
+import { Building2, CreditCard, Edit, Plus, Search, Trash2, Zap } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
 import { useInstituciones } from '../../instituciones/hooks/useInstituciones';
+import { generarPagosTodasSuscripcionesApi } from '../api/suscripcionesApi';
 import SuscripcionForm from '../components/SuscripcionForm';
 import { usePlanes } from '../hooks/usePlanes';
 import { useSuscripciones } from '../hooks/useSuscripciones';
 import type { Suscripcion, SuscripcionFormData } from '../types';
 
 const SuscripcionesActivasPage: React.FC = () => {
-    const { suscripciones, estadosSuscripcion, ciclosFacturacion, metodosPago, isLoading, crear, actualizar, eliminar } = useSuscripciones();
+    const { suscripciones, estadosSuscripcion, ciclosFacturacion, isLoading, crear, actualizar, eliminar } = useSuscripciones();
     const { planes } = usePlanes();
     const { instituciones } = useInstituciones();
     
@@ -19,12 +20,41 @@ const SuscripcionesActivasPage: React.FC = () => {
     const [filterEstado, setFilterEstado] = useState<string>('todos');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [generandoPagos, setGenerandoPagos] = useState(false);
 
     const normalizeText = (value?: string | number | null) =>
         String(value ?? '')
             .toLowerCase()
             .normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '');
+    
+    // Función para generar pagos de todas las suscripciones (MIGRACIÓN)
+    const handleGenerarPagosTodas = async () => {
+        if (!window.confirm(
+            '⚠️ MIGRACIÓN: ¿Generar pagos automáticos para TODAS las suscripciones existentes?\n\n' +
+            'Esto creará los pagos programados según el ciclo de facturación.\n' +
+            'Solo debe hacerse UNA VEZ.'
+        )) {
+            return;
+        }
+
+        setGenerandoPagos(true);
+        try {
+            const resultado = await generarPagosTodasSuscripcionesApi();
+            toast.success(
+                `✅ Proceso completado!\n` +
+                `• ${resultado.totalSuscripciones} suscripciones procesadas\n` +
+                `• ${resultado.totalPagosGenerados} pagos generados\n` +
+                `• ${resultado.errores} errores`,
+                { duration: 10000 }
+            );
+            console.log('Reporte detallado:', resultado.reporte);
+        } catch (error: any) {
+            toast.error('❌ Error al generar pagos: ' + (error.response?.data || error.message));
+        } finally {
+            setGenerandoPagos(false);
+        }
+    };
 
     // Filtrar suscripciones
     const suscripcionesFiltradas = suscripciones.filter(sus => {
@@ -125,13 +155,26 @@ const SuscripcionesActivasPage: React.FC = () => {
                             Gestiona las suscripciones de todas las instituciones
                         </p>
                     </div>
-                    <button
-                        onClick={handleNueva}
-                        className="bg-primary text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md w-full sm:w-auto"
-                    >
-                        <Plus className="w-5 h-5" />
-                        <span>Nueva Suscripción</span>
-                    </button>
+                    <div className="flex gap-2 flex-col sm:flex-row w-full sm:w-auto">
+                        {/* Botón TEMPORAL para generar pagos (MIGRACIÓN) */}
+                        <button
+                            onClick={handleGenerarPagosTodas}
+                            disabled={generandoPagos}
+                            className="bg-yellow-500 text-white px-4 py-2.5 rounded-lg hover:bg-yellow-600 transition-colors flex items-center justify-center space-x-2 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Generar pagos programados para suscripciones existentes (usar solo una vez)"
+                        >
+                            <Zap className="w-5 h-5" />
+                            <span>{generandoPagos ? 'Generando...' : '⚡ Generar Pagos'}</span>
+                        </button>
+                        
+                        <button
+                            onClick={handleNueva}
+                            className="bg-primary text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md"
+                        >
+                            <Plus className="w-5 h-5" />
+                            <span>Nueva Suscripción</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 

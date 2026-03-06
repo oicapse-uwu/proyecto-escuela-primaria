@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import {
+    actualizarPagoProgramadoApi,
     deletePagoApi,
     getEstadisticasPagosApi,
     getPagoByIdApi,
@@ -101,6 +102,31 @@ export const usePagosSuscripcion = () => {
         } catch (err) {
             toast.error('Error al registrar el pago');
             console.error('Error registering pago:', err);
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    /**
+     * Actualizar pago programado con comprobante
+     */
+    const actualizarPagoProgramado = useCallback(async (
+        idPago: number,
+        datos: PagoSuscripcionFormData,
+        comprobante: File
+    ) => {
+        try {
+            setIsLoading(true);
+            const pagoActualizado = await actualizarPagoProgramadoApi(idPago, datos, comprobante);
+            setPagos(prev => prev.map(p => 
+                p.idPago === idPago ? pagoActualizado : p
+            ));
+            toast.success('Comprobante registrado correctamente. Pago pendiente de verificación.');
+            return pagoActualizado;
+        } catch (err) {
+            toast.error('Error al actualizar el pago');
+            console.error('Error updating pago programado:', err);
             throw err;
         } finally {
             setIsLoading(false);
@@ -267,6 +293,7 @@ export const usePagosSuscripcion = () => {
         
         // Operaciones específicas
         registrar,
+        actualizarPagoProgramado,
         verificar,
         rechazar,
         

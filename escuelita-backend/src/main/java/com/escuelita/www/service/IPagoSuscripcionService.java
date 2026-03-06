@@ -33,6 +33,15 @@ public interface IPagoSuscripcionService {
     PagoSuscripcion registrarPago(PagoSuscripcionDTO dto, MultipartFile comprobante, Long idSuperAdmin) throws Exception;
     
     /**
+     * Actualizar un pago programado con comprobante
+     * @param idPago ID del pago a actualizar
+     * @param dto Datos actualizados del pago
+     * @param comprobante Archivo del comprobante (imagen/PDF)
+     * @return Pago actualizado
+     */
+    PagoSuscripcion actualizarPagoProgramado(Long idPago, PagoSuscripcionDTO dto, MultipartFile comprobante) throws Exception;
+    
+    /**
      * Verificar un pago y actualizar estado de suscripción a ACTIVA
      * @param idPago ID del pago
      * @param idSuperAdmin ID del super admin que verifica

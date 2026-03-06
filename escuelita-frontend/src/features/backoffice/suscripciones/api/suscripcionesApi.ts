@@ -94,3 +94,30 @@ export const getSuscripcionPorInstitucionApi = async (idInstitucion: number): Pr
         return null;
     }
 };
+
+// ============= GESTIÓN DE PAGOS PROGRAMADOS =============
+
+/**
+ * Generar pagos programados para TODAS las suscripciones
+ * USAR SOLO UNA VEZ para migración
+ */
+export const generarPagosTodasSuscripcionesApi = async (): Promise<any> => {
+    const response = await api.post(`${API_ENDPOINTS.SUSCRIPCIONES}/generar-pagos-todas`);
+    return response.data;
+};
+
+/**
+ * Generar pagos programados para una suscripción específica
+ */
+export const generarPagosSuscripcionApi = async (idSuscripcion: number): Promise<any> => {
+    const response = await api.post(`${API_ENDPOINTS.SUSCRIPCIONES}/${idSuscripcion}/generar-pagos`);
+    return response.data;
+};
+
+/**
+ * Cancelar suscripción (cambiar estado a CANCELADA)
+ */
+export const cancelarSuscripcionApi = async (idSuscripcion: number): Promise<any> => {
+    const response = await api.put(`${API_ENDPOINTS.SUSCRIPCIONES}/${idSuscripcion}/cancelar`);
+    return response.data;
+};

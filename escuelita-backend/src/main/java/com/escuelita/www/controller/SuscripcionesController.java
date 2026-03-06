@@ -222,4 +222,64 @@ public class SuscripcionesController {
                 .body("Error al cancelar suscripción: " + e.getMessage());
         }
     }
+    
+    /**
+     * MIGRACIÓN: Generar pagos programados para todas las suscripciones existentes
+     * POST /restful/suscripciones/generar-pagos-todas
+     * 
+     * USAR SOLO UNA VEZ para migrar suscripciones existentes
+     */
+    @PostMapping("/suscripciones/generar-pagos-todas")
+    public ResponseEntity<?> generarPagosTodas() {
+        try {
+            List<Suscripciones> todasSuscripciones = serviceSuscripciones.buscarTodos();
+            int totalGenerados = 0;
+            int errores = 0;
+            StringBuilder reporte = new StringBuilder();
+            
+            for (Suscripciones suscripcion : todasSuscripciones) {
+                try {
+                    int pagosGenerados = servicePagos.generarPagosProgramados(suscripcion.getIdSuscripcion());
+                    totalGenerados += pagosGenerados;
+                    reporte.append(String.format("✅ Suscripción %d: %d pagos generados\n", 
+                        suscripcion.getIdSuscripcion(), pagosGenerados));
+                } catch (Exception e) {
+                    errores++;
+                    reporte.append(String.format("❌ Suscripción %d: ERROR - %s\n", 
+                        suscripcion.getIdSuscripcion(), e.getMessage()));
+                }
+            }
+            
+            return ResponseEntity.ok()
+                .body(Map.of(
+                    "mensaje", "Proceso completado",
+                    "totalSuscripciones", todasSuscripciones.size(),
+                    "totalPagosGenerados", totalGenerados,
+                    "errores", errores,
+                    "reporte", reporte.toString()
+                ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body("Error al generar pagos: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Generar pagos para una suscripción específica
+     * POST /restful/suscripciones/{id}/generar-pagos
+     */
+    @PostMapping("/suscripciones/{id}/generar-pagos")
+    public ResponseEntity<?> generarPagosSuscripcion(@PathVariable("id") Long id) {
+        try {
+            int pagosGenerados = servicePagos.generarPagosProgramados(id);
+            return ResponseEntity.ok()
+                .body(Map.of(
+                    "mensaje", "Pagos generados correctamente",
+                    "pagosGenerados", pagosGenerados
+                ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body("Error: " + e.getMessage());
+        }
+    }
 }

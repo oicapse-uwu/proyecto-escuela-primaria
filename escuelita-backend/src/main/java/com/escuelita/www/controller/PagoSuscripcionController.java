@@ -114,6 +114,37 @@ public class PagoSuscripcionController {
     }
     
     /**
+     * Actualizar pago programado con comprobante
+     * PUT /restful/pagos-suscripcion/{id}/actualizar-comprobante
+     * 
+     * Form-data:
+     * - datos: JSON con PagoSuscripcionDTO
+     * - comprobante: Archivo (imagen/PDF)
+     */
+    @PutMapping(value = "/{id}/actualizar-comprobante", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> actualizarPagoProgramado(
+            @PathVariable Long id,
+            @RequestPart("datos") String datosJson,
+            @RequestPart(value = "comprobante", required = true) MultipartFile comprobante) {
+        try {
+            // Parsear JSON a DTO
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.findAndRegisterModules(); // Para soportar LocalDate
+            PagoSuscripcionDTO dto = mapper.readValue(datosJson, PagoSuscripcionDTO.class);
+            
+            // Actualizar pago
+            PagoSuscripcion pago = pagoService.actualizarPagoProgramado(id, dto, comprobante);
+            
+            return ResponseEntity.ok(Map.of(
+                "mensaje", "Pago actualizado correctamente. Comprobante registrado.",
+                "pago", pagoService.convertirADTO(pago)
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    /**
      * Verificar pago (aprobar)
      * PUT /restful/pagos-suscripcion/{id}/verificar
      * 

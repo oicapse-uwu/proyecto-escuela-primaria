@@ -120,7 +120,7 @@ export interface PagoSuscripcion {
     fechaRegistro: string; // LocalDateTime
     numeroOperacion: string | null;
     banco: string | null;
-    comprobanteUrl: string;
+    comprobanteUrl: string | null; // Nullable: pagos programados no tienen comprobante aún
     observaciones: string | null;
     estadoVerificacion: EstadoVerificacion;
     
@@ -129,7 +129,7 @@ export interface PagoSuscripcion {
     nombreInstitucion?: string;
     codModular?: string;
     
-    idMetodoPago: number;
+    idMetodoPago: number | null; // Nullable: pagos programados no tienen método aún
     nombreMetodoPago?: string;
     
     verificadoPor: number | null;

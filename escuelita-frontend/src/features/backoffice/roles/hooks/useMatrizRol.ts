@@ -1,24 +1,29 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { actualizarMatrizRol, obtenerMatrizRol } from '../api/rolesMatrizApi';
-import type { MatrizRol, ActualizarMatrizRolPayload } from '../types';
+import { asignarModulosRol, obtenerModulosRol } from '../api/rolesMatrizApi';
+import type { ActualizarRolModulosPayload } from '../types';
 
+/**
+ * Hook simplificado para gestionar módulos asignados a un rol
+ * Solo maneja módulos, sin permisos granulares
+ */
 export const useMatrizRol = (idRol: number | null) => {
-    const [matriz, setMatriz] = useState<MatrizRol | null>(null);
+    const [modulosAsignados, setModulosAsignados] = useState<number[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const cargarMatriz = async () => {
+    const cargarModulos = async () => {
         if (!idRol) return;
 
         setIsLoading(true);
         setError(null);
         try {
-            const data = await obtenerMatrizRol(idRol);
-            setMatriz(data);
+            const data = await obtenerModulosRol(idRol);
+            setModulosAsignados(data.modulosAsignados || []);
+            console.log('✅ Módulos cargados:', data.modulosAsignados);
         } catch (err: any) {
-            const mensaje = err.response?.data?.message || 'Error al cargar la matriz de permisos';
+            const mensaje = err.response?.data?.message || 'Error al cargar los módulos del rol';
             setError(mensaje);
             toast.error(mensaje);
         } finally {
@@ -26,24 +31,26 @@ export const useMatrizRol = (idRol: number | null) => {
         }
     };
 
-    const actualizarMatriz = async (payload: ActualizarMatrizRolPayload) => {
+    const actualizarModulos = async (nuevosMódulos: number[]) => {
+        if (!idRol) return;
+
         setIsSaving(true);
         setError(null);
         try {
-            console.log('📤 Enviando actualización de matriz:', payload);
-            await actualizarMatrizRol(idRol!, payload);
+            console.log('📤 Asignando módulos:', nuevosMódulos);
+            const payload: ActualizarRolModulosPayload = {
+                idRol,
+                modulosAsignados: nuevosMódulos
+            };
+            await asignarModulosRol(idRol, payload);
             
-            // Pequeño delay para asegurar que el backend procesó completamente
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            // Recargar la matriz después de actualizar
-            console.log('♻️ Recargando matriz después de actualizar...');
-            await cargarMatriz();
-            toast.success('Matriz de permisos actualizada correctamente');
+            // Actualizar estado localmente
+            setModulosAsignados(nuevosMódulos);
+            toast.success('Módulos asignados correctamente');
         } catch (err: any) {
-            const mensaje = err.response?.data?.message || err.response?.data?.error || 'Error al actualizar la matriz de permisos';
+            const mensaje = err.response?.data?.message || err.response?.data?.error || 'Error al asignar módulos';
             setError(mensaje);
-            console.error('❌ Error en actualización:', mensaje);
+            console.error('❌ Error:', mensaje);
             toast.error(mensaje);
             throw err;
         } finally {
@@ -52,15 +59,15 @@ export const useMatrizRol = (idRol: number | null) => {
     };
 
     useEffect(() => {
-        cargarMatriz();
+        cargarModulos();
     }, [idRol]);
 
     return {
-        matriz,
+        modulosAsignados,
         isLoading,
         isSaving,
         error,
-        actualizarMatriz,
-        recargar: cargarMatriz
+        actualizarModulos,
+        recargar: cargarModulos
     };
 };

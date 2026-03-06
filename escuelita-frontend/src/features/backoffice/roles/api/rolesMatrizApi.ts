@@ -1,32 +1,33 @@
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
-import type { MatrizRol, ActualizarMatrizRolPayload } from '../types';
+import type { RolModulosAsignacion, ActualizarRolModulosPayload } from '../types';
 
 const ROLES_BASE_URL = API_ENDPOINTS.ROLES;
 
 /**
- * Obtiene la matriz completa de un rol (todos los módulos y permisos)
- * Con caché bypass para asegurar datos frescos
+ * Obtiene los módulos asignados a un rol
+ * Nueva arquitectura simplificada: solo módulos, sin permisos granulares
  */
-export const obtenerMatrizRol = async (idRol: number): Promise<MatrizRol> => {
-    console.log(`📥 Obteniendo matriz para rol: ${idRol}`);
-    const response = await api.get<MatrizRol>(`${ROLES_BASE_URL}/${idRol}/matriz-completa`, {
-        params: { _t: Date.now() } // Cache busting - fuerza siempre ir al servidor
+export const obtenerModulosRol = async (idRol: number): Promise<RolModulosAsignacion> => {
+    console.log(`📥 Obteniendo módulos para rol: ${idRol}`);
+    const response = await api.get<RolModulosAsignacion>(`${ROLES_BASE_URL}/${idRol}/modulos`, {
+        params: { _t: Date.now() } // Cache busting
     });
-    console.log(`✓ Matriz obtenida para rol ${idRol}:`, response.data?.modulos?.length || 0, 'módulos');
+    console.log(`✓ Módulos obtenidos para rol ${idRol}:`, response.data?.modulosAsignados?.length || 0);
     return response.data;
 };
 
 /**
- * Actualiza la matriz de permisos de un rol en lote
+ * Asigna módulos a un rol (reemplaza los anteriores)
+ * Nueva arquitectura simplificada
  */
-export const actualizarMatrizRol = async (idRol: number, payload: ActualizarMatrizRolPayload): Promise<{ mensaje: string }> => {
-    console.log('📤 Enviando payload a backend:', { idRol, payload });
+export const asignarModulosRol = async (idRol: number, payload: ActualizarRolModulosPayload): Promise<{ mensaje: string }> => {
+    console.log('📤 Asignando módulos al rol:', { idRol, modulosAsignados: payload.modulosAsignados });
     try {
-        const response = await api.post<{ mensaje: string }>(`${ROLES_BASE_URL}/${idRol}/matriz-completa`, payload);
+        const response = await api.post<{ mensaje: string }>(`${ROLES_BASE_URL}/${idRol}/modulos`, payload);
         console.log('✅ Respuesta del backend:', response.data);
         return response.data;
     } catch (error: any) {
-        console.error('❌ Error en actualización:', {
+        console.error('❌ Error en asignación:', {
             status: error.response?.status,
             data: error.response?.data,
             payload

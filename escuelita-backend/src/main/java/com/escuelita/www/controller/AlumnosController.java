@@ -30,6 +30,7 @@ import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.repository.SuscripcionesRepository;
 import com.escuelita.www.repository.TipoDocumentosRepository;
 import com.escuelita.www.service.IAlumnosService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -49,10 +50,12 @@ public class AlumnosController {
     private SuscripcionesRepository repoSuscripciones;
 
     @GetMapping("/alumnos")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public List<Alumnos> buscarTodos() {
         return serviceAlumnos.buscarTodos(); 
     }
     @PostMapping("/alumnos")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public ResponseEntity<?> guardar(@RequestBody AlumnosDTO dto) {
         System.out.println("🔍 Intentando crear alumno para sede ID: " + dto.getIdSede());
         System.out.println("🟡 Estado del alumno recibido: '" + dto.getEstadoAlumno() + "'");
@@ -141,6 +144,7 @@ public class AlumnosController {
         return ResponseEntity.ok(serviceAlumnos.guardar(alumnos));
     }
     @PutMapping("/alumnos")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public ResponseEntity<?> modificar(@RequestBody AlumnosDTO dto) {
         if(dto.getIdAlumno() == null){
             return ResponseEntity.badRequest()
@@ -173,10 +177,12 @@ public class AlumnosController {
         return ResponseEntity.ok(serviceAlumnos.modificar(alumnos));
     }
     @GetMapping("/alumnos/{id}")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public Optional<Alumnos> buscarId(@PathVariable("id") Long id){
         return serviceAlumnos.buscarId(id);
     }
     @DeleteMapping("/alumnos/{id}")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public String eliminar(@PathVariable Long id){
         serviceAlumnos.eliminar(id);
         return "Alumno eliminado correctamente";

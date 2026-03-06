@@ -30,8 +30,7 @@ import com.escuelita.www.repository.RolesRepository;
 import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.repository.TipoDocumentosRepository;
 import com.escuelita.www.repository.ModulosRepository;
-import com.escuelita.www.repository.PermisosRepository;
-import com.escuelita.www.repository.RolModuloPermisoRepository;
+import com.escuelita.www.repository.ModuloAccesoRepository;
 import com.escuelita.www.service.IUsuariosService;
 
 @RestController
@@ -49,9 +48,7 @@ public class UsuariosController {
     @Autowired
     private ModulosRepository repoModulos;
     @Autowired
-    private PermisosRepository repoPermisos;
-    @Autowired
-    private RolModuloPermisoRepository repoRolModuloPermiso; 
+    private ModuloAccesoRepository repoModuloAcceso; 
 
     @GetMapping("/usuarios")
     public List<Usuarios> buscarTodos() {
@@ -166,32 +163,24 @@ public class UsuariosController {
             return ResponseEntity.badRequest().body("Usuario no tiene rol asignado");
         }
 
-        // Obtener todas las asignaciones de rol-módulo-permiso del usuario
-        List<com.escuelita.www.entity.RolModuloPermiso> asignaciones = 
-            repoRolModuloPermiso.findByIdRol_IdRol(rol.getIdRol());
-        // Agrupar por módulo
-        Map<Long, List<com.escuelita.www.entity.RolModuloPermiso>> permisoPorModulo = 
-            asignaciones.stream()
-                .collect(Collectors.groupingBy(rmp -> rmp.getIdModulo().getIdModulo()));
-        // Construir lista de módulos con sus permisos
+        // Obtener lista de módulos asignados al rol del usuario
+        List<com.escuelita.www.entity.RolModulo> rolModulos = 
+            repoModuloAcceso.findAll().stream()
+                .filter(rm -> rm.getIdRol().getIdRol().equals(rol.getIdRol()) && rm.getEstado() == 1)
+                .collect(Collectors.toList());
+        
+        // Construir lista de módulos con permisos vacíos (compatible con DTO)
         List<ModuloAccesoDTO> modulosDTO = new java.util.ArrayList<>();
         
-        for (Long idModulo : permisoPorModulo.keySet()) {
-            Optional<com.escuelita.www.entity.Modulos> moduloOpt = repoModulos.findById(idModulo);
+        for (com.escuelita.www.entity.RolModulo rolModulo : rolModulos) {
+            Optional<com.escuelita.www.entity.Modulos> moduloOpt = repoModulos.findById(rolModulo.getIdModulo().getIdModulo());
             if (moduloOpt.isEmpty()) continue;
 
             com.escuelita.www.entity.Modulos modulo = moduloOpt.get();
-            List<com.escuelita.www.entity.RolModuloPermiso> permisosModulo = permisoPorModulo.get(idModulo);
             
-            List<PermisoAccesoDTO> permisosDTO = permisosModulo.stream()
-                .map(rmp -> new PermisoAccesoDTO(
-                    rmp.getIdPermiso().getIdPermiso(),
-                    rmp.getIdPermiso().getNombre(),
-                    rmp.getIdPermiso().getCodigo(),
-                    rmp.getIdPermiso().getDescripcion()
-                ))
-                .collect(Collectors.toList());
-
+            // En el nuevo sistema, retornamos módulos sin permisos granulares
+            List<PermisoAccesoDTO> permisosDTO = new java.util.ArrayList<>();
+            
             modulosDTO.add(new ModuloAccesoDTO(
                 modulo.getIdModulo(),
                 modulo.getNombre(),
@@ -207,6 +196,7 @@ public class UsuariosController {
             m1.getOrden() != null ? m1.getOrden() : 999,
             m2.getOrden() != null ? m2.getOrden() : 999
         ));
+        
         ModulosPermisosUsuarioDTO respuesta = new ModulosPermisosUsuarioDTO(
             usuario.getIdUsuario(),
             usuario.getNombres() + " " + usuario.getApellidos(),

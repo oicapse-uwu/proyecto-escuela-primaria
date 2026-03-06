@@ -1,25 +1,43 @@
 import { Plus, Shield, Trash2 } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Toaster, toast } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
 import Modal from '../../../../components/common/Modal';
-import MatrizRolEditor from '../components/MatrizRolEditor';
+import ModulosAsignacionEditor from '../components/ModulosAsignacionEditor';
 import CrearRolModal from '../components/CrearRolModal';
 import { useMatrizRol } from '../hooks/useMatrizRol';
 import { useRoles } from '../../usuarios/hooks/useRoles';
 import { eliminarRol } from '../api/rolesApi';
 import type { Rol } from '../../usuarios/types';
+import type { Modulo } from '../types';
+import { api, API_ENDPOINTS } from '../../../../config/api.config';
 
 const MatrizRolesPage: React.FC = () => {
     const { roles, isLoading: rolesLoading, cargarRoles } = useRoles();
     const [rolSeleccionado, setRolSeleccionado] = useState<Rol | null>(null);
+    const [modulosTotales, setModulosTotales] = useState<Modulo[]>([]);
     const [isCrearRolOpen, setIsCrearRolOpen] = useState(false);
     const [isEliminarOpen, setIsEliminarOpen] = useState(false);
     const [isEliminando, setIsEliminando] = useState(false);
-    const { matriz, isLoading, isSaving, actualizarMatriz } = useMatrizRol(rolSeleccionado?.idRol ?? null);
+    const { modulosAsignados, isLoading, isSaving, actualizarModulos } = useMatrizRol(rolSeleccionado?.idRol ?? null);
 
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(10);
+    const itemsPerPage = 10;
+
+    // Cargar la lista de módulos disponibles al montar
+    useEffect(() => {
+        const cargarModulos = async () => {
+            try {
+                const response = await api.get<any[]>(API_ENDPOINTS.MODULOS);
+                setModulosTotales(response.data || []);
+                console.log('✅ Módulos cargados:', response.data?.length);
+            } catch (error) {
+                console.error('❌ Error cargando módulos:', error);
+                toast.error('Error al cargar los módulos disponibles');
+            }
+        };
+        cargarModulos();
+    }, []);
 
     const rolesPaginados = useMemo(() => {
         const indexOfLastItem = currentPage * itemsPerPage;
@@ -27,16 +45,12 @@ const MatrizRolesPage: React.FC = () => {
         return roles.slice(indexOfFirstItem, indexOfLastItem);
     }, [roles, currentPage, itemsPerPage]);
 
-    const handleGuardarMatriz = async (permisos: { idModulo: number; idPermisos: number[] }[]) => {
+    const handleGuardarModulos = async (modulosSeleccionados: number[]) => {
         if (!rolSeleccionado) return;
-        await actualizarMatriz({
-            idRol: rolSeleccionado.idRol,
-            modulos: permisos
-        });
+        await actualizarModulos(modulosSeleccionados);
     };
 
     const handleRolCreado = () => {
-        // Recargar lista de roles
         cargarRoles();
         setRolSeleccionado(null);
     };
@@ -67,10 +81,10 @@ const MatrizRolesPage: React.FC = () => {
             <div className="mb-6">
                 <h1 className="text-3xl font-bold text-gray-800 flex items-center space-x-3 mb-2">
                     <Shield className="w-8 h-8 text-primary" />
-                    <span>Matriz de Roles y Permisos</span>
+                    <span>Asignación de Módulos a Roles</span>
                 </h1>
                 <p className="text-gray-600">
-                    Administra los permisos disponibles para cada rol del sistema
+                    Asigna los módulos disponibles a cada rol del sistema
                 </p>
             </div>
 
@@ -119,21 +133,19 @@ const MatrizRolesPage: React.FC = () => {
                             <div className="p-4 border-t border-gray-200">
                                 <Pagination
                                     currentPage={currentPage}
-                                    totalItems={roles.length}
-                                    itemsPerPage={itemsPerPage}
+                                    totalPages={Math.ceil(roles.length / itemsPerPage)}
                                     onPageChange={setCurrentPage}
-                                    onItemsPerPageChange={setItemsPerPage}
                                 />
                             </div>
                         )}
                     </div>
                 </div>
 
-                {/* Columna 2-3: Editor de Matriz */}
+                {/* Columna 2-3: Editor de Módulos */}
                 <div className="lg:col-span-2">
-                    <div className="bg-white rounded-lg shadow p-6">
+                    <div className="bg-white rounded-lg shadow">
                         {rolSeleccionado && (
-                            <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+                            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
                                 <div>
                                     <h3 className="text-xl font-semibold text-gray-800">{rolSeleccionado.nombre}</h3>
                                     <p className="text-sm text-gray-500">ID: {rolSeleccionado.idRol}</p>
@@ -148,17 +160,20 @@ const MatrizRolesPage: React.FC = () => {
                             </div>
                         )}
                         {rolSeleccionado ? (
-                            <MatrizRolEditor
-                                key={`matriz-${rolSeleccionado.idRol}`}
-                                matriz={matriz}
-                                isLoading={isLoading}
-                                onGuardar={handleGuardarMatriz}
-                                isSaving={isSaving}
-                            />
+                            <div className="p-6">
+                                <ModulosAsignacionEditor
+                                    key={`modulos-${rolSeleccionado.idRol}`}
+                                    tomodulos={modulosTotales}
+                                    modulosAsignados={modulosAsignados}
+                                    isLoading={isLoading}
+                                    onGuardar={handleGuardarModulos}
+                                    isSaving={isSaving}
+                                />
+                            </div>
                         ) : (
                             <div className="text-center py-12">
                                 <Shield className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                <p className="text-gray-500 text-lg">Selecciona un rol para editar sus permisos</p>
+                                <p className="text-gray-500 text-lg">Selecciona un rol para asignar módulos</p>
                             </div>
                         )}
                     </div>

@@ -63,7 +63,7 @@ const PlanForm: React.FC<PlanFormProps> = ({ planEditar, onSubmit, onCancel }) =
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
                 {/* Header */}
-                <div className="bg-primary text-white px-6 py-4 flex items-center justify-between">
+                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                         <Package className="w-6 h-6" />
                         <h2 className="text-xl font-bold">

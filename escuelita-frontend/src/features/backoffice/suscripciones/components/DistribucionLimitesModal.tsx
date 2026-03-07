@@ -104,7 +104,7 @@ const DistribucionLimitesModal: React.FC<DistribucionLimitesModalProps> = ({
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
             <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden ring-1 ring-gray-200">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-700 px-6 py-5 flex justify-between items-center">
+                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] px-6 py-5 flex justify-between items-center">
                     <h2 className="text-xl font-bold text-white flex items-center gap-2">
                         <span className="text-2xl">📊</span>
                         Distribución de Límites de Alumnos
@@ -287,7 +287,7 @@ const DistribucionLimitesModal: React.FC<DistribucionLimitesModalProps> = ({
                         type="button"
                         onClick={handleGuardar}
                         disabled={isLoading || excedeLimite || isLoadingSedes}
-                        className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed flex items-center gap-2 font-semibold shadow-md hover:shadow-lg"
+                        className="px-6 py-2.5 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-xl hover:from-[#1e40af] hover:to-[#312e81] transition-all disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed flex items-center gap-2 font-semibold shadow-md hover:shadow-lg"
                     >
                         {isLoading ? (
                             <>

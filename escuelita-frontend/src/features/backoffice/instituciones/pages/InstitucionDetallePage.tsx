@@ -583,98 +583,109 @@ const InstitucionDetallePage: React.FC = () => {
 
                 {/* Tab: Sedes */}
                 {activeTab === 'sedes' && (
-                    <div>
-                        {/* Información de Suscripción */}
-                        {suscripcion ? (
-                            <div className="bg-white rounded-xl shadow-sm border-2 border-blue-100 p-6 mb-6">
-                                <div className="flex items-start gap-4">
-                                    <div className="bg-blue-500 p-3 rounded-xl">
-                                        <CreditCard className="w-6 h-6 text-white" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
-                                            <span>Plan Contratado:</span>
-                                            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        {/* Columna Izquierda: Resumen del Plan */}
+                        <div className="lg:col-span-4 relative z-0">
+                            {suscripcion ? (
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 sticky top-6">
+                                    <div className="flex items-center gap-3 mb-5 pb-4 border-b border-gray-200">
+                                        <div className="p-2">
+                                            <CreditCard className="w-5 h-5 text-gray-600" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="text-xs font-medium text-gray-500 uppercase tracking-wide">Plan Contratado - sedes</h3>
+                                            <p className="text-base font-bold text-gray-800 mt-0.5">
                                                 {suscripcion.idPlan?.nombrePlan || 'N/A'}
-                                            </span>
-                                        </h3>
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                            <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
-                                                <p className="text-gray-600 text-sm mb-1">Límite de Sedes</p>
-                                                <p className="text-2xl font-bold text-gray-800">
-                                                    {suscripcion.limiteSedesContratadas}
-                                                </p>
-                                            </div>
-                                            <div className="bg-green-50 rounded-lg p-4 border border-green-100">
-                                                <p className="text-gray-600 text-sm mb-1">Sedes Registradas</p>
-                                                <p className="text-2xl font-bold text-gray-800">
-                                                    {sedes.length}
-                                                </p>
-                                            </div>
-                                            <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
-                                                <p className="text-gray-600 text-sm mb-1">Disponibles</p>
-                                                <p className="text-2xl font-bold text-gray-800">
-                                                    {suscripcion.limiteSedesContratadas - sedes.length}
-                                                </p>
-                                            </div>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="space-y-3">
+                                        <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                                            <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                                                Límite
+                                            </p>
+                                            <p className="text-3xl font-bold text-gray-800 mt-1">
+                                                {suscripcion.limiteSedesContratadas}
+                                            </p>
+                                        </div>
+                                        
+                                        <div className="bg-green-50 rounded-lg p-4 border border-green-100">
+                                            <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                                                Registradas
+                                            </p>
+                                            <p className="text-3xl font-bold text-gray-800 mt-1">
+                                                {sedes.length}
+                                            </p>
+                                        </div>
+                                        
+                                        <div className="bg-purple-50 rounded-lg p-4 border border-purple-100">
+                                            <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                                                Disponibles
+                                            </p>
+                                            <p className="text-3xl font-bold text-gray-800 mt-1">
+                                                {suscripcion.limiteSedesContratadas - sedes.length}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        ) : (
-                            <div className="bg-gray-50 border-2 border-gray-300 rounded-xl p-6 mb-6">
-                                <div className="flex items-start gap-4">
-                                    <div className="bg-gray-200 p-3 rounded-lg">
-                                        <CreditCard className="w-6 h-6 text-gray-500" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="text-lg font-bold text-gray-700 mb-1">Sin Suscripción Activa</h3>
-                                        <p className="text-gray-600">
-                                            Esta institución no tiene una suscripción activa. Por favor, asigne una suscripción antes de agregar sedes.
-                                        </p>
+                            ) : (
+                                <div className="bg-gray-50 border-2 border-gray-300 rounded-xl p-6">
+                                    <div className="flex items-start gap-4">
+                                        <div className="bg-gray-200 p-3 rounded-lg">
+                                            <CreditCard className="w-6 h-6 text-gray-500" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="text-lg font-bold text-gray-700 mb-1">Sin Suscripción Activa</h3>
+                                            <p className="text-gray-600 text-sm">
+                                                Esta institución no tiene una suscripción activa. Por favor, asigne una suscripción antes de agregar sedes.
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
-
-                        {/* Header de Sedes con Botón */}
-                        <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                                <Building2 className="w-7 h-7 text-primary" />
-                                Sedes
-                                <span className="bg-primary/10 text-primary px-3 py-1 rounded-lg text-lg font-semibold">
-                                    {sedes.length}
-                                </span>
-                            </h3>
-                            <button
-                                onClick={handleNuevaSede}
-                                disabled={!suscripcion}
-                                className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-all ${
-                                    suscripcion
-                                        ? 'bg-primary text-white hover:bg-primary-dark shadow-md hover:shadow-lg'
-                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                }`}
-                            >
-                                <Plus className="w-5 h-5" />
-                                Nueva Sede
-                            </button>
+                            )}
                         </div>
 
-                        {/* Lista de Sedes */}
-                        {sedes.length === 0 ? (
-                            <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl shadow-inner border-2 border-dashed border-gray-300">
-                                <div className="bg-gray-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Building2 className="w-10 h-10 text-gray-400" />
-                                </div>
-                                <p className="text-xl font-semibold text-gray-600 mb-2">No hay sedes registradas</p>
-                                {suscripcion && (
-                                    <p className="text-sm text-gray-500">
-                                        Haga clic en "Nueva Sede" para agregar una
-                                    </p>
-                                )}
+                        {/* Columna Derecha: Lista de Sedes */}
+                        <div className="lg:col-span-8">
+                            {/* Header de Sedes con Botón */}
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                                    <Building2 className="w-7 h-7 text-primary" />
+                                    Sedes
+                                    <span className="bg-primary/10 text-primary px-3 py-1 rounded-lg text-lg font-semibold">
+                                        {sedes.length}
+                                    </span>
+                                </h3>
+                                <button
+                                    onClick={handleNuevaSede}
+                                    disabled={!suscripcion}
+                                    className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-all ${
+                                        suscripcion
+                                            ? 'bg-primary text-white hover:bg-primary-dark shadow-md hover:shadow-lg'
+                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    }`}
+                                >
+                                    <Plus className="w-5 h-5" />
+                                    Nueva Sede
+                                </button>
                             </div>
-                        ) : (
-                            <div className="grid gap-5">
+
+                            {/* Lista de Sedes */}
+                            {sedes.length === 0 ? (
+                                <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl shadow-inner border-2 border-dashed border-gray-300">
+                                    <div className="bg-gray-200 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <Building2 className="w-10 h-10 text-gray-400" />
+                                    </div>
+                                    <p className="text-xl font-semibold text-gray-600 mb-2">No hay sedes registradas</p>
+                                    {suscripcion && (
+                                        <p className="text-sm text-gray-500">
+                                            Haga clic en "Nueva Sede" para agregar una
+                                        </p>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="grid gap-5">
                                 {sedes.map((sede) => (
                                     <div
                                         key={sede.idSede}
@@ -760,6 +771,7 @@ const InstitucionDetallePage: React.FC = () => {
                                 ))}
                             </div>
                         )}
+                        </div>
                     </div>
                 )}
             </div>

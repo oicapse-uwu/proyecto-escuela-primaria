@@ -76,8 +76,9 @@ export const usePagosSuscripcion = () => {
             await deletePagoApi(id);
             setPagos(prev => prev.filter(p => p.idPago !== id));
             toast.success('Pago anulado correctamente');
-        } catch (err) {
-            toast.error('Error al anular el pago');
+        } catch (err: any) {
+            const mensajeError = err?.response?.data?.error || 'Error al anular el pago';
+            toast.error(mensajeError);
             console.error('Error deleting pago:', err);
             throw err;
         }
@@ -99,8 +100,9 @@ export const usePagosSuscripcion = () => {
             setPagos(prev => [...prev, nuevoPago]);
             toast.success('Pago registrado correctamente');
             return nuevoPago;
-        } catch (err) {
-            toast.error('Error al registrar el pago');
+        } catch (err: any) {
+            const mensajeError = err?.response?.data?.error || 'Error al registrar el pago';
+            toast.error(mensajeError);
             console.error('Error registering pago:', err);
             throw err;
         } finally {
@@ -124,8 +126,10 @@ export const usePagosSuscripcion = () => {
             ));
             toast.success('Comprobante registrado correctamente. Pago pendiente de verificación.');
             return pagoActualizado;
-        } catch (err) {
-            toast.error('Error al actualizar el pago');
+        } catch (err: any) {
+            // Mostrar mensaje específico del backend si está disponible
+            const mensajeError = err?.response?.data?.error || 'Error al actualizar el pago';
+            toast.error(mensajeError);
             console.error('Error updating pago programado:', err);
             throw err;
         } finally {
@@ -149,8 +153,9 @@ export const usePagosSuscripcion = () => {
             
             toast.success('Pago verificado. Suscripción activada.');
             return pagoVerificado;
-        } catch (err) {
-            toast.error('Error al verificar el pago');
+        } catch (err: any) {
+            const mensajeError = err?.response?.data?.error || 'Error al verificar el pago';
+            toast.error(mensajeError);
             console.error('Error verifying pago:', err);
             throw err;
         } finally {
@@ -178,8 +183,9 @@ export const usePagosSuscripcion = () => {
             
             toast.error('Pago rechazado');
             return pagoRechazado;
-        } catch (err) {
-            toast.error('Error al rechazar el pago');
+        } catch (err: any) {
+            const mensajeError = err?.response?.data?.error || 'Error al rechazar el pago';
+            toast.error(mensajeError);
             console.error('Error rejecting pago:', err);
             throw err;
         } finally {

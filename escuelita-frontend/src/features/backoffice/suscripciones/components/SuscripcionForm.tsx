@@ -1,5 +1,6 @@
 import { CreditCard, Settings, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import SearchableSelect from '../../../../components/common/SearchableSelect';
 import type { Institucion } from '../../instituciones/types';
 import type { CicloFacturacion, EstadoSuscripcion, Plan, Suscripcion, SuscripcionFormData } from '../types';
@@ -102,6 +103,15 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
         }
     }, [suscripcionEditar, planes, instituciones]);
 
+    // Mostrar notificación cuando se selecciona un plan personalizado
+    useEffect(() => {
+        if (planSeleccionado && esPlanPersonalizado(planSeleccionado)) {
+            toast.info('Plan Personalizado: Puedes definir límites y precios según el acuerdo con la institución.', {
+                duration: 5000,
+            });
+        }
+    }, [planSeleccionado]);
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         
@@ -185,7 +195,7 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full overflow-hidden flex flex-col">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 p-6 text-white flex justify-between items-center">
+                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] p-6 text-white flex justify-between items-center">
                     <h2 className="text-2xl font-bold flex items-center space-x-2">
                         <CreditCard className="w-6 h-6" />
                         <span>{suscripcionEditar ? 'Editar Suscripción' : 'Nueva Suscripción'}</span>
@@ -355,14 +365,9 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
                                         Límites y Precios
                                     </h3>
                                     
-                                    {/* Mensaje y botón en fila */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-                                        {planSeleccionado && esPlanPersonalizado(planSeleccionado) && (
-                                            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
-                                                <strong>Plan Personalizado:</strong> Puedes definir límites y precios según el acuerdo con la institución.
-                                            </div>
-                                        )}
-                                        {suscripcionEditar && formData.idInstitucion > 0 && (
+                                    {/* Botón de distribución por sede */}
+                                    {suscripcionEditar && formData.idInstitucion > 0 && (
+                                        <div className="mb-4">
                                             <button
                                                 type="button"
                                                 onClick={() => setShowDistribucionModal(true)}
@@ -371,8 +376,8 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
                                                 <Settings className="w-4 h-4" />
                                                 <span className="font-medium">Distribución por Sede</span>
                                             </button>
-                                        )}
-                                    </div>
+                                        </div>
+                                    )}
                                 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     {/* Límite de Alumnos */}

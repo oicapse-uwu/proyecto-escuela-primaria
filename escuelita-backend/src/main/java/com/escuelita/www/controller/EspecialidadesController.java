@@ -1,4 +1,4 @@
-// Revisado
+// Sin tocar
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.escuelita.www.entity.Especialidades;
 import com.escuelita.www.service.IEspecialidadesService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -24,24 +25,29 @@ public class EspecialidadesController {
     private IEspecialidadesService serviceEspecialidades;
 
     @GetMapping("/especialidades")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
     public List<Especialidades> buscarTodos() {
         return serviceEspecialidades.buscarTodos(); 
     }
     @PostMapping("/especialidades")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
     public Especialidades guardar(@RequestBody Especialidades especialidades) {
         serviceEspecialidades.guardar(especialidades);
         return especialidades;
     }
     @PutMapping("/especialidades")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
     public Especialidades modificar(@RequestBody Especialidades especialidades) {
         serviceEspecialidades.modificar(especialidades);
         return especialidades;
     }
     @GetMapping("/especialidades/{id}")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
     public Optional<Especialidades> buscarId(@PathVariable("id") Long id){
         return serviceEspecialidades.buscarId(id);
     }
     @DeleteMapping("/especialidades/{id}")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
     public String eliminar(@PathVariable Long id){
         serviceEspecialidades.eliminar(id);
         return "Especialidad eliminada correctamente";

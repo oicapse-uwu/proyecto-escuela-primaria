@@ -1,4 +1,4 @@
-// Revisado
+// Sin tocar
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -26,6 +26,7 @@ import com.escuelita.www.repository.CursosRepository;
 import com.escuelita.www.repository.PerfilDocenteRepository;
 import com.escuelita.www.repository.SeccionesRepository;
 import com.escuelita.www.service.IAsignacionDocenteService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -43,10 +44,12 @@ public class AsignacionDocenteController {
     private AnioEscolarRepository repoAnioEscolar;
 
     @GetMapping("/asignaciondocente")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public List<AsignacionDocente> buscarTodos() {
         return serviceAsignacionDocente.buscarTodos();
     }
     @PostMapping("/asignaciondocente")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public ResponseEntity<?> guardar(@RequestBody AsignacionDocenteDTO dto) {
         AsignacionDocente asignacionDocente = new AsignacionDocente();
 
@@ -71,6 +74,7 @@ public class AsignacionDocenteController {
         return ResponseEntity.ok(serviceAsignacionDocente.guardar(asignacionDocente));
     }
     @PutMapping("/asignaciondocente")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public ResponseEntity<?> modificar(@RequestBody AsignacionDocenteDTO dto) {
         if (dto.getIdAsignacion() == null) {
             return ResponseEntity.badRequest()
@@ -104,6 +108,7 @@ public class AsignacionDocenteController {
         return serviceAsignacionDocente.buscarId(id);
     }
     @DeleteMapping("/asignaciondocente/{id}")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public String eliminar(@PathVariable Long id){
         serviceAsignacionDocente.eliminar(id);
         return "Asignación eliminada correctamente";

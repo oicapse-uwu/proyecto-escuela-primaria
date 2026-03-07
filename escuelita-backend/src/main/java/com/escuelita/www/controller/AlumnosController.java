@@ -1,4 +1,7 @@
-// Revisado
+/*
+    MODIFICADO - Validacion de la existencia de la sede, 
+    que la suscripcion este vigente y la capacidad de alumnos
+*/
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -27,6 +30,7 @@ import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.repository.SuscripcionesRepository;
 import com.escuelita.www.repository.TipoDocumentosRepository;
 import com.escuelita.www.service.IAlumnosService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -46,14 +50,16 @@ public class AlumnosController {
     private SuscripcionesRepository repoSuscripciones;
 
     @GetMapping("/alumnos")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public List<Alumnos> buscarTodos() {
         return serviceAlumnos.buscarTodos(); 
     }
     @PostMapping("/alumnos")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public ResponseEntity<?> guardar(@RequestBody AlumnosDTO dto) {
         System.out.println("🔍 Intentando crear alumno para sede ID: " + dto.getIdSede());
         System.out.println("🟡 Estado del alumno recibido: '" + dto.getEstadoAlumno() + "'");
-        
+
         // 🔒 VALIDACIÓN DE LÍMITES POR SEDE
         // Solo validar si el alumno será ACTIVO (case-insensitive)
         if (dto.getEstadoAlumno() != null && dto.getEstadoAlumno().toUpperCase().equals("ACTIVO")) {
@@ -73,8 +79,8 @@ public class AlumnosController {
             if (suscripcionOpt.isPresent()) {
                 Suscripciones suscripcionActiva = suscripcionOpt.get();
                 System.out.println("📋 Suscripción activa encontrada: ID=" + suscripcionActiva.getIdSuscripcion() 
-                                 + ", Límite total=" + suscripcionActiva.getLimiteAlumnosContratado());
-                
+                                    + ", Límite total=" + suscripcionActiva.getLimiteAlumnosContratado());
+
                 // Buscar límite asignado a esta sede
                 Optional<LimitesSedesSuscripcion> limite = repoLimitesSedes
                     .findByIdSuscripcionIdAndIdSedeId(
@@ -99,7 +105,7 @@ public class AlumnosController {
                         System.err.println("❌ " + mensajeError);
                         return ResponseEntity.badRequest().body(mensajeError);
                     }
-                    
+
                     System.out.println("✅ Validación OK: " + alumnosActuales + " < " + limiteAsignado);
                 } else {
                     System.out.println("⚠️ No hay límite configurado para esta sede. Permitiendo creación.");
@@ -138,6 +144,7 @@ public class AlumnosController {
         return ResponseEntity.ok(serviceAlumnos.guardar(alumnos));
     }
     @PutMapping("/alumnos")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public ResponseEntity<?> modificar(@RequestBody AlumnosDTO dto) {
         if(dto.getIdAlumno() == null){
             return ResponseEntity.badRequest()
@@ -170,10 +177,12 @@ public class AlumnosController {
         return ResponseEntity.ok(serviceAlumnos.modificar(alumnos));
     }
     @GetMapping("/alumnos/{id}")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public Optional<Alumnos> buscarId(@PathVariable("id") Long id){
         return serviceAlumnos.buscarId(id);
     }
     @DeleteMapping("/alumnos/{id}")
+    @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public String eliminar(@PathVariable Long id){
         serviceAlumnos.eliminar(id);
         return "Alumno eliminado correctamente";

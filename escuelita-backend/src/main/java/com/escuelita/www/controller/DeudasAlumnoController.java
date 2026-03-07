@@ -1,3 +1,4 @@
+// Sin tocar
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -21,6 +22,7 @@ import com.escuelita.www.entity.Matriculas;
 import com.escuelita.www.repository.ConceptosPagoRepository;
 import com.escuelita.www.repository.MatriculasRepository;
 import com.escuelita.www.service.IDeudasAlumnoService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -34,10 +36,12 @@ public class DeudasAlumnoController {
     private ConceptosPagoRepository repoConceptos;
 
     @GetMapping("/deudasalumno")
+    @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
     public List<DeudasAlumno> buscarTodos() {
         return serviceDeudas.buscarTodos(); 
     }
     @PostMapping("/deudasalumno")
+    @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
     public ResponseEntity<?> guardar(@RequestBody DeudasAlumnoDTO dto) {
         DeudasAlumno deudasAlumno = new DeudasAlumno();
         deudasAlumno.setDescripcionCuota(dto.getDescripcionCuota());
@@ -61,6 +65,7 @@ public class DeudasAlumnoController {
     }
     
     @PutMapping("/deudasalumno")
+    @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
     public ResponseEntity<?> modificar(@RequestBody DeudasAlumnoDTO dto) {
         if(dto.getIdDeuda() == null){
             return ResponseEntity.badRequest()
@@ -88,10 +93,12 @@ public class DeudasAlumnoController {
         return ResponseEntity.ok(serviceDeudas.modificar(deudasAlumno));
     }
     @GetMapping("/deudasalumno/{id}")
+    @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
     public Optional<DeudasAlumno> buscarId(@PathVariable("id") Long id){
     return serviceDeudas.buscarId(id);
     }
     @DeleteMapping("/deudasalumno/{id}")
+    @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
     public String eliminar(@PathVariable Long id) {
         serviceDeudas.eliminar(id);
         return "Deuda de alumno eliminada correctamente";

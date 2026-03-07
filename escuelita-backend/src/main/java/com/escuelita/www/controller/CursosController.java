@@ -1,4 +1,4 @@
-// Revisado
+// Sin tocar
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -20,6 +20,7 @@ import com.escuelita.www.entity.Cursos;
 import com.escuelita.www.entity.CursosDTO;
 import com.escuelita.www.repository.AreasRepository;
 import com.escuelita.www.service.ICursosService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -31,10 +32,12 @@ public class CursosController {
     private AreasRepository repoAreas;
 
     @GetMapping("/cursos")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public List<Cursos> buscarTodos() {
         return serviceCursos.buscarTodos();
     }
     @PostMapping("/cursos")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public ResponseEntity<?> guardar(@RequestBody CursosDTO dto) {
         Cursos cursos = new Cursos();
         cursos.setNombreCurso(dto.getNombreCurso());
@@ -48,6 +51,7 @@ public class CursosController {
         return ResponseEntity.ok(serviceCursos.guardar(cursos));
     }
     @PutMapping("/cursos")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
     public ResponseEntity<?> modificar(@RequestBody CursosDTO dto) {
         if (dto.getIdCurso() == null) {
             return ResponseEntity.badRequest()
@@ -62,14 +66,10 @@ public class CursosController {
             .orElse(null);
 
         cursos.setIdArea(areas);
-
         return ResponseEntity.ok(serviceCursos.modificar(cursos));
     }
-    @GetMapping("/cursos/{id}")
-    public Optional<Cursos> buscarId(@PathVariable("id") Long id) {
-        return serviceCursos.buscarId(id);
-    }
     @DeleteMapping("/cursos/{id}")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
     public String eliminar(@PathVariable Long id) {
         serviceCursos.eliminar(id);
         return "Curso eliminado correctamente";

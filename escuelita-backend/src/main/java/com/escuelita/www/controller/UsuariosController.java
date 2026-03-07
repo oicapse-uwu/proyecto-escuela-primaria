@@ -1,8 +1,11 @@
-// Revisado
+// MODIFICADO - Obtiene los módulos y permisos asignados según el rol del usuario.
 package com.escuelita.www.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +23,15 @@ import com.escuelita.www.entity.Sedes;
 import com.escuelita.www.entity.TipoDocumentos;
 import com.escuelita.www.entity.Usuarios;
 import com.escuelita.www.entity.UsuariosDTO;
+import com.escuelita.www.entity.ModulosPermisosUsuarioDTO;
+import com.escuelita.www.entity.ModuloAccesoDTO;
 import com.escuelita.www.repository.RolesRepository;
 import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.repository.TipoDocumentosRepository;
+import com.escuelita.www.repository.ModulosRepository;
+import com.escuelita.www.repository.ModuloAccesoRepository;
 import com.escuelita.www.service.IUsuariosService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -36,17 +44,24 @@ public class UsuariosController {
     @Autowired
     private TipoDocumentosRepository repoTipoDocs;
     @Autowired
-    private SedesRepository repoSedes; 
+    private SedesRepository repoSedes;
+    @Autowired
+    private ModulosRepository repoModulos;
+    @Autowired
+    private ModuloAccesoRepository repoModuloAcceso; 
 
     @GetMapping("/usuarios")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public List<Usuarios> buscarTodos() {
         return serviceUsuarios.buscarTodos();
     }
     @GetMapping("/usuarios/sede/{idSede}")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public List<Usuarios> buscarPorSede(@PathVariable Long idSede) {
         return serviceUsuarios.buscarPorSede(idSede);
     }
     @PostMapping("/usuarios")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public ResponseEntity<?> guardar(@RequestBody UsuariosDTO dto) {
         Usuarios usuarios = new Usuarios();
         usuarios.setNumeroDocumento(dto.getNumeroDocumento());
@@ -74,6 +89,7 @@ public class UsuariosController {
         return ResponseEntity.ok(serviceUsuarios.guardar(usuarios));
     }
     @PutMapping("/usuarios")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public ResponseEntity<?> modificar(@RequestBody UsuariosDTO dto) {
         if(dto.getIdUsuario() == null) {
             return ResponseEntity.badRequest()
@@ -124,12 +140,72 @@ public class UsuariosController {
         return ResponseEntity.ok(serviceUsuarios.modificar(usuarios));
     }
     @GetMapping("/usuarios/{id}")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public Optional<Usuarios> buscarId(@PathVariable Long id) {
         return serviceUsuarios.buscarId(id);
     }
     @DeleteMapping("/usuarios/{id}")
+    @RequireModulo(2)  // 2 = Módulo CONFIGURACIÓN
     public String eliminar(@PathVariable Long id) {
         serviceUsuarios.eliminar(id);
         return "Usuario desactivado correctamente";
+    }
+
+    // FASE 2: Usuario obtiene sus módulos y permisos según su rol
+
+    // Este endpoint es llamado por el FRONTEND al cargar la aplicación
+    // Retorna los MÓDULOS que el usuario puede acceder según su rol
+    @GetMapping("/usuarios/{idUsuario}/modulos-permisos")
+    public ResponseEntity<?> obtenerModulosPermisosUsuario(@PathVariable Long idUsuario) {
+        Optional<Usuarios> usuarioOpt = serviceUsuarios.buscarId(idUsuario);
+        if (usuarioOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("Usuario no encontrado");
+        }
+
+        Usuarios usuario = usuarioOpt.get();
+        Roles rol = usuario.getIdRol();
+        
+        if (rol == null) {
+            return ResponseEntity.badRequest().body("Usuario no tiene rol asignado");
+        }
+
+        // Obtener lista de módulos asignados al rol del usuario
+        List<com.escuelita.www.entity.RolModulo> rolModulos = repoModuloAcceso.findByIdRolAndEstado(rol.getIdRol());
+        
+        // Construir lista de módulos
+        List<ModuloAccesoDTO> modulosDTO = new java.util.ArrayList<>();
+        
+        // Procesar módulos asignados al rol
+        for (com.escuelita.www.entity.RolModulo rolModulo : rolModulos) {
+            if (rolModulo.getIdModulo() == null) continue;
+            
+            Optional<com.escuelita.www.entity.Modulos> moduloOpt = repoModulos.findById(rolModulo.getIdModulo().getIdModulo());
+            if (moduloOpt.isEmpty()) continue;
+
+            com.escuelita.www.entity.Modulos modulo = moduloOpt.get();
+            
+            modulosDTO.add(new ModuloAccesoDTO(
+                modulo.getIdModulo(),
+                modulo.getNombre(),
+                modulo.getDescripcion(),
+                modulo.getIcono(),
+                modulo.getOrden()
+            ));
+        }
+
+        // Ordenar módulos por orden
+        modulosDTO.sort((m1, m2) -> Integer.compare(
+            m1.getOrden() != null ? m1.getOrden() : 999,
+            m2.getOrden() != null ? m2.getOrden() : 999
+        ));
+        
+        ModulosPermisosUsuarioDTO respuesta = new ModulosPermisosUsuarioDTO(
+            usuario.getIdUsuario(),
+            usuario.getNombres() + " " + usuario.getApellidos(),
+            rol.getIdRol(),
+            rol.getNombre(),
+            modulosDTO
+        );
+        return ResponseEntity.ok(respuesta);
     }
 }

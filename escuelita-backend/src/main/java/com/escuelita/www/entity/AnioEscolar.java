@@ -1,5 +1,4 @@
 //CORRECTO
-
 package com.escuelita.www.entity;
 
 import org.hibernate.annotations.SQLDelete;

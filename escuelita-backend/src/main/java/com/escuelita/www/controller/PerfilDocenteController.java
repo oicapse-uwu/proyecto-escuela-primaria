@@ -1,4 +1,4 @@
-// Revisado
+// No modificado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -22,6 +22,7 @@ import com.escuelita.www.entity.Usuarios;
 import com.escuelita.www.repository.EspecialidadesRepository;
 import com.escuelita.www.repository.UsuariosRepository;
 import com.escuelita.www.service.IPerfilDocenteService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -35,10 +36,12 @@ public class PerfilDocenteController {
     private EspecialidadesRepository repoEspecialidades;
 
     @GetMapping("/perfildocente")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public List<PerfilDocente> buscarTodos() {
         return servicePerfilDocente.buscarTodos();
     }
     @PostMapping("/perfildocente")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public ResponseEntity<?> guardar(@RequestBody PerfilDocenteDTO dto) {
         PerfilDocente perfilDocente = new PerfilDocente();
         perfilDocente.setGradoAcademico(dto.getGradoAcademico());
@@ -58,6 +61,7 @@ public class PerfilDocenteController {
         return ResponseEntity.ok(servicePerfilDocente.guardar(perfilDocente));
     }
     @PutMapping("/perfildocente")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public ResponseEntity<?> modificar(@RequestBody PerfilDocenteDTO dto) {
         if (dto.getIdDocente() == null) {
             return ResponseEntity.badRequest()
@@ -82,10 +86,12 @@ public class PerfilDocenteController {
         return ResponseEntity.ok(servicePerfilDocente.modificar(perfilDocente));
     }
     @GetMapping("/perfildocente/{id}")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public Optional<PerfilDocente> buscarId(@PathVariable("id") Long id) {
         return servicePerfilDocente.buscarId(id);
     }
     @DeleteMapping("/perfildocente/{id}")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public String eliminar(@PathVariable Long id){
         servicePerfilDocente.eliminar(id);
         return "Perfil docente eliminado correctamente";

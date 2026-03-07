@@ -1,4 +1,4 @@
-// Revisado
+// Sin tocar
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -22,6 +22,7 @@ import com.escuelita.www.entity.HorariosDTO;
 import com.escuelita.www.repository.AsignacionDocenteRepository;
 import com.escuelita.www.repository.AulasRepository;
 import com.escuelita.www.service.IHorariosService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -35,10 +36,12 @@ public class HorariosController {
     private AulasRepository repoAulas;
 
     @GetMapping("/horarios")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public List<Horarios> buscarTodos() {
         return serviceHorarios.buscarTodos();
     }
     @PostMapping("/horarios")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public ResponseEntity<?> guardar(@RequestBody HorariosDTO dto) {
         Horarios horarios = new Horarios();
         horarios.setDiaSemana(dto.getDiaSemana());
@@ -58,6 +61,7 @@ public class HorariosController {
         return ResponseEntity.ok(serviceHorarios.guardar(horarios));
     }
     @PutMapping("/horarios")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public ResponseEntity<?> modificar(@RequestBody HorariosDTO dto) {
         if (dto.getIdHorario() == null) {
             return ResponseEntity.badRequest()
@@ -86,6 +90,7 @@ public class HorariosController {
         return serviceHorarios.buscarId(id);
     }
     @DeleteMapping("/horarios/{id}")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
     public String eliminar(@PathVariable Long id){
         serviceHorarios.eliminar(id);
         return "Horario eliminado correctamente";

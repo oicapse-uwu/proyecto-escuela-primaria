@@ -1,17 +1,30 @@
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
-import type { 
-    Institucion, InstitucionDTO,
-    Sede, SedeDTO, 
+import type {
     AnioEscolar, AnioEscolarDTO,
-    Periodo, PeriodoDTO,
+    Aula, AulaDTO,
     Grado, GradoDTO,
+    Institucion, InstitucionDTO,
+    Periodo, PeriodoDTO,
     Seccion, SeccionDTO,
-    Aula, AulaDTO
+    Sede, SedeDTO
 } from '../types';
+
+// Tipo para Suscripción (estructura similar a la del backoffice)
+export interface Suscripcion {
+    idSuscripcion: number;
+    limiteAlumnosContratado: number;
+    limiteSedesContratadas: number;
+    fechaInicio: string;
+    fechaVencimiento: string;
+    precioAcordado: number;
+    idInstitucion: any;
+    idEstado: any;
+}
 
 // CONFIGURACIÓN DE ENDPOINTS
 const INSTITUCION_ENDPOINT = API_ENDPOINTS.INSTITUCIONES;
 const SEDES_ENDPOINT = API_ENDPOINTS.SEDES;
+const SUSCRIPCIONES_ENDPOINT = API_ENDPOINTS.SUSCRIPCIONES;
 const ANIO_ESCOLAR_ENDPOINT = API_ENDPOINTS.ANIO_ESCOLAR;
 const PERIODOS_ENDPOINT = API_ENDPOINTS.PERIODOS;
 const GRADOS_ENDPOINT = API_ENDPOINTS.GRADOS;
@@ -72,6 +85,12 @@ export const actualizarSede = async (sede: SedeDTO): Promise<Sede> => {
 
 export const eliminarSede = async (id: number): Promise<string> => {
     const response = await api.delete<string>(`${SEDES_ENDPOINT}/${id}`);
+    return response.data;
+};
+
+// Obtener suscripción activa por institución
+export const obtenerSuscripcionActivaPorInstitucion = async (idInstitucion: number): Promise<Suscripcion | null> => {
+    const response = await api.get<Suscripcion>(`${SUSCRIPCIONES_ENDPOINT}/por-institucion/${idInstitucion}`);
     return response.data;
 };
 

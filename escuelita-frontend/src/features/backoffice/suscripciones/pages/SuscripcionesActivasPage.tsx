@@ -1,20 +1,23 @@
-import { Building2, CreditCard, Edit, Plus, Search, Trash2 } from 'lucide-react';
+import { Building2, CreditCard, Edit, Plus, Search, Trash2, XCircle } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
 import { useInstituciones } from '../../instituciones/hooks/useInstituciones';
+import { cancelarSuscripcionApi } from '../api/suscripcionesApi';
 import SuscripcionForm from '../components/SuscripcionForm';
 import { usePlanes } from '../hooks/usePlanes';
 import { useSuscripciones } from '../hooks/useSuscripciones';
 import type { Suscripcion, SuscripcionFormData } from '../types';
 
 const SuscripcionesActivasPage: React.FC = () => {
-    const { suscripciones, estadosSuscripcion, ciclosFacturacion, metodosPago, isLoading, crear, actualizar, eliminar } = useSuscripciones();
+    const { suscripciones, estadosSuscripcion, ciclosFacturacion, isLoading, crear, actualizar, eliminar } = useSuscripciones();
     const { planes } = usePlanes();
     const { instituciones } = useInstituciones();
     
     const [showForm, setShowForm] = useState(false);
     const [suscripcionEditar, setSuscripcionEditar] = useState<Suscripcion | null>(null);
+    const [suscripcionEliminar, setSuscripcionEliminar] = useState<Suscripcion | null>(null);
+    const [suscripcionCancelar, setSuscripcionCancelar] = useState<Suscripcion | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterEstado, setFilterEstado] = useState<string>('todos');
     const [currentPage, setCurrentPage] = useState(1);
@@ -62,16 +65,57 @@ const SuscripcionesActivasPage: React.FC = () => {
     };
 
     const handleEliminar = async (idSuscripcion: number) => {
-        if (window.confirm('¿Está seguro de eliminar esta suscripción?')) {
-            await eliminar(idSuscripcion);
-        }
+        setSuscripcionEliminar(suscripciones.find(s => s.idSuscripcion === idSuscripcion) || null);
+    };
+
+    const confirmarEliminar = async () => {
+        if (!suscripcionEliminar) return;
+        
+        toast.promise(
+            eliminar(suscripcionEliminar.idSuscripcion),
+            {
+                loading: 'Eliminando suscripción...',
+                success: '✅ Suscripción eliminada exitosamente',
+                error: '❌ Error al eliminar la suscripción',
+            }
+        );
+        setSuscripcionEliminar(null);
+    };
+
+    const handleCancelar = async (suscripcion: Suscripcion) => {
+        setSuscripcionCancelar(suscripcion);
+    };
+
+    const confirmarCancelar = async () => {
+        if (!suscripcionCancelar) return;
+        
+        toast.promise(
+            async () => {
+                await cancelarSuscripcionApi(suscripcionCancelar.idSuscripcion);
+                window.location.reload();
+            },
+            {
+                loading: 'Cancelando suscripción...',
+                success: '✅ Suscripción cancelada. El acceso será bloqueado.',
+                error: '❌ Error al cancelar la suscripción',
+            }
+        );
+        setSuscripcionCancelar(null);
     };
 
     const handleSubmit = async (suscripcionData: SuscripcionFormData) => {
-        if (suscripcionEditar) {
-            await actualizar(suscripcionEditar.idSuscripcion, suscripcionData);
-        } else {
-            await crear(suscripcionData);
+        try {
+            if (suscripcionEditar) {
+                await actualizar(suscripcionEditar.idSuscripcion, suscripcionData);
+            } else {
+                await crear(suscripcionData);
+            }
+            // Cerrar el modal después de crear/actualizar exitosamente
+            setShowForm(false);
+            setSuscripcionEditar(null);
+        } catch (error) {
+            // El error ya se muestra en el hook con toast
+            console.error('Error en handleSubmit:', error);
         }
     };
 
@@ -94,6 +138,14 @@ const SuscripcionesActivasPage: React.FC = () => {
     const formatPrice = (price: number | null | undefined) => {
         if (price === null || price === undefined) return 'N/A';
         return `S/ ${parseFloat(price.toString()).toLocaleString('es-PE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    };
+
+    const getTipoPago = (mesesDuracion: number | null | undefined) => {
+        if (!mesesDuracion) return { texto: 'N/A', clase: 'bg-gray-100 text-gray-600' };
+        if (mesesDuracion === 1) {
+            return { texto: 'Mensual', clase: 'bg-pink-100 text-pink-800' };
+        }
+        return { texto: 'Anual', clase: 'bg-purple-100 text-purple-800' };
     };
 
     // Stats - con protección contra datos incompletos
@@ -119,7 +171,7 @@ const SuscripcionesActivasPage: React.FC = () => {
                     </div>
                     <button
                         onClick={handleNueva}
-                        className="bg-primary text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md w-full sm:w-auto"
+                        className="bg-primary text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md"
                     >
                         <Plus className="w-5 h-5" />
                         <span>Nueva Suscripción</span>
@@ -236,6 +288,12 @@ const SuscripcionesActivasPage: React.FC = () => {
                                             <p className="font-semibold text-gray-900">{formatPrice(suscripcion.precioAcordado)}</p>
                                         </div>
                                         <div>
+                                            <p className="text-gray-500">Tipo</p>
+                                            <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getTipoPago(suscripcion.idCiclo?.mesesDuracion).clase}`}>
+                                                {getTipoPago(suscripcion.idCiclo?.mesesDuracion).texto}
+                                            </span>
+                                        </div>
+                                        <div>
                                             <p className="text-gray-500">Alumnos</p>
                                             <p className="font-medium text-gray-900">{suscripcion.limiteAlumnosContratado}</p>
                                         </div>
@@ -256,6 +314,13 @@ const SuscripcionesActivasPage: React.FC = () => {
                                             title="Editar"
                                         >
                                             <Edit className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            onClick={() => handleCancelar(suscripcion)}
+                                            className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                                            title="Cancelar suscripción"
+                                        >
+                                            <XCircle className="w-4 h-4" />
                                         </button>
                                         <button
                                             onClick={() => handleEliminar(suscripcion.idSuscripcion)}
@@ -287,6 +352,9 @@ const SuscripcionesActivasPage: React.FC = () => {
                                         </th>
                                         <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Precio
+                                        </th>
+                                        <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Tipo
                                         </th>
                                         <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Venc.
@@ -327,6 +395,11 @@ const SuscripcionesActivasPage: React.FC = () => {
                                             <td className="px-3 py-3 whitespace-nowrap text-xs font-semibold text-gray-900">
                                                 {formatPrice(suscripcion.precioAcordado)}
                                             </td>
+                                            <td className="px-2 py-3 whitespace-nowrap text-center">
+                                                <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getTipoPago(suscripcion.idCiclo?.mesesDuracion).clase}`}>
+                                                    {getTipoPago(suscripcion.idCiclo?.mesesDuracion).texto}
+                                                </span>
+                                            </td>
                                             <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-900">
                                                 {formatDate(suscripcion.fechaVencimiento)}
                                             </td>
@@ -343,6 +416,13 @@ const SuscripcionesActivasPage: React.FC = () => {
                                                         title="Editar"
                                                     >
                                                         <Edit className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleCancelar(suscripcion)}
+                                                        className="p-1.5 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                                                        title="Cancelar suscripción"
+                                                    >
+                                                        <XCircle className="w-4 h-4" />
                                                     </button>
                                                     <button
                                                         onClick={() => handleEliminar(suscripcion.idSuscripcion)}
@@ -383,10 +463,83 @@ const SuscripcionesActivasPage: React.FC = () => {
                     planes={planes}
                     estadosSuscripcion={estadosSuscripcion}
                     ciclosFacturacion={ciclosFacturacion}
-                    metodosPago={metodosPago}
                     onSubmit={handleSubmit}
                     onCancel={() => setShowForm(false)}
                 />
+            )}
+
+            {/* Modal de confirmación: Eliminar */}
+            {suscripcionEliminar && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                <Trash2 className="w-6 h-6 text-red-600" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-900">Eliminar Suscripción</h3>
+                                <p className="text-sm text-gray-500">Esta acción no se puede deshacer</p>
+                            </div>
+                        </div>
+                        <p className="text-gray-700 mb-6">
+                            ¿Está seguro de eliminar la suscripción de{' '}
+                            <span className="font-semibold">{suscripcionEliminar.idInstitucion?.nombre}</span>?
+                        </p>
+                        <div className="flex gap-3 justify-end">
+                            <button
+                                onClick={() => setSuscripcionEliminar(null)}
+                                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={confirmarEliminar}
+                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de confirmación: Cancelar */}
+            {suscripcionCancelar && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                                <XCircle className="w-6 h-6 text-orange-600" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-900">Cancelar Suscripción</h3>
+                                <p className="text-sm text-gray-500">Bloqueará el acceso al sistema</p>
+                            </div>
+                        </div>
+                        <p className="text-gray-700 mb-6">
+                            ¿Está seguro de <span className="font-bold text-orange-600">CANCELAR</span> la suscripción de{' '}
+                            <span className="font-semibold">{suscripcionCancelar.idInstitucion?.nombre}</span>?
+                            <br /><br />
+                            <span className="text-sm text-gray-600">Esta acción bloqueará inmediatamente el acceso al sistema.</span>
+                        </p>
+                        <div className="flex gap-3 justify-end">
+                            <button
+                                onClick={() => setSuscripcionCancelar(null)}
+                                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                            >
+                                No, mantener activa
+                            </button>
+                            <button
+                                onClick={confirmarCancelar}
+                                className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2"
+                            >
+                                <XCircle className="w-4 h-4" />
+                                Sí, cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

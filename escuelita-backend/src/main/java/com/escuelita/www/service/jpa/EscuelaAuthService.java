@@ -74,17 +74,17 @@ public class EscuelaAuthService {
         
         Sedes sede = usuario.getIdSede();
         
-        // 5. VALIDAR SUSCRIPCIÓN ACTIVA
+        // 5. VALIDAR SUSCRIPCIÓN ACTIVA Y PAGOS AL DÍA
         // Obtener la institución de la sede
         Institucion institucion = sede.getIdInstitucion();
         if (institucion == null) {
             throw new Exception("La sede no tiene una institución asociada");
         }
         
-        // Validar que la institución tenga suscripción activa
+        // Validar que la institución tenga suscripción activa Y pagos al día
         try {
-            Suscripciones suscripcion = suscripcionValidator.validarSuscripcionActiva(institucion);
-            System.out.println("✅ Suscripción válida para institución: " + institucion.getNombre() + 
+            Suscripciones suscripcion = suscripcionValidator.validarAccesoConPagosAlDia(institucion);
+            System.out.println("✅ Acceso autorizado para institución: " + institucion.getNombre() + 
                 " (Vence: " + suscripcion.getFechaVencimiento() + ")");
         } catch (Exception e) {
             // Lanzar la excepción con el mensaje específico

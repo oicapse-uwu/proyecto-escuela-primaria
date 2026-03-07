@@ -1,4 +1,4 @@
-// Revisado
+// Sin tocar
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -20,6 +20,7 @@ import com.escuelita.www.entity.GradosDTO;
 import com.escuelita.www.entity.Sedes;
 import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.service.IGradosService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -30,10 +31,12 @@ public class GradosController {
     @Autowired
     private SedesRepository repoSedes;
     @GetMapping("/grados")
+    @RequireModulo(3)  // 3 = Módulo INFRAESTRUCTURA
     public List<Grados> buscarTodos() {
         return serviceGrados.buscarTodos(); 
     }
     @PostMapping("/grados")
+    @RequireModulo(3)  // 3 = Módulo INFRAESTRUCTURA
     public ResponseEntity<?> guardar(@RequestBody GradosDTO dto) {
         Grados grados = new Grados();
         grados.setNombreGrado(dto.getNombreGrado());
@@ -47,6 +50,7 @@ public class GradosController {
         return ResponseEntity.ok(serviceGrados.guardar(grados));
     }
     @PutMapping("/grados")
+    @RequireModulo(3)  // 3 = Módulo INFRAESTRUCTURA
     public ResponseEntity<?> modificar(@RequestBody GradosDTO dto) {
         if(dto.getIdGrado() == null){
             return ResponseEntity.badRequest()
@@ -69,6 +73,7 @@ public class GradosController {
         return serviceGrados.buscarId(id);
     }
     @DeleteMapping("/grados/{id}")
+    @RequireModulo(3)  // 3 = Módulo INFRAESTRUCTURA
     public String eliminar(@PathVariable Long id){
         serviceGrados.eliminar(id);
         return "Grado eliminado correctamente";

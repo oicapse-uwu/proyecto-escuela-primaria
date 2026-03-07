@@ -5,6 +5,7 @@ import {
   Dashboard,
   InstitucionesRoutes,
   ReportesRoutes,
+  RolesRoutes,
   SedesRoutes,
   SuscripcionesRoutes,
   UsuariosRoutes
@@ -12,6 +13,8 @@ import {
 
 import AlumnosRoutes from './features/portal/alumnos/routes/AlumnosRoutes';
 import ApoderadosRoutes from './features/portal/apoderados/routes/apoderados.routes';
+import AreasRoutes from './features/portal/areas/routes/areas.routes';
+import EspecialidadesRoutes from './features/portal/especialidades/routes/especialidades.routes';
 import InfraestructuraRoutes from './features/portal/infraestructura/routes/InfraestructuraRoutes';
 import MatriculasRoutes from './features/portal/matriculas/routes/matriculas.routes';
 import UsuariosPortalRoutes from './features/portal/usuarios/routes/UsuariosPortalRoutes';
@@ -28,12 +31,11 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Rutas públicas - Login */}
+        <Route path="/login" element={<Login />} /> {/* Super Admin Login */}
+        <Route path="/escuela/login" element={<LoginEscuela />} /> {/* Escuela Login */}
 
-        {/* ==================== RUTAS PÚBLICAS ==================== */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/escuela/login" element={<LoginEscuela />} />
-
-        {/* ==================== SUPER ADMIN ==================== */}
+        {/* Rutas protegidas - Super Admin */}
         <Route
           path="/admin"
           element={
@@ -42,18 +44,20 @@ function App() {
             </PrivateRoute>
           }
         >
+          {/* Dashboard por defecto */}
           <Route index element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
-
-          {/* Backoffice */}
+          
+          {/* Módulos del Backoffice */}
           <Route path="instituciones/*" element={<InstitucionesRoutes />} />
+          <Route path="roles/*" element={<RolesRoutes />} />
           <Route path="sedes/*" element={<SedesRoutes />} />
           <Route path="suscripciones/*" element={<SuscripcionesRoutes />} />
           <Route path="usuarios/*" element={<UsuariosRoutes />} />
           <Route path="reportes/*" element={<ReportesRoutes />} />
         </Route>
 
-        {/* ==================== PORTAL ESCUELA ==================== */}
+        {/* Rutas protegidas - Escuela */}
         <Route
           path="/escuela"
           element={
@@ -62,22 +66,26 @@ function App() {
             </PrivateRoute>
           }
         >
+          {/* Dashboard por defecto */}
           <Route index element={<Navigate to="/escuela/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardEscuela />} />
 
-          {/* Módulos del Portal */}
+          {/* Módulos del Portal Escuela - Protegidos con ModuloGuard en frontend + @RequireModulo en backend */}
           <Route path="alumnos/*" element={<AlumnosRoutes />} />
           <Route path="infraestructura/*" element={<InfraestructuraRoutes />} />
           <Route path="configuracion/usuarios/*" element={<UsuariosPortalRoutes />} />
           <Route path="apoderados/*" element={<ApoderadosRoutes />} />
           <Route path="matriculas/*" element={<MatriculasRoutes />} />
+          <Route path="academica/areas-cursos/*" element={<AreasRoutes />} />
+          <Route path="academica/especialidades/*" element={<EspecialidadesRoutes />} />
           <Route path="tesoreria/*" element={<TesoreriaRoutes />} />
         </Route>
 
-        {/* ==================== REDIRECCIONES ==================== */}
+        {/* Redirección por defecto */}
         <Route path="/" element={<Navigate to="/escuela/login" replace />} />
+        
+        {/* Ruta 404 */}
         <Route path="*" element={<Navigate to="/escuela/login" replace />} />
-
       </Routes>
     </Router>
   );

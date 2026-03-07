@@ -1,3 +1,4 @@
+// No modificado
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -20,8 +21,8 @@ import com.escuelita.www.entity.MetodosPago;
 import com.escuelita.www.entity.Usuarios;
 import com.escuelita.www.repository.MetodosPagoRepository;
 import com.escuelita.www.repository.UsuariosRepository;
-
 import com.escuelita.www.service.IPagosCajaService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -35,10 +36,12 @@ public class PagosCajaController {
     private UsuariosRepository repoUsuarios;
 
     @GetMapping("/pagoscaja")
+    @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
     public List<PagosCaja> buscarTodos() {
         return servicePagosCaja.buscarTodos();  
     }
     @PostMapping("/pagoscaja")
+    @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
     public ResponseEntity<?> guardar(@RequestBody PagosCajaDTO dto) {
         PagosCaja pagosCaja = new PagosCaja();
         pagosCaja.setFechaPago(dto.getFechaPago());
@@ -59,6 +62,7 @@ public class PagosCajaController {
         return ResponseEntity.ok(servicePagosCaja.guardar(pagosCaja));
     }
     @PutMapping("/pagoscaja")
+    @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
     public ResponseEntity<?> modificar(@RequestBody PagosCajaDTO dto) {
         if(dto.getIdPago() == null){
             return ResponseEntity.badRequest()
@@ -84,10 +88,13 @@ public class PagosCajaController {
         return ResponseEntity.ok(servicePagosCaja.modificar(pagosCaja));
     }
     @GetMapping("/pagoscaja/{id}")
+    @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
     public Optional<PagosCaja> buscarId(@PathVariable("id") Long id){
-    return servicePagosCaja.buscarId(id);
+        return servicePagosCaja.buscarId(id);
     }
+    
     @DeleteMapping("/pagoscaja/{id}")
+    @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
     public String eliminar(@PathVariable Long id) {
         servicePagosCaja.eliminar(id);
         return "Pago eliminado correctamente";

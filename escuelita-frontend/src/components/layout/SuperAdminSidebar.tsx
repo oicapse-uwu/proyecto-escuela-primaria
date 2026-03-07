@@ -61,8 +61,9 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }
             subItems: [
                 { name: 'Planes Disponibles', path: '/admin/suscripciones/planes', icon: Package },
                 { name: 'Suscripciones Activas', path: '/admin/suscripciones/activas', icon: CreditCard },
-                { name: 'Facturación', path: '/admin/suscripciones/facturacion', icon: FileText },
+                { name: 'Pagos por Institución', path: '/admin/suscripciones/instituciones', icon: Building2 },
                 { name: 'Pagos Pendientes', path: '/admin/suscripciones/pendientes', icon: TrendingUp },
+                { name: 'Facturación', path: '/admin/suscripciones/facturacion', icon: FileText },
             ]
         },
         {
@@ -71,8 +72,12 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }
             subItems: [
                 { name: 'Super Admins', path: '/admin/usuarios/super-admins', icon: Shield },
                 { name: 'Administradores', path: '/admin/usuarios/administradores', icon: Users },
-                { name: 'Roles y Permisos', path: '/admin/usuarios/roles', icon: Settings },
             ]
+        },
+        {
+            name: 'Roles y Permisos',
+            icon: Settings,
+            path: '/admin/roles'
         },
         {
             name: 'Reportes',

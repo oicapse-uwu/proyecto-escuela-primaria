@@ -1,4 +1,4 @@
-// Revisado
+// Sin tocar
 package com.escuelita.www.controller;
 
 import java.util.List;
@@ -25,6 +25,7 @@ import com.escuelita.www.repository.GradosRepository;
 import com.escuelita.www.repository.InstitucionRepository;
 
 import com.escuelita.www.service.IConceptosPagoService;
+import com.escuelita.www.security.RequireModulo;
 
 @RestController
 @RequestMapping("/restful")
@@ -38,10 +39,12 @@ public class ConceptosPagoController {
     private GradosRepository repoGrados;
 
     @GetMapping("/conceptospago")
+    @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
     public List<ConceptosPago> buscarTodos() {
         return serviceConceptos.buscarTodos(); 
     }
     @PostMapping("/conceptospago")
+    @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
     public ResponseEntity<?> guardar(@RequestBody ConceptosPagoDTO dto) {
         
         ConceptosPago conceptosPago = new ConceptosPago();
@@ -62,6 +65,7 @@ public class ConceptosPagoController {
         return ResponseEntity.ok(serviceConceptos.guardar(conceptosPago));
     }
     @PutMapping("/conceptospago")
+    @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
     public ResponseEntity<?> modificar(@RequestBody ConceptosPagoDTO dto) {
         if(dto.getIdConcepto() == null){
             return ResponseEntity.badRequest()
@@ -86,10 +90,12 @@ public class ConceptosPagoController {
         return ResponseEntity.ok(serviceConceptos.modificar(conceptosPago));
     }
     @GetMapping("/conceptospago/{id}")
+    @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
     public Optional<ConceptosPago> buscarId(@PathVariable("id") Long id){
     return serviceConceptos.buscarId(id);
     }
     @DeleteMapping("/conceptospago/{id}")
+    @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
     public String eliminar(@PathVariable Long id){
         serviceConceptos.eliminar(id);
         return "Concepto de pago eliminado";

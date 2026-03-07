@@ -2,9 +2,10 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 const tabs = [
-    { to: '/escuela/configuracion/usuarios', label: 'Usuarios' },
-    { to: '/escuela/configuracion/usuarios/roles', label: 'Roles' },
-    { to: '/escuela/configuracion/usuarios/permisos', label: 'Permisos' }
+    { to: '/escuela/configuracion/usuarios', label: 'Usuarios' }
+    // Roles no se muestra aquí porque los roles globales se crean solo en el SuperAdmin (backoffice/roles)
+    // El IE Admin solo selecciona roles existentes al crear usuarios
+    // Permisos granulares no se implementan (RBAC es módulo-level, no permiso-level)
 ];
 
 const UsuariosPortalTabs: React.FC = () => {

@@ -1,15 +1,15 @@
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
 import type {
-    Modulo,
-    Permiso,
-    Rol,
-    RolDTO,
-    RolModuloPermiso,
-    RolModuloPermisoDTO,
-    Sede,
-    TipoDocumento,
-    UsuarioPortal,
-    UsuarioPortalDTO
+  Modulo,
+  Permiso,
+  Rol,
+  RolDTO,
+  RolModuloPermiso,
+  RolModuloPermisoDTO,
+  Sede,
+  TipoDocumento,
+  UsuarioPortal,
+  UsuarioPortalDTO
 } from '../types';
 
 const USUARIOS_ENDPOINT = API_ENDPOINTS.USUARIOS;

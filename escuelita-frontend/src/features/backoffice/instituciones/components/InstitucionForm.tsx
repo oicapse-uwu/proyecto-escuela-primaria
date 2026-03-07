@@ -198,7 +198,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full overflow-hidden flex flex-col">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-primary to-primary-light p-6 text-white flex justify-between items-center">
+                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] p-6 text-white flex justify-between items-center">
                     <h2 className="text-2xl font-bold flex items-center space-x-2">
                         <Building2 className="w-6 h-6" />
                         <span>{institucion ? 'Editar Institución' : 'Nueva Institución'}</span>
@@ -257,7 +257,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                     </div>
 
                     {/* Tab Content */}
-                    <div className="p-6 h-[350px] overflow-y-auto">
+                    <div className="p-6 h-[325px] overflow-y-auto">
                         {/* Tab 1: Información Básica */}
                         {activeTab === 'basica' && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -369,7 +369,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                             >
                                 {/* Header arrastrable */}
                                 <div 
-                                    className="bg-gradient-to-r from-primary to-primary-light p-3 rounded-t-lg cursor-move flex justify-between items-center"
+                                    className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] p-3 rounded-t-lg cursor-move flex justify-between items-center"
                                     onMouseDown={handleMouseDown}
                                 >
                                     <div className="flex items-center gap-2 text-white">

@@ -20,8 +20,15 @@ const VerificarPagoModal: React.FC<VerificarPagoModalProps> = ({
     const [motivoRechazo, setMotivoRechazo] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
 
-    const comprobanteUrl = getComprobanteUrlApi(pago.comprobanteUrl);
-    const isPdf = pago.comprobanteUrl.toLowerCase().endsWith('.pdf');
+    // Validar que existe comprobante  
+    const tieneComprobante = pago.comprobanteUrl && pago.comprobanteUrl.trim() !== '';
+    const comprobanteUrl = tieneComprobante ? getComprobanteUrlApi(pago.comprobanteUrl) : '';
+    const isPdf = tieneComprobante && pago.comprobanteUrl.toLowerCase().endsWith('.pdf');
+
+    console.log('Pago completo:', pago);
+    console.log('Comprobante URL original:', pago.comprobanteUrl);
+    console.log('Comprobante URL generada:', comprobanteUrl);
+    console.log('¿Tiene comprobante?:', tieneComprobante);
 
     const handleVerificar = async () => {
         try {
@@ -189,7 +196,12 @@ const VerificarPagoModal: React.FC<VerificarPagoModalProps> = ({
                             <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 h-full">
                                 <h3 className="font-semibold text-gray-900 mb-3">Comprobante de Pago</h3>
                                 
-                                {isPdf ? (
+                                {!tieneComprobante ? (
+                                    <div className="flex flex-col items-center justify-center h-96 bg-white rounded border border-gray-300">
+                                        <FileText size={64} className="text-gray-400 mb-4" />
+                                        <p className="text-gray-500">No hay comprobante registrado</p>
+                                    </div>
+                                ) : isPdf ? (
                                     <div className="flex flex-col items-center justify-center h-96 bg-white rounded border border-gray-300">
                                         <FileText size={64} className="text-red-500 mb-4" />
                                         <p className="text-gray-600 mb-4">Archivo PDF</p>
@@ -209,6 +221,10 @@ const VerificarPagoModal: React.FC<VerificarPagoModalProps> = ({
                                             alt="Comprobante de pago" 
                                             className="w-full h-auto rounded cursor-pointer hover:opacity-90 transition-opacity"
                                             onClick={() => window.open(comprobanteUrl, '_blank')}
+                                            onError={(e) => {
+                                                console.error('Error al cargar imagen:', comprobanteUrl);
+                                                e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23ddd"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999"%3EError al cargar%3C/text%3E%3C/svg%3E';
+                                            }}
                                         />
                                         <p className="text-xs text-center text-gray-500 mt-2">Click para ampliar</p>
                                     </div>

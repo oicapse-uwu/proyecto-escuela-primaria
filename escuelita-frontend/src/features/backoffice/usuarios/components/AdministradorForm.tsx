@@ -161,7 +161,7 @@ const AdministradorForm: React.FC<AdministradorFormProps> = ({
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden">
-                <div className="bg-gradient-to-r from-primary to-primary-light p-6 text-white flex justify-between items-center">
+                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] p-6 text-white flex justify-between items-center">
                     <h2 className="text-2xl font-bold flex items-center space-x-2">
                         <Users className="w-6 h-6" />
                         <span>{administrador ? 'Editar Administrador' : 'Nuevo Administrador'}</span>

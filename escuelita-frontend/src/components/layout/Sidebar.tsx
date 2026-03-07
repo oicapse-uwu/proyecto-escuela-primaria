@@ -32,7 +32,7 @@ import {
     Wallet,
     X
 } from 'lucide-react';
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useModulosPermisos } from '../../hooks/useModulosPermisos';
 import { escuelaAuthService } from '../../services/escuelaAuth.service';
@@ -107,11 +107,11 @@ const menuModulesConfig: Record<string, { icon: LucideIcon; subItems?: Record<st
     'PAGOS Y PENSIONES': {
         icon: Wallet,
         subItems: {
-            'Conceptos de Pago': { path: '/escuela/pagos/conceptos', icon: DollarSign },
-            'Métodos de Pago': { path: '/escuela/pagos/metodos', icon: CreditCard },
-            'Registrar Pago': { path: '/escuela/pagos/registrar', icon: Receipt },
-            'Deudas por Alumno': { path: '/escuela/pagos/deudas', icon: BarChart3 },
-            'Reportes de Caja': { path: '/escuela/pagos/reportes', icon: TrendingUp },
+            'Conceptos de Pago': { path: '/escuela/tesoreria/conceptos-pago', icon: DollarSign },
+            'Métodos de Pago': { path: '/escuela/tesoreria/metodos-pago', icon: CreditCard },
+            'Registrar Pago': { path: '/escuela/tesoreria/pagos', icon: Receipt },
+            'Deudas por Alumno': { path: '/escuela/tesoreria/deudas-alumnos', icon: BarChart3 },
+            'Reportes de Caja': { path: '/escuela/tesoreria/reportes', icon: TrendingUp },
         }
     },
 };

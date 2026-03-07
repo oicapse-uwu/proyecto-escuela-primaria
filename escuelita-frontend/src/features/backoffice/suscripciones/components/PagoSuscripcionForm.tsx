@@ -120,14 +120,14 @@ const PagoSuscripcionForm: React.FC<PagoSuscripcionFormProps> = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
                 {/* Header */}
-                <div className="sticky top-0 bg-indigo-600 text-white px-6 py-4 flex justify-between items-center rounded-t-lg z-10">
+                <div className="sticky top-0 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white px-6 py-4 flex justify-between items-center rounded-t-lg z-10">
                     <div>
                         <h2 className="text-xl font-bold">Registrar pago de Suscripción</h2>
-                        <p className="text-indigo-100 text-sm mt-1">
+                        <p className="text-blue-100 text-sm mt-1">
                             {pago.nombreInstitucion} - Pago #{pago.numeroPago}
                         </p>
                     </div>
-                    <button onClick={onClose} className="text-white hover:bg-indigo-700 p-2 rounded">
+                    <button onClick={onClose} className="text-white hover:bg-blue-700 p-2 rounded">
                         <X size={24} />
                     </button>
                 </div>

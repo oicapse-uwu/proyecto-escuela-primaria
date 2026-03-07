@@ -11,62 +11,54 @@ export const api = axios.create({
 // Interceptor de solicitudes para agregar token de autenticación
 api.interceptors.request.use(
     (config) => {
-        // Detectar el contexto según la ruta actual del navegador
         const currentPath = window.location.pathname;
         let token = null;
-        
+
         if (currentPath.startsWith('/admin')) {
-            // Si estamos en rutas de admin, usar el token de admin
             token = localStorage.getItem('admin_token');
         } else if (currentPath.startsWith('/escuela')) {
-            // Si estamos en rutas de escuela, usar el token de escuela
             token = localStorage.getItem('escuela_token');
         } else {
-            // Fallback: usar el que esté disponible
-            token = localStorage.getItem('admin_token') || localStorage.getItem('escuela_token');
+            token =
+                localStorage.getItem('admin_token') ||
+                localStorage.getItem('escuela_token');
         }
-        
+
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
-        
+
         return config;
     },
-    (error) => {
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
 
 // Maneja errores globales
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        // Si el token es inválido, expiró o no autorizado (401/403)
         if (error.response?.status === 401 || error.response?.status === 403) {
-            // Limpiar tokens
             localStorage.removeItem('escuela_token');
             localStorage.removeItem('escuela_user');
             localStorage.removeItem('admin_token');
             localStorage.removeItem('admin_user');
-            
-            // Redirigir al login correspondiente según la ruta actual
+
             const currentPath = window.location.pathname;
+
             if (currentPath.startsWith('/admin')) {
                 window.location.href = '/login';
-            } else if (currentPath.startsWith('/escuela')) {
-                window.location.href = '/escuela/login';
             } else {
-                // Por defecto, redirigir al login de escuela
                 window.location.href = '/escuela/login';
             }
         }
+
         return Promise.reject(error);
     }
 );
 
-// Endpoints de la API
+// ================= ENDPOINTS =================
 export const API_ENDPOINTS = {
-    // Endpoints backoffice (super-admins)
+    // ===== BACKOFFICE (SUPER ADMIN) =====
     INSTITUCIONES: '/restful/institucion',
     SUSCRIPCIONES: '/restful/suscripciones',
     USUARIOS: '/restful/usuarios',
@@ -75,7 +67,6 @@ export const API_ENDPOINTS = {
     PLANES: '/restful/planes',
     ESTADOS_SUSCRIPCION: '/restful/estadossuscripcion',
     CICLOS_FACTURACION: '/restful/ciclosfacturacion',
-    METODOS_PAGO: '/restful/metodospago',
     SEDES: '/restful/sedes',
     TIPOS_DOCUMENTO: '/restful/tipodocumentos',
     ROLES: '/restful/roles',
@@ -84,15 +75,11 @@ export const API_ENDPOINTS = {
     ROL_MODULO_PERMISO: '/restful/rolmodulopermiso',
     FILES_UPLOAD: '/restful/files/upload',
 
-    // Endpoints portal (escuelas)
+    // ===== PORTAL ESCUELA =====
     ALUMNOS: '/restful/alumnos',
     APODERADOS: '/restful/apoderados',
     ALUMNO_APODERADO: '/restful/alumnoapoderado',
     MATRICULAS: '/restful/matriculas',
-    ANIO_ESCOLAR: '/restful/anioescolar',
-    PERIODOS: '/restful/periodos',
-    REQUISITOS_DOCUMENTOS: '/restful/requisitosdocumentos',
-    DOCUMENTOS_ALUMNO: '/restful/documentosalumno',
     CURSOS: '/restful/cursos',
     GRADOS: '/restful/grados',
     SECCIONES: '/restful/secciones',
@@ -103,17 +90,29 @@ export const API_ENDPOINTS = {
     PERFIL_DOCENTE: '/restful/perfildocente',
     MALLA_CURRICULAR: '/restful/mallacurricular',
     ESPECIALIDADES: '/restful/especialidades',
+
+    // ===== INFRAESTRUCTURA =====
+    ANIO_ESCOLAR: '/restful/anioescolar',
+    PERIODOS: '/restful/periodos',
+    REQUISITOS_DOCUMENTOS: '/restful/requisitosdocumentos',
+    DOCUMENTOS_ALUMNO: '/restful/documentosalumno',
+
+    // ===== EVALUACIONES Y CALIFICACIONES =====
     CALIFICACIONES: '/restful/calificaciones',
     PROMEDIOS: '/restful/promedios',
     ASISTENCIAS: '/restful/asistencias',
     TIPOS_NOTA: '/restful/tiposnota',
     EVALUACIONES: '/restful/evaluaciones',
     TIPOS_EVALUACION: '/restful/tiposevaluacion',
-    DEUDAS_ALUMNO: '/restful/deudasalumno',
+
+    // ===== TESORERÍA =====
     CONCEPTOS_PAGO: '/restful/conceptospago',
+    DEUDAS_ALUMNO: '/restful/deudasalumno',
+    METODOS_PAGO: '/restful/metodospago',
+    PAGOS: '/restful/pagoscaja',
 };
 
-// Configuración adicional de la aplicación
+// Configuración adicional
 export const APP_CONFIG = {
     NAME: 'Escuela Primaria',
     VERSION: '1.0.0',

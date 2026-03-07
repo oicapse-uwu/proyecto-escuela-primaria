@@ -41,7 +41,9 @@ public class SecurityConfig {
                         , "/auth/escuela/**"  // Autenticación Escuela
                         , "/utils/**"
                         , "/uploads/**").permitAll()  // Permitir acceso a archivos subidos
-                    .anyRequest().authenticated()     // Esto requiere autenticación para /restful/**
+                    // Permitir endpoints GET de lectura (dropdowns)
+                    .requestMatchers("GET", "/restful/metodospago", "/restful/deudasalumno", "/restful/conceptospago", "/restful/instituciones", "/restful/grados", "/restful/matriculas", "/restful/alumnos").permitAll()
+                    .anyRequest().authenticated()     // Resto de endpoints requieren autenticación
                 )
                 .addFilterBefore(jwtFilter, 
                     UsernamePasswordAuthenticationFilter.class);

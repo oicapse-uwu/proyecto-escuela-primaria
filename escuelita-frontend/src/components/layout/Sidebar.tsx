@@ -165,11 +165,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
     const isModuleActive = (module: MenuItem) => {
         if (module.path) return isActive(module.path);
         if (module.subItems) {
-            return module.subItems.some(sub => location.pathname === sub.path);
+            return module.subItems.some(sub => location.pathname.startsWith(sub.path));
         }
         return false;
     };
-
     const toggleModule = (moduleName: string) => {
         setExpandedModules(prev => 
             prev.includes(moduleName) 
@@ -189,7 +188,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                 scrollbarGutter: 'stable'
             }}
         >
-            {/* Espacio para Logo y Título del Colegio */}
             <div className="p-6 border-b border-escuela/30 bg-gradient-to-br from-escuela-dark via-escuela-light to-escuela relative">
                 <button
                     onClick={onClose}
@@ -199,11 +197,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                     <X className="w-5 h-5" />
                 </button>
                 <div className="flex flex-col items-center">
-                    {/* Logo del colegio */}
                     <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-3 border-2 border-escuela/30 shadow-lg p-3 transition-transform hover:scale-110 cursor-pointer">
                         <img src="/src/assets/logo/Logo_escuelita.svg" alt="Logo Escuelita" className="w-full h-full object-contain" />
                     </div>
-                    {/* Nombre del colegio */}
                     <h2 className="text-lg font-bold text-center text-white">Sistema Escolar</h2>
                     <p className="text-xs text-white/70 text-center mt-1">Gestión Integral</p>
                 </div>
@@ -218,50 +214,31 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                                 <>
                                     <button
                                         onClick={() => toggleModule(module.name)}
-                                        className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 group relative ${
-                                            isModuleActive(module) 
-                                                ? 'border-l-4 border-white' 
-                                                : expandedModules.includes(module.name) 
-                                                    ? 'bg-escuela/40 shadow-sm hover:bg-escuela/50' 
-                                                    : 'hover:bg-escuela/50'
+                                        className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 ${
+                                            isModuleActive(module)
+                                                ? 'border-l-4 border-white'
+                                                : 'hover:bg-escuela/50'
                                         }`}
                                     >
-                                        <div className="flex items-center space-x-3 min-w-0 flex-1">
-                                            <IconComponent className="w-5 h-5 flex-shrink-0 transition-colors text-white/90" />
-                                            <span className="text-sm font-semibold truncate transition-colors text-white">{module.name}</span>
-                                        </div>
-                                        <div>
-                                            <svg 
-                                                className={`w-4 h-4 transition-transform duration-200 flex-shrink-0 ${
-                                                    expandedModules.includes(module.name) ? 'rotate-180' : ''
-                                                }`}
-                                                fill="none" 
-                                                stroke="currentColor" 
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                            </svg>
+                                        <div className="flex items-center space-x-3">
+                                            <IconComponent className="w-5 h-5 text-white/90" />
+                                            <span className="text-sm font-semibold text-white">{module.name}</span>
                                         </div>
                                     </button>
                                     {expandedModules.includes(module.name) && (
-                                        <div className="ml-4 mt-1 space-y-0.5 border-l-2 border-escuela/40 w-full">
+                                        <div className="ml-4 mt-1 space-y-1 border-l-2 border-escuela/40">
                                             {module.subItems.map((subItem) => {
                                                 const SubIconComponent = subItem.icon;
-                                                const subItemActive = isActive(subItem.path);
                                                 return (
                                                     <Link
                                                         key={subItem.path}
                                                         to={subItem.path}
-                                                        className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg transition-all duration-150 text-sm ml-2 w-full group relative ${
-                                                            subItemActive 
-                                                                ? 'border-l-4 border-white' 
-                                                                : 'hover:bg-escuela/40'
-                                                        }`}
+                                                        className="flex items-center space-x-3 px-4 py-2 rounded-lg text-sm hover:bg-escuela/40"
                                                     >
                                                         {SubIconComponent && (
-                                                            <SubIconComponent className="w-4 h-4 flex-shrink-0 transition-colors text-white/70 group-hover:text-white/90" />
+                                                            <SubIconComponent className="w-4 h-4 text-white/70" />
                                                         )}
-                                                        <span className="font-medium truncate transition-colors text-white/80 group-hover:text-white">{subItem.name}</span>
+                                                        <span className="text-white/80">{subItem.name}</span>
                                                     </Link>
                                                 );
                                             })}
@@ -271,14 +248,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                             ) : (
                                 <Link
                                     to={module.path || '#'}
-                                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group w-full relative ${
-                                        isActive(module.path) 
-                                            ? 'border-l-4 border-white' 
-                                            : 'hover:bg-escuela/50'
-                                    }`}
+                                    className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-escuela/50"
                                 >
-                                    <IconComponent className="w-5 h-5 flex-shrink-0 transition-colors text-white/90" />
-                                    <span className="text-sm font-semibold truncate transition-colors text-white">{module.name}</span>
+                                    <IconComponent className="w-5 h-5 text-white/90" />
+                                    <span className="text-sm font-semibold text-white">{module.name}</span>
                                 </Link>
                             )}
                         </div>

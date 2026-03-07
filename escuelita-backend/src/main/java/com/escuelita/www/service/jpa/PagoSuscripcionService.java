@@ -94,9 +94,16 @@ public class PagoSuscripcionService implements IPagoSuscripcionService {
         MetodosPago metodoPago = metodosPagoRepository.findById(dto.getIdMetodoPago())
             .orElseThrow(() -> new Exception("Método de pago no encontrado"));
         
-        // Guardar comprobante en el servidor
+        // Validar que el pago no esté muy atrasado (máximo 2 meses)
+        LocalDate hoy = LocalDate.now();
+        LocalDate fechaLimite = hoy.minusMonths(2);
+        if (dto.getFechaPago().isBefore(fechaLimite)) {
+            throw new Exception("No se puede registrar un pago con más de 2 meses de atraso. Fecha del pago: " + 
+                dto.getFechaPago() + ", Fecha límite: " + fechaLimite);
+        }
+        
+        // Guardar comprobante en el servidor (solo guardamos el nombre del archivo en BD)
         String nombreArchivo = fileStorageService.guardarComprobanteSuscripcion(comprobante);
-        String urlComprobante = fileStorageService.obtenerUrlComprobante(nombreArchivo);
         
         // Crear nuevo pago
         PagoSuscripcion pago = new PagoSuscripcion();
@@ -106,7 +113,7 @@ public class PagoSuscripcionService implements IPagoSuscripcionService {
         pago.setFechaPago(dto.getFechaPago());
         pago.setNumeroOperacion(dto.getNumeroOperacion());
         pago.setBanco(dto.getBanco());
-        pago.setComprobanteUrl(urlComprobante);
+        pago.setComprobanteUrl(nombreArchivo);
         pago.setEstadoVerificacion(EstadoVerificacion.PENDIENTE);
         pago.setObservaciones(dto.getObservaciones());
         pago.setEstado(1); // Activo
@@ -155,13 +162,29 @@ public class PagoSuscripcionService implements IPagoSuscripcionService {
             }
         }
         
+        // ========== VALIDACIONES DE FECHA ==========
+        LocalDate hoy = LocalDate.now();
+        
+        // 1. Validar que el pago no esté muy atrasado (máximo 2 meses)
+        LocalDate fechaLimiteAtrasado = hoy.minusMonths(2);
+        if (dto.getFechaPago().isBefore(fechaLimiteAtrasado)) {
+            throw new Exception("No se puede registrar un pago con más de 2 meses de atraso. Fecha del pago: " + 
+                dto.getFechaPago() + ", Fecha límite: " + fechaLimiteAtrasado);
+        }
+        
+        // 2. Validar que no se adelante más de 3 meses
+        LocalDate fechaLimiteAdelanto = hoy.plusMonths(3);
+        if (dto.getFechaPago().isAfter(fechaLimiteAdelanto)) {
+            throw new Exception("No se puede adelantar más de 3 meses. Fecha del pago: " + 
+                dto.getFechaPago() + ", Fecha límite: " + fechaLimiteAdelanto);
+        }
+        
         // Obtener método de pago
         MetodosPago metodoPago = metodosPagoRepository.findById(dto.getIdMetodoPago())
             .orElseThrow(() -> new Exception("Método de pago no encontrado"));
         
-        // Guardar comprobante en el servidor
+        // Guardar comprobante en el servidor (solo guardamos el nombre del archivo en BD)
         String nombreArchivo = fileStorageService.guardarComprobanteSuscripcion(comprobante);
-        String urlComprobante = fileStorageService.obtenerUrlComprobante(nombreArchivo);
         
         // Actualizar datos del pago
         pago.setMetodoPago(metodoPago);
@@ -169,7 +192,7 @@ public class PagoSuscripcionService implements IPagoSuscripcionService {
         pago.setFechaPago(dto.getFechaPago());
         pago.setNumeroOperacion(dto.getNumeroOperacion());
         pago.setBanco(dto.getBanco());
-        pago.setComprobanteUrl(urlComprobante);
+        pago.setComprobanteUrl(nombreArchivo);
         if (dto.getObservaciones() != null) {
             pago.setObservaciones(dto.getObservaciones());
         }
@@ -208,30 +231,51 @@ public class PagoSuscripcionService implements IPagoSuscripcionService {
         // ========== ACTUALIZAR ESTADO DE SUSCRIPCIÓN A ACTIVA ==========
         Suscripciones suscripcion = pago.getSuscripcion();
         
-        // Solo cambiar a Activa si está Pendiente Y el pago verificado cubre el mes actual
-        if (suscripcion.getIdEstado().getIdEstado() == 5L) { // 5 = PENDIENTE
-            LocalDate hoy = LocalDate.now();
-            LocalDate fechaInicioPeriodo = pago.getFechaPago();
-            Integer mesesDuracion = suscripcion.getIdCiclo() != null ? suscripcion.getIdCiclo().getMesesDuracion() : 1;
-            LocalDate fechaFinPeriodo = fechaInicioPeriodo.plusMonths(mesesDuracion);
-            
-            // Verificar si el pago verificado cubre el período actual
-            boolean cubrePeriodoActual = !hoy.isBefore(fechaInicioPeriodo) && hoy.isBefore(fechaFinPeriodo);
-            
+        // Obtener día de corte (día en que inició la suscripción)
+        LocalDate fechaInicioSuscripcion = suscripcion.getFechaInicio();
+        int diaCorte = fechaInicioSuscripcion.getDayOfMonth();
+        
+        // Calcular período que cubre este pago basado en el día de corte
+        LocalDate hoy = LocalDate.now();
+        LocalDate fechaPagoAjustada = pago.getFechaPago();
+        
+        // Ajustar al día de corte del mes del pago
+        LocalDate fechaInicioPeriodo;
+        try {
+            fechaInicioPeriodo = fechaPagoAjustada.withDayOfMonth(diaCorte);
+        } catch (Exception e) {
+            // Si el día no existe en ese mes (ej: 31 en febrero), usar el último día del mes
+            fechaInicioPeriodo = fechaPagoAjustada.withDayOfMonth(fechaPagoAjustada.lengthOfMonth());
+        }
+        
+        // Si el pago es antes del día de corte, retroceder un mes
+        if (fechaPagoAjustada.isBefore(fechaInicioPeriodo)) {
+            fechaInicioPeriodo = fechaInicioPeriodo.minusMonths(1);
+        }
+        
+        Integer mesesDuracion = suscripcion.getIdCiclo() != null ? suscripcion.getIdCiclo().getMesesDuracion() : 1;
+        LocalDate fechaFinPeriodo = fechaInicioPeriodo.plusMonths(mesesDuracion);
+        
+        // Verificar si el pago verificado cubre el período actual
+        boolean cubrePeriodoActual = !hoy.isBefore(fechaInicioPeriodo) && hoy.isBefore(fechaFinPeriodo);
+        
+        // Solo NO activar si está CANCELADA (estado 4)
+        if (suscripcion.getIdEstado().getIdEstado() != 4L) { // 4 = CANCELADA
             if (cubrePeriodoActual) {
+                // ✅ Pago cubre el período actual → ACTIVAR
                 EstadosSuscripcion estadoActiva = estadosSuscripcionRepository.findById(1L) // 1 = ACTIVA
                     .orElseThrow(() -> new Exception("Estado ACTIVA no encontrado"));
                 
                 suscripcion.setIdEstado(estadoActiva);
                 suscripcionRepository.save(suscripcion);
                 System.out.println("✅ Suscripción ID " + suscripcion.getIdSuscripcion() + 
-                    " activada tras verificar pago que cubre el período actual (" + 
-                    fechaInicioPeriodo + " a " + fechaFinPeriodo + ")");
+                    " ACTIVADA. Pago cubre período: " + fechaInicioPeriodo + " a " + fechaFinPeriodo + 
+                    " (Día de corte: " + diaCorte + ")");
             } else {
-                System.out.println("⚠️ Pago verificado pero NO cubre el período actual. " +
-                    "Suscripción permanece en estado Pendiente. " +
+                // ⚠️ Pago adelantado - verificado pero no activa aún
+                System.out.println("⚠️ Pago verificado como ADELANTADO. Se activará cuando cubra el período actual. " +
                     "Período del pago: " + fechaInicioPeriodo + " a " + fechaFinPeriodo + 
-                    " | Hoy: " + hoy);
+                    " | Hoy: " + hoy + " (Día de corte: " + diaCorte + ")");
             }
         }
         

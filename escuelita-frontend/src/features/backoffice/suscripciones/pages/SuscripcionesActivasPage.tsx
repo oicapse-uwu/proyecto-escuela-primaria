@@ -1,8 +1,9 @@
-import { Building2, CreditCard, Edit, Plus, Search, Trash2 } from 'lucide-react';
+import { Building2, CreditCard, Edit, Plus, Search, Trash2, XCircle } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
 import { useInstituciones } from '../../instituciones/hooks/useInstituciones';
+import { cancelarSuscripcionApi } from '../api/suscripcionesApi';
 import SuscripcionForm from '../components/SuscripcionForm';
 import { usePlanes } from '../hooks/usePlanes';
 import { useSuscripciones } from '../hooks/useSuscripciones';
@@ -15,6 +16,8 @@ const SuscripcionesActivasPage: React.FC = () => {
     
     const [showForm, setShowForm] = useState(false);
     const [suscripcionEditar, setSuscripcionEditar] = useState<Suscripcion | null>(null);
+    const [suscripcionEliminar, setSuscripcionEliminar] = useState<Suscripcion | null>(null);
+    const [suscripcionCancelar, setSuscripcionCancelar] = useState<Suscripcion | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterEstado, setFilterEstado] = useState<string>('todos');
     const [currentPage, setCurrentPage] = useState(1);
@@ -62,9 +65,42 @@ const SuscripcionesActivasPage: React.FC = () => {
     };
 
     const handleEliminar = async (idSuscripcion: number) => {
-        if (window.confirm('¿Está seguro de eliminar esta suscripción?')) {
-            await eliminar(idSuscripcion);
-        }
+        setSuscripcionEliminar(suscripciones.find(s => s.idSuscripcion === idSuscripcion) || null);
+    };
+
+    const confirmarEliminar = async () => {
+        if (!suscripcionEliminar) return;
+        
+        toast.promise(
+            eliminar(suscripcionEliminar.idSuscripcion),
+            {
+                loading: 'Eliminando suscripción...',
+                success: '✅ Suscripción eliminada exitosamente',
+                error: '❌ Error al eliminar la suscripción',
+            }
+        );
+        setSuscripcionEliminar(null);
+    };
+
+    const handleCancelar = async (suscripcion: Suscripcion) => {
+        setSuscripcionCancelar(suscripcion);
+    };
+
+    const confirmarCancelar = async () => {
+        if (!suscripcionCancelar) return;
+        
+        toast.promise(
+            async () => {
+                await cancelarSuscripcionApi(suscripcionCancelar.idSuscripcion);
+                window.location.reload();
+            },
+            {
+                loading: 'Cancelando suscripción...',
+                success: '✅ Suscripción cancelada. El acceso será bloqueado.',
+                error: '❌ Error al cancelar la suscripción',
+            }
+        );
+        setSuscripcionCancelar(null);
     };
 
     const handleSubmit = async (suscripcionData: SuscripcionFormData) => {
@@ -280,6 +316,13 @@ const SuscripcionesActivasPage: React.FC = () => {
                                             <Edit className="w-4 h-4" />
                                         </button>
                                         <button
+                                            onClick={() => handleCancelar(suscripcion)}
+                                            className="p-2 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                                            title="Cancelar suscripción"
+                                        >
+                                            <XCircle className="w-4 h-4" />
+                                        </button>
+                                        <button
                                             onClick={() => handleEliminar(suscripcion.idSuscripcion)}
                                             className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                             title="Eliminar"
@@ -375,6 +418,13 @@ const SuscripcionesActivasPage: React.FC = () => {
                                                         <Edit className="w-4 h-4" />
                                                     </button>
                                                     <button
+                                                        onClick={() => handleCancelar(suscripcion)}
+                                                        className="p-1.5 text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
+                                                        title="Cancelar suscripción"
+                                                    >
+                                                        <XCircle className="w-4 h-4" />
+                                                    </button>
+                                                    <button
                                                         onClick={() => handleEliminar(suscripcion.idSuscripcion)}
                                                         className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                                         title="Eliminar"
@@ -416,6 +466,80 @@ const SuscripcionesActivasPage: React.FC = () => {
                     onSubmit={handleSubmit}
                     onCancel={() => setShowForm(false)}
                 />
+            )}
+
+            {/* Modal de confirmación: Eliminar */}
+            {suscripcionEliminar && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                <Trash2 className="w-6 h-6 text-red-600" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-900">Eliminar Suscripción</h3>
+                                <p className="text-sm text-gray-500">Esta acción no se puede deshacer</p>
+                            </div>
+                        </div>
+                        <p className="text-gray-700 mb-6">
+                            ¿Está seguro de eliminar la suscripción de{' '}
+                            <span className="font-semibold">{suscripcionEliminar.idInstitucion?.nombre}</span>?
+                        </p>
+                        <div className="flex gap-3 justify-end">
+                            <button
+                                onClick={() => setSuscripcionEliminar(null)}
+                                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={confirmarEliminar}
+                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+                            >
+                                <Trash2 className="w-4 h-4" />
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de confirmación: Cancelar */}
+            {suscripcionCancelar && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                                <XCircle className="w-6 h-6 text-orange-600" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-gray-900">Cancelar Suscripción</h3>
+                                <p className="text-sm text-gray-500">Bloqueará el acceso al sistema</p>
+                            </div>
+                        </div>
+                        <p className="text-gray-700 mb-6">
+                            ¿Está seguro de <span className="font-bold text-orange-600">CANCELAR</span> la suscripción de{' '}
+                            <span className="font-semibold">{suscripcionCancelar.idInstitucion?.nombre}</span>?
+                            <br /><br />
+                            <span className="text-sm text-gray-600">Esta acción bloqueará inmediatamente el acceso al sistema.</span>
+                        </p>
+                        <div className="flex gap-3 justify-end">
+                            <button
+                                onClick={() => setSuscripcionCancelar(null)}
+                                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                            >
+                                No, mantener activa
+                            </button>
+                            <button
+                                onClick={confirmarCancelar}
+                                className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2"
+                            >
+                                <XCircle className="w-4 h-4" />
+                                Sí, cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

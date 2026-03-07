@@ -258,9 +258,12 @@ const SedeForm: React.FC<SedeFormProps> = ({
                                         value={formData.telefono}
                                         onChange={handleChange}
                                         required
+                                        maxLength={9}
+                                        pattern="[0-9]{9}"
                                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                        placeholder="Ej: 01 234 5678"
+                                        placeholder="Ej: 987654321"
                                     />
+                                    <p className="text-xs text-gray-500 mt-1">Solo 9 dígitos numéricos</p>
                                 </div>
 
                                 <div className="mt-2">

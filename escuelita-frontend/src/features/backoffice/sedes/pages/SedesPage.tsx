@@ -1,7 +1,8 @@
-import { Building2, Edit, MapPin, Plus, Search, Star, Trash2 } from 'lucide-react';
+import { Building2, Edit, MapPin, Plus, Star, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Toaster } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
+import { SearchFilterBar } from '../../../../components/common/SearchFilterBar';
 import SedeForm from '../components/SedeForm';
 import { useSedes } from '../hooks/useSedes';
 import type { Sede, SedeFormData } from '../types';
@@ -111,7 +112,7 @@ const SedesPage: React.FC = () => {
                     </div>
                     <button
                         onClick={handleNueva}
-                        className="bg-primary hover:bg-primary-dark text-white px-6 py-3 rounded-lg flex items-center space-x-2 transition-all shadow-lg hover:shadow-xl"
+                        className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white px-6 py-2.5 rounded-lg flex items-center gap-2 transition-all shadow-md hover:from-[#1e40af] hover:to-[#312e81] hover:shadow-lg font-semibold whitespace-nowrap"
                     >
                         <Plus className="w-5 h-5" />
                         <span>Nueva Sede</span>
@@ -120,18 +121,11 @@ const SedesPage: React.FC = () => {
             </div>
 
             {/* Barra de búsqueda */}
-            <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-                <div className="flex-1 relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                    <input
-                        type="text"
-                        placeholder="Buscar por nombre de sede, institución, distrito..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    />
-                </div>
-            </div>
+            <SearchFilterBar
+                searchValue={searchTerm}
+                onSearchChange={setSearchTerm}
+                searchPlaceholder="Buscar por nombre de sede, institución, distrito..."
+            />
 
             {/* Resultados de búsqueda */}
             {searchTerm && (
@@ -146,13 +140,13 @@ const SedesPage: React.FC = () => {
                     <table className="w-full">
                         <thead className="bg-gradient-to-r from-primary to-primary-light text-white">
                             <tr>
-                                <th className="px-6 py-4 text-left text-sm font-semibold">Sede</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold">Institución</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold">Código SUNAT</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold">Principal</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold">Ubicación</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold">Contacto</th>
-                                <th className="px-6 py-4 text-center text-sm font-semibold">Acciones</th>
+                                <th className="px-6 py-4 text-left text-xs font-semibold">Sede</th>
+                                <th className="px-6 py-4 text-left text-xs font-semibold">Institución</th>
+                                <th className="px-6 py-4 text-left text-xs font-semibold">Código SUNAT</th>
+                                <th className="px-6 py-4 text-left text-xs font-semibold">Principal</th>
+                                <th className="px-6 py-4 text-left text-xs font-semibold">Ubicación</th>
+                                <th className="px-6 py-4 text-left text-xs font-semibold">Contacto</th>
+                                <th className="px-6 py-4 text-center text-xs font-semibold">Acciones</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
@@ -194,12 +188,12 @@ const SedesPage: React.FC = () => {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="text-sm text-gray-900">
+                                            <div className="text-xs text-gray-900">
                                                 {sede.idInstitucion?.nombre || 'N/A'}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
+                                            <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
                                                 {sede.codigoEstablecimiento}
                                             </span>
                                         </td>
@@ -216,7 +210,7 @@ const SedesPage: React.FC = () => {
                                         <td className="px-6 py-4">
                                             <div className="flex items-start space-x-2">
                                                 <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
-                                                <div className="text-sm text-gray-600">
+                                                <div className="text-xs text-gray-600">
                                                     <div>{sede.distrito}</div>
                                                     <div className="text-xs text-gray-500">
                                                         {sede.provincia}, {sede.departamento}
@@ -225,7 +219,7 @@ const SedesPage: React.FC = () => {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="text-sm text-gray-600">
+                                            <div className="text-xs text-gray-600">
                                                 <div className="flex items-center space-x-1">
                                                     <span className="text-xs">📞</span>
                                                     <span>{sede.telefono}</span>

@@ -1,6 +1,7 @@
 import { FileText, Trash2, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
+import Button from '../../../../../components/ui/Button';
 import type { PagoFormData } from '../types';
 
 interface PagoFormProps {
@@ -308,20 +309,23 @@ const PagoForm: React.FC<PagoFormProps> = ({
 
                     {/* Botones */}
                     <div className="flex gap-3 pt-4 border-t border-gray-200">
-                        <button
+                        <Button
                             type="button"
                             onClick={onCancel}
-                            className="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                            variant="outline"
+                            fullWidth
                         >
                             Cancelar
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             type="submit"
+                            variant="primary"
                             disabled={isSubmitting || isLoading}
-                            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-blue-400"
+                            loading={isSubmitting || isLoading}
+                            fullWidth
                         >
-                            {isSubmitting || isLoading ? 'Guardando...' : 'Registrar Pago'}
-                        </button>
+                            Registrar Pago
+                        </Button>
                     </div>
                 </form>
             </div>

@@ -173,10 +173,9 @@ public class MatriculasService implements IMatriculasService{
     @Override
     public int consultarVacantesDisponibles(Long idSeccion, Long idAnio) {
         try {
-            // Obtener capacidad máxima de la sección
-            Integer capacidadMaxima = entityManager.createQuery(
-                "SELECT s.capacidadMaxima FROM Secciones s WHERE s.idSeccion = :idSeccion", 
-                Integer.class)
+            // Obtener capacidad máxima de la sección usando native query
+            Integer capacidadMaxima = (Integer) entityManager.createNativeQuery(
+                "SELECT capacidad_maxima FROM secciones WHERE id_seccion = :idSeccion")
                 .setParameter("idSeccion", idSeccion)
                 .getSingleResult();
             
@@ -184,16 +183,15 @@ public class MatriculasService implements IMatriculasService{
                 throw new RuntimeException("Sección no encontrada");
             }
             
-            // Contar matrículas activas en esa sección
-            Long matriculasActivas = entityManager.createQuery(
-                "SELECT COUNT(m) FROM Matriculas m WHERE m.idSeccion.idSeccion = :idSeccion " +
-                "AND m.idAnio.idAnioEscolar = :idAnio " +
-                "AND m.estadoMatricula = 'Activa' " +
-                "AND m.estado = 1", 
-                Long.class)
+            // Contar matrículas activas en esa sección usando native query
+            Long matriculasActivas = ((Number) entityManager.createNativeQuery(
+                "SELECT COUNT(*) FROM matriculas WHERE id_seccion = :idSeccion " +
+                "AND id_anio = :idAnio " +
+                "AND estado_matricula = 'Activa' " +
+                "AND estado = 1")
                 .setParameter("idSeccion", idSeccion)
                 .setParameter("idAnio", idAnio)
-                .getSingleResult();
+                .getSingleResult()).longValue();
             
             // Calcular vacantes disponibles
             int vacantesDisponibles = capacidadMaxima - matriculasActivas.intValue();

@@ -9,6 +9,7 @@ import { obtenerTodosAlumnos } from '../../alumnos/api/alumnosApi';
 import type { Alumno } from '../../alumnos/types';
 import {
     actualizarMatricula,
+    consultarVacantesDisponibles,
     crearMatricula,
     eliminarMatricula,
     obtenerTodasMatriculas,
@@ -29,6 +30,8 @@ const MatriculasPage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [filterEstado, setFilterEstado] = useState<string>('');
+    const [vacantesDisponibles, setVacantesDisponibles] = useState<number | null>(null);
+    const [cargandoVacantes, setCargandoVacantes] = useState(false);
 
     const [formData, setFormData] = useState<MatriculaFormData>({
         idAlumno: 0,
@@ -107,9 +110,32 @@ const MatriculasPage: React.FC = () => {
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm, filterEstado]);
+    
+    // Consultar vacantes disponibles cuando cambia sección o año
+    useEffect(() => {
+        const consultarVacantes = async () => {
+            if (formData.idSeccion && formData.idAnio && formData.idSeccion !== 0 && formData.idAnio !== 0) {
+                setCargandoVacantes(true);
+                try {
+                    const vacantes = await consultarVacantesDisponibles(formData.idSeccion, formData.idAnio);
+                    setVacantesDisponibles(vacantes);
+                } catch (error) {
+                    console.error('Error al consultar vacantes:', error);
+                    setVacantesDisponibles(null);
+                } finally {
+                    setCargandoVacantes(false);
+                }
+            } else {
+                setVacantesDisponibles(null);
+            }
+        };
+        
+        consultarVacantes();
+    }, [formData.idSeccion, formData.idAnio]);
 
     const handleNuevo = () => {
         setMatriculaEditar(null);
+        setVacantesDisponibles(null);
         setFormData({
             idAlumno: 0,
             idSeccion: 0,
@@ -186,6 +212,12 @@ const MatriculasPage: React.FC = () => {
             toast.error('La fecha de matrícula es obligatoria');
             return;
         }
+        
+        // Advertencia si no hay vacantes disponibles (solo para nuevos sin vacante garantizada)
+        if (!matriculaEditar && vacantesDisponibles !== null && vacantesDisponibles <= 0) {
+            toast.error('⚠️ No hay vacantes disponibles en esta sección');
+            return;
+        }
 
         // El backend espera LocalDateTime — agrega hora si no tiene
         const fechaConHora = formData.fechaMatricula.includes('T')
@@ -211,9 +243,16 @@ const MatriculasPage: React.FC = () => {
             }
             setShowModal(false);
             cargarDatos();
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            toast.error(matriculaEditar ? 'Error al actualizar matrícula' : 'Error al crear matrícula');
+            const mensajeError = error.response?.data || error.message || 'Error en la operación';
+            
+            // Mostrar mensaje específico si es error de vacantes
+            if (mensajeError.includes('No hay vacantes disponibles')) {
+                toast.error('❌ ' + mensajeError);
+            } else {
+                toast.error(matriculaEditar ? 'Error al actualizar matrícula' : 'Error al crear matrícula');
+            }
         }
     };
 
@@ -610,6 +649,43 @@ const MatriculasPage: React.FC = () => {
                             </select>
                         </div>
 
+                        {/* Indicador de Vacantes Disponibles */}
+                        {formData.idSeccion > 0 && formData.idAnio > 0 && (
+                            <div className="col-span-2">
+                                {cargandoVacantes ? (
+                                    <div className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                                        <span className="text-sm text-gray-600">Consultando vacantes disponibles...</span>
+                                    </div>
+                                ) : vacantesDisponibles !== null && (
+                                    <div className={`flex items-center gap-2 p-3 rounded-lg border ${
+                                        vacantesDisponibles === 0 
+                                            ? 'bg-red-50 border-red-200 text-red-800'
+                                            : vacantesDisponibles <= 5
+                                            ? 'bg-yellow-50 border-yellow-200 text-yellow-800'
+                                            : 'bg-green-50 border-green-200 text-green-800'
+                                    }`}>
+                                        {vacantesDisponibles === 0 ? (
+                                            <>
+                                                <span className="text-lg">❌</span>
+                                                <span className="text-sm font-medium">Sin vacantes disponibles - No se puede crear matrícula</span>
+                                            </>
+                                        ) : vacantesDisponibles <= 5 ? (
+                                            <>
+                                                <span className="text-lg">⚠️</span>
+                                                <span className="text-sm font-medium">¡Atención! Solo quedan {vacantesDisponibles} {vacantesDisponibles === 1 ? 'vacante' : 'vacantes'} disponibles</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span className="text-lg">✅</span>
+                                                <span className="text-sm font-medium">{vacantesDisponibles} vacantes disponibles</span>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         {/* Código Matrícula */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -746,7 +822,12 @@ const MatriculasPage: React.FC = () => {
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                            disabled={!matriculaEditar && vacantesDisponibles !== null && vacantesDisponibles <= 0}
+                            className={`px-4 py-2 rounded-lg transition-colors font-medium ${
+                                !matriculaEditar && vacantesDisponibles !== null && vacantesDisponibles <= 0
+                                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                            }`}
                         >
                             {matriculaEditar ? 'Actualizar' : 'Crear'}
                         </button>

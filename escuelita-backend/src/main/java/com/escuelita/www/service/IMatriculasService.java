@@ -10,5 +10,7 @@ public interface IMatriculasService {
     Matriculas guardar(Matriculas matricula);
     Matriculas modificar(Matriculas matricula);
     Optional<Matriculas> buscarId(Long id);
-    void eliminar(Long id); 
+    void eliminar(Long id);
+    String confirmarPagoMatricula(Long idMatricula);
+    int consultarVacantesDisponibles(Long idSeccion, Long idAnio);
 }

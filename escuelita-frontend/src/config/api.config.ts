@@ -80,6 +80,7 @@ export const API_ENDPOINTS = {
     APODERADOS: '/restful/apoderados',
     ALUMNO_APODERADO: '/restful/alumnoapoderado',
     MATRICULAS: '/restful/matriculas',
+    MOVIMIENTOS_ALUMNO: '/restful/movimientos-alumno',
     CURSOS: '/restful/cursos',
     GRADOS: '/restful/grados',
     SECCIONES: '/restful/secciones',

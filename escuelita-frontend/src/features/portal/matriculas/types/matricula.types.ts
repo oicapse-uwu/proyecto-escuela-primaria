@@ -26,12 +26,12 @@ export interface Matricula {
     idAnio: AnioEscolar;
     codigoMatricula?: string;
     fechaMatricula: string;
-    situacionAcademicaPrevia: 'Promovido' | 'Repitente' | 'Ingresante';
-    estadoMatricula: 'Activa' | 'Retirada' | 'Trasladado_Saliente';
-    observacionesMatricula?: string;
-    fechaRetiro?: string;
-    motivoRetiro?: string;
-    colegioDestino?: string;
+    fechaVencimientoPago?: string;
+    tipoIngreso: 'Nuevo' | 'Promovido' | 'Repitente' | 'Trasladado_Entrante';
+    estadoMatricula: 'Pendiente_Pago' | 'Activa' | 'Finalizada' | 'Cancelada';
+    vacanteGarantizada?: boolean;
+    fechaPagoMatricula?: string;
+    observaciones?: string;
     estado?: number;
 }
 
@@ -42,12 +42,12 @@ export interface MatriculaDTO {
     idAnio: number;
     codigoMatricula?: string;
     fechaMatricula?: string;
-    situacionAcademicaPrevia: 'Promovido' | 'Repitente' | 'Ingresante';
-    estadoMatricula: 'Activa' | 'Retirada' | 'Trasladado_Saliente';
-    observacionesMatricula?: string;
-    fechaRetiro?: string;
-    motivoRetiro?: string;
-    colegioDestino?: string;
+    fechaVencimientoPago?: string;
+    tipoIngreso: 'Nuevo' | 'Promovido' | 'Repitente' | 'Trasladado_Entrante';
+    estadoMatricula: 'Pendiente_Pago' | 'Activa' | 'Finalizada' | 'Cancelada';
+    vacanteGarantizada?: boolean;
+    fechaPagoMatricula?: string;
+    observaciones?: string;
 }
 
 export interface MatriculaFormData extends Omit<MatriculaDTO, 'idMatricula'> {

@@ -1,4 +1,4 @@
-import { api } from "../../../../config/api.config";
+import { api, API_ENDPOINTS } from "../../../../config/api.config";
 import type { Plan, PlanFormData } from "../types";
 
 // Obtener todos los planes
@@ -9,7 +9,7 @@ export const getPlanesApi = async (): Promise<Plan[]> => {
 
 // Obtener un plan por ID
 export const getPlanByIdApi = async (id: number): Promise<Plan> => {
-    const response = await api.get(`${API_ENDPOINTS.PLANES}/${id}`);
+    const response = await api.get(`/restful/planes/${id}`);
     return response.data;
 };
 

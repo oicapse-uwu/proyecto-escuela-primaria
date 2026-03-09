@@ -1,7 +1,8 @@
-import { Building2, Edit, Plus, Search, Trash2, Users } from 'lucide-react';
+import { Building2, Edit, Plus, Trash2, Users } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
-import { Toaster } from 'sonner';
+import { toast, Toaster } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
+import { SearchFilterBar } from '../../../../components/common/SearchFilterBar';
 import AdministradorForm from '../components/AdministradorForm';
 import { useUsuariosSistema } from '../hooks/useUsuariosSistema';
 import type { AdministradorFormData, UsuarioSistema } from '../types';
@@ -71,6 +72,12 @@ const AdministradoresPage: React.FC = () => {
         return roles.filter(rol => normalizeText(rol.nombre).includes('administrador'));
     }, [roles]);
 
+    // Opciones de filtro para SearchFilterBar
+    const filterOptions = useMemo(() => [
+        { value: 'todos', label: 'Todos los roles' },
+        ...rolesAdministrador.map(rol => ({ value: String(rol.idRol), label: rol.nombre }))
+    ], [rolesAdministrador]);
+
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const usuariosPaginados = usuariosFiltrados.slice(indexOfFirstItem, indexOfLastItem);
@@ -87,6 +94,7 @@ const AdministradoresPage: React.FC = () => {
     const handleEditar = (administrador: UsuarioSistema) => {
         setAdminEditar(administrador);
         setShowForm(true);
+        toast.info('Si dejas la contraseña vacía, se conservará la contraseña actual.');
     };
 
     const handleEliminar = async (id: number) => {
@@ -135,7 +143,7 @@ const AdministradoresPage: React.FC = () => {
                     </div>
                     <button
                         onClick={handleNuevo}
-                        className="bg-primary text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md w-full sm:w-auto"
+                        className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white px-6 py-2.5 rounded-lg hover:from-[#1e40af] hover:to-[#312e81] transition-colors flex items-center justify-center gap-2 shadow-md font-semibold whitespace-nowrap w-full sm:w-auto"
                     >
                         <Plus className="w-5 h-5" />
                         <span>Nuevo Administrador</span>
@@ -143,34 +151,16 @@ const AdministradoresPage: React.FC = () => {
                 </div>
             </div>
 
-            <div className="mb-3 lg:mb-4 bg-white rounded-lg shadow p-3 lg:p-3.5">
-                <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_240px] gap-3 items-center">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 lg:w-5 lg:h-5" />
-                        <input
-                            type="text"
-                            placeholder="Buscar por nombre, usuario o correo..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-9 lg:pl-10 pr-4 py-2.5 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                        />
-                    </div>
-                    <select
-                        value={filterRol}
-                        onChange={(e) => setFilterRol(e.target.value)}
-                        className="w-full md:justify-self-end px-4 py-2.5 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    >
-                        <option value="todos">Todos los roles</option>
-                        {rolesAdministrador.map((rol) => (
-                            <option key={rol.idRol} value={String(rol.idRol)}>
-                                {rol.nombre}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            </div>
+            <SearchFilterBar
+                searchValue={searchTerm}
+                onSearchChange={setSearchTerm}
+                searchPlaceholder="Buscar por nombre, usuario o correo..."
+                filterValue={filterRol}
+                onFilterChange={setFilterRol}
+                filterOptions={filterOptions}
+            />
 
-            <div className="bg-white rounded-lg shadow overflow-hidden flex flex-col">
+            <div className="bg-white rounded-lg shadow overflow-hidden">
                 {isLoading ? (
                     <div className="flex-1 flex justify-center items-center h-64">
                         <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
@@ -227,35 +217,37 @@ const AdministradoresPage: React.FC = () => {
                             ))}
                         </div>
 
-                        <div className="hidden md:block overflow-x-auto">
+                        <div className="hidden md:block overflow-x-auto max-w-full">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50 sticky top-0 z-10">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre completo</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Correo</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Escuela / Sede</th>
-                                        <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                        <th className="pl-6 pr-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[160px]">Nombre completo</th>
+                                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">Usuario</th>
+                                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">Rol</th>
+                                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[160px]">Escuela / Sede</th>
+                                        <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[70px]">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {usuariosPaginados.map((item) => (
                                         <tr key={item.idUsuario} className="hover:bg-gray-50">
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <td className="pl-6 pr-2 py-3 whitespace-nowrap text-xs text-gray-900 min-w-[160px]">
                                                 {item.nombres} {item.apellidos}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.usuario}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.correo}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.idRol?.nombre || '-'}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-700">
-                                                <div className="flex items-start gap-1">
-                                                    <Building2 className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
-                                                    <div className="min-w-0">
+                                            <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-700 min-w-[80px]">
+                                                {item.usuario}
+                                            </td>
+                                            <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-700 min-w-[100px]">
+                                                {item.idRol?.nombre || '-'}
+                                            </td>
+                                            <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-700 min-w-[160px]">
+                                                <div className="flex items-center gap-1">
+                                                    <Building2 className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+                                                    <div>
                                                         {item.idSede?.idInstitucion?.nombre ? (
                                                             <div>
-                                                                <div className="font-medium text-gray-900 truncate">{item.idSede.idInstitucion.nombre}</div>
-                                                                <div className="text-xs text-gray-500 truncate">{item.idSede.nombreSede}</div>
+                                                                <div className="font-medium text-gray-900">{item.idSede.idInstitucion.nombre}</div>
+                                                                <div className="text-xs text-gray-500">{item.idSede.nombreSede}</div>
                                                             </div>
                                                         ) : (
                                                             <span className="text-gray-500">-</span>
@@ -263,7 +255,7 @@ const AdministradoresPage: React.FC = () => {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
+                                            <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-700 text-center min-w-[70px]">
                                                 <div className="flex items-center justify-center space-x-3">
                                                     <button
                                                         onClick={() => handleEditar(item)}

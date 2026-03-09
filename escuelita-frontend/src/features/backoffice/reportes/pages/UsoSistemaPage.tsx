@@ -238,11 +238,11 @@ const UsoSistemaPage: React.FC = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                         {institucionesPaginadas.map((item) => (
                             <tr key={item.idInstitucion} className="hover:bg-gray-50">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.nombre}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.codModular}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.estadoSuscripcion || '-'}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.totalUsuarios}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-primary">{item.porcentajeUso.toFixed(2)}%</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-900">{item.nombre}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{item.codModular}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{item.estadoSuscripcion || '-'}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{item.totalUsuarios}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs font-semibold text-primary">{item.porcentajeUso.toFixed(2)}%</td>
                             </tr>
                         ))}
                     </tbody>
@@ -262,8 +262,8 @@ const UsoSistemaPage: React.FC = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                         {sedesPaginadas.map((item) => (
                             <tr key={item.nombre} className="hover:bg-gray-50">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.nombre}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-primary">{item.valor}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{item.nombre}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs font-semibold text-primary">{item.valor}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -285,11 +285,11 @@ const UsoSistemaPage: React.FC = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                         {usuariosPaginados.map((item) => (
                             <tr key={item.idUsuario} className="hover:bg-gray-50">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.nombres} {item.apellidos}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.usuario}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.correo}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.idRol?.nombre || '-'}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-900">{item.nombres} {item.apellidos}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{item.usuario}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{item.correo}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{item.idRol?.nombre || '-'}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">
                                     <span className="inline-flex items-center gap-1">
                                         <Building2 className="w-4 h-4 text-gray-400" />
                                         {item.idSede?.nombreSede || '-'}

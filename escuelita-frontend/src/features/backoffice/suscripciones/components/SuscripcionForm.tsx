@@ -1,10 +1,10 @@
-import { CreditCard, Settings, X } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { CreditCard, X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import SearchableSelect from '../../../../components/common/SearchableSelect';
+import Button from '../../../../components/ui/Button';
 import type { Institucion } from '../../instituciones/types';
 import type { CicloFacturacion, EstadoSuscripcion, Plan, Suscripcion, SuscripcionFormData } from '../types';
-import DistribucionLimitesModal from './DistribucionLimitesModal';
 
 interface SuscripcionFormProps {
     suscripcionEditar?: Suscripcion | null;
@@ -35,24 +35,24 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
         idInstitucion: 0,
         idPlan: 0,
         idCiclo: 0,
-        idEstado: 1, // El estado ahora es AUTOMÁTICO (gestionado por backend según pagos y fechas)
-        idMetodoPago: 0
+        idEstado: 1 // El estado ahora es AUTOMÁTICO (gestionado por backend según pagos y fechas)
     });
 
-    /* 
-     * LÓGICA DE ESTADO AUTOMÁTICO (implementar en backend):
-     * - ACTIVA (1): Suscripción recién creada y con pago confirmado
-     * - SUSPENDIDA (2): Suscripción creada pero sin pago confirmado aún
-     * - VENCIDA (3): Suscripción activa que dejó de pagar después de tiempo
-     * - CANCELADA (4): Suscripción cancelada manualmente por el usuario
-     * 
-     * El estado NO debe ser editable desde el formulario, se actualiza automáticamente
-     * según el estado de pagos y las fechas de vencimiento.
-     */
+/* 
+    LÓGICA DE ESTADO AUTOMÁTICO (implementar en backend):
+        - ACTIVA (1): Suscripción con pago confirmado.
+        - SUSPENDIDA (2): Suscripción sin pago.
+        - VENCIDA (3): Suscripción activa que dejó de pagar después de tiempo
+        - CANCELADA (4): Suscripción cancelada manualmente por el usuario
+        - PENDIENTE (5): Suscripción recién creada pero sin pago.
+
+    El estado NO debe ser editable desde el formulario, se actualiza automáticamente
+    según el estado de pagos y las fechas de vencimiento.
+*/
 
     const [planSeleccionado, setPlanSeleccionado] = useState<Plan | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showDistribucionModal, setShowDistribucionModal] = useState(false);
+    const mensajeMostrado = useRef(false);
     
     // Helper para determinar si un plan es personalizado
     const esPlanPersonalizado = (plan: Plan | null): boolean => {
@@ -111,6 +111,24 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
             });
         }
     }, [planSeleccionado]);
+
+    // Mostrar notificación sobre estado automático cuando se abre el formulario
+    useEffect(() => {
+        if (!suscripcionEditar && !mensajeMostrado.current) {
+            // Solo mostrar en nueva suscripción y una sola vez
+            // Usar un ID único para evitar duplicación
+            toast.info('El estado de la suscripción cambia automáticamente a Activo cuando se registra el primer pago.', {
+                id: 'suscripcion-estado-info',
+                duration: 6000,
+            });
+            mensajeMostrado.current = true;
+        }
+        
+        // Limpiar el flag cuando se desmonte el componente
+        return () => {
+            mensajeMostrado.current = false;
+        };
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -212,7 +230,7 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="flex flex-col">
                     {/* Form Content */}
-                    <div className="p-6 max-h-[500px] overflow-y-auto">
+                    <div className="p-6 h-[450px] overflow-y-auto">
                         <div className="space-y-6">
                                 {/* Institución y Plan en la misma fila */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -280,23 +298,6 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
                                     </div>
                                 </div>
 
-                                {/* Estado Actual (Solo lectura en edición) */}
-                                {suscripcionEditar && (
-                                    <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-                                        <label className="block text-xs font-medium text-indigo-700 mb-2">
-                                            Estado Actual (Automático)
-                                        </label>
-                                        <div className="flex items-center gap-3">
-                                            <span className={`px-3 py-1.5 rounded-full text-sm font-semibold ${getEstadoBadge(formData.idEstado)}`}>
-                                                {estadosSuscripcion.find(e => e.idEstado === formData.idEstado)?.nombre || 'N/A'}
-                                            </span>
-                                            <span className="text-xs text-indigo-600">
-                                                ℹ️ El estado se actualiza automáticamente según pagos y fechas
-                                            </span>
-                                        </div>
-                                    </div>
-                                )}
-
                                 {/* Sección: Fechas y Ciclo */}
                                 <div className="border-t border-gray-200 pt-6">
                                     <h3 className="text-sm font-semibold text-indigo-700 mb-4 flex items-center gap-2">
@@ -315,7 +316,7 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
                                                 value={formData.idCiclo}
                                                 onChange={handleChange}
                                                 required
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                                className="w-full pl-3 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                             >
                                                 <option value={0}>Seleccione ciclo</option>
                                                 {ciclosFacturacion.map(ciclo => (
@@ -361,24 +362,10 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
                                 {/* Sección: Límites y Precios */}
                                 <div className="border-t border-gray-200 pt-6">
                                     <h3 className="text-sm font-semibold text-indigo-700 mb-4 flex items-center gap-2">
-                                        <Settings className="w-4 h-4" />
+                                        <CreditCard className="w-4 h-4" />
                                         Límites y Precios
                                     </h3>
                                     
-                                    {/* Botón de distribución por sede */}
-                                    {suscripcionEditar && formData.idInstitucion > 0 && (
-                                        <div className="mb-4">
-                                            <button
-                                                type="button"
-                                                onClick={() => setShowDistribucionModal(true)}
-                                                className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 border border-blue-300 rounded-lg hover:bg-blue-100 transition-colors text-sm"
-                                            >
-                                                <Settings className="w-4 h-4" />
-                                                <span className="font-medium">Distribución por Sede</span>
-                                            </button>
-                                        </div>
-                                    )}
-                                
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     {/* Límite de Alumnos */}
                                     <div>
@@ -441,18 +428,10 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                                         />
                                         {formData.precioAcordado > 0 && formData.idCiclo > 0 && (
-                                            <p className="text-xs text-indigo-600 mt-1 font-medium">
+                                            <p className="text-xs text-gray-600 mt-1">
                                                 {ciclosFacturacion.find(c => c.idCiclo === formData.idCiclo)?.mesesDuracion === 1
-                                                    ? '💳 Pago Mensual'
-                                                    : '📅 Pago Anual'
-                                                }
-                                            </p>
-                                        )}
-                                        {planSeleccionado && !esPlanPersonalizado(planSeleccionado) && (
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                Precio del plan: S/ {formData.idCiclo > 0 && ciclosFacturacion.find(c => c.idCiclo === formData.idCiclo)?.mesesDuracion === 1
-                                                    ? planSeleccionado.precioMensual
-                                                    : planSeleccionado.precioAnual
+                                                    ? 'Pago Mensual'
+                                                    : 'Pago Anual'
                                                 }
                                             </p>
                                         )}
@@ -464,38 +443,25 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
 
                     {/* Footer */}
                     <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end space-x-4">
-                        <button
+                        <Button
                             type="button"
                             onClick={onCancel}
-                            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                            variant="outline"
                             disabled={isSubmitting}
                         >
                             Cancelar
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             type="submit"
+                            variant="primary"
                             disabled={isSubmitting}
-                            className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            loading={isSubmitting}
                         >
-                            {isSubmitting ? 'Guardando...' : (suscripcionEditar ? 'Actualizar Suscripción' : 'Crear Suscripción')}
-                        </button>
+                            {suscripcionEditar ? 'Actualizar Suscripción' : 'Crear Suscripción'}
+                        </Button>
                     </div>
                 </form>
             </div>
-
-            {/* Modal de Distribución de Límites */}
-            {showDistribucionModal && suscripcionEditar && (
-                <DistribucionLimitesModal
-                    idSuscripcion={suscripcionEditar.idSuscripcion}
-                    idInstitucion={formData.idInstitucion}
-                    limiteTotal={formData.limiteAlumnosContratado}
-                    tipoDistribucion={formData.tipoDistribucionLimite as 'EQUITATIVA' | 'PERSONALIZADA'}
-                    onClose={() => setShowDistribucionModal(false)}
-                    onSuccess={() => {
-                        // Actualizar si es necesario
-                    }}
-                />
-            )}
         </div>
     );
 };

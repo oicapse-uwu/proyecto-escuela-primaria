@@ -33,12 +33,12 @@ const LoginEscuela: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-dark via-primary to-primary-light p-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#34d399] via-escuela to-escuela-dark p-4">
             <div className="w-full max-w-md">
                 {/* Card principal */}
-                <div className="bg-gradient-to-br from-white via-white to-primary-light/10 rounded-2xl shadow-2xl overflow-hidden border border-primary-light/20">
+                <div className="bg-gradient-to-br from-white via-white to-escuela-light/10 rounded-2xl shadow-2xl overflow-hidden border border-escuela-light/20">
                     {/* Header */}
-                    <div className="bg-gradient-to-r from-primary via-primary-light to-primary p-8 text-center relative">
+                    <div className="bg-gradient-to-r from-escuela-dark via-escuela to-[#34d399] p-8 text-center relative">
                         <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg p-3">
                             <img src="/src/assets/logo/Logo_escuelita.svg" alt="Logo Escuelita" className="w-full h-full object-contain" />
                         </div>
@@ -75,7 +75,7 @@ const LoginEscuela: React.FC = () => {
                                         type="text"
                                         value={credentials.usuario}
                                         onChange={(e) => setCredentials({ ...credentials, usuario: e.target.value })}
-                                        className="block w-full pl-10 pr-3 py-3 border border-border-primary rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-text-primary placeholder-text-secondary"
+                                        className="block w-full pl-10 pr-3 py-3 border border-border-primary rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent transition-all outline-none text-text-primary placeholder-text-secondary"
                                         placeholder="Ingresa tu usuario"
                                         disabled={isLoading}
                                         autoComplete="username"
@@ -97,7 +97,7 @@ const LoginEscuela: React.FC = () => {
                                         type="password"
                                         value={credentials.contrasena}
                                         onChange={(e) => setCredentials({ ...credentials, contrasena: e.target.value })}
-                                        className="block w-full pl-10 pr-3 py-3 border border-border-primary rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-text-primary placeholder-text-secondary"
+                                        className="block w-full pl-10 pr-3 py-3 border border-border-primary rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent transition-all outline-none text-text-primary placeholder-text-secondary"
                                         placeholder="Ingresa tu contraseña"
                                         disabled={isLoading}
                                         autoComplete="current-password"
@@ -109,7 +109,7 @@ const LoginEscuela: React.FC = () => {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+                                className="w-full bg-escuela-dark hover:bg-escuela text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
                             >
                                 {isLoading ? (
                                     <>
@@ -129,7 +129,7 @@ const LoginEscuela: React.FC = () => {
                         <div className="mt-6 text-center">
                             <a 
                                 href="#" 
-                                className="text-sm text-primary hover:text-primary-dark transition-colors"
+                                className="text-sm text-escuela hover:text-escuela-dark transition-colors"
                                 onClick={(e) => {
                                     e.preventDefault();
                                     alert('Funcionalidad de recuperación de contraseña próximamente');

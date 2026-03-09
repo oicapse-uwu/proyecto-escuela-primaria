@@ -29,9 +29,7 @@ import com.escuelita.www.service.FileStorageService;
 import com.escuelita.www.service.IPagoSuscripcionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-/**
- * Controller REST para gestión de pagos de suscripciones (Backoffice Super Admin)
- */
+
 @RestController
 @RequestMapping("/restful/pagos-suscripcion")
 public class PagoSuscripcionController {
@@ -42,22 +40,12 @@ public class PagoSuscripcionController {
     @Autowired
     private FileStorageService fileStorageService;
     
-    // ========== CRUD BÁSICO ==========
-    
-    /**
-     * Obtener todos los pagos (con datos expandidos en DTO)
-     * GET /restful/pagos-suscripcion
-     */
     @GetMapping
     public ResponseEntity<List<PagoSuscripcionDTO>> obtenerTodos() {
         List<PagoSuscripcion> pagos = pagoService.buscarTodos();
         return ResponseEntity.ok(pagoService.convertirListaADTO(pagos));
     }
     
-    /**
-     * Obtener pago por ID
-     * GET /restful/pagos-suscripcion/{id}
-     */
     @GetMapping("/{id}")
     public ResponseEntity<?> obtenerPorId(@PathVariable Long id) {
         return pagoService.buscarId(id)
@@ -65,10 +53,7 @@ public class PagoSuscripcionController {
             .orElse(ResponseEntity.notFound().build());
     }
     
-    /**
-     * Eliminar pago (anular)
-     * DELETE /restful/pagos-suscripcion/{id}
-     */
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Long id) {
         try {
@@ -79,17 +64,6 @@ public class PagoSuscripcionController {
         }
     }
     
-    // ========== OPERACIONES ESPECÍFICAS ==========
-    
-    /**
-     * Registrar nuevo pago con comprobante
-     * POST /restful/pagos-suscripcion/registrar
-     * 
-     * Form-data:
-     * - datos: JSON con PagoSuscripcionDTO
-     * - comprobante: Archivo (imagen/PDF)
-     * - idSuperAdmin: ID del super admin que registra
-     */
     @PostMapping(value = "/registrar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> registrarPago(
             @RequestPart("datos") String datosJson,
@@ -113,14 +87,6 @@ public class PagoSuscripcionController {
         }
     }
     
-    /**
-     * Actualizar pago programado con comprobante
-     * PUT /restful/pagos-suscripcion/{id}/actualizar-comprobante
-     * 
-     * Form-data:
-     * - datos: JSON con PagoSuscripcionDTO
-     * - comprobante: Archivo (imagen/PDF)
-     */
     @PutMapping(value = "/{id}/actualizar-comprobante", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> actualizarPagoProgramado(
             @PathVariable Long id,
@@ -144,13 +110,6 @@ public class PagoSuscripcionController {
         }
     }
     
-    /**
-     * Verificar pago (aprobar)
-     * PUT /restful/pagos-suscripcion/{id}/verificar
-     * 
-     * Params:
-     * - idSuperAdmin: ID del super admin que verifica
-     */
     @PutMapping("/{id}/verificar")
     public ResponseEntity<?> verificarPago(
             @PathVariable Long id,
@@ -166,14 +125,6 @@ public class PagoSuscripcionController {
         }
     }
     
-    /**
-     * Rechazar pago
-     * PUT /restful/pagos-suscripcion/{id}/rechazar
-     * 
-     * Params:
-     * - motivo: Motivo del rechazo
-     * - idSuperAdmin: ID del super admin que rechaza
-     */
     @PutMapping("/{id}/rechazar")
     public ResponseEntity<?> rechazarPago(
             @PathVariable Long id,
@@ -190,22 +141,12 @@ public class PagoSuscripcionController {
         }
     }
     
-    // ========== CONSULTAS ==========
-    
-    /**
-     * Obtener pagos de una suscripción específica
-     * GET /restful/pagos-suscripcion/suscripcion/{idSuscripcion}
-     */
     @GetMapping("/suscripcion/{idSuscripcion}")
     public ResponseEntity<List<PagoSuscripcionDTO>> obtenerPorSuscripcion(@PathVariable Long idSuscripcion) {
         List<PagoSuscripcion> pagos = pagoService.obtenerPagosPorSuscripcion(idSuscripcion);
         return ResponseEntity.ok(pagoService.convertirListaADTO(pagos));
     }
     
-    /**
-     * Obtener pagos pendientes de verificación
-     * GET /restful/pagos-suscripcion/pendientes
-     */
     @GetMapping("/pendientes")
     public ResponseEntity<List<PagoSuscripcionDTO>> obtenerPendientes() {
         List<PagoSuscripcion> pagos = pagoService.obtenerPagosPendientes();
@@ -231,14 +172,6 @@ public class PagoSuscripcionController {
         }
     }
     
-    /**
-     * Obtener pagos en un rango de fechas
-     * GET /restful/pagos-suscripcion/rango
-     * 
-     * Params:
-     * - fechaInicio: formato yyyy-MM-dd
-     * - fechaFin: formato yyyy-MM-dd
-     */
     @GetMapping("/rango")
     public ResponseEntity<List<PagoSuscripcionDTO>> obtenerPorRangoFechas(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
@@ -247,14 +180,6 @@ public class PagoSuscripcionController {
         return ResponseEntity.ok(pagoService.convertirListaADTO(pagos));
     }
     
-    // ========== ARCHIVOS (COMPROBANTES) ==========
-    
-    /**
-     * Ver comprobante de pago
-     * GET /restful/pagos-suscripcion/comprobante/{filename}
-     * 
-     * Retorna el archivo para visualizarlo en el navegador (inline)
-     */
     @GetMapping("/comprobante/{filename}")
     public ResponseEntity<Resource> verComprobante(@PathVariable String filename) {
         try {
@@ -277,12 +202,6 @@ public class PagoSuscripcionController {
         }
     }
     
-    /**
-     * Descargar comprobante de pago
-     * GET /restful/pagos-suscripcion/comprobante/{filename}/descargar
-     * 
-     * Retorna el archivo para descargarlo (attachment)
-     */
     @GetMapping("/comprobante/{filename}/descargar")
     public ResponseEntity<Resource> descargarComprobante(@PathVariable String filename) {
         try {
@@ -296,12 +215,6 @@ public class PagoSuscripcionController {
         }
     }
     
-    // ========== ESTADÍSTICAS ==========
-    
-    /**
-     * Obtener estadísticas de pagos
-     * GET /restful/pagos-suscripcion/estadisticas
-     */
     @GetMapping("/estadisticas")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticas() {
         List<PagoSuscripcion> todos = pagoService.buscarTodos();

@@ -67,7 +67,7 @@ public class JwtFilter extends GenericFilter{
                 SecurityContextHolder.getContext()
                             .setAuthentication(auth);
             } else {
-                // Si no es JWT válido, buscar en tabla Registros (usuarios de escuela)
+                // Si no es JWT válido, buscar en tabla Registros (acceso SUPER_ADMIN)
                 Optional<Registros> match = registrosRepository
                             .findAll().stream()
                             .filter(r ->token.equals(r.getAccess_token()))
@@ -75,6 +75,11 @@ public class JwtFilter extends GenericFilter{
 
                 if(match.isPresent()){
                     String clienteId = match.get().getCliente_id();
+                    
+                    // Configurar como SUPER_ADMIN para acceso sin restricciones
+                    TenantContext.setUserType("SUPER_ADMIN");
+                    System.out.println("🔑 Token de Registros '" + clienteId + "' - Acceso SUPER_ADMIN sin restricciones");
+                    
                     UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(clienteId, 
                                 null, Collections.emptyList());

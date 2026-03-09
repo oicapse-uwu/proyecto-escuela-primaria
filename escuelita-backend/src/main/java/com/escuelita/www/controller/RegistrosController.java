@@ -45,7 +45,9 @@ public class RegistrosController {
         String claveOriginal = registro.getEmail()
                 + registro.getNombres() + registro.getApellidos();
         
-        registro.setLlave_secreta(claveOriginal);        
+        // Hashear la llave secreta antes de guardarla
+        String claveHasheada = passwordEncoder.encode(claveOriginal);
+        registro.setLlave_secreta(claveHasheada);        
         serviceRegistros.guardar(registro);
         return registro;
     }

@@ -42,9 +42,19 @@ public class JwtFilter extends GenericFilter{
             if (jwtUtil.validarToken(token)) {
                 String clienteId = jwtUtil.extraerClienteId(token);
                 
-                // Extraer sede del token si es usuario de escuela
-                // Formato: "ESCUELA_123_SEDE_45" o "SUPER_ADMIN_1"
-                if (clienteId.contains("_SEDE_")) {
+                // Verificar si el clienteId existe en tabla Registros (acceso SUPER_ADMIN)
+                Optional<Registros> registroMatch = registrosRepository
+                            .findAll().stream()
+                            .filter(r -> clienteId.equals(r.getCliente_id()))
+                            .findFirst();
+                
+                if (registroMatch.isPresent()) {
+                    // Usuario de tabla Registros → acceso SUPER_ADMIN
+                    TenantContext.setUserType("SUPER_ADMIN");
+                    System.out.println("🔑 Token JWT de Registros '" + clienteId + "' - Acceso SUPER_ADMIN sin restricciones");
+                } else if (clienteId.contains("_SEDE_")) {
+                    // Extraer sede del token si es usuario de escuela
+                    // Formato: "ESCUELA_123_SEDE_45"
                     try {
                         String[] parts = clienteId.split("_SEDE_");
                         if (parts.length == 2) {

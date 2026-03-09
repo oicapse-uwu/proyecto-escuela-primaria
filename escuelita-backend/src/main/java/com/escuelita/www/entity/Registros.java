@@ -6,7 +6,6 @@ import java.security.NoSuchAlgorithmException;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 

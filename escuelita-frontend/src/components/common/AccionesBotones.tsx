@@ -35,9 +35,10 @@ export const AccionesBotones: React.FC<AccionesBotoneProps> = ({
   layout = 'horizontal',
   className = '',
 }) => {
+  const tieneAccesoAlModulo = usePermisoModulo(idModulo);
   const accionesConPermiso = acciones.map(accion => ({
     ...accion,
-    tienePermiso: usePermisoModulo(idModulo, accion.codigo),
+    tienePermiso: tieneAccesoAlModulo,
   }));
 
   const accionesVisibles = accionesConPermiso.filter(a => a.tienePermiso);
@@ -96,10 +97,9 @@ interface SoloConPermisoProps {
 
 export const SoloConPermiso: React.FC<SoloConPermisoProps> = ({
   idModulo,
-  permiso,
   children,
   fallback = null,
 }) => {
-  const tienePermiso = usePermisoModulo(idModulo, permiso);
+  const tienePermiso = usePermisoModulo(idModulo);
   return tienePermiso ? <>{children}</> : <>{fallback}</>;
 };

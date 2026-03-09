@@ -17,10 +17,20 @@ public class AsignacionDocenteService implements IAsignacionDocenteService {
     private AsignacionDocenteRepository repoAsignacionDocente;
 
     public List<AsignacionDocente> buscarTodos() {
-        if (TenantContext.isSuperAdmin()) {
+        try {
+            if (TenantContext.isSuperAdmin()) {
+                return repoAsignacionDocente.findAll();
+            }
+            Long sedeId = TenantContext.getSedeId();
+            if (sedeId == null) {
+                return repoAsignacionDocente.findAll();
+            }
+            return repoAsignacionDocente.findBySedeId(sedeId);
+        } catch (Exception e) {
+            System.out.println("Error en AsignacionDocenteService.buscarTodos(): " + e.getMessage());
+            e.printStackTrace();
             return repoAsignacionDocente.findAll();
         }
-        return repoAsignacionDocente.findBySedeId(TenantContext.getSedeId());
     }
     
     @Override

@@ -98,9 +98,9 @@ const menuModulesConfig: Record<string, { icon: LucideIcon; subItems?: Record<st
     'EVALUACIONES Y NOTAS': {
         icon: FileText,
         subItems: {
-            'Asistencias': { path: '/escuela/evaluaciones/asistencias', icon: CheckCircle },
-            'Evaluaciones': { path: '/escuela/evaluaciones/lista', icon: FileText },
             'Calificaciones': { path: '/escuela/evaluaciones/calificaciones', icon: ClipboardCheck },
+            'Asistencias': { path: '/escuela/evaluaciones/asistencias', icon: CheckCircle },
+            'Evaluaciones': { path: '/escuela/evaluaciones/evaluaciones', icon: FileText },
             'Promedios': { path: '/escuela/evaluaciones/promedios', icon: TrendingUp },
         }
     },

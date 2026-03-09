@@ -99,7 +99,7 @@ export const API_ENDPOINTS = {
 
     // ===== EVALUACIONES Y CALIFICACIONES =====
     CALIFICACIONES: '/restful/calificaciones',
-    PROMEDIOS: '/restful/promedios',
+    PROMEDIOS: '/restful/promediosperiodo',
     ASISTENCIAS: '/restful/asistencias',
     TIPOS_NOTA: '/restful/tiposnota',
     EVALUACIONES: '/restful/evaluaciones',

@@ -112,7 +112,7 @@ const CrearRolModal: React.FC<CrearRolModalProps> = ({ isOpen, onClose, onRolCre
                     <button
                         onClick={handleSubmit}
                         disabled={isLoading || !nombre.trim()}
-                        className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                        className="px-6 py-2.5 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-lg hover:from-[#1e40af] hover:to-[#312e81] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                     >
                         {isLoading ? 'Creando...' : 'Crear Rol'}
                     </button>

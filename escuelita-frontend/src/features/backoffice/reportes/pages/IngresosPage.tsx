@@ -281,9 +281,9 @@ const IngresosPage: React.FC = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                         {planesPaginados.map((item) => (
                             <tr key={item.nombrePlan} className="hover:bg-gray-50">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.nombrePlan}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.cantidadSuscripciones}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-primary">{currency(item.ingresoTotal)}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{item.nombrePlan}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{item.cantidadSuscripciones}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs font-semibold text-primary">{currency(item.ingresoTotal)}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -303,13 +303,13 @@ const IngresosPage: React.FC = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                         {metodosPagoPaginados.map((item) => (
                             <tr key={item.nombreMetodo} className="hover:bg-gray-50">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.nombreMetodo}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-primary">{currency(item.ingresoTotal)}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{item.nombreMetodo}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs font-semibold text-primary">{currency(item.ingresoTotal)}</td>
                             </tr>
                         ))}
                         <tr className="bg-gray-50">
-                            <td className="px-6 py-4 text-sm font-semibold text-gray-700">Total métodos de pago</td>
-                            <td className="px-6 py-4 text-sm font-bold text-primary">
+                            <td className="px-6 py-4 text-xs font-semibold text-gray-700">Total métodos de pago</td>
+                            <td className="px-6 py-4 text-xs font-bold text-primary">
                                 {currency(metodosPagoFiltrados.reduce((acc, item) => acc + item.ingresoTotal, 0))}
                             </td>
                         </tr>
@@ -332,16 +332,16 @@ const IngresosPage: React.FC = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                         {suscripcionesPaginadas.map((item) => (
                             <tr key={item.idSuscripcion} className="hover:bg-gray-50">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.idInstitucion?.nombre || '-'}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.idPlan?.nombrePlan || '-'}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.idCiclo?.nombre || '-'}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.idEstado?.nombre || '-'}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-primary">{currency(Number(item.precioAcordado) || 0)}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-900">{item.idInstitucion?.nombre || '-'}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{item.idPlan?.nombrePlan || '-'}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{item.idCiclo?.nombre || '-'}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{item.idEstado?.nombre || '-'}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-xs font-semibold text-primary">{currency(Number(item.precioAcordado) || 0)}</td>
                             </tr>
                         ))}
                         <tr className="bg-gray-50">
-                            <td colSpan={4} className="px-6 py-4 text-sm font-semibold text-gray-700 text-right">Total filtrado</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-primary">{currency(totalFiltradoIngresos)}</td>
+                            <td colSpan={4} className="px-6 py-4 text-xs font-semibold text-gray-700 text-right">Total filtrado</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-xs font-bold text-primary">{currency(totalFiltradoIngresos)}</td>
                         </tr>
                     </tbody>
                 </table>

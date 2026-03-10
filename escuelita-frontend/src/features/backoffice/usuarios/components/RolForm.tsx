@@ -64,7 +64,7 @@ const RolForm: React.FC<RolFormProps> = ({ rol, onSubmit, onCancel, isLoading = 
                         </button>
                         <button
                             type="submit"
-                            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50"
+                            className="px-6 py-2.5 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-lg hover:from-[#1e40af] hover:to-[#312e81] transition-colors disabled:opacity-50 font-semibold"
                             disabled={isLoading}
                         >
                             {isLoading ? 'Guardando...' : rol ? 'Actualizar' : 'Crear'}

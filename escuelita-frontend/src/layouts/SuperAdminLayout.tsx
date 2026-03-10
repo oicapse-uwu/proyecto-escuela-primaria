@@ -39,7 +39,7 @@ const SuperAdminLayout: React.FC = () => {
             <TopBar onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
             
             {/* Main Content Area */}
-            <main className={`flex-1 mt-16 lg:mt-[4.5rem] transition-all duration-300 ${
+            <main className={`flex-1 min-w-0 mt-16 lg:mt-[4.5rem] transition-all duration-300 ${
                 sidebarOpen ? 'lg:ml-72' : 'lg:ml-0'
             }`}>
                 <Outlet />

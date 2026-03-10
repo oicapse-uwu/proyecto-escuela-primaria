@@ -1,4 +1,4 @@
-import { Calendar, DollarSign, FileText, X } from 'lucide-react';
+import { Calendar, DollarSign, FileText, X, AlertCircle, Check, Users, BookOpen } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import type { DeudasAlumno, DeudasAlumnoFormData } from '../types';
@@ -104,170 +104,208 @@ const DeudasAlumnoForm: React.FC<DeudasAlumnoFormProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-                <div className="flex justify-between items-center p-6 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-t-lg">
-                    <h2 className="text-xl font-semibold flex items-center gap-2">
-                        <DollarSign className="w-5 h-5" />
-                        {deuda ? 'Editar Deuda' : 'Nueva Deuda'}
-                    </h2>
-                    <button
-                        onClick={onCancel}
-                        className="p-2 hover:bg-white/20 rounded-lg transition-colors"
-                    >
-                        <X className="w-5 h-5" />
-                    </button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all">
+                <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-6 border-b-2 border-purple-200 sticky top-0">
+                    <div className="flex justify-between items-start">
+                        <div className="flex items-start gap-3">
+                            <div className="bg-purple-600 rounded-lg p-2.5">
+                                <FileText className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-bold text-gray-900">
+                                    {deuda ? 'Editar Deuda' : 'Nueva Deuda'}
+                                </h2>
+                                <p className="text-xs text-gray-700 mt-1">
+                                    {deuda ? 'Actualiza los datos de la deuda' : 'Registra una nueva deuda de alumno'}
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={onCancel}
+                            className="p-2 hover:bg-purple-200 rounded-lg transition-all duration-200"
+                        >
+                            <X className="w-5 h-5 text-gray-600" />
+                        </button>
+                    </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                    {/* Descripción */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Descripción de la Cuota *
-                        </label>
-                        <textarea
-                            name="descripcionCuota"
-                            value={formData.descripcionCuota}
-                            onChange={handleChange}
-                            placeholder="Ej: Cuota del mes de marzo..."
-                            rows={2}
-                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                                errors.descripcionCuota
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300 focus:ring-blue-500'
-                            }`}
-                        />
-                        {errors.descripcionCuota && (
-                            <p className="text-red-500 text-xs mt-1">{errors.descripcionCuota}</p>
-                        )}
+                <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                    {/* Sección de datos principales */}
+                    <div className="space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        {/* Descripción */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                <FileText className="w-4 h-4 text-blue-600" />
+                                Descripción de la Cuota *
+                            </label>
+                            <textarea
+                                name="descripcionCuota"
+                                value={formData.descripcionCuota}
+                                onChange={handleChange}
+                                placeholder="Ej: Cuota del mes de marzo..."
+                                rows={2}
+                                className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
+                                    errors.descripcionCuota
+                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
+                                        : 'border-gray-200 focus:ring-blue-300 focus:border-blue-500 bg-white hover:border-gray-300'
+                                }`}
+                            />
+                            {errors.descripcionCuota && (
+                                <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
+                                    <AlertCircle className="w-3 h-3" />
+                                    {errors.descripcionCuota}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Monto */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                <DollarSign className="w-4 h-4 text-green-600" />
+                                Monto Total *
+                            </label>
+                            <input
+                                type="number"
+                                name="montoTotal"
+                                value={formData.montoTotal}
+                                onChange={handleChange}
+                                placeholder="0.00"
+                                step="0.01"
+                                min="0"
+                                className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
+                                    errors.montoTotal
+                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
+                                        : 'border-gray-200 focus:ring-green-300 focus:border-green-500 bg-white hover:border-gray-300'
+                                }`}
+                            />
+                            {errors.montoTotal && (
+                                <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
+                                    <AlertCircle className="w-3 h-3" />
+                                    {errors.montoTotal}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Concepto de Pago */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                <BookOpen className="w-4 h-4 text-yellow-600" />
+                                Concepto de Pago *
+                            </label>
+                            <select
+                                name="idConcepto"
+                                value={formData.idConcepto}
+                                onChange={handleChange}
+                                className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
+                                    errors.idConcepto
+                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
+                                        : 'border-gray-200 focus:ring-yellow-300 focus:border-yellow-500 bg-white hover:border-gray-300'
+                                }`}
+                            >
+                                <option value="0">Seleccionar concepto</option>
+                                {/* TODO: Cargar conceptos dinámicamente */}
+                            </select>
+                            {errors.idConcepto && (
+                                <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
+                                    <AlertCircle className="w-3 h-3" />
+                                    {errors.idConcepto}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Matrícula */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                <Users className="w-4 h-4 text-purple-600" />
+                                Matrícula *
+                            </label>
+                            <select
+                                name="idMatricula"
+                                value={formData.idMatricula}
+                                onChange={handleChange}
+                                className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
+                                    errors.idMatricula
+                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
+                                        : 'border-gray-200 focus:ring-purple-300 focus:border-purple-500 bg-white hover:border-gray-300'
+                                }`}
+                            >
+                                <option value="0">Seleccionar matrícula</option>
+                                {/* TODO: Cargar matrículas dinámicamente */}
+                            </select>
+                            {errors.idMatricula && (
+                                <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
+                                    <AlertCircle className="w-3 h-3" />
+                                    {errors.idMatricula}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    {/* Monto */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-                            <DollarSign className="w-4 h-4" />
-                            Monto Total *
-                        </label>
-                        <input
-                            type="number"
-                            name="montoTotal"
-                            value={formData.montoTotal}
-                            onChange={handleChange}
-                            placeholder="0.00"
-                            step="0.01"
-                            min="0"
-                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                                errors.montoTotal
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300 focus:ring-blue-500'
-                            }`}
-                        />
-                        {errors.montoTotal && (
-                            <p className="text-red-500 text-xs mt-1">{errors.montoTotal}</p>
-                        )}
-                    </div>
+                    {/* Fechas */}
+                    <div className="space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        {/* Fecha Emisión */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                <Calendar className="w-4 h-4 text-pink-600" />
+                                Fecha de Emisión *
+                            </label>
+                            <input
+                                type="date"
+                                name="fechaEmision"
+                                value={formData.fechaEmision}
+                                onChange={handleChange}
+                                className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
+                                    errors.fechaEmision
+                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
+                                        : 'border-gray-200 focus:ring-pink-300 focus:border-pink-500 bg-white hover:border-gray-300'
+                                }`}
+                            />
+                            {errors.fechaEmision && (
+                                <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
+                                    <AlertCircle className="w-3 h-3" />
+                                    {errors.fechaEmision}
+                                </div>
+                            )}
+                        </div>
 
-                    {/* Fecha Emisión */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-                            <Calendar className="w-4 h-4" />
-                            Fecha de Emisión *
-                        </label>
-                        <input
-                            type="date"
-                            name="fechaEmision"
-                            value={formData.fechaEmision}
-                            onChange={handleChange}
-                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                                errors.fechaEmision
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300 focus:ring-blue-500'
-                            }`}
-                        />
-                        {errors.fechaEmision && (
-                            <p className="text-red-500 text-xs mt-1">{errors.fechaEmision}</p>
-                        )}
-                    </div>
-
-                    {/* Fecha Vencimiento */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-                            <Calendar className="w-4 h-4" />
-                            Fecha de Vencimiento *
-                        </label>
-                        <input
-                            type="date"
-                            name="fechaVencimiento"
-                            value={formData.fechaVencimiento}
-                            onChange={handleChange}
-                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                                errors.fechaVencimiento
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300 focus:ring-blue-500'
-                            }`}
-                        />
-                        {errors.fechaVencimiento && (
-                            <p className="text-red-500 text-xs mt-1">{errors.fechaVencimiento}</p>
-                        )}
-                    </div>
-
-                    {/* Concepto de Pago */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-                            <FileText className="w-4 h-4" />
-                            Concepto de Pago *
-                        </label>
-                        <select
-                            name="idConcepto"
-                            value={formData.idConcepto}
-                            onChange={handleChange}
-                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                                errors.idConcepto
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300 focus:ring-blue-500'
-                            }`}
-                        >
-                            <option value="0">Seleccionar concepto</option>
-                            {/* TODO: Cargar conceptos dinámicamente */}
-                        </select>
-                        {errors.idConcepto && (
-                            <p className="text-red-500 text-xs mt-1">{errors.idConcepto}</p>
-                        )}
-                    </div>
-
-                    {/* Matrícula */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Matrícula *
-                        </label>
-                        <select
-                            name="idMatricula"
-                            value={formData.idMatricula}
-                            onChange={handleChange}
-                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                                errors.idMatricula
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300 focus:ring-blue-500'
-                            }`}
-                        >
-                            <option value="0">Seleccionar matrícula</option>
-                            {/* TODO: Cargar matrículas dinámicamente */}
-                        </select>
-                        {errors.idMatricula && (
-                            <p className="text-red-500 text-xs mt-1">{errors.idMatricula}</p>
-                        )}
+                        {/* Fecha Vencimiento */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                <Calendar className="w-4 h-4 text-red-600" />
+                                Fecha de Vencimiento *
+                            </label>
+                            <input
+                                type="date"
+                                name="fechaVencimiento"
+                                value={formData.fechaVencimiento}
+                                onChange={handleChange}
+                                className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
+                                    errors.fechaVencimiento
+                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
+                                        : 'border-gray-200 focus:ring-red-300 focus:border-red-500 bg-white hover:border-gray-300'
+                                }`}
+                            />
+                            {errors.fechaVencimiento && (
+                                <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
+                                    <AlertCircle className="w-3 h-3" />
+                                    {errors.fechaVencimiento}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Estado */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                            <Check className="w-4 h-4 text-teal-600" />
                             Estado de la Deuda
                         </label>
                         <select
                             name="estadoDeuda"
                             value={formData.estadoDeuda}
                             onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-300 focus:border-teal-500 bg-white hover:border-gray-300 transition-all duration-200"
                         >
                             <option value="Pendiente">Pendiente</option>
                             <option value="Parcial">Parcial</option>
@@ -275,21 +313,31 @@ const DeudasAlumnoForm: React.FC<DeudasAlumnoFormProps> = ({
                         </select>
                     </div>
 
-                    {/* Botones */}
-                    <div className="flex gap-3 pt-4 border-t border-gray-200">
+                    {/* Botones mejorados */}
+                    <div className="flex gap-3 pt-6 border-t-2 border-gray-200">
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                            className="flex-1 px-4 py-2.5 text-gray-700 border-2 border-gray-300 rounded-lg hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 font-semibold"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting || isLoading}
-                            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-blue-400"
+                            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:shadow-lg active:scale-95 transition-all duration-200 font-semibold flex items-center justify-center gap-2 disabled:bg-purple-400 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
                         >
-                            {isSubmitting || isLoading ? 'Guardando...' : 'Guardar'}
+                            {isSubmitting || isLoading ? (
+                                <>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                    Guardando...
+                                </>
+                            ) : (
+                                <>
+                                    <Check className="w-4 h-4" />
+                                    {deuda ? 'Actualizar' : 'Guardar'}
+                                </>
+                            )}
                         </button>
                     </div>
                 </form>

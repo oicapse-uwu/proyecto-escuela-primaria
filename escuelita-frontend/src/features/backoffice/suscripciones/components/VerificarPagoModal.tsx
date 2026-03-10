@@ -1,5 +1,6 @@
 import { Building2, Calendar, Check, CreditCard, DollarSign, FileText, Hash, User, X, XCircle } from 'lucide-react';
 import React, { useState } from 'react';
+import Button from '../../../../components/ui/Button';
 import { getComprobanteUrlApi } from '../api/pagosSuscripcionApi';
 import type { PagoSuscripcion } from '../types';
 
@@ -21,14 +22,19 @@ const VerificarPagoModal: React.FC<VerificarPagoModalProps> = ({
     const [isProcessing, setIsProcessing] = useState(false);
 
     // Validar que existe comprobante  
-    const tieneComprobante = pago.comprobanteUrl && pago.comprobanteUrl.trim() !== '';
+    const tieneComprobante = pago.comprobanteUrl && pago.comprobanteUrl.trim() !== '' && pago.comprobanteUrl !== 'null';
     const comprobanteUrl = tieneComprobante ? getComprobanteUrlApi(pago.comprobanteUrl) : '';
     const isPdf = tieneComprobante && pago.comprobanteUrl.toLowerCase().endsWith('.pdf');
 
-    console.log('Pago completo:', pago);
-    console.log('Comprobante URL original:', pago.comprobanteUrl);
-    console.log('Comprobante URL generada:', comprobanteUrl);
-    console.log('¿Tiene comprobante?:', tieneComprobante);
+    console.log('🔍 Debug Comprobante:', {
+        numeroComprobante: pago.numeroPago,
+        comprobanteOriginal: pago.comprobanteUrl,
+        tieneComprobante,
+        comprobanteUrlGenerada: comprobanteUrl,
+        isPdf,
+        verificadoPor: pago.nombreVerificadoPor,
+        idVerificadoPor: pago.verificadoPor
+    });
 
     const handleVerificar = async () => {
         try {
@@ -76,12 +82,12 @@ const VerificarPagoModal: React.FC<VerificarPagoModalProps> = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-5xl w-full max-h-[90vh] overflow-y-auto">
                 {/* Header */}
-                <div className="sticky top-0 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white px-6 py-4 flex justify-between items-center rounded-t-lg z-10">
+                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white px-6 py-4 flex justify-between items-center rounded-t-lg">
                     <div>
                         <h2 className="text-xl font-bold">Verificar Pago de Suscripción</h2>
-                        <p className="text-blue-200 text-sm mt-1">{pago.numeroPago}</p>
+                        <p className="text-blue-100 text-sm mt-1">{pago.numeroPago}</p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-lg transition-colors">
+                    <button onClick={onClose} className="text-white hover:bg-white/20 p-2 rounded transition-colors">
                         <X size={24} />
                     </button>
                 </div>
@@ -222,8 +228,17 @@ const VerificarPagoModal: React.FC<VerificarPagoModalProps> = ({
                                             className="w-full h-auto rounded cursor-pointer hover:opacity-90 transition-opacity"
                                             onClick={() => window.open(comprobanteUrl, '_blank')}
                                             onError={(e) => {
-                                                console.error('Error al cargar imagen:', comprobanteUrl);
-                                                e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23ddd"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999"%3EError al cargar%3C/text%3E%3C/svg%3E';
+                                                console.error('❌ Error al cargar comprobante. URL:', comprobanteUrl);
+                                                const errorDiv = document.createElement('div');
+                                                errorDiv.className = 'flex flex-col items-center justify-center p-8 text-center';
+                                                errorDiv.innerHTML = `
+                                                    <svg class="w-16 h-16 text-red-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                    </svg>
+                                                    <p class="text-red-600 font-medium mb-1">Error al cargar comprobante</p>
+                                                    <p class="text-xs text-gray-500">Verifica los permisos del backend</p>
+                                                `;
+                                                e.currentTarget.parentElement?.replaceChild(errorDiv, e.currentTarget);
                                             }}
                                         />
                                         <p className="text-xs text-center text-gray-500 mt-2">Click para ampliar</p>
@@ -238,20 +253,21 @@ const VerificarPagoModal: React.FC<VerificarPagoModalProps> = ({
                         <div className="mt-6 border-t pt-6">
                             {!accion ? (
                                 <div className="flex justify-end gap-3">
-                                    <button
+                                    <Button
                                         onClick={() => setAccion('rechazar')}
-                                        className="px-6 py-2 border border-red-500 text-red-500 rounded-md hover:bg-red-50 transition-colors flex items-center"
+                                        variant="outline"
+                                        icon={<XCircle size={18} />}
+                                        className="border-red-500 text-red-500 hover:bg-red-50"
                                     >
-                                        <XCircle className="mr-2" size={18} />
                                         Rechazar
-                                    </button>
-                                    <button
+                                    </Button>
+                                    <Button
                                         onClick={() => setAccion('verificar')}
-                                        className="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center"
+                                        variant="success"
+                                        icon={<Check size={18} />}
                                     >
-                                        <Check className="mr-2" size={18} />
                                         Verificar y Activar
-                                    </button>
+                                    </Button>
                                 </div>
                             ) : accion === 'verificar' ? (
                                 <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -260,20 +276,21 @@ const VerificarPagoModal: React.FC<VerificarPagoModalProps> = ({
                                         Esto activará automáticamente la suscripción.
                                     </p>
                                     <div className="flex justify-end gap-3">
-                                        <button
+                                        <Button
                                             onClick={() => setAccion(null)}
-                                            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                                            variant="outline"
                                             disabled={isProcessing}
                                         >
                                             Cancelar
-                                        </button>
-                                        <button
+                                        </Button>
+                                        <Button
                                             onClick={handleVerificar}
+                                            variant="success"
                                             disabled={isProcessing}
-                                            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:bg-gray-400"
+                                            loading={isProcessing}
                                         >
-                                            {isProcessing ? 'Verificando...' : 'Confirmar Verificación'}
-                                        </button>
+                                            Confirmar Verificación
+                                        </Button>
                                     </div>
                                 </div>
                             ) : (
@@ -289,23 +306,24 @@ const VerificarPagoModal: React.FC<VerificarPagoModalProps> = ({
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500 mb-4"
                                     />
                                     <div className="flex justify-end gap-3">
-                                        <button
+                                        <Button
                                             onClick={() => {
                                                 setAccion(null);
                                                 setMotivoRechazo('');
                                             }}
-                                            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                                            variant="outline"
                                             disabled={isProcessing}
                                         >
                                             Cancelar
-                                        </button>
-                                        <button
+                                        </Button>
+                                        <Button
                                             onClick={handleRechazar}
+                                            variant="danger"
                                             disabled={isProcessing || !motivoRechazo.trim()}
-                                            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:bg-gray-400"
+                                            loading={isProcessing}
                                         >
-                                            {isProcessing ? 'Rechazando...' : 'Confirmar Rechazo'}
-                                        </button>
+                                            Confirmar Rechazo
+                                        </Button>
                                     </div>
                                 </div>
                             )}

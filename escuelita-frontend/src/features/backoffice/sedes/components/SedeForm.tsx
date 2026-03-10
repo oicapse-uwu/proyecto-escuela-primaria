@@ -180,7 +180,7 @@ const SedeForm: React.FC<SedeFormProps> = ({
                                                 onChange={handleChange}
                                                 required
                                                 disabled={loadingInstituciones || !!sede}
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100"
+                                                className="w-full pl-3 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100"
                                             >
                                                 <option value={0}>Seleccione una institución</option>
                                                 {instituciones.map(inst => (
@@ -377,7 +377,7 @@ const SedeForm: React.FC<SedeFormProps> = ({
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 flex items-center space-x-2"
+                            className="px-6 py-2.5 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-lg hover:from-[#1e40af] hover:to-[#312e81] transition-colors disabled:opacity-50 flex items-center gap-2 font-semibold"
                         >
                             {isLoading ? (
                                 <>

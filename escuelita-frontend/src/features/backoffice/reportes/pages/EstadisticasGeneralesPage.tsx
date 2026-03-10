@@ -613,14 +613,14 @@ const EstadisticasGeneralesPage: React.FC = () => {
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {rowsPaginadas.map((row) => (
                                         <tr key={row.idInstitucion} className="hover:bg-gray-50">
-                                            <td className="px-4 py-2 text-sm text-gray-900">{row.nombre}</td>
-                                            <td className="px-4 py-2 text-sm text-gray-700">{row.codModular}</td>
-                                            <td className="px-4 py-2 text-sm text-gray-700">{row.tipoGestion}</td>
-                                            <td className="px-4 py-2 text-sm text-gray-700">{row.estadoSuscripcion}</td>
-                                            <td className="px-4 py-2 text-sm text-gray-700">{row.planContratado}</td>
-                                            <td className="px-4 py-2 text-sm text-gray-700">{row.totalUsuarios}</td>
-                                            <td className="px-4 py-2 text-sm font-semibold text-primary">{row.porcentajeUso.toFixed(2)}%</td>
-                                            <td className="px-4 py-2 text-sm text-gray-700">{row.totalSuscripciones}</td>
+                                            <td className="px-4 py-2 text-xs text-gray-900">{row.nombre}</td>
+                                            <td className="px-4 py-2 text-xs text-gray-700">{row.codModular}</td>
+                                            <td className="px-4 py-2 text-xs text-gray-700">{row.tipoGestion}</td>
+                                            <td className="px-4 py-2 text-xs text-gray-700">{row.estadoSuscripcion}</td>
+                                            <td className="px-4 py-2 text-xs text-gray-700">{row.planContratado}</td>
+                                            <td className="px-4 py-2 text-xs text-gray-700">{row.totalUsuarios}</td>
+                                            <td className="px-4 py-2 text-xs font-semibold text-primary">{row.porcentajeUso.toFixed(2)}%</td>
+                                            <td className="px-4 py-2 text-xs text-gray-700">{row.totalSuscripciones}</td>
                                         </tr>
                                     ))}
                                 </tbody>

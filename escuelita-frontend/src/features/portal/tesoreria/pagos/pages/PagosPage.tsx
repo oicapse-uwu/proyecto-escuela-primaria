@@ -170,7 +170,7 @@ const PagosPage: React.FC = () => {
                                             <td className="px-6 py-4 text-sm text-gray-800 font-medium">
                                                 {pago.comprobanteNumero || '-'}
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-800">
+                                            <td className="px-6 py-4 text-sm text-gray-800 uppercase">
                                                 {pago.idMetodo.nombreMetodo}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 font-semibold text-right">

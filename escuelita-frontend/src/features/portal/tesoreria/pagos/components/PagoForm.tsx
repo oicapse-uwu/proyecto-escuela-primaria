@@ -123,14 +123,14 @@ const PagoForm: React.FC<PagoFormProps> = ({
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <div className="flex justify-between items-center p-6 border-b border-gray-200 sticky top-0 bg-white">
-                    <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                        <FileText className="w-5 h-5 text-blue-600" />
+                <div className="flex justify-between items-center p-6 sticky top-0 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-t-lg z-10">
+                    <h2 className="text-xl font-semibold flex items-center gap-2">
+                        <FileText className="w-5 h-5" />
                         Registrar Nuevo Pago
                     </h2>
                     <button
                         onClick={onCancel}
-                        className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-white/20 rounded-lg transition-colors"
                     >
                         <X className="w-5 h-5" />
                     </button>

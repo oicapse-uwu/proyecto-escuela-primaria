@@ -1,4 +1,4 @@
-import { Layers, Users, X } from 'lucide-react';
+import { AlertTriangle, Layers, Users, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { escuelaAuthService } from '../../../../services/escuelaAuth.service';
 import type { Grado, Seccion, SeccionDTO } from '../types';
@@ -9,6 +9,7 @@ interface SeccionFormProps {
     onCancel: () => void;
     isLoading?: boolean;
     grados: Grado[];
+    vacantesDisponibles?: number | null;
 }
 
 const SeccionForm: React.FC<SeccionFormProps> = ({ 
@@ -16,13 +17,16 @@ const SeccionForm: React.FC<SeccionFormProps> = ({
     onSubmit, 
     onCancel, 
     isLoading = false,
-    grados 
+    grados,
+    vacantesDisponibles 
 }) => {
     const sedeId = escuelaAuthService.getSedeId();
     
+    const maxVacantes = vacantesDisponibles != null && vacantesDisponibles > 0 ? vacantesDisponibles : 100;
+
     const [formData, setFormData] = useState<SeccionDTO>({
         nombreSeccion: '',
-        vacantes: 30,
+        vacantes: Math.min(maxVacantes, 30),
         idGrado: grados.length > 0 ? grados[0].idGrado : 0,
         idSede: sedeId || 0
     });
@@ -61,14 +65,14 @@ const SeccionForm: React.FC<SeccionFormProps> = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
                 {/* Header */}
-                <div className="bg-white border-b px-6 py-4 flex justify-between items-center rounded-t-lg">
-                    <h2 className="text-xl font-bold text-gray-800 flex items-center space-x-2">
-                        <Layers className="w-5 h-5 text-primary" />
+                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] px-6 py-4 text-white flex justify-between items-center rounded-t-lg">
+                    <h2 className="text-xl font-bold flex items-center space-x-2">
+                        <Layers className="w-5 h-5" />
                         <span>{seccion ? 'Editar Sección' : 'Nueva Sección'}</span>
                     </h2>
                     <button
                         onClick={onCancel}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="p-2 hover:bg-white/20 rounded-lg transition-colors"
                         disabled={isLoading}
                     >
                         <X className="w-5 h-5" />
@@ -90,7 +94,7 @@ const SeccionForm: React.FC<SeccionFormProps> = ({
                         >
                             {grados.map(grado => (
                                 <option key={grado.idGrado} value={grado.idGrado}>
-                                    {grado.nombreGrado}
+                                    {grado.nombreGrado.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}
                                 </option>
                             ))}
                         </select>
@@ -123,9 +127,19 @@ const SeccionForm: React.FC<SeccionFormProps> = ({
                             onChange={handleChange}
                             required
                             min="1"
-                            max="100"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            max={maxVacantes}
+                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+                                formData.vacantes > maxVacantes ? 'border-red-400 bg-red-50' : 'border-gray-300'
+                            }`}
                         />
+                        {vacantesDisponibles != null && vacantesDisponibles > 0 && (
+                            <p className={`text-xs mt-1 flex items-center gap-1 ${
+                                formData.vacantes > maxVacantes ? 'text-red-600 font-medium' : 'text-gray-500'
+                            }`}>
+                                {formData.vacantes > maxVacantes && <AlertTriangle className="w-3 h-3" />}
+                                Máximo permitido por el plan: {vacantesDisponibles}
+                            </p>
+                        )}
                     </div>
 
                     {/* Botones */}
@@ -140,7 +154,7 @@ const SeccionForm: React.FC<SeccionFormProps> = ({
                         </button>
                         <button
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || formData.vacantes > maxVacantes}
                             className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50"
                         >
                             {isLoading ? 'Guardando...' : (seccion ? 'Actualizar' : 'Crear')}

@@ -32,6 +32,7 @@ public class AnioEscolar {
 
     @Column(name = "nombre_anio", length = 50)
     private String nombreAnio;
+
     private Integer activo = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)

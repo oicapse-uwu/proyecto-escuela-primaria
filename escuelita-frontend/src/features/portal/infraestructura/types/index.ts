@@ -9,6 +9,12 @@ export interface Institucion {
     resolucionCreacion?: string;
     nombreDirector?: string;
     logoPath?: string;
+    ruc?: string;
+    razonSocial?: string;
+    domicilioFiscal?: string;
+    representanteLegal?: string;
+    correoFacturacion?: string;
+    telefonoFacturacion?: string;
     estadoSuscripcion?: string;
     fechaInicioSuscripcion?: string;
     fechaVencimientoLicencia?: string;
@@ -24,6 +30,12 @@ export interface InstitucionDTO {
     resolucionCreacion?: string;
     nombreDirector?: string;
     logoPath?: string;
+    ruc?: string;
+    razonSocial?: string;
+    domicilioFiscal?: string;
+    representanteLegal?: string;
+    correoFacturacion?: string;
+    telefonoFacturacion?: string;
     estadoSuscripcion?: string;
     fechaInicioSuscripcion?: string;
     fechaVencimientoLicencia?: string;
@@ -76,6 +88,7 @@ export interface AnioEscolar {
     nombreAnio: string;
     fechaInicio?: string;
     fechaFin?: string;
+    tipoPeriodo?: string; // 'Bimestre' o 'Trimestre'
     activo?: boolean;
     estado?: number;
 }
@@ -85,6 +98,7 @@ export interface AnioEscolarDTO {
     nombreAnio: string;
     fechaInicio?: string;
     fechaFin?: string;
+    tipoPeriodo?: string;
     activo?: boolean;
 }
 
@@ -100,7 +114,7 @@ export interface Periodo {
     nombrePeriodo: string;
     fechaInicio?: string;
     fechaFin?: string;
-    idAnio: AnioEscolar; // Objeto completo
+    idAnio: AnioEscolar | number; // Puede ser objeto completo o solo ID
     estado?: number;
 }
 

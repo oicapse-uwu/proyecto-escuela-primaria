@@ -93,32 +93,23 @@ const SedesPage: React.FC = () => {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-white rounded-lg shadow p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500 text-sm">Total Sedes</p>
-                            <p className="text-2xl font-bold text-gray-800">{sedes.length}</p>
+                            <p className="text-gray-600 text-sm">Total Sedes</p>
+                            <p className="text-2xl font-bold text-blue-700">{sedes.length}</p>
                         </div>
-                        <Building2 className="w-10 h-10 text-blue-500 opacity-50" />
+                        <Building2 className="w-10 h-10 text-blue-600" />
                     </div>
                 </div>
-                <div className="bg-white rounded-lg shadow p-4">
+                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500 text-sm">Resultados</p>
-                            <p className="text-2xl font-bold text-gray-800">{sedesFiltradas.length}</p>
+                            <p className="text-gray-600 text-sm">Mostrando</p>
+                            <p className="text-2xl font-bold text-green-700">{sedesFiltradas.length}</p>
                         </div>
-                        <Search className="w-10 h-10 text-green-500 opacity-50" />
-                    </div>
-                </div>
-                <div className="bg-white rounded-lg shadow p-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-gray-500 text-sm">Página Actual</p>
-                            <p className="text-2xl font-bold text-gray-800">{currentPage} / {totalPages || 1}</p>
-                        </div>
-                        <MapPin className="w-10 h-10 text-purple-500 opacity-50" />
+                        <MapPin className="w-10 h-10 text-green-600" />
                     </div>
                 </div>
             </div>
@@ -155,7 +146,7 @@ const SedesPage: React.FC = () => {
                     <div className="p-8 text-center text-gray-500">Cargando sedes...</div>
                 ) : sedesPaginadas.length === 0 ? (
                     <div className="p-8 text-center text-gray-500">
-                        {searchTerm ? 'No se encontraron sedes con ese criterio' : 'No hay sedes registradas'}
+                        {searchTerm ? 'No se encontraron sedes' : 'No hay sedes registradas'}
                     </div>
                 ) : (
                     <>
@@ -177,7 +168,7 @@ const SedesPage: React.FC = () => {
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center space-x-2">
                                                     <Building2 className="w-5 h-5 text-primary" />
-                                                    <span className="font-medium text-gray-900">{sede.nombreSede}</span>
+                                                    <span className="font-medium text-gray-900 uppercase">{sede.nombreSede}</span>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
@@ -238,7 +229,7 @@ const SedesPage: React.FC = () => {
                                     <div className="flex items-start justify-between mb-2">
                                         <div className="flex items-center space-x-2">
                                             <Building2 className="w-5 h-5 text-primary" />
-                                            <span className="font-medium text-gray-900">{sede.nombreSede}</span>
+                                            <span className="font-medium text-gray-900 uppercase">{sede.nombreSede}</span>
                                         </div>
                                         <div className="flex space-x-2">
                                             <button

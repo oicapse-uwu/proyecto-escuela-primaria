@@ -151,7 +151,7 @@ const MetodosPagoPage: React.FC = () => {
                                 <tbody className="divide-y divide-gray-200">
                                     {metodosPaginados.map((metodo) => (
                                         <tr key={metodo.idMetodo} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4 text-sm text-gray-800 font-medium">
+                                            <td className="px-6 py-4 text-sm text-gray-800 font-medium uppercase">
                                                 {metodo.nombreMetodo}
                                             </td>
                                             <td className="px-6 py-4 text-sm">

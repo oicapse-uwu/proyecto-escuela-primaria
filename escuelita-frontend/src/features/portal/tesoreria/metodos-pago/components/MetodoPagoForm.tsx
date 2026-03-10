@@ -83,14 +83,14 @@ const MetodoPagoForm: React.FC<MetodoPagoFormProps> = ({
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-2xl w-full max-w-md">
-                <div className="flex justify-between items-center p-6 border-b border-gray-200">
-                    <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                        <CreditCard className="w-5 h-5 text-blue-600" />
+                <div className="flex justify-between items-center p-6 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-t-lg">
+                    <h2 className="text-xl font-semibold flex items-center gap-2">
+                        <CreditCard className="w-5 h-5" />
                         {metodo ? 'Editar Método de Pago' : 'Nuevo Método de Pago'}
                     </h2>
                     <button
                         onClick={onCancel}
-                        className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+                        className="p-2 hover:bg-white/20 rounded-lg transition-colors"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -160,7 +160,7 @@ const MetodoPagoForm: React.FC<MetodoPagoFormProps> = ({
                             disabled={isSubmitting || isLoading}
                             className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-blue-400"
                         >
-                            {isSubmitting || isLoading ? 'Guardando...' : 'Guardar'}
+                            {isSubmitting || isLoading ? 'Guardando...' : metodo ? 'Actualizar' : 'Crear'}
                         </button>
                     </div>
                 </form>

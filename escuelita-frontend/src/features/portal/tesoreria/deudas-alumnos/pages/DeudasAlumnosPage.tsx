@@ -212,10 +212,10 @@ const DeudasAlumnosPage: React.FC = () => {
                                 <tbody className="divide-y divide-gray-200">
                                     {deudasPaginadas.map((deuda) => (
                                         <tr key={deuda.idDeuda} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4 text-sm text-gray-800 font-medium">
+                                            <td className="px-6 py-4 text-sm text-gray-800 font-medium uppercase">
                                                 {deuda.idMatricula.idAlumno.nombres} {deuda.idMatricula.idAlumno.apellidos}
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-800">
+                                            <td className="px-6 py-4 text-sm text-gray-800 uppercase">
                                                 {deuda.idConcepto.nombreConcepto}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 font-semibold text-right">

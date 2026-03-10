@@ -166,13 +166,13 @@ const ConceptosPagoPage: React.FC = () => {
                                 <tbody className="divide-y divide-gray-200">
                                     {conceptosPaginados.map((concepto) => (
                                         <tr key={concepto.idConcepto} className="hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4 text-sm text-gray-800 font-medium">
+                                            <td className="px-6 py-4 text-sm text-gray-800 font-medium uppercase">
                                                 {concepto.nombreConcepto}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800 text-right font-medium">
                                                 S/. {concepto.monto.toFixed(2)}
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-800">
+                                            <td className="px-6 py-4 text-sm text-gray-800 uppercase">
                                                 {concepto.idGrado?.nombreGrado || 'N/A'}
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-800">

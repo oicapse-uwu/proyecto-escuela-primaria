@@ -12,3 +12,16 @@ export const subirFotoAvatar = async (file: File): Promise<string> => {
     });
     return response.data.url;
 };
+
+/**
+ * Sube un archivo genérico (logos, documentos, etc.)
+ * Retorna la URL del archivo subido.
+ */
+export const subirArchivo = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post<{ url: string }>('/restful/files/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data.url;
+};

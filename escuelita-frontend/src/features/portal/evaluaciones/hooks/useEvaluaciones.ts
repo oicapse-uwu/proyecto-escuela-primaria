@@ -1,16 +1,41 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { Evaluaciones, EvaluacionesDTO } from '../types';
+import { escuelaAuthService } from '../../../../services/escuelaAuth.service';
 import {
   obtenerTodasEvaluaciones,
   crearEvaluacion,
   actualizarEvaluacion,
   eliminarEvaluacion,
 } from '../api/evaluacionesApi';
+import { useAsignacionesDocente } from './useAsignacionesDocente';
 
 export const useEvaluaciones = () => {
   const [evaluaciones, setEvaluaciones] = useState<Evaluaciones[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Obtener asignaciones del docente logueado
+  const { idAsignacionesArray, loading: loadingAsignaciones } = useAsignacionesDocente();
+
+  // Filtrar evaluaciones según el rol del usuario
+  const evaluacionesFiltradas = useMemo(() => {
+    const usuarioActual = escuelaAuthService.getCurrentUser();
+    const esProfesor = escuelaAuthService.isProfesor();
+    const esAdministrador = usuarioActual?.rol?.nombreRol?.toUpperCase() === 'ADMINISTRADOR';
+
+    // Si es profesor, mostrar solo sus evaluaciones (filtradas por asignación)
+    if (esProfesor && !esAdministrador) {
+      return evaluaciones.filter(ev => {
+        const idAsignacion = typeof ev.idAsignacion === 'object' 
+          ? ev.idAsignacion?.idAsignacion 
+          : ev.idAsignacion;
+        return idAsignacionesArray.includes(idAsignacion);
+      });
+    }
+
+    // Si es administrador, mostrar todas
+    return evaluaciones;
+  }, [evaluaciones, idAsignacionesArray]);
 
   const cargarEvaluaciones = async () => {
     setLoading(true);
@@ -74,7 +99,7 @@ export const useEvaluaciones = () => {
   }, []);
 
   return {
-    evaluaciones,
+    evaluaciones: evaluacionesFiltradas,
     loading,
     error,
     crear,

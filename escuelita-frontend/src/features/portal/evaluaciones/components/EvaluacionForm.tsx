@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import type { EvaluacionesDTO } from '../types';
 import type { AsignacionDocente, Periodos, TiposNota, TiposEvaluacion } from '../types';
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
+import { escuelaAuthService } from '../../../../services/escuelaAuth.service';
+import { useAsignacionesDocente } from '../hooks/useAsignacionesDocente';
 
 interface EvaluacionFormProps {
   onSubmit: (data: EvaluacionesDTO) => Promise<void>;
@@ -29,6 +31,12 @@ const EvaluacionForm: React.FC<EvaluacionFormProps> = ({
   const [periodos, setPeriodos] = useState<Periodos[]>([]);
   const [tiposNota, setTiposNota] = useState<TiposNota[]>([]);
   const [tiposEvaluacion, setTiposEvaluacion] = useState<TiposEvaluacion[]>([]);
+
+  // Obtener rol del usuario y sus asignaciones
+  const usuarioActual = escuelaAuthService.getCurrentUser();
+  const esProfesor = escuelaAuthService.isProfesor();
+  const esAdministrador = usuarioActual?.rol?.nombreRol?.toUpperCase() === 'ADMINISTRADOR';
+  const { asignaciones: asignacionesProfesor } = useAsignacionesDocente();
 
   // Cargar datos al montar el componente
   useEffect(() => {
@@ -81,6 +89,17 @@ const EvaluacionForm: React.FC<EvaluacionFormProps> = ({
 
     cargarDatos();
   }, []);
+
+  // Auto-seleccionar asignación si es profesor
+  useEffect(() => {
+    if (esProfesor && !esAdministrador && asignacionesProfesor.length > 0) {
+      // Auto-seleccionar la primera asignación del profesor
+      setFormData((prev) => ({
+        ...prev,
+        idAsignacion: asignacionesProfesor[0].idAsignacion,
+      }));
+    }
+  }, [esProfesor, esAdministrador, asignacionesProfesor]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -200,9 +219,65 @@ const EvaluacionForm: React.FC<EvaluacionFormProps> = ({
 
         <div>
           <label className="block text-sm font-medium mb-1">
-            Asignación Docente {useManualIds && '(ID)'} *
+            {esProfesor && !esAdministrador ? 'Curso' : 'Asignación Docente'} {useManualIds && '(ID)'} *
           </label>
-          {!useManualIds && asignaciones.length > 0 ? (
+          {esProfesor && !esAdministrador ? (
+            // VISTA PARA PROFESOR - Campo de solo lectura con curso y área
+            asignacionesProfesor.length === 1 ? (
+              // Una sola asignación: mostrar como texto
+              <div className="w-full px-3 py-2 border rounded bg-gray-50 flex items-center">
+                {asignacionesProfesor.length > 0 && formData.idAsignacion ? (
+                  <div className="flex flex-col w-full">
+                    {asignacionesProfesor.map((asig) => {
+                      if (asig.idAsignacion === formData.idAsignacion) {
+                        const cursoObj = typeof asig.idCurso === 'object' ? asig.idCurso : null;
+                        const cursoNombre = cursoObj?.nombreCurso || cursoObj?.nombre || 'Curso desconocido';
+                        
+                        // Obtener el área del curso
+                        const areaObj = typeof cursoObj?.idArea === 'object' ? cursoObj.idArea : null;
+                        const areaNombre = areaObj?.nombreArea || areaObj?.nombre || 'Área desconocida';
+                        
+                        return (
+                          <div key={asig.idAsignacion} className="text-sm text-gray-700">
+                            <p className="font-semibold">{cursoNombre} <span className="text-gray-500 text-xs">({areaNombre})</span></p>
+                            <p className="text-gray-500 text-xs">Asignado a: {usuarioActual?.nombres}</p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })}
+                  </div>
+                ) : (
+                  <span className="text-gray-500">Cargando tu curso...</span>
+                )}
+              </div>
+            ) : (
+              // Varias asignaciones: mostrar como dropdown
+              <select
+                name="idAsignacion"
+                value={formData.idAsignacion}
+                onChange={handleChange}
+                disabled={loading}
+                className="w-full px-3 py-2 border rounded"
+                required
+              >
+                <option value={0}>Selecciona tu curso</option>
+                {Array.from(
+                  new Map(
+                    asignacionesProfesor.map((asignacion) => [
+                      asignacion.idAsignacion,
+                      asignacion,
+                    ])
+                  ).values()
+                ).map((asignacion) => (
+                  <option key={asignacion.idAsignacion} value={asignacion.idAsignacion}>
+                    {`${asignacion.nombreCurso} (${asignacion.nombreArea})`}
+                  </option>
+                ))}
+              </select>
+            )
+          ) : !useManualIds && asignaciones.length > 0 ? (
+            // VISTA PARA ADMINISTRADOR - Dropdown normal
             <select
               name="idAsignacion"
               value={formData.idAsignacion}

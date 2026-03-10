@@ -1,16 +1,15 @@
 import { Plus, Shield, Trash2 } from 'lucide-react';
-import React, { useMemo, useState, useEffect } from 'react';
-import { Toaster, toast } from 'sonner';
-import Pagination from '../../../../components/common/Pagination';
+import React, { useEffect, useState } from 'react';
+import { toast, Toaster } from 'sonner';
 import Modal from '../../../../components/common/Modal';
-import ModulosAsignacionEditor from '../components/ModulosAsignacionEditor';
-import CrearRolModal from '../components/CrearRolModal';
-import { useMatrizRol } from '../hooks/useMatrizRol';
-import { useRoles } from '../../usuarios/hooks/useRoles';
-import { eliminarRol } from '../api/rolesApi';
-import type { Rol } from '../../usuarios/types';
-import type { Modulo } from '../types';
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
+import { useRoles } from '../../usuarios/hooks/useRoles';
+import type { Rol } from '../../usuarios/types';
+import { eliminarRol } from '../api/rolesApi';
+import CrearRolModal from '../components/CrearRolModal';
+import ModulosAsignacionEditor from '../components/ModulosAsignacionEditor';
+import { useMatrizRol } from '../hooks/useMatrizRol';
+import type { Modulo } from '../types';
 
 const MatrizRolesPage: React.FC = () => {
     const { roles, isLoading: rolesLoading, cargarRoles } = useRoles();
@@ -20,9 +19,6 @@ const MatrizRolesPage: React.FC = () => {
     const [isEliminarOpen, setIsEliminarOpen] = useState(false);
     const [isEliminando, setIsEliminando] = useState(false);
     const { modulosAsignados, isLoading, isSaving, actualizarModulos } = useMatrizRol(rolSeleccionado?.idRol ?? null);
-
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
 
     // Cargar la lista de módulos disponibles al montar
     useEffect(() => {
@@ -38,12 +34,6 @@ const MatrizRolesPage: React.FC = () => {
         };
         cargarModulos();
     }, []);
-
-    const rolesPaginados = useMemo(() => {
-        const indexOfLastItem = currentPage * itemsPerPage;
-        const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-        return roles.slice(indexOfFirstItem, indexOfLastItem);
-    }, [roles, currentPage, itemsPerPage]);
 
     const handleGuardarModulos = async (modulosSeleccionados: number[]) => {
         if (!rolSeleccionado) return;
@@ -112,7 +102,7 @@ const MatrizRolesPage: React.FC = () => {
                             </div>
                         ) : (
                             <div className="p-4 space-y-2 max-h-96 overflow-y-auto">
-                                {rolesPaginados.map(rol => (
+                                {roles.map(rol => (
                                     <button
                                         key={rol.idRol}
                                         onClick={() => setRolSeleccionado(rol)}
@@ -126,16 +116,6 @@ const MatrizRolesPage: React.FC = () => {
                                         <p className="text-xs opacity-75">ID: {rol.idRol}</p>
                                     </button>
                                 ))}
-                            </div>
-                        )}
-
-                        {roles.length > itemsPerPage && (
-                            <div className="p-4 border-t border-gray-200">
-                                <Pagination
-                                    currentPage={currentPage}
-                                    totalPages={Math.ceil(roles.length / itemsPerPage)}
-                                    onPageChange={setCurrentPage}
-                                />
                             </div>
                         )}
                     </div>

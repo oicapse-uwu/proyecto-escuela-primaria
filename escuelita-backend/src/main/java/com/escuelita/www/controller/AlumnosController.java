@@ -29,8 +29,8 @@ import com.escuelita.www.repository.LimitesSedesSuscripcionRepository;
 import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.repository.SuscripcionesRepository;
 import com.escuelita.www.repository.TipoDocumentosRepository;
-import com.escuelita.www.service.IAlumnosService;
 import com.escuelita.www.security.RequireModulo;
+import com.escuelita.www.service.IAlumnosService;
 
 @RestController
 @RequestMapping("/restful")
@@ -58,63 +58,57 @@ public class AlumnosController {
     @RequireModulo(5)  // 5 = Módulo ALUMNOS
     public ResponseEntity<?> guardar(@RequestBody AlumnosDTO dto) {
         System.out.println("🔍 Intentando crear alumno para sede ID: " + dto.getIdSede());
-        System.out.println("🟡 Estado del alumno recibido: '" + dto.getEstadoAlumno() + "'");
 
         // 🔒 VALIDACIÓN DE LÍMITES POR SEDE
-        // Solo validar si el alumno será ACTIVO (case-insensitive)
-        if (dto.getEstadoAlumno() != null && dto.getEstadoAlumno().toUpperCase().equals("ACTIVO")) {
-            System.out.println("✅ Alumno ACTIVO detectado, ejecutando validación de límites...");
-            Sedes sede = repoSedes.findById(dto.getIdSede()).orElse(null);
-            if (sede == null) {
-                System.err.println("❌ Sede no encontrada: " + dto.getIdSede());
-                return ResponseEntity.badRequest().body("Sede no encontrada");
-            }
+        // Los alumnos siempre se crean activos, por lo tanto siempre validamos
+        Sedes sede = repoSedes.findById(dto.getIdSede()).orElse(null);
+        if (sede == null) {
+            System.err.println("❌ Sede no encontrada: " + dto.getIdSede());
+            return ResponseEntity.badRequest().body("Sede no encontrada");
+        }
 
-            System.out.println("📍 Sede encontrada: " + sede.getNombreSede() + " (Institución: " + sede.getIdInstitucion().getNombre() + ")");
+        System.out.println("📍 Sede encontrada: " + sede.getNombreSede() + " (Institución: " + sede.getIdInstitucion().getNombre() + ")");
 
-            // Buscar suscripción activa de la institución
-            Optional<Suscripciones> suscripcionOpt = repoSuscripciones
-                .findSuscripcionActivaByInstitucion(sede.getIdInstitucion());
+        // Buscar suscripción activa de la institución
+        Optional<Suscripciones> suscripcionOpt = repoSuscripciones
+            .findSuscripcionActivaByInstitucion(sede.getIdInstitucion());
 
-            if (suscripcionOpt.isPresent()) {
-                Suscripciones suscripcionActiva = suscripcionOpt.get();
-                System.out.println("📋 Suscripción activa encontrada: ID=" + suscripcionActiva.getIdSuscripcion() 
-                                    + ", Límite total=" + suscripcionActiva.getLimiteAlumnosContratado());
+        if (suscripcionOpt.isPresent()) {
+            Suscripciones suscripcionActiva = suscripcionOpt.get();
+            System.out.println("📋 Suscripción activa encontrada: ID=" + suscripcionActiva.getIdSuscripcion() 
+                                + ", Límite total=" + suscripcionActiva.getLimiteAlumnosContratado());
 
-                // Buscar límite asignado a esta sede
-                Optional<LimitesSedesSuscripcion> limite = repoLimitesSedes
-                    .findByIdSuscripcionIdAndIdSedeId(
-                        suscripcionActiva.getIdSuscripcion(),
-                        dto.getIdSede()
+            // Buscar límite asignado a esta sede
+            Optional<LimitesSedesSuscripcion> limite = repoLimitesSedes
+                .findByIdSuscripcionIdAndIdSedeId(
+                    suscripcionActiva.getIdSuscripcion(),
+                    dto.getIdSede()
+                );
+
+            if (limite.isPresent()) {
+                int limiteAsignado = limite.get().getLimiteAlumnosAsignado();
+                long alumnosActuales = repoAlumnos.countAlumnosActivosBySede(dto.getIdSede());
+
+                System.out.println("🎯 Límite asignado a sede: " + limiteAsignado);
+                System.out.println("👥 Alumnos activos actuales: " + alumnosActuales);
+
+                if (alumnosActuales >= limiteAsignado) {
+                    String mensajeError = String.format(
+                        "No se puede crear el alumno. La sede '%s' ha alcanzado su límite de %d alumnos activos (%d actuales).",
+                        sede.getNombreSede(),
+                        limiteAsignado,
+                        alumnosActuales
                     );
-
-                if (limite.isPresent()) {
-                    int limiteAsignado = limite.get().getLimiteAlumnosAsignado();
-                    long alumnosActuales = repoAlumnos.countAlumnosActivosBySede(dto.getIdSede());
-
-                    System.out.println("🎯 Límite asignado a sede: " + limiteAsignado);
-                    System.out.println("👥 Alumnos activos actuales: " + alumnosActuales);
-
-                    if (alumnosActuales >= limiteAsignado) {
-                        String mensajeError = String.format(
-                            "No se puede crear el alumno. La sede '%s' ha alcanzado su límite de %d alumnos activos (%d actuales).",
-                            sede.getNombreSede(),
-                            limiteAsignado,
-                            alumnosActuales
-                        );
-                        System.err.println("❌ " + mensajeError);
-                        return ResponseEntity.badRequest().body(mensajeError);
-                    }
-
-                    System.out.println("✅ Validación OK: " + alumnosActuales + " < " + limiteAsignado);
-                } else {
-                    System.out.println("⚠️ No hay límite configurado para esta sede. Permitiendo creación.");
+                    System.err.println("❌ " + mensajeError);
+                    return ResponseEntity.badRequest().body(mensajeError);
                 }
+
+                System.out.println("✅ Validación OK: " + alumnosActuales + " < " + limiteAsignado);
             } else {
-                System.out.println("⚠️ No hay suscripción activa. Permitiendo creación.");
+                System.out.println("⚠️ No hay límite configurado para esta sede. Permitiendo creación.");
             }
         } else {
-            System.out.println("ℹ️ Alumno no activo, saltando validación de límites");
+            System.out.println("⚠️ No hay suscripción activa. Permitiendo creación.");
         }
 
         // Proceder con la creación del alumno
@@ -128,8 +122,6 @@ public class AlumnosController {
         alumnos.setTelefonoContacto(dto.getTelefonoContacto());
         alumnos.setFotoUrl(dto.getFotoUrl());
         alumnos.setObservacionesSalud(dto.getObservacionesSalud());
-        alumnos.setTipoIngreso(dto.getTipoIngreso());
-        alumnos.setEstadoAlumno(dto.getEstadoAlumno());
 
         Sedes sedes = repoSedes
             .findById(dto.getIdSede())
@@ -161,8 +153,6 @@ public class AlumnosController {
         alumnos.setTelefonoContacto(dto.getTelefonoContacto());
         alumnos.setFotoUrl(dto.getFotoUrl());
         alumnos.setObservacionesSalud(dto.getObservacionesSalud());
-        alumnos.setTipoIngreso(dto.getTipoIngreso());
-        alumnos.setEstadoAlumno(dto.getEstadoAlumno());
 
         Sedes sedes = repoSedes
             .findById(dto.getIdSede())

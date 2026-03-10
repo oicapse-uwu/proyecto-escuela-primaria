@@ -38,8 +38,6 @@ export interface Alumno {
     telefonoContacto?: string;
     fotoUrl?: string;
     observacionesSalud?: string;
-    tipoIngreso?: string;
-    estadoAlumno?: string;
     idSede: Sede;
     idTipoDoc: TipoDocumento;
     estado?: number;
@@ -59,8 +57,6 @@ export interface AlumnoDTO {
     telefonoContacto?: string;
     fotoUrl?: string;
     observacionesSalud?: string;
-    tipoIngreso?: string;
-    estadoAlumno?: string;
 }
 
 // Tipo para formulario de alumno

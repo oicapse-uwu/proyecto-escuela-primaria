@@ -1,7 +1,8 @@
-import { Building2, CreditCard, Edit, Plus, Search, Trash2, XCircle } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { Building2, CreditCard, Edit, Plus, Trash2, XCircle } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Toaster, toast } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
+import { SearchFilterBar } from '../../../../components/common/SearchFilterBar';
 import { useInstituciones } from '../../instituciones/hooks/useInstituciones';
 import { cancelarSuscripcionApi } from '../api/suscripcionesApi';
 import SuscripcionForm from '../components/SuscripcionForm';
@@ -48,6 +49,12 @@ const SuscripcionesActivasPage: React.FC = () => {
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const suscripcionesPaginadas = suscripcionesFiltradas.slice(indexOfFirstItem, indexOfLastItem);
+
+    // Opciones de filtro para SearchFilterBar
+    const filterOptions = useMemo(() => [
+        { value: 'todos', label: 'Todos los estados' },
+        ...estadosSuscripcion.map(estado => ({ value: estado.nombre, label: estado.nombre }))
+    ], [estadosSuscripcion]);
 
     // Reset página cuando cambia el filtro/búsqueda
     useEffect(() => {
@@ -155,7 +162,7 @@ const SuscripcionesActivasPage: React.FC = () => {
 
     return (
         <div className="px-3 pt-6 pb-3 sm:px-4 sm:pt-8 sm:pb-4 lg:px-6 lg:pt-8 lg:pb-6 overflow-x-hidden">
-            <Toaster position="top-right" richColors />
+            <Toaster position="top-right" richColors expand={true} visibleToasts={5} />
             
             {/* Header */}
             <div className="mb-3 lg:mb-4">
@@ -171,7 +178,7 @@ const SuscripcionesActivasPage: React.FC = () => {
                     </div>
                     <button
                         onClick={handleNueva}
-                        className="bg-primary text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md"
+                        className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white px-6 py-2.5 rounded-lg hover:from-[#1e40af] hover:to-[#312e81] transition-colors flex items-center justify-center gap-2 shadow-md font-semibold whitespace-nowrap"
                     >
                         <Plus className="w-5 h-5" />
                         <span>Nueva Suscripción</span>
@@ -220,35 +227,14 @@ const SuscripcionesActivasPage: React.FC = () => {
             </div>
 
             {/* Filtros */}
-            <div className="bg-white rounded-lg shadow p-3 mb-3 lg:mb-4">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                    <div>
-                        <select
-                            value={filterEstado}
-                            onChange={(e) => setFilterEstado(e.target.value)}
-                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                        >
-                            <option value="todos">Todos los estados</option>
-                            {estadosSuscripcion.map(estado => (
-                                <option key={estado.idEstado} value={estado.nombre}>
-                                    {estado.nombre}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="relative lg:col-span-2">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                        <input
-                            type="text"
-                            placeholder="Buscar por institución o código modular..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                        />
-                    </div>
-                </div>
-            </div>
+            <SearchFilterBar
+                searchValue={searchTerm}
+                onSearchChange={setSearchTerm}
+                searchPlaceholder="Buscar por institución o código modular..."
+                filterValue={filterEstado}
+                onFilterChange={setFilterEstado}
+                filterOptions={filterOptions}
+            />
 
             {/* Tabla de Suscripciones */}
             <div className="bg-white rounded-lg shadow overflow-hidden flex flex-col">

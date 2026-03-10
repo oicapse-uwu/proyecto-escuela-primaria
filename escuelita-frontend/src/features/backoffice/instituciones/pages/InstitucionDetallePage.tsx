@@ -1,4 +1,4 @@
-import { ArrowLeft, Building2, CreditCard, Edit, FileText, FolderOpen, Mail, MapPin, Phone, Plus, Receipt, Trash2, User, X } from 'lucide-react';
+import { ArrowLeft, Building2, CreditCard, Edit, FileText, FolderOpen, Mail, MapPin, Phone, Plus, Receipt, Settings, Trash2, User, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast, Toaster } from 'sonner';
@@ -7,6 +7,7 @@ import SedeForm from '../../sedes/components/SedeForm';
 import { useSedes } from '../../sedes/hooks/useSedes';
 import type { Sede, SedeFormData } from '../../sedes/types';
 import { getSuscripcionPorInstitucionApi } from '../../suscripciones/api/suscripcionesApi';
+import DistribucionLimitesModal from '../../suscripciones/components/DistribucionLimitesModal';
 import type { Suscripcion } from '../../suscripciones/types';
 import { actualizarInstitucion, obtenerInstitucionPorId } from '../api/institucionesApi';
 import InstitucionForm from '../components/InstitucionForm';
@@ -31,6 +32,7 @@ const InstitucionDetallePage: React.FC = () => {
     const [suscripcion, setSuscripcion] = useState<Suscripcion | null>(null);
     const [showSedeForm, setShowSedeForm] = useState(false);
     const [sedeEditar, setSedeEditar] = useState<Sede | null>(null);
+    const [showDistribucionModal, setShowDistribucionModal] = useState(false);
     
     const { crear: crearSede, actualizar: actualizarSede, eliminar: eliminarSede } = useSedes();
     
@@ -262,10 +264,10 @@ const InstitucionDetallePage: React.FC = () => {
                         {activeTab === 'informacion' && (
                             <button
                                 onClick={() => setEditMode(!editMode)}
-                                className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                                className={`flex items-center gap-2 px-6 py-2.5 rounded-lg transition-colors font-semibold ${
                                     editMode
                                         ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                        : 'bg-primary text-white hover:bg-primary-dark'
+                                        : 'bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white hover:from-[#1e40af] hover:to-[#312e81]'
                                 }`}
                             >
                                 {editMode ? (
@@ -657,18 +659,29 @@ const InstitucionDetallePage: React.FC = () => {
                                         {sedes.length}
                                     </span>
                                 </h3>
-                                <button
-                                    onClick={handleNuevaSede}
-                                    disabled={!suscripcion}
-                                    className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-all ${
-                                        suscripcion
-                                            ? 'bg-primary text-white hover:bg-primary-dark shadow-md hover:shadow-lg'
-                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                    }`}
-                                >
-                                    <Plus className="w-5 h-5" />
-                                    Nueva Sede
-                                </button>
+                                <div className="flex gap-3">
+                                    {suscripcion && (
+                                        <button
+                                            onClick={() => setShowDistribucionModal(true)}
+                                            className="flex items-center gap-2 px-6 py-2.5 rounded-lg transition-all bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white hover:from-[#1e40af] hover:to-[#312e81] shadow-md hover:shadow-lg font-semibold whitespace-nowrap"
+                                        >
+                                            <Settings className="w-5 h-5" />
+                                            Distribución
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={handleNuevaSede}
+                                        disabled={!suscripcion}
+                                        className={`flex items-center gap-2 px-6 py-2.5 rounded-lg transition-all font-semibold whitespace-nowrap ${
+                                            suscripcion
+                                                ? 'bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white hover:from-[#1e40af] hover:to-[#312e81] shadow-md hover:shadow-lg'
+                                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                        }`}
+                                    >
+                                        <Plus className="w-5 h-5" />
+                                        Nueva Sede
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Lista de Sedes */}
@@ -775,6 +788,21 @@ const InstitucionDetallePage: React.FC = () => {
                     </div>
                 )}
             </div>
+            
+            {/* Modal de Distribución de Límites */}
+            {showDistribucionModal && suscripcion && (
+                <DistribucionLimitesModal
+                    idSuscripcion={suscripcion.idSuscripcion}
+                    idInstitucion={Number(id)}
+                    limiteTotal={suscripcion.limiteAlumnosContratado || 0}
+                    tipoDistribucion={suscripcion.tipoDistribucionLimite as 'EQUITATIVA' | 'PERSONALIZADA'}
+                    onClose={() => setShowDistribucionModal(false)}
+                    onSuccess={() => {
+                        setShowDistribucionModal(false);
+                        cargarSedes();
+                    }}
+                />
+            )}
         </div>
     );
 };

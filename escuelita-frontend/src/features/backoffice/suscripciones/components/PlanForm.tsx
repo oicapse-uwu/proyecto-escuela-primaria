@@ -181,10 +181,7 @@ const PlanForm: React.FC<PlanFormProps> = ({ planEditar, onSubmit, onCancel }) =
                             </div>
                         </div>
 
-                        {/* Nota informativa */}
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-                            <p><strong>Nota:</strong> Los límites de alumnos y sedes pueden dejarse vacíos para planes sin restricciones específicas.</p>
-                        </div>
+
                     </div>
                 </form>
 
@@ -202,7 +199,7 @@ const PlanForm: React.FC<PlanFormProps> = ({ planEditar, onSubmit, onCancel }) =
                         type="submit"
                         onClick={handleSubmit}
                         disabled={isSubmitting}
-                        className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-6 py-2.5 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-lg hover:from-[#1e40af] hover:to-[#312e81] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                     >
                         {isSubmitting ? 'Guardando...' : (planEditar ? 'Actualizar Plan' : 'Crear Plan')}
                     </button>

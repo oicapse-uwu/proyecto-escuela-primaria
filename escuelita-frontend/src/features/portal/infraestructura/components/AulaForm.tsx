@@ -57,14 +57,14 @@ const AulaForm: React.FC<AulaFormProps> = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
                 {/* Header */}
-                <div className="bg-white border-b px-6 py-4 flex justify-between items-center rounded-t-lg">
-                    <h2 className="text-xl font-bold text-gray-800 flex items-center space-x-2">
-                        <DoorOpen className="w-5 h-5 text-primary" />
+                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] px-6 py-4 text-white flex justify-between items-center rounded-t-lg">
+                    <h2 className="text-xl font-bold flex items-center space-x-2">
+                        <DoorOpen className="w-5 h-5" />
                         <span>{aula ? 'Editar Aula' : 'Nueva Aula'}</span>
                     </h2>
                     <button
                         onClick={onCancel}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="p-2 hover:bg-white/20 rounded-lg transition-colors"
                         disabled={isLoading}
                     >
                         <X className="w-5 h-5" />

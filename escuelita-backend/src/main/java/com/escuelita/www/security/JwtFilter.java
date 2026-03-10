@@ -42,19 +42,35 @@ public class JwtFilter extends GenericFilter{
             if (jwtUtil.validarToken(token)) {
                 String clienteId = jwtUtil.extraerClienteId(token);
                 
-                // Extraer sede del token si es usuario de escuela
-                // Formato: "ESCUELA_123_SEDE_45" o "SUPER_ADMIN_1"
-                if (clienteId.contains("_SEDE_")) {
+                // Verificar si el clienteId existe en tabla Registros (acceso SUPER_ADMIN)
+                Optional<Registros> registroMatch = registrosRepository
+                            .findAll().stream()
+                            .filter(r -> clienteId.equals(r.getCliente_id()))
+                            .findFirst();
+                
+                if (registroMatch.isPresent()) {
+                    // Usuario de tabla Registros → acceso SUPER_ADMIN
+                    TenantContext.setUserType("SUPER_ADMIN");
+                    System.out.println("🔑 Token JWT de Registros '" + clienteId + "' - Acceso SUPER_ADMIN sin restricciones");
+                } else if (clienteId.contains("_SEDE_")) {
+                    // Extraer sede del token si es usuario de escuela
+                    // Formato: "ESCUELA_123_SEDE_45"
                     try {
                         String[] parts = clienteId.split("_SEDE_");
                         if (parts.length == 2) {
                             Long sedeId = Long.parseLong(parts[1]);
                             TenantContext.setSedeId(sedeId);
                             TenantContext.setUserType("ESCUELA");
-                            System.out.println("🏫 Usuario de ESCUELA - Sede ID: " + sedeId);
+                            // Extraer userId del formato ESCUELA_123
+                            String escuelaPart = parts[0]; // "ESCUELA_123"
+                            if (escuelaPart.startsWith("ESCUELA_")) {
+                                Long userId = Long.parseLong(escuelaPart.substring("ESCUELA_".length()));
+                                TenantContext.setUserId(userId);
+                                System.out.println("🏫 Usuario de ESCUELA - User ID: " + userId + " - Sede ID: " + sedeId);
+                            }
                         }
                     } catch (NumberFormatException e) {
-                        System.err.println("⚠️  Error al extraer sede del token: " + clienteId);
+                        System.err.println("⚠️  Error al extraer sede/usuario del token: " + clienteId);
                     }
                 } else if (clienteId.startsWith("SUPER_ADMIN") || clienteId.startsWith("ADMIN_")) {
                     TenantContext.setUserType("SUPER_ADMIN");
@@ -67,7 +83,7 @@ public class JwtFilter extends GenericFilter{
                 SecurityContextHolder.getContext()
                             .setAuthentication(auth);
             } else {
-                // Si no es JWT válido, buscar en tabla Registros (usuarios de escuela)
+                // Si no es JWT válido, buscar en tabla Registros (acceso SUPER_ADMIN)
                 Optional<Registros> match = registrosRepository
                             .findAll().stream()
                             .filter(r ->token.equals(r.getAccess_token()))
@@ -75,6 +91,11 @@ public class JwtFilter extends GenericFilter{
 
                 if(match.isPresent()){
                     String clienteId = match.get().getCliente_id();
+                    
+                    // Configurar como SUPER_ADMIN para acceso sin restricciones
+                    TenantContext.setUserType("SUPER_ADMIN");
+                    System.out.println("🔑 Token de Registros '" + clienteId + "' - Acceso SUPER_ADMIN sin restricciones");
+                    
                     UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(clienteId, 
                                 null, Collections.emptyList());

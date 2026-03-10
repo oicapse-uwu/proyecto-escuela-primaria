@@ -385,7 +385,7 @@ const Dashboard: React.FC = () => {
                                         fill="#8884d8"
                                         dataKey="value"
                                     >
-                                        {distribucionPlanes.map((_, index) => (
+                                        {distribucionPlanes.map((_entry, index) => (
                                             <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                                         ))}
                                     </Pie>

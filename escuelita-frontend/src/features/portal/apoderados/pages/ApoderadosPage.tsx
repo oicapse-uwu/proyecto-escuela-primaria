@@ -1,7 +1,6 @@
-import { Edit, IdCard, Mail, Phone, Plus, Search, Trash2, User, Users } from 'lucide-react';
+import { Edit, IdCard, Mail, Phone, Plus, Search, Trash2, User, UserCircle, Users, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Toaster, toast } from 'sonner';
-import Modal from '../../../../components/common/Modal';
 import Pagination from '../../../../components/common/Pagination';
 import { obtenerTiposDocumento } from '../api/apoderadosApi';
 import ApoderadoForm from '../components/ApoderadoForm';
@@ -241,7 +240,7 @@ const ApoderadosPage: React.FC = () => {
                         <div key={apoderado.idApoderado} className="bg-white rounded-lg shadow p-4">
                             <div className="flex justify-between items-start mb-3">
                                 <div className="flex-1">
-                                    <h3 className="font-semibold text-gray-800">
+                                    <h3 className="font-semibold text-gray-800 uppercase">
                                         {apoderado.nombres} {apoderado.apellidos}
                                     </h3>
                                     <p className="text-sm text-gray-600 flex items-center mt-1">
@@ -335,7 +334,7 @@ const ApoderadosPage: React.FC = () => {
                                             </div>
                                         </td>
                                         <td className="px-4 py-3 text-sm">
-                                            <div className="text-gray-900 font-medium">
+                                            <div className="text-gray-900 font-medium uppercase">
                                                 {apoderado.nombres} {apoderado.apellidos}
                                             </div>
                                             {apoderado.lugarTrabajo && (
@@ -391,20 +390,35 @@ const ApoderadosPage: React.FC = () => {
             )}
 
             {/* Modal del Formulario */}
-            <Modal
-                isOpen={showModal}
-                onClose={handleCancel}
-                title={apoderadoEditar ? 'Editar Apoderado' : 'Nuevo Apoderado'}
-                size="2xl"
-            >
-                <ApoderadoForm
-                    apoderado={apoderadoEditar}
-                    tiposDocumento={tiposDocumento}
-                    onSubmit={handleSubmit}
-                    onCancel={handleCancel}
-                    isLoading={loading}
-                />
-            </Modal>
+            {showModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh]">
+                        <div className="bg-gradient-to-r from-[#064e3b] via-[#065f46] to-[#059669] p-6 text-white flex justify-between items-center">
+                            <h2 className="text-2xl font-bold flex items-center space-x-2">
+                                <UserCircle className="w-6 h-6" />
+                                <span>{apoderadoEditar ? 'Editar Apoderado' : 'Nuevo Apoderado'}</span>
+                            </h2>
+                            <button
+                                onClick={handleCancel}
+                                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                                disabled={loading}
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        <div className="flex-1 p-6 overflow-y-auto">
+                            <ApoderadoForm
+                                apoderado={apoderadoEditar}
+                                tiposDocumento={tiposDocumento}
+                                onSubmit={handleSubmit}
+                                onCancel={handleCancel}
+                                isLoading={loading}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

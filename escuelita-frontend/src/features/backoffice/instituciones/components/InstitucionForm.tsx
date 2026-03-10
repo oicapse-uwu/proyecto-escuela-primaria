@@ -305,7 +305,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                         value={formData.tipoGestion}
                                         onChange={handleChange}
                                         required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        className="w-full pl-3 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                                     >
                                         <option value="Pública">Pública</option>
                                         <option value="Privada">Privada</option>
@@ -634,7 +634,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                         <button
                             type="submit"
                             disabled={isLoading || uploadingFile}
-                            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 flex items-center space-x-2"
+                            className="px-6 py-2.5 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-lg hover:from-[#1e40af] hover:to-[#312e81] transition-colors disabled:opacity-50 flex items-center gap-2 font-semibold"
                         >
                             {(isLoading || uploadingFile) ? (
                                 <>

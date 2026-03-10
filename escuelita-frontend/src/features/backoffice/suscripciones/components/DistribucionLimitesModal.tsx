@@ -1,4 +1,4 @@
-import { AlertCircle, Check, X } from 'lucide-react';
+import { BarChart3, Check, CreditCard, Save, Sliders, Target, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { obtenerSedesPorInstitucion } from '../../sedes/api/sedesApi';
@@ -99,61 +99,74 @@ const DistribucionLimitesModal: React.FC<DistribucionLimitesModalProps> = ({
     const totalAsignado = calcularTotalAsignado();
     const quedanPorAsignar = limiteTotal - totalAsignado;
     const excedeLimite = totalAsignado > limiteTotal;
+    
+    // Mostrar validación como toast
+    useEffect(() => {
+        if (tipoDistribucion === 'PERSONALIZADA' && totalAsignado > 0) {
+            if (excedeLimite) {
+                toast.error(`La suma de límites (${totalAsignado}) excede el límite total (${limiteTotal})`, {
+                    id: 'validacion-limites',
+                    duration: 4000
+                });
+            } else if (quedanPorAsignar > 0) {
+                toast.info(`Quedan ${quedanPorAsignar} alumnos sin asignar de ${limiteTotal} totales`, {
+                    id: 'validacion-limites',
+                    duration: 4000
+                });
+            } else if (totalAsignado === limiteTotal) {
+                toast.success(`Distribución completa: ${totalAsignado}/${limiteTotal} alumnos asignados`, {
+                    id: 'validacion-limites',
+                    duration: 4000
+                });
+            }
+        }
+    }, [totalAsignado, limiteTotal, tipoDistribucion, excedeLimite, quedanPorAsignar]);
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden ring-1 ring-gray-200">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full overflow-hidden flex flex-col">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] px-6 py-5 flex justify-between items-center">
-                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                        <span className="text-2xl">📊</span>
-                        Distribución de Límites de Alumnos
+                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] p-6 text-white flex justify-between items-center">
+                    <h2 className="text-2xl font-bold flex items-center space-x-2">
+                        <BarChart3 className="w-6 h-6" />
+                        <span>Distribución de Límites de Alumnos</span>
                     </h2>
                     <button
                         onClick={onClose}
-                        className="text-white hover:bg-white/20 rounded-lg p-1.5 transition-all hover:rotate-90"
+                        className="p-2 hover:bg-white/20 rounded-lg transition-colors"
                     >
                         <X className="w-6 h-6" />
                     </button>
                 </div>
 
-                <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
-                    {/* Información General */}
-                    <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-xl p-5 mb-6 shadow-sm">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <span className="text-sm font-medium text-gray-600">Límite Total Contratado:</span>
-                                <p className="text-2xl font-bold text-purple-700">{limiteTotal} alumnos</p>
-                            </div>
-                            <div>
-                                <span className="text-sm font-medium text-gray-600">Número de Sedes:</span>
-                                <p className="text-2xl font-bold text-indigo-700">{sedes.length}</p>
-                            </div>
-                        </div>
-                    </div>
+                <div className="p-6 h-[420px] overflow-y-auto">
 
                     {/* Selector de Tipo de Distribución */}
                     <div className="mb-6">
-                        <label className="block text-sm font-semibold text-gray-700 mb-3">
+                        <label className={`block text-sm font-semibold mb-3 ${
+                            tipoDistribucion === 'EQUITATIVA' ? 'text-pink-700' : 'text-purple-700'
+                        }`}>
                             Tipo de Distribución
                         </label>
                         <div className="grid grid-cols-2 gap-4">
                             <button
                                 type="button"
                                 onClick={() => setTipoDistribucion('EQUITATIVA')}
-                                className={`p-5 border-2 rounded-xl transition-all transform hover:scale-[1.02] ${
+                                className={`p-4 border-2 rounded-lg transition-all ${
                                     tipoDistribucion === 'EQUITATIVA'
-                                        ? 'border-purple-500 bg-gradient-to-br from-purple-50 to-purple-100 shadow-md'
-                                        : 'border-gray-200 hover:border-purple-300 hover:shadow-sm'
+                                        ? 'border-pink-500 bg-pink-50'
+                                        : 'border-gray-300 hover:border-pink-300 hover:bg-pink-50/50'
                                 }`}
                             >
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="font-bold text-gray-800 flex items-center gap-2">
-                                        <span>⚖️</span>
+                                    <span className={`font-semibold flex items-center gap-2 ${
+                                        tipoDistribucion === 'EQUITATIVA' ? 'text-pink-700' : 'text-gray-800'
+                                    }`}>
+                                        <Sliders className="w-5 h-5" />
                                         Equitativa
                                     </span>
                                     {tipoDistribucion === 'EQUITATIVA' && (
-                                        <Check className="w-6 h-6 text-purple-600 animate-in" />
+                                        <Check className="w-5 h-5 text-pink-600" />
                                     )}
                                 </div>
                                 <p className="text-sm text-gray-600 text-left">
@@ -164,19 +177,21 @@ const DistribucionLimitesModal: React.FC<DistribucionLimitesModalProps> = ({
                             <button
                                 type="button"
                                 onClick={() => setTipoDistribucion('PERSONALIZADA')}
-                                className={`p-5 border-2 rounded-xl transition-all transform hover:scale-[1.02] ${
+                                className={`p-4 border-2 rounded-lg transition-all ${
                                     tipoDistribucion === 'PERSONALIZADA'
-                                        ? 'border-indigo-500 bg-gradient-to-br from-indigo-50 to-indigo-100 shadow-md'
-                                        : 'border-gray-200 hover:border-indigo-300 hover:shadow-sm'
+                                        ? 'border-purple-500 bg-purple-50'
+                                        : 'border-gray-300 hover:border-purple-300 hover:bg-purple-50/50'
                                 }`}
                             >
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="font-bold text-gray-800 flex items-center gap-2">
-                                        <span>🎯</span>
+                                    <span className={`font-semibold flex items-center gap-2 ${
+                                        tipoDistribucion === 'PERSONALIZADA' ? 'text-purple-700' : 'text-gray-800'
+                                    }`}>
+                                        <Target className="w-5 h-5" />
                                         Personalizada
                                     </span>
                                     {tipoDistribucion === 'PERSONALIZADA' && (
-                                        <Check className="w-6 h-6 text-indigo-600 animate-in" />
+                                        <Check className="w-5 h-5 text-purple-600" />
                                     )}
                                 </div>
                                 <p className="text-sm text-gray-600 text-left">
@@ -189,26 +204,37 @@ const DistribucionLimitesModal: React.FC<DistribucionLimitesModalProps> = ({
                     {/* Lista de Sedes */}
                     {isLoadingSedes ? (
                         <div className="text-center py-8">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-purple-600 mx-auto"></div>
+                            <div className={`animate-spin rounded-full h-12 w-12 border-b-4 mx-auto ${
+                                tipoDistribucion === 'EQUITATIVA' ? 'border-pink-600' : 'border-purple-600'
+                            }`}></div>
                             <p className="mt-4 text-gray-600 font-medium">Cargando sedes...</p>
                         </div>
                     ) : (
                         <>
                             <div className="mb-4">
-                                <h3 className="font-semibold text-gray-800 mb-3">
+                                <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${
+                                    tipoDistribucion === 'EQUITATIVA' ? 'text-pink-700' : 'text-purple-700'
+                                }`}>
+                                    <CreditCard className="w-4 h-4" />
                                     Distribución por Sede
                                 </h3>
                                 <div className="space-y-3">
                                     {sedes.map((sede) => (
                                         <div
                                             key={sede.idSede}
-                                            className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border-2 border-gray-200 hover:border-purple-300 transition-all"
+                                            className={`flex items-center justify-between p-4 bg-white border border-gray-300 rounded-lg transition-all ${
+                                                tipoDistribucion === 'EQUITATIVA' ? 'hover:border-pink-400' : 'hover:border-purple-400'
+                                            }`}
                                         >
                                             <div className="flex-1">
                                                 <p className="font-semibold text-gray-800">{sede.nombreSede}</p>
                                                 {sede.esSedePrincipal && (
-                                                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">
-                                                        ⭐ Sede Principal
+                                                    <span className={`text-xs px-2 py-0.5 rounded font-medium mt-1 inline-block ${
+                                                        tipoDistribucion === 'EQUITATIVA' 
+                                                            ? 'bg-pink-100 text-pink-700' 
+                                                            : 'bg-purple-100 text-purple-700'
+                                                    }`}>
+                                                        Sede Principal
                                                     </span>
                                                 )}
                                             </div>
@@ -220,54 +246,19 @@ const DistribucionLimitesModal: React.FC<DistribucionLimitesModalProps> = ({
                                                         onChange={(e) => handleLimiteChange(sede.idSede, e.target.value)}
                                                         min="0"
                                                         max={limiteTotal}
-                                                        className="w-28 px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 font-semibold transition-all"
+                                                        className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                                     />
                                                 ) : (
-                                                    <div className="w-28 px-4 py-2 bg-purple-100 border-2 border-purple-300 rounded-lg text-center font-bold text-purple-700">
+                                                    <div className="w-24 px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg text-center font-semibold text-gray-700">
                                                         {limitesPersonalizados[sede.idSede] || 0}
                                                     </div>
                                                 )}
-                                                <span className="text-gray-600 font-medium">alumnos</span>
+                                                <span className={`text-sm font-medium ${
+                                                    tipoDistribucion === 'EQUITATIVA' ? 'text-pink-600' : 'text-purple-600'
+                                                }`}>alumnos</span>
                                             </div>
                                         </div>
                                     ))}
-                                </div>
-                            </div>
-
-                            {/* Resumen */}
-                            <div className={`p-4 rounded-lg border-2 ${
-                                excedeLimite 
-                                    ? 'bg-red-50 border-red-300' 
-                                    : quedanPorAsignar > 0 
-                                        ? 'bg-yellow-50 border-yellow-300'
-                                        : 'bg-green-50 border-green-300'
-                            }`}>
-                                <div className="flex items-start gap-3">
-                                    <AlertCircle className={`w-5 h-5 mt-0.5 ${
-                                        excedeLimite 
-                                            ? 'text-red-600' 
-                                            : quedanPorAsignar > 0 
-                                                ? 'text-yellow-600'
-                                                : 'text-green-600'
-                                    }`} />
-                                    <div className="flex-1">
-                                        <p className="font-semibold text-gray-800 mb-1">
-                                            Total Asignado: {totalAsignado} / {limiteTotal} alumnos
-                                        </p>
-                                        {excedeLimite ? (
-                                            <p className="text-sm text-red-700">
-                                                ⚠️ Excede el límite por {totalAsignado - limiteTotal} alumnos
-                                            </p>
-                                        ) : quedanPorAsignar > 0 ? (
-                                            <p className="text-sm text-yellow-700">
-                                                ℹ️ Quedan {quedanPorAsignar} alumnos sin asignar
-                                            </p>
-                                        ) : (
-                                            <p className="text-sm text-green-700">
-                                                ✅ Distribución completa y correcta
-                                            </p>
-                                        )}
-                                    </div>
                                 </div>
                             </div>
                         </>
@@ -275,11 +266,12 @@ const DistribucionLimitesModal: React.FC<DistribucionLimitesModalProps> = ({
                 </div>
 
                 {/* Footer */}
-                <div className="border-t-2 border-gray-200 px-6 py-5 bg-gradient-to-r from-gray-50 to-gray-100 flex justify-end gap-3">
+                <div className="bg-gray-50 px-6 py-4 border-t border-gray-200 flex justify-end space-x-4">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-6 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-white hover:border-gray-400 transition-all font-medium"
+                        className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                        disabled={isLoading}
                     >
                         Cancelar
                     </button>
@@ -287,7 +279,7 @@ const DistribucionLimitesModal: React.FC<DistribucionLimitesModalProps> = ({
                         type="button"
                         onClick={handleGuardar}
                         disabled={isLoading || excedeLimite || isLoadingSedes}
-                        className="px-6 py-2.5 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-xl hover:from-[#1e40af] hover:to-[#312e81] transition-all disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed flex items-center gap-2 font-semibold shadow-md hover:shadow-lg"
+                        className="px-6 py-2.5 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-lg hover:from-[#1e40af] hover:to-[#312e81] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-semibold"
                     >
                         {isLoading ? (
                             <>
@@ -295,7 +287,10 @@ const DistribucionLimitesModal: React.FC<DistribucionLimitesModalProps> = ({
                                 Guardando...
                             </>
                         ) : (
-                            '💾 Guardar Distribución'
+                            <>
+                                <Save className="w-4 h-4" />
+                                Guardar Distribución
+                            </>
                         )}
                     </button>
                 </div>

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.escuelita.www.entity.Asistencias;
 import com.escuelita.www.repository.AsistenciasRepository;
+import com.escuelita.www.repository.PerfilDocenteRepository;
 import com.escuelita.www.service.IAsistenciasService;
 import com.escuelita.www.util.TenantContext;
 
@@ -15,13 +16,24 @@ import com.escuelita.www.util.TenantContext;
 public class AsistenciasService implements IAsistenciasService {
     @Autowired
     private AsistenciasRepository repoAsistencias;
-    
+
+    @Autowired
+    private PerfilDocenteRepository repoPerfilDocente;
+
     @Transactional(readOnly = true)
     public List<Asistencias> buscarTodos() {
         if (TenantContext.isSuperAdmin()) {
             return repoAsistencias.findAll();
         }
-        return repoAsistencias.findBySedeId(TenantContext.getSedeId());
+        Long userId = TenantContext.getUserId();
+        Long sedeId = TenantContext.getSedeId();
+        if (userId != null && repoPerfilDocente.findByIdUsuario_IdUsuario(userId).isPresent()) {
+            return repoAsistencias.findByDocenteUsuarioId(userId);
+        }
+        if (sedeId != null) {
+            return repoAsistencias.findBySedeId(sedeId);
+        }
+        return repoAsistencias.findAll();
     }
     
     @Override

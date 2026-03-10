@@ -1,11 +1,14 @@
 import type { LucideIcon } from 'lucide-react';
 import {
     BarChart3,
+    BookOpen,
     Building2,
     CreditCard,
-    FileText,
+    GraduationCap,
+    HeartPulse,
     LayoutDashboard,
     Package,
+    Receipt,
     Settings,
     Shield,
     TrendingUp,
@@ -29,7 +32,7 @@ interface MenuItem {
 
 const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }) => {
     const location = useLocation();
-    const [expandedModules, setExpandedModules] = useState<string[]>(['dashboard']);
+    const [expandedModules, setExpandedModules] = useState<string[]>(['dashboard', 'Reportes']);
 
     const isActive = (path?: string) => {
         if (!path) return false;
@@ -60,10 +63,8 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }
             icon: CreditCard,
             subItems: [
                 { name: 'Planes Disponibles', path: '/admin/suscripciones/planes', icon: Package },
-                { name: 'Suscripciones Activas', path: '/admin/suscripciones/activas', icon: CreditCard },
-                { name: 'Pagos por Institución', path: '/admin/suscripciones/instituciones', icon: Building2 },
-                { name: 'Pagos Pendientes', path: '/admin/suscripciones/pendientes', icon: TrendingUp },
-                { name: 'Facturación', path: '/admin/suscripciones/facturacion', icon: FileText },
+                { name: 'Suscripciones', path: '/admin/suscripciones/activas', icon: CreditCard },
+                { name: 'Pagos', path: '/admin/suscripciones/instituciones', icon: Building2 },
             ]
         },
         {
@@ -86,6 +87,10 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({ isOpen, onClose }
                 { name: 'Estadísticas Generales', path: '/admin/reportes/estadisticas', icon: TrendingUp },
                 { name: 'Uso del Sistema', path: '/admin/reportes/uso', icon: BarChart3 },
                 { name: 'Ingresos', path: '/admin/reportes/ingresos', icon: CreditCard },
+                { name: 'Reporte Académico', path: '/admin/reportes/academico', icon: BookOpen },
+                { name: 'Salud Comercial', path: '/admin/reportes/salud-comercial', icon: HeartPulse },
+                { name: 'Pagos de Suscripción', path: '/admin/reportes/pagos-suscripcion', icon: Receipt },
+                { name: 'Alumnos', path: '/admin/reportes/alumnos', icon: GraduationCap },
             ]
         },
     ];

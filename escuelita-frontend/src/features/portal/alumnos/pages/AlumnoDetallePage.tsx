@@ -91,8 +91,6 @@ const AlumnoDetallePage: React.FC = () => {
                 genero: alumnoData.genero,
                 direccion: alumnoData.direccion || '',
                 telefonoContacto: alumnoData.telefonoContacto || '',
-                tipoIngreso: alumnoData.tipoIngreso || '',
-                estadoAlumno: alumnoData.estadoAlumno || 'ACTIVO',
                 observacionesSalud: alumnoData.observacionesSalud || ''
             });
         } catch (error) {
@@ -148,12 +146,12 @@ const AlumnoDetallePage: React.FC = () => {
                 idAlumno: Number(id),
                 ...formData
             });
-            toast.success('Alumno actualizado correctamente');
+            toast.success('Alumno actualizado exitosamente');
             setEditMode(false);
             await cargarDatos();
         } catch (error: any) {
             const data = error?.response?.data;
-            const errMsg = typeof data === 'string' ? data : (data?.message || 'Error al actualizar alumno');
+            const errMsg = typeof data === 'string' ? data : (data?.message || 'Error al actualizar el alumno');
             toast.error(errMsg);
         }
     };
@@ -194,15 +192,15 @@ const AlumnoDetallePage: React.FC = () => {
         try {
             if (relacionEditar) {
                 await actualizarRelacion(relacionEditar.idAlumnoApoderado, relacionFormData);
-                toast.success('Relación actualizada correctamente');
+                toast.success('Relación actualizada exitosamente');
             } else {
                 await crearRelacion(relacionFormData);
-                toast.success('Apoderado vinculado correctamente');
+                toast.success('Apoderado vinculado exitosamente');
             }
             setShowApoderadoModal(false);
             await cargarRelaciones();
         } catch (error: any) {
-            toast.error(error?.response?.data?.message || 'Error al guardar relación');
+            toast.error(error?.response?.data?.message || 'Error al crear la relación');
         }
     };
 
@@ -211,10 +209,10 @@ const AlumnoDetallePage: React.FC = () => {
 
         try {
             await eliminarRelacion(idRelacion);
-            toast.success('Relación eliminada correctamente');
+            toast.success('Relación eliminada exitosamente');
             await cargarRelaciones();
         } catch (error: any) {
-            toast.error(error?.response?.data?.message || 'Error al eliminar relación');
+            toast.error(error?.response?.data?.message || 'Error al eliminar la relación');
         }
     };
 
@@ -266,16 +264,16 @@ const AlumnoDetallePage: React.FC = () => {
             if (documentoEditar) {
                 dto.idDocumentoAlumno = documentoEditar.idDocumentoAlumno;
                 await actualizarDocumento(dto);
-                toast.success('Documento actualizado correctamente');
+                toast.success('Documento actualizado exitosamente');
             } else {
                 await crearDocumento(dto);
-                toast.success('Documento marcado como presentado');
+                toast.success('Documento presentado exitosamente');
             }
 
             setShowDocumentoModal(false);
             await cargarDocumentos();
         } catch (error: any) {
-            toast.error(error?.response?.data?.mensaje || error?.response?.data?.message || 'Error al guardar documento');
+            toast.error(error?.response?.data?.mensaje || error?.response?.data?.message || 'Error al guardar el documento');
         } finally {
             setIsUploadingFile(false);
         }
@@ -286,10 +284,10 @@ const AlumnoDetallePage: React.FC = () => {
 
         try {
             await eliminarDocumento(idDocumento);
-            toast.success('Documento eliminado correctamente');
+            toast.success('Documento eliminado exitosamente');
             await cargarDocumentos();
         } catch (error: any) {
-            toast.error(error?.response?.data?.message || 'Error al eliminar documento');
+            toast.error(error?.response?.data?.message || 'Error al eliminar el documento');
         }
     };
 
@@ -343,7 +341,7 @@ const AlumnoDetallePage: React.FC = () => {
                         )}
                     </div>
                     <div>
-                        <h1 className="text-2xl lg:text-3xl font-bold text-gray-800">
+                        <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 uppercase">
                             {alumno.nombres} {alumno.apellidos}
                         </h1>
                         <p className="text-sm text-gray-600">
@@ -562,37 +560,6 @@ const AlumnoDetallePage: React.FC = () => {
                                             />
                                         </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                Tipo de Ingreso
-                                            </label>
-                                            <select
-                                                value={formData.tipoIngreso}
-                                                onChange={(e) => setFormData({...formData, tipoIngreso: e.target.value})}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                            >
-                                                <option value="">Seleccione...</option>
-                                                <option value="Nuevo">Nuevo</option>
-                                                <option value="Traslado">Traslado</option>
-                                                <option value="Reingreso">Reingreso</option>
-                                            </select>
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                Estado
-                                            </label>
-                                            <select
-                                                value={formData.estadoAlumno}
-                                                onChange={(e) => setFormData({...formData, estadoAlumno: e.target.value})}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                            >
-                                                <option value="Activo">Activo</option>
-                                                <option value="Inactivo">Inactivo</option>
-                                                <option value="Retirado">Retirado</option>
-                                            </select>
-                                        </div>
-
                                         <div className="md:col-span-2">
                                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                                 Observaciones de Salud
@@ -661,22 +628,6 @@ const AlumnoDetallePage: React.FC = () => {
                                         <p className="text-sm text-gray-600">Teléfono de Contacto</p>
                                         <p className="font-medium">{alumno.telefonoContacto || 'No especificado'}</p>
                                     </div>
-                                    <div>
-                                        <p className="text-sm text-gray-600">Tipo de Ingreso</p>
-                                        <p className="font-medium">{alumno.tipoIngreso || 'No especificado'}</p>
-                                    </div>
-                                    <div>
-                                        <p className="text-sm text-gray-600">Estado</p>
-                                        <p className="font-medium">
-                                            <span className={`px-2 py-1 rounded-full text-xs ${
-                                                alumno.estadoAlumno === 'Activo' 
-                                                    ? 'bg-green-100 text-green-800' 
-                                                    : 'bg-gray-100 text-gray-800'
-                                            }`}>
-                                                {alumno.estadoAlumno}
-                                            </span>
-                                        </p>
-                                    </div>
                                     <div className="md:col-span-2">
                                         <p className="text-sm text-gray-600">Observaciones de Salud</p>
                                         <p className="font-medium">{alumno.observacionesSalud || 'Sin observaciones'}</p>
@@ -716,7 +667,7 @@ const AlumnoDetallePage: React.FC = () => {
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-3 mb-2">
-                                                        <h3 className="font-semibold text-lg">
+                                                        <h3 className="font-semibold text-lg uppercase">
                                                             {relacion.idApoderado.nombres} {relacion.idApoderado.apellidos}
                                                         </h3>
                                                         <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">

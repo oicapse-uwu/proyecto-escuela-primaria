@@ -127,7 +127,7 @@ const AlumnoApoderadoPage: React.FC = () => {
                 toast.success('Relación eliminada exitosamente');
                 cargarDatos();
             } catch (error) {
-                toast.error('Error al eliminar relación');
+                toast.error('Error al eliminar la relación');
             }
         }
     };
@@ -159,7 +159,7 @@ const AlumnoApoderadoPage: React.FC = () => {
             setShowModal(false);
             cargarDatos();
         } catch (error) {
-            toast.error(relacionEditar ? 'Error al actualizar relación' : 'Error al crear relación');
+            toast.error(relacionEditar ? 'Error al actualizar la relación' : 'Error al crear la relación');
         }
     };
 
@@ -317,7 +317,7 @@ const AlumnoApoderadoPage: React.FC = () => {
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
                                                 <div className="text-sm">
-                                                    <p className="font-medium text-gray-900">
+                                                    <p className="font-medium text-gray-900 uppercase">
                                                         {relacion.idAlumno.nombres} {relacion.idAlumno.apellidos}
                                                     </p>
                                                     <p className="text-gray-500">{relacion.idAlumno.numeroDocumento}</p>
@@ -326,7 +326,7 @@ const AlumnoApoderadoPage: React.FC = () => {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="text-sm">
-                                                <p className="font-medium text-gray-900">
+                                                <p className="font-medium text-gray-900 uppercase">
                                                     {relacion.idApoderado.nombres} {relacion.idApoderado.apellidos}
                                                 </p>
                                                 <p className="text-gray-500">{relacion.idApoderado.numeroDocumento}</p>
@@ -417,13 +417,13 @@ const AlumnoApoderadoPage: React.FC = () => {
                                     <div className="space-y-2 text-sm">
                                         <div>
                                             <p className="text-gray-500 text-xs">Alumno:</p>
-                                            <p className="font-medium text-gray-900">
+                                            <p className="font-medium text-gray-900 uppercase">
                                                 {relacion.idAlumno.nombres} {relacion.idAlumno.apellidos}
                                             </p>
                                         </div>
                                         <div>
                                             <p className="text-gray-500 text-xs">Apoderado:</p>
-                                            <p className="font-medium text-gray-900">
+                                            <p className="font-medium text-gray-900 uppercase">
                                                 {relacion.idApoderado.nombres} {relacion.idApoderado.apellidos}
                                             </p>
                                         </div>

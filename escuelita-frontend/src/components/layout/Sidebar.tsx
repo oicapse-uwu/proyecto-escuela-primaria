@@ -1,27 +1,22 @@
 import type { LucideIcon } from 'lucide-react';
 import {
-    BarChart3,
     BookOpen,
     Briefcase,
     Building,
     Building2,
     Calendar,
-    CalendarDays,
     CheckCircle,
     ClipboardCheck,
     ClipboardList,
     Clock,
     CreditCard,
     DollarSign,
-    DoorOpen,
     FileCheck,
     FileText,
-    FileType,
     GraduationCap,
     Grid3x3,
     Layers,
     LayoutDashboard,
-    MapPin,
     Receipt,
     Settings,
     TrendingUp,
@@ -55,19 +50,15 @@ const menuModulesConfig: Record<string, { icon: LucideIcon; subItems?: Record<st
     'CONFIGURACIÓN': { 
         icon: Settings,
         subItems: {
-            'Institución': { path: '/escuela/configuracion/institucion', icon: Building },
-            'Sedes': { path: '/escuela/configuracion/sedes', icon: MapPin },
-            'Año Escolar': { path: '/escuela/configuracion/anio-escolar', icon: Calendar },
-            'Periodos Académicos': { path: '/escuela/configuracion/periodos', icon: CalendarDays },
             'Usuarios y Roles': { path: '/escuela/configuracion/usuarios', icon: UserCog },
-            'Tipos de Documento': { path: '/escuela/configuracion/tipo-documentos', icon: FileType },
         }
     },
     'INFRAESTRUCTURA': {
         icon: Building2,
         subItems: {
-            'Grados y Secciones': { path: '/escuela/infraestructura/grados-secciones', icon: Layers },
-            'Aulas': { path: '/escuela/infraestructura/aulas', icon: DoorOpen },
+            'Institución': { path: '/escuela/infraestructura/institucion', icon: Building },
+            'Año y Periodos': { path: '/escuela/infraestructura/anio-periodos', icon: Calendar },
+            'Grados, Secciones y Aulas': { path: '/escuela/infraestructura/grados-secciones', icon: Layers },
         }
     },
     'GESTIÓN ACADÉMICA': {
@@ -98,9 +89,9 @@ const menuModulesConfig: Record<string, { icon: LucideIcon; subItems?: Record<st
     'EVALUACIONES Y NOTAS': {
         icon: FileText,
         subItems: {
-            'Asistencias': { path: '/escuela/evaluaciones/asistencias', icon: CheckCircle },
-            'Evaluaciones': { path: '/escuela/evaluaciones/lista', icon: FileText },
             'Calificaciones': { path: '/escuela/evaluaciones/calificaciones', icon: ClipboardCheck },
+            'Asistencias': { path: '/escuela/evaluaciones/asistencias', icon: CheckCircle },
+            'Evaluaciones': { path: '/escuela/evaluaciones/evaluaciones', icon: FileText },
             'Promedios': { path: '/escuela/evaluaciones/promedios', icon: TrendingUp },
         }
     },
@@ -109,9 +100,9 @@ const menuModulesConfig: Record<string, { icon: LucideIcon; subItems?: Record<st
         subItems: {
             'Conceptos de Pago': { path: '/escuela/tesoreria/conceptos-pago', icon: DollarSign },
             'Métodos de Pago': { path: '/escuela/tesoreria/metodos-pago', icon: CreditCard },
+            'Deudas de Alumnos': { path: '/escuela/tesoreria/deudas-alumnos', icon: Users },
             'Registrar Pago': { path: '/escuela/tesoreria/pagos', icon: Receipt },
-            'Deudas por Alumno': { path: '/escuela/tesoreria/deudas-alumnos', icon: BarChart3 },
-            'Reportes de Caja': { path: '/escuela/tesoreria/reportes', icon: TrendingUp },
+            //'Reportes de Caja': { path: '/escuela/pagos/reportes', icon: TrendingUp },
         }
     },
 };

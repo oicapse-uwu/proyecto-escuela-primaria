@@ -3,8 +3,8 @@ export interface ReporteInstitucion {
     nombre: string;
     codModular: string;
     tipoGestion: string;
-    estadoSuscripcion: string;
-    planContratado: string;
+    estadoSuscripcion?: string;
+    planContratado?: string;
     estado: number;
 }
 
@@ -165,6 +165,18 @@ export interface SaludComercialInstitucion {
     ingresoComprometido: number;
     ingresoCobrado: number;
     brechaCobranza: number;
+}
+
+export interface ReporteAcademico {
+    idInstitucion: number;
+    nombreInstitucion: string;
+    codModular: string;
+    totalEvaluaciones: number;
+    totalCalificaciones: number;
+    totalAlumnosEvaluados: number;
+    promedioNotasGeneral: number;
+    totalDocentes: number;
+    estadoSuscripcion: string;
 }
 
 export interface ResumenReportes {

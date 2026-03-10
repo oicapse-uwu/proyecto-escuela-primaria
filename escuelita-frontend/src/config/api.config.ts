@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { toast } from 'sonner';
 import { adminAuthService } from '../services/adminAuth.service';
 import { escuelaAuthService } from '../services/escuelaAuth.service';
 
@@ -44,22 +43,12 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401 || error.response?.status === 403) {
-            try {
-                console.error('[API] Unauthorized response', error.response?.status, error.response?.data);
-            } catch {}
+        const requestUrl = error.config?.url || '';
 
-            // Mostrar notificación visible para el usuario antes del redirect
-            try {
-                toast.error('Sesión expirada o no autorizada. Redirigiendo al login...');
-            } catch {}
+        // No interceptar 401/403 en endpoints de autenticación (login)
+        const isAuthEndpoint = requestUrl.includes('/auth/');
 
-            // ALERT temporal para garantizar visibilidad en caso de que toasts no se muestren
-            try {
-                // eslint-disable-next-line no-alert
-                window.alert('Sesión expirada o no autorizada. Serás redirigido al login.');
-            } catch {}
-
+        if (!isAuthEndpoint && (error.response?.status === 401 || error.response?.status === 403)) {
             localStorage.removeItem('escuela_token');
             localStorage.removeItem('escuela_user');
             localStorage.removeItem('admin_token');
@@ -67,7 +56,7 @@ api.interceptors.response.use(
 
             const currentPath = window.location.pathname;
 
-            if (currentPath.startsWith('/admin')) {
+            if (currentPath.startsWith('/admin') || currentPath === '/login') {
                 window.location.href = '/login';
             } else {
                 window.location.href = '/escuela/login';
@@ -102,6 +91,7 @@ export const API_ENDPOINTS = {
     APODERADOS: '/restful/apoderados',
     ALUMNO_APODERADO: '/restful/alumnoapoderado',
     MATRICULAS: '/restful/matriculas',
+    MOVIMIENTOS_ALUMNO: '/restful/movimientos-alumno',
     CURSOS: '/restful/cursos',
     GRADOS: '/restful/grados',
     SECCIONES: '/restful/secciones',
@@ -121,7 +111,7 @@ export const API_ENDPOINTS = {
 
     // ===== EVALUACIONES Y CALIFICACIONES =====
     CALIFICACIONES: '/restful/calificaciones',
-    PROMEDIOS: '/restful/promedios',
+    PROMEDIOS: '/restful/promediosperiodo',
     ASISTENCIAS: '/restful/asistencias',
     TIPOS_NOTA: '/restful/tiposnota',
     EVALUACIONES: '/restful/evaluaciones',

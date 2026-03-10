@@ -9,6 +9,6 @@ import org.springframework.data.repository.query.Param;
 import com.escuelita.www.entity.AsignacionDocente;
 
 public interface AsignacionDocenteRepository extends JpaRepository<AsignacionDocente, Long> {
-    @Query("SELECT a FROM AsignacionDocente a WHERE a.idSeccion.idSede.idSede = :idSede")
+    @Query("SELECT a FROM AsignacionDocente a JOIN a.idSeccion s WHERE s.idSede.idSede = :idSede")
     List<AsignacionDocente> findBySedeId(@Param("idSede") Long idSede);
 }

@@ -48,14 +48,14 @@ const CrearRolModal: React.FC<CrearRolModalProps> = ({ isOpen, onClose, onRolCre
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b">
-                    <h2 className="text-xl font-bold text-gray-800">Crear Nuevo Rol</h2>
+                <div className="flex items-center justify-between p-6 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-t-lg">
+                    <h2 className="text-xl font-bold">Crear Nuevo Rol</h2>
                     <button
                         onClick={onClose}
                         disabled={isLoading}
-                        className="p-1 hover:bg-gray-100 rounded disabled:opacity-50"
+                        className="p-2 hover:bg-white/20 rounded-lg transition-colors disabled:opacity-50"
                     >
-                        <X className="w-5 h-5 text-gray-500" />
+                        <X className="w-5 h-5" />
                     </button>
                 </div>
 
@@ -112,7 +112,7 @@ const CrearRolModal: React.FC<CrearRolModalProps> = ({ isOpen, onClose, onRolCre
                     <button
                         onClick={handleSubmit}
                         disabled={isLoading || !nombre.trim()}
-                        className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                        className="px-6 py-2.5 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-lg hover:from-[#1e40af] hover:to-[#312e81] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                     >
                         {isLoading ? 'Creando...' : 'Crear Rol'}
                     </button>

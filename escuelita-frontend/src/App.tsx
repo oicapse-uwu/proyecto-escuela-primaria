@@ -3,27 +3,23 @@ import { Toaster } from 'sonner';
 import PrivateRoute from './components/common/PrivateRoute';
 
 import {
-    Dashboard,
-    InstitucionesRoutes,
-    ReportesRoutes,
-    RolesRoutes,
-    SedesRoutes,
-    SuscripcionesRoutes,
-    UsuariosRoutes
+  Dashboard,
+  InstitucionesRoutes,
+  ReportesRoutes,
+  RolesRoutes,
+  SedesRoutes,
+  SuscripcionesRoutes,
+  UsuariosRoutes
 } from './features/backoffice';
 
+import GestionAcademicaRoutes from './features/portal/academica/routes/GestionAcademicaRoutes';
 import AlumnosRoutes from './features/portal/alumnos/routes/AlumnosRoutes';
 import ApoderadosRoutes from './features/portal/apoderados/routes/apoderados.routes';
-import AreasRoutes from './features/portal/areas/routes/areas.routes';
-import AsignacionDocenteRoutes from './features/portal/asignacion-docente/routes';
-import DocentesRoutes from './features/portal/docentes/routes';
-import EspecialidadesRoutes from './features/portal/especialidades/routes/especialidades.routes';
-import HorariosRoutes from './features/portal/horarios/routes';
+import ConfiguracionRoutes from './features/portal/configuracion/routes/ConfiguracionRoutes';
+import EvaluacionesRoutes from './features/portal/evaluaciones/routes/EvaluacionesRoutes';
 import InfraestructuraRoutes from './features/portal/infraestructura/routes/InfraestructuraRoutes';
-import MallaCurricularRoutes from './features/portal/malla-curricular/routes';
 import MatriculasRoutes from './features/portal/matriculas/routes/matriculas.routes';
 import TesoreriaRoutes from './features/portal/tesoreria/routes/TesoreriaRoutes';
-import UsuariosPortalRoutes from './features/portal/usuarios/routes/UsuariosPortalRoutes';
 
 import EscuelaLayout from './layouts/EscuelaLayout';
 import SuperAdminLayout from './layouts/SuperAdminLayout';
@@ -79,15 +75,11 @@ function App() {
           {/* Módulos del Portal Escuela - Protegidos con ModuloGuard en frontend + @RequireModulo en backend */}
           <Route path="alumnos/*" element={<AlumnosRoutes />} />
           <Route path="infraestructura/*" element={<InfraestructuraRoutes />} />
-          <Route path="configuracion/usuarios/*" element={<UsuariosPortalRoutes />} />
+          <Route path="configuracion/*" element={<ConfiguracionRoutes />} />
           <Route path="apoderados/*" element={<ApoderadosRoutes />} />
           <Route path="matriculas/*" element={<MatriculasRoutes />} />
-          <Route path="academica/areas-cursos/*" element={<AreasRoutes />} />
-          <Route path="academica/especialidades/*" element={<EspecialidadesRoutes />} />
-          <Route path="academica/malla-curricular/*" element={<MallaCurricularRoutes />} />
-          <Route path="academica/asignacion-docente/*" element={<AsignacionDocenteRoutes />} />
-          <Route path="academica/horarios/*" element={<HorariosRoutes />} />
-          <Route path="academica/docentes/*" element={<DocentesRoutes />} />
+          <Route path="academica/*" element={<GestionAcademicaRoutes />} />
+          <Route path="evaluaciones/*" element={<EvaluacionesRoutes />} />
           <Route path="tesoreria/*" element={<TesoreriaRoutes />} />
         </Route>
 

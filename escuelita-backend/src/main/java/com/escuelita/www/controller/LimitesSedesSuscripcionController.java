@@ -239,4 +239,50 @@ public class LimitesSedesSuscripcionController {
                 .body(Map.of("error", e.getMessage()));
         }
     }
+
+    // GET /api/limites-sedes/por-sede/{idSede}
+
+    // Obtener el límite de alumnos asignado a una sede específica
+    @GetMapping("/por-sede/{idSede}")
+    public ResponseEntity<?> obtenerLimitePorSede(@PathVariable Long idSede) {
+        try {
+            Optional<Sedes> sedeOpt = repoSedes.findById(idSede);
+            if (!sedeOpt.isPresent()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Sede no encontrada"));
+            }
+
+            Sedes sede = sedeOpt.get();
+
+            // Buscar suscripción activa de la institución
+            Optional<Suscripciones> suscripcionOpt = repoSuscripciones
+                .findSuscripcionActivaByInstitucion(sede.getIdInstitucion());
+
+            if (!suscripcionOpt.isPresent()) {
+                return ResponseEntity.ok(Map.of("limiteAlumnos", 0, "mensaje", "No hay suscripción activa"));
+            }
+
+            Suscripciones suscripcion = suscripcionOpt.get();
+
+            // Buscar límite específico de esta sede
+            Optional<LimitesSedesSuscripcion> limiteOpt = servicioLimites
+                .buscarPorSuscripcionYSede(suscripcion.getIdSuscripcion(), idSede);
+
+            if (limiteOpt.isPresent()) {
+                return ResponseEntity.ok(Map.of(
+                    "limiteAlumnos", limiteOpt.get().getLimiteAlumnosAsignado(),
+                    "limiteTotal", suscripcion.getLimiteAlumnosContratado()
+                ));
+            } else {
+                // Sin distribución por sede, usar límite total
+                return ResponseEntity.ok(Map.of(
+                    "limiteAlumnos", suscripcion.getLimiteAlumnosContratado(),
+                    "limiteTotal", suscripcion.getLimiteAlumnosContratado()
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", e.getMessage()));
+        }
+    }
 }

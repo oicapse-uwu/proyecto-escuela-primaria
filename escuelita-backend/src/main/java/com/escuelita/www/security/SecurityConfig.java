@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -42,7 +43,7 @@ public class SecurityConfig {
                         , "/utils/**"
                         , "/uploads/**").permitAll()  // Permitir acceso a archivos subidos
                     // Permitir endpoints GET de lectura (dropdowns)
-                    .requestMatchers("GET", "/restful/metodospago", "/restful/deudasalumno", "/restful/conceptospago", "/restful/instituciones", "/restful/grados", "/restful/matriculas", "/restful/alumnos").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/restful/metodospago", "/restful/deudasalumno", "/restful/conceptospago", "/restful/instituciones", "/restful/grados", "/restful/matriculas", "/restful/alumnos").permitAll()
                     .anyRequest().authenticated()     // Resto de endpoints requieren autenticación
                 )
                 .addFilterBefore(jwtFilter, 

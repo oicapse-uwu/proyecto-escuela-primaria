@@ -9,6 +9,9 @@ import org.springframework.data.repository.query.Param;
 import com.escuelita.www.entity.Evaluaciones;
 
 public interface EvaluacionesRepository extends JpaRepository<Evaluaciones, Long> {
-    @Query("SELECT e FROM Evaluaciones e WHERE e.idAsignacion.idSeccion.idSede.idSede = :idSede")
+    @Query("SELECT e FROM Evaluaciones e JOIN e.idAsignacion a JOIN a.idSeccion s WHERE s.idSede.idSede = :idSede")
     List<Evaluaciones> findBySedeId(@Param("idSede") Long idSede);
+
+    @Query("SELECT e FROM Evaluaciones e JOIN e.idAsignacion a JOIN a.idDocente d WHERE d.idUsuario.idUsuario = :idUsuario")
+    List<Evaluaciones> findByDocenteUsuarioId(@Param("idUsuario") Long idUsuario);
 }

@@ -7,8 +7,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({
     "idAlumno", "numeroDocumento", "nombres", "apellidos", 
     "fechaNacimiento", "genero", "direccion", "telefonoContacto", 
-    "fotoUrl", "observacionesSalud", "tipoIngreso", "estadoAlumno",
-    "idSede", "idTipoDoc", "estado"
+    "fotoUrl", "observacionesSalud", "idSede", "idTipoDoc", "estado"
 })
 public class AlumnosDTO {
 
@@ -22,8 +21,6 @@ public class AlumnosDTO {
     private String telefonoContacto;
     private String fotoUrl;
     private String observacionesSalud;
-    private String tipoIngreso;
-    private String estadoAlumno;
 
     private Long idSede;
     private Long idTipoDoc;
@@ -90,18 +87,6 @@ public class AlumnosDTO {
     public void setObservacionesSalud(String observacionesSalud) {
         this.observacionesSalud = observacionesSalud;
     }
-    public String getTipoIngreso() {
-        return tipoIngreso;
-    }
-    public void setTipoIngreso(String tipoIngreso) {
-        this.tipoIngreso = tipoIngreso;
-    }
-    public String getEstadoAlumno() {
-        return estadoAlumno;
-    }
-    public void setEstadoAlumno(String estadoAlumno) {
-        this.estadoAlumno = estadoAlumno;
-    }
     public Long getIdSede() {
         return idSede;
     }
@@ -125,7 +110,7 @@ public class AlumnosDTO {
         return "AlumnosDTO [idAlumno=" + idAlumno + ", numeroDocumento=" + numeroDocumento + ", nombres=" + nombres
                 + ", apellidos=" + apellidos + ", fechaNacimiento=" + fechaNacimiento + ", genero=" + genero
                 + ", direccion=" + direccion + ", telefonoContacto=" + telefonoContacto + ", fotoUrl=" + fotoUrl
-                + ", observacionesSalud=" + observacionesSalud + ", tipoIngreso=" + tipoIngreso + ", estadoAlumno="
-                + estadoAlumno + ", idSede=" + idSede + ", idTipoDoc=" + idTipoDoc + ", estado=" + estado + "]";
+                + ", observacionesSalud=" + observacionesSalud + ", idSede=" + idSede + ", idTipoDoc=" + idTipoDoc 
+                + ", estado=" + estado + "]";
     }
 }

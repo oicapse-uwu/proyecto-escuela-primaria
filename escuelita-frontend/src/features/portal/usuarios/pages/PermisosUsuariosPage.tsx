@@ -48,7 +48,7 @@ const PermisosUsuariosPage: React.FC = () => {
     };
 
     const handleEliminar = async (idRmp: number) => {
-        if (!window.confirm('¿Deseas eliminar esta asignación?')) {
+        if (!window.confirm('¿Está seguro de eliminar esta asignación?')) {
             return;
         }
         await eliminarAsignacion(idRmp);
@@ -154,9 +154,9 @@ const PermisosUsuariosPage: React.FC = () => {
                         <tbody className="divide-y divide-gray-100">
                             {asignacionesPaginadas.map((item) => (
                                 <tr key={item.idRmp} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-4 py-3 text-sm text-gray-700 font-medium">{item.idRol?.nombre ?? '-'}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-700">{item.idModulo?.nombre ?? '-'}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-700">{item.idPermiso?.nombre ?? '-'}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-700 font-medium uppercase">{item.idRol?.nombre ?? '-'}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-700 uppercase">{item.idModulo?.nombre ?? '-'}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-700 uppercase">{item.idPermiso?.nombre ?? '-'}</td>
                                     <td className="px-4 py-3 text-sm text-gray-700 text-center">
                                         <button className="text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md p-1 transition-colors" onClick={() => handleEliminar(item.idRmp)}>
                                             <Trash2 className="w-4 h-4" />
@@ -169,7 +169,7 @@ const PermisosUsuariosPage: React.FC = () => {
                 </div>
 
                 {!loading && asignaciones.length === 0 && (
-                    <div className="p-6 text-center text-gray-500">No hay asignaciones registradas.</div>
+                    <div className="p-6 text-center text-gray-500">No hay asignaciones registradas</div>
                 )}
 
                 <Pagination
@@ -181,7 +181,6 @@ const PermisosUsuariosPage: React.FC = () => {
                         setItemsPerPage(value);
                         setCurrentPage(1);
                     }}
-                    itemsPerPageOptions={[5, 10, 20, 50]}
                 />
             </div>
         </div>

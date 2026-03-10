@@ -1,4 +1,4 @@
-import { DollarSign, GraduationCap, Package, X } from 'lucide-react';
+import { AlertCircle, Check, DollarSign, GraduationCap, Building2, Package, X, FileText } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import type { ConceptoPago, ConceptoPagoFormData } from '../types';
@@ -33,8 +33,8 @@ const ConceptoPagoForm: React.FC<ConceptoPagoFormProps> = ({
                 nombreConcepto: concepto.nombreConcepto,
                 monto: concepto.monto,
                 estadoConcepto: concepto.estadoConcepto,
-                idInstitucion: concepto.idInstitucion.idInstitucion,
-                idGrado: concepto.idGrado.idGrado
+                idInstitucion: concepto.idInstitucion?.idInstitucion ?? 0,
+                idGrado: concepto.idGrado?.idGrado ?? 0
             });
         }
     }, [concepto]);
@@ -94,147 +94,196 @@ const ConceptoPagoForm: React.FC<ConceptoPagoFormProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-                <div className="flex justify-between items-center p-6 border-b border-gray-200">
-                    <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                        <Package className="w-5 h-5 text-blue-600" />
-                        {concepto ? 'Editar Concepto de Pago' : 'Nuevo Concepto de Pago'}
-                    </h2>
-                    <button
-                        onClick={onCancel}
-                        className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                        <X className="w-5 h-5" />
-                    </button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto transform transition-all">
+                {/* Header con gradiente sutil */}
+                <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 border-b-2 border-blue-200">
+                    <div className="flex justify-between items-start">
+                        <div className="flex items-start gap-3">
+                            <div className="bg-blue-600 rounded-lg p-2.5">
+                                <Package className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-bold text-gray-900">
+                                    {concepto ? 'Editar Concepto de Pago' : 'Nuevo Concepto de Pago'}
+                                </h2>
+                                <p className="text-xs text-gray-600 mt-1">
+                                    {concepto ? 'Actualiza los detalles del concepto' : 'Crea un nuevo concepto de pago'}
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={onCancel}
+                            className="p-2 hover:bg-blue-200 rounded-lg transition-all duration-200 hover:shadow-sm"
+                        >
+                            <X className="w-5 h-5 text-gray-600" />
+                        </button>
+                    </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                    {/* Nombre del Concepto */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Nombre del Concepto *
-                        </label>
-                        <input
-                            type="text"
-                            name="nombreConcepto"
-                            value={formData.nombreConcepto}
-                            onChange={handleChange}
-                            placeholder="Ej: Matrícula"
-                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                                errors.nombreConcepto
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300 focus:ring-blue-500'
-                            }`}
-                        />
-                        {errors.nombreConcepto && (
-                            <p className="text-red-500 text-xs mt-1">{errors.nombreConcepto}</p>
-                        )}
+                <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                    {/* Sección de Información del Concepto */}
+                    <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
+                        {/* Nombre del Concepto */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                <FileText className="w-4 h-4 text-blue-600" />
+                                Nombre del Concepto *
+                            </label>
+                            <input
+                                type="text"
+                                name="nombreConcepto"
+                                value={formData.nombreConcepto}
+                                onChange={handleChange}
+                                placeholder="Ej: Matrícula"
+                                className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
+                                    errors.nombreConcepto
+                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
+                                        : 'border-gray-200 focus:ring-blue-300 focus:border-blue-500 bg-white hover:border-gray-300'
+                                }`}
+                            />
+                            {errors.nombreConcepto && (
+                                <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
+                                    <AlertCircle className="w-3 h-3" />
+                                    {errors.nombreConcepto}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Monto */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                <div className="bg-green-100 rounded-lg p-1">
+                                    <DollarSign className="w-4 h-4 text-green-600" />
+                                </div>
+                                Monto *
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type="number"
+                                    name="monto"
+                                    value={formData.monto}
+                                    onChange={handleChange}
+                                    placeholder="0.00"
+                                    step="0.01"
+                                    min="0"
+                                    className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
+                                        errors.monto
+                                            ? 'border-red-400 focus:ring-red-300 bg-red-50'
+                                            : 'border-gray-200 focus:ring-green-300 focus:border-green-500 bg-white hover:border-gray-300'
+                                    }`}
+                                />
+                            </div>
+                            {errors.monto && (
+                                <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
+                                    <AlertCircle className="w-3 h-3" />
+                                    {errors.monto}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
-                    {/* Monto */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-                            <DollarSign className="w-4 h-4" />
-                            Monto *
-                        </label>
-                        <input
-                            type="number"
-                            name="monto"
-                            value={formData.monto}
-                            onChange={handleChange}
-                            placeholder="0.00"
-                            step="0.01"
-                            min="0"
-                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                                errors.monto
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300 focus:ring-blue-500'
-                            }`}
-                        />
-                        {errors.monto && (
-                            <p className="text-red-500 text-xs mt-1">{errors.monto}</p>
-                        )}
+                    {/* Sección de Configuración */}
+                    <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
+                        {/* Institución */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                <div className="bg-purple-100 rounded-lg p-1">
+                                    <Building2 className="w-4 h-4 text-purple-600" />
+                                </div>
+                                Institución *
+                            </label>
+                            <select
+                                name="idInstitucion"
+                                value={formData.idInstitucion}
+                                onChange={handleChange}
+                                className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 appearance-none ${
+                                    errors.idInstitucion
+                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
+                                        : 'border-gray-200 focus:ring-purple-300 focus:border-purple-500 bg-white hover:border-gray-300'
+                                }`}
+                            >
+                                <option value="0">Seleccionar institución</option>
+                            </select>
+                            {errors.idInstitucion && (
+                                <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
+                                    <AlertCircle className="w-3 h-3" />
+                                    {errors.idInstitucion}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Grado */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                <div className="bg-yellow-100 rounded-lg p-1">
+                                    <GraduationCap className="w-4 h-4 text-yellow-600" />
+                                </div>
+                                Grado *
+                            </label>
+                            <select
+                                name="idGrado"
+                                value={formData.idGrado}
+                                onChange={handleChange}
+                                className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 appearance-none ${
+                                    errors.idGrado
+                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
+                                        : 'border-gray-200 focus:ring-yellow-300 focus:border-yellow-500 bg-white hover:border-gray-300'
+                                }`}
+                            >
+                                <option value="0">Seleccionar grado</option>
+                            </select>
+                            {errors.idGrado && (
+                                <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
+                                    <AlertCircle className="w-3 h-3" />
+                                    {errors.idGrado}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Estado */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                <Check className="w-4 h-4 text-green-600" />
+                                Estado
+                            </label>
+                            <select
+                                name="estadoConcepto"
+                                value={formData.estadoConcepto}
+                                onChange={handleChange}
+                                className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-300 focus:border-green-500 transition-all duration-200 appearance-none bg-white hover:border-gray-300"
+                            >
+                                <option value={1}>Activo</option>
+                                <option value={0}>Inactivo</option>
+                            </select>
+                        </div>
                     </div>
 
-                    {/* Institución */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Institución *
-                        </label>
-                        <select
-                            name="idInstitucion"
-                            value={formData.idInstitucion}
-                            onChange={handleChange}
-                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                                errors.idInstitucion
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300 focus:ring-blue-500'
-                            }`}
-                        >
-                            <option value="0">Seleccionar institución</option>
-                            {/* TODO: Cargar instituciones dinámicamente */}
-                        </select>
-                        {errors.idInstitucion && (
-                            <p className="text-red-500 text-xs mt-1">{errors.idInstitucion}</p>
-                        )}
-                    </div>
-
-                    {/* Grado */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-                            <GraduationCap className="w-4 h-4" />
-                            Grado *
-                        </label>
-                        <select
-                            name="idGrado"
-                            value={formData.idGrado}
-                            onChange={handleChange}
-                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                                errors.idGrado
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300 focus:ring-blue-500'
-                            }`}
-                        >
-                            <option value="0">Seleccionar grado</option>
-                            {/* TODO: Cargar grados dinámicamente */}
-                        </select>
-                        {errors.idGrado && (
-                            <p className="text-red-500 text-xs mt-1">{errors.idGrado}</p>
-                        )}
-                    </div>
-
-                    {/* Estado */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Estado
-                        </label>
-                        <select
-                            name="estadoConcepto"
-                            value={formData.estadoConcepto}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            <option value={1}>Activo</option>
-                            <option value={0}>Inactivo</option>
-                        </select>
-                    </div>
-
-                    {/* Botones */}
-                    <div className="flex gap-3 pt-4 border-t border-gray-200">
+                    {/* Botones con estilos mejorados */}
+                    <div className="flex gap-3 pt-6 border-t-2 border-gray-200">
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                            className="flex-1 px-4 py-2.5 text-gray-700 border-2 border-gray-300 rounded-lg hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 font-semibold"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting || isLoading}
-                            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-blue-400"
+                            className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:scale-95 transition-all duration-200 font-semibold flex items-center justify-center gap-2 disabled:bg-blue-400 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
                         >
-                            {isSubmitting || isLoading ? 'Guardando...' : 'Guardar'}
+                            {isSubmitting || isLoading ? (
+                                <>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                    Guardando...
+                                </>
+                            ) : (
+                                <>
+                                    <Check className="w-4 h-4" />
+                                    Guardar
+                                </>
+                            )}
                         </button>
                     </div>
                 </form>

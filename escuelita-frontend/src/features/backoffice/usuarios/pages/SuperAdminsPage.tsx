@@ -1,7 +1,8 @@
 import { Edit, Plus, Search, Shield, Trash2, UserCog } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
-import { Toaster } from 'sonner';
+import { toast, Toaster } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
+import { SearchFilterBar } from '../../../../components/common/SearchFilterBar';
 import { adminAuthService } from '../../../../services/adminAuth.service';
 import SuperAdminForm from '../components/SuperAdminForm';
 import { useSuperAdmins } from '../hooks/useSuperAdmins';
@@ -48,6 +49,7 @@ const SuperAdminsPage: React.FC = () => {
     const handleEditar = (admin: SuperAdmin) => {
         setAdminEditar(admin);
         setShowForm(true);
+        toast.info('Si dejas la contraseña vacía, se conservará la contraseña actual.');
     };
 
     const handleEliminar = async (id: number) => {
@@ -101,7 +103,7 @@ const SuperAdminsPage: React.FC = () => {
                     </div>
                     <button
                         onClick={handleNuevo}
-                        className="bg-primary text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md w-full sm:w-auto"
+                        className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white px-6 py-2.5 rounded-lg hover:from-[#1e40af] hover:to-[#312e81] transition-colors flex items-center justify-center gap-2 shadow-md font-semibold whitespace-nowrap w-full sm:w-auto"
                     >
                         <Plus className="w-5 h-5" />
                         <span>Nuevo Super Admin</span>
@@ -141,18 +143,11 @@ const SuperAdminsPage: React.FC = () => {
                 </div>
             </div>
 
-            <div className="mb-3 lg:mb-4 bg-white rounded-lg shadow p-3 lg:p-3.5">
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 lg:w-5 lg:h-5" />
-                    <input
-                        type="text"
-                        placeholder="Buscar por nombre, usuario o correo..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-9 lg:pl-10 pr-4 py-2.5 lg:py-3 text-sm lg:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    />
-                </div>
-            </div>
+            <SearchFilterBar
+                searchValue={searchTerm}
+                onSearchChange={setSearchTerm}
+                searchPlaceholder="Buscar por nombre, usuario o correo..."
+            />
 
             <div className="bg-white rounded-lg shadow overflow-hidden flex flex-col">
                 {isLoading ? (
@@ -216,13 +211,13 @@ const SuperAdminsPage: React.FC = () => {
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {superAdminsPaginados.map((item) => (
                                         <tr key={item.idAdmin} className="hover:bg-gray-50">
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-900">
                                                 {item.nombres} {item.apellidos}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.usuario}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.correo}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.rolPlataforma}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
+                                            <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{item.usuario}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{item.correo}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700">{item.rolPlataforma}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-700 text-center">
                                                 <div className="flex items-center justify-center space-x-3">
                                                     <button
                                                         onClick={() => handleEditar(item)}

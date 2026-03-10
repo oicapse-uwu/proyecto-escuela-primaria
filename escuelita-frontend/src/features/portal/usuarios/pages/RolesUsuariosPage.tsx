@@ -66,7 +66,7 @@ const RolesUsuariosPage: React.FC = () => {
     };
 
     const handleEliminar = async (idRol: number) => {
-        if (!window.confirm('¿Deseas eliminar este rol?')) {
+        if (!window.confirm('¿Está seguro de eliminar este rol?')) {
             return;
         }
         await eliminarRol(idRol);
@@ -98,7 +98,7 @@ const RolesUsuariosPage: React.FC = () => {
                         className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                     >
                         <Plus className="w-4 h-4" />
-                        Nuevo rol
+                        Nuevo Rol
                     </button>
                 </div>
             </div>
@@ -143,7 +143,7 @@ const RolesUsuariosPage: React.FC = () => {
                             {rolesPaginados.map((item) => (
                                 <tr key={item.idRol} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-4 py-3 text-sm text-gray-700">#{item.idRol}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-700 font-medium">{item.nombre}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-700 font-medium uppercase">{item.nombre}</td>
                                     <td className="px-4 py-3 text-sm text-gray-700">
                                         <div className="flex items-center justify-center gap-3">
                                             <button className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md p-1 transition-colors" onClick={() => openEditar(item)}>
@@ -161,7 +161,7 @@ const RolesUsuariosPage: React.FC = () => {
                 </div>
 
                 {!loading && rolesFiltrados.length === 0 && (
-                    <div className="p-6 text-center text-gray-500">No hay roles para mostrar.</div>
+                    <div className="p-6 text-center text-gray-500">No hay roles registrados</div>
                 )}
 
                 <Pagination
@@ -173,7 +173,6 @@ const RolesUsuariosPage: React.FC = () => {
                         setItemsPerPage(value);
                         setCurrentPage(1);
                     }}
-                    itemsPerPageOptions={[5, 10, 20, 50]}
                 />
             </div>
 

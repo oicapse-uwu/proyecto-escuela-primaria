@@ -1,4 +1,4 @@
-import { Baby, Calendar, Camera, FileText, FileType, Home, IdCard, Phone, Stethoscope, User } from 'lucide-react';
+import { Baby, Calendar, Camera, FileType, Home, IdCard, Phone, Stethoscope, User } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { subirFotoAvatar } from '../../../../services/uploadService';
@@ -12,16 +12,20 @@ interface AlumnoFormProps {
     isLoading?: boolean;
 }
 
-const AlumnoForm: React.FC<AlumnoFormProps> = ({ 
-    alumno, 
+const AlumnoForm: React.FC<AlumnoFormProps> = ({
+    alumno,
     tiposDocumento,
-    onSubmit, 
-    onCancel, 
-    isLoading = false 
+    onSubmit,
+    onCancel,
+    isLoading = false
+
 }) => {
+
+    const [activeTab, setActiveTab] = useState<'personales' | 'contacto' | 'foto'>('personales');
     const [documentoError, setDocumentoError] = useState<string>('');
     const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
     const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://primaria.spring.informaticapp.com:4040';
+
     const [formData, setFormData] = useState<AlumnoFormData>({
         idSede: 0,
         idTipoDoc: 0,
@@ -33,9 +37,7 @@ const AlumnoForm: React.FC<AlumnoFormProps> = ({
         direccion: '',
         telefonoContacto: '',
         fotoUrl: '',
-        observacionesSalud: '',
-        tipoIngreso: '',
-        estadoAlumno: 'ACTIVO'
+        observacionesSalud: ''
     });
 
     const tipoDocumentoSeleccionado = useMemo(
@@ -78,9 +80,7 @@ const AlumnoForm: React.FC<AlumnoFormProps> = ({
                 direccion: alumno.direccion || '',
                 telefonoContacto: alumno.telefonoContacto || '',
                 fotoUrl: alumno.fotoUrl || '',
-                observacionesSalud: alumno.observacionesSalud || '',
-                tipoIngreso: alumno.tipoIngreso || '',
-                estadoAlumno: alumno.estadoAlumno || 'ACTIVO'
+                observacionesSalud: alumno.observacionesSalud || ''
             });
         }
     }, [alumno]);
@@ -93,6 +93,7 @@ const AlumnoForm: React.FC<AlumnoFormProps> = ({
             setDocumentoError('');
             return;
         }
+
         const valorProcesado =
             (name === 'numeroDocumento' && requiereSoloNumeros) || name === 'telefonoContacto'
                 ? value.replace(/\D/g, '')
@@ -120,8 +121,9 @@ const AlumnoForm: React.FC<AlumnoFormProps> = ({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         // Validaciones
+
         if (!formData.idTipoDoc || formData.idTipoDoc === 0) {
             toast.error('Debe seleccionar un tipo de documento');
             return;
@@ -148,7 +150,7 @@ const AlumnoForm: React.FC<AlumnoFormProps> = ({
             toast.error('La fecha de nacimiento es obligatoria');
             return;
         }
-        
+
         try {
             await onSubmit({
                 ...formData,
@@ -161,285 +163,330 @@ const AlumnoForm: React.FC<AlumnoFormProps> = ({
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-            {/* Foto de Perfil */}
-            <div className="flex flex-col items-center gap-2 pb-3 border-b">
-                <div
-                    className="relative group cursor-pointer"
-                    onClick={() => document.getElementById('alumno-foto-input')?.click()}
-                >
-                    <div className="w-20 h-20 rounded-full border-2 border-gray-200 overflow-hidden bg-gray-100 flex items-center justify-center">
-                        {formData.fotoUrl ? (
-                            <img
-                                src={`${BASE_URL}${formData.fotoUrl}`}
-                                alt="Foto alumno"
-                                className="w-full h-full object-cover"
-                            />
-                        ) : (
-                            <User className="w-10 h-10 text-gray-400" />
-                        )}
+        // 1. Quitamos el space-y-5 que generaba huecos invisibles
+        <form onSubmit={handleSubmit} className="flex flex-col">
+            
+            {/* Tabs Header */}
+            <div className="bg-gray-50 border-b border-gray-200 -mx-6 -mt-4 px-6 mb-5">
+                <div className="flex space-x-1">
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab('personales')}
+                        className={`px-6 py-3 font-medium text-sm transition-all ${
+                            activeTab === 'personales'
+                                ? 'border-b-2 border-emerald-600 text-emerald-600 bg-white'
+                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                        }`}
+                    >
+                        <User className="inline w-4 h-4 mr-2" />
+                        Datos Personales
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab('contacto')}
+                        className={`px-6 py-3 font-medium text-sm transition-all ${
+                            activeTab === 'contacto'
+                                ? 'border-b-2 border-emerald-600 text-emerald-600 bg-white'
+                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                        }`}
+                    >
+                        <Phone className="inline w-4 h-4 mr-2" />
+                        Información de Contacto
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab('foto')}
+                        className={`px-6 py-3 font-medium text-sm transition-all ${
+                            activeTab === 'foto'
+                                ? 'border-b-2 border-emerald-600 text-emerald-600 bg-white'
+                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                        }`}
+                    >
+                        <Camera className="inline w-4 h-4 mr-2" />
+                        Foto de Perfil
+                    </button>
+                </div>
+            </div>
+
+            {/* Tab Content */}
+            <div className="mb-6">
+                {/* Tab 1: Datos Personales */}
+                {activeTab === 'personales' && (
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Tipo de Documento */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <FileType className="inline w-4 h-4 mr-1" />
+                                    Tipo de Documento <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                    name="idTipoDoc"
+                                    value={formData.idTipoDoc}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    required
+                                >
+                                    <option value={0}>Seleccione tipo</option>
+                                    {tiposDocumento.map(tipo => (
+                                        <option key={tipo.idDocumento} value={tipo.idDocumento}>
+                                            {tipo.descripcion}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Número de Documento */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <IdCard className="inline w-4 h-4 mr-1" />
+                                    Número de Documento <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="numeroDocumento"
+                                    value={formData.numeroDocumento}
+                                    onChange={handleChange}
+                                    inputMode={requiereSoloNumeros ? 'numeric' : 'text'}
+                                    maxLength={tipoDocumentoSeleccionado?.longitudMaxima ?? 20}
+                                    disabled={!formData.idTipoDoc}
+                                    className={`w-full px-3 py-2.5 text-base border rounded-lg focus:ring-2 transition-colors ${
+                                        documentoError
+                                            ? 'border-red-500 focus:ring-red-500 bg-red-50'
+                                            : 'border-gray-300 focus:ring-emerald-500 focus:border-emerald-500'
+                                    } ${!formData.idTipoDoc ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                    placeholder={tipoDocumentoSeleccionado ? `Ej: ${'0'.repeat(tipoDocumentoSeleccionado.longitudMaxima ?? 8)}` : 'Seleccione tipo primero'}
+                                    required
+                                />
+                                <div className="h-5 mt-1">
+                                    {tipoDocumentoSeleccionado?.longitudMaxima && (
+                                        <p className={`text-xs ${documentoError ? 'text-red-600' : 'text-gray-500'}`}>
+                                            {tipoDocumentoSeleccionado.eslongitudExacta === 1
+                                                ? `Exactamente ${tipoDocumentoSeleccionado.longitudMaxima} caracteres`
+                                                : `Máximo ${tipoDocumentoSeleccionado.longitudMaxima} caracteres`}
+                                            {requiereSoloNumeros ? ' · Solo números' : ''}
+                                        </p>
+                                    )}
+                                    {documentoError && <p className="text-xs text-red-600">{documentoError}</p>}
+                                </div>
+                            </div>
+
+                            {/* Nombres */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <User className="inline w-4 h-4 mr-1" />
+                                    Nombres <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="nombres"
+                                    value={formData.nombres}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    placeholder="Ej: Juan Carlos"
+                                    maxLength={100}
+                                    required
+                                />
+                            </div>
+
+                            {/* Apellidos */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <User className="inline w-4 h-4 mr-1" />
+                                    Apellidos <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="apellidos"
+                                    value={formData.apellidos}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    placeholder="Ej: García López"
+                                    maxLength={100}
+                                    required
+                                />
+                            </div>
+
+                            {/* Fecha de Nacimiento */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <Calendar className="inline w-4 h-4 mr-1" />
+                                    Fecha de Nacimiento <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="date"
+                                    name="fechaNacimiento"
+                                    value={formData.fechaNacimiento}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    required
+                                />
+                            </div>
+
+                            {/* Género */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <Baby className="inline w-4 h-4 mr-1" />
+                                    Género <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                    name="genero"
+                                    value={formData.genero}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    required
+                                >
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Femenino</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    {isUploadingPhoto ? (
-                        <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center">
-                            <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                )}
+
+                {/* Tab 2: Información de Contacto */}
+                {activeTab === 'contacto' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Columna izquierda: Dirección y Teléfono */}
+                        <div className="space-y-4">
+                            {/* Dirección */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <Home className="inline w-4 h-4 mr-1" />
+                                    Dirección
+                                </label>
+                                <input
+                                    type="text"
+                                    name="direccion"
+                                    value={formData.direccion}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    placeholder="Ej: Av. Principal 123, Distrito, Ciudad"
+                                    maxLength={255}
+                                />
+                            </div>
+
+                            {/* Teléfono de Contacto */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <Phone className="inline w-4 h-4 mr-1" />
+                                    Teléfono de Contacto
+                                </label>
+                                <input
+                                    type="tel"
+                                    name="telefonoContacto"
+                                    value={formData.telefonoContacto}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                    placeholder="Ej: 987654321"
+                                    inputMode="numeric"
+                                    maxLength={9}
+                                />
+                                <p className="mt-1 text-xs text-gray-500">Número de celular del padre/madre/apoderado</p>
+                            </div>
                         </div>
-                    ) : (
-                        <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-all">
-                            <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100" />
+
+                        {/* Columna derecha: Observaciones de Salud */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <Stethoscope className="inline w-4 h-4 mr-1" />
+                                Observaciones de Salud
+                            </label>
+                            <textarea
+                                name="observacionesSalud"
+                                value={formData.observacionesSalud}
+                                onChange={handleChange}
+                                className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+                                rows={7}
+                                placeholder="Alergias, condiciones médicas, medicación, restricciones alimentarias, etc."
+                            />
+                            <p className="mt-1 text-xs text-gray-500">
+                                Esta información es importante para el bienestar del alumno
+                            </p>
                         </div>
-                    )}
-                    <input
-                        id="alumno-foto-input"
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleFotoChange}
-                    />
-                </div>
-                <p className="text-xs text-gray-500">Foto de perfil (opcional)</p>
+                    </div>
+                )}
+
+                {/* Tab 3: Foto de Perfil */}
+                {activeTab === 'foto' && (
+                    <div className="max-w-3xl mx-auto py-2">
+                        <div className="text-center mb-4">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-2">Foto de Perfil del Alumno</h3>
+                            <p className="text-sm text-gray-600">Sube la foto que representara al alumno en el sistema</p>
+                        </div>
+
+                        <div className="flex items-center justify-center gap-8">
+                            <div className="flex-shrink-0">
+                                {formData.fotoUrl ? (
+                                    <div className="relative">
+                                        <img
+                                            src={`${BASE_URL}${formData.fotoUrl}`}
+                                            alt="Foto alumno"
+                                            className="h-32 w-32 rounded-full object-cover border-4 border-emerald-500/20 shadow-lg"
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="h-32 w-32 bg-emerald-500/10 rounded-full flex items-center justify-center border-4 border-emerald-500/20 shadow-lg">
+                                        <User className="w-16 h-16 text-emerald-600" />
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="flex-1 max-w-md">
+                                <input
+                                    id="alumno-foto-input"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFotoChange}
+                                    disabled={isUploadingPhoto}
+                                    className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-[#064e3b] file:to-[#059669] file:text-white hover:file:from-[#053b2d] hover:file:to-[#047857] file:transition-all file:shadow-md hover:file:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                />
+                                <div className="mt-3">
+                                    <p className="text-xs text-gray-500">
+                                        Formatos aceptados: JPG, PNG - Tamano maximo: 5MB
+                                    </p>
+                                </div>
+                                {formData.fotoUrl && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setFormData(prev => ({ ...prev, fotoUrl: '' }));
+                                        }}
+                                        className="mt-3 text-sm text-red-600 hover:text-red-700 underline"
+                                        disabled={isUploadingPhoto}
+                                    >
+                                        Eliminar imagen
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
 
-            {/* Información Básica */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-                {/* Tipo de Documento */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        <FileType className="inline w-4 h-4 mr-1" />
-                        Tipo de Documento <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                        name="idTipoDoc"
-                        value={formData.idTipoDoc}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        required
-                    >
-                        <option value={0}>Seleccione tipo</option>
-                        {tiposDocumento.map(tipo => (
-                            <option key={tipo.idDocumento} value={tipo.idDocumento}>
-                                {tipo.descripcion}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+            {/* Espaciador para bajar los botones */}
+            <div className="h-1"></div>
 
-                {/* Número de Documento */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        <IdCard className="inline w-4 h-4 mr-1" />
-                        Número de Documento <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        name="numeroDocumento"
-                        value={formData.numeroDocumento}
-                        onChange={handleChange}
-                        inputMode={requiereSoloNumeros ? 'numeric' : 'text'}
-                        maxLength={tipoDocumentoSeleccionado?.longitudMaxima ?? 20}
-                        disabled={!formData.idTipoDoc}
-                        className={`w-full px-3 py-2.5 text-base border rounded-lg focus:ring-2 transition-colors ${
-                            documentoError
-                                ? 'border-red-500 focus:ring-red-500 bg-red-50'
-                                : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
-                        } ${!formData.idTipoDoc ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                        placeholder={tipoDocumentoSeleccionado ? `Ej: ${'0'.repeat(tipoDocumentoSeleccionado.longitudMaxima ?? 8)}` : 'Seleccione tipo primero'}
-                        required
-                    />
-                    {tipoDocumentoSeleccionado?.longitudMaxima && (
-                        <p className={`mt-1 text-xs ${documentoError ? 'text-red-600' : 'text-gray-500'}`}>
-                            {tipoDocumentoSeleccionado.eslongitudExacta === 1
-                                ? `Exactamente ${tipoDocumentoSeleccionado.longitudMaxima} caracteres`
-                                : `Máximo ${tipoDocumentoSeleccionado.longitudMaxima} caracteres`}
-                            {requiereSoloNumeros ? ' · Solo números' : ''}
-                        </p>
-                    )}
-                    {documentoError && <p className="mt-1 text-xs text-red-600">{documentoError}</p>}
-                </div>
-
-                {/* Nombres */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        <User className="inline w-4 h-4 mr-1" />
-                        Nombres <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        name="nombres"
-                        value={formData.nombres}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ej: Juan Carlos"
-                        maxLength={100}
-                        required
-                    />
-                </div>
-
-                {/* Apellidos */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        <User className="inline w-4 h-4 mr-1" />
-                        Apellidos <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        name="apellidos"
-                        value={formData.apellidos}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ej: García López"
-                        maxLength={100}
-                        required
-                    />
-                </div>
-
-                {/* Fecha de Nacimiento */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        <Calendar className="inline w-4 h-4 mr-1" />
-                        Fecha de Nacimiento <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="date"
-                        name="fechaNacimiento"
-                        value={formData.fechaNacimiento}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        required
-                    />
-                </div>
-
-                {/* Género */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        <Baby className="inline w-4 h-4 mr-1" />
-                        Género <span className="text-red-500">*</span>
-                    </label>
-                    <select
-                        name="genero"
-                        value={formData.genero}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        required
-                    >
-                        <option value="M">Masculino</option>
-                        <option value="F">Femenino</option>
-                    </select>
-                </div>
-
-                {/* Dirección */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        <Home className="inline w-4 h-4 mr-1" />
-                        Dirección
-                    </label>
-                    <input
-                        type="text"
-                        name="direccion"
-                        value={formData.direccion}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ej: Av. Principal 123"
-                        maxLength={255}
-                    />
-                </div>
-
-                {/* Teléfono de Contacto */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        <Phone className="inline w-4 h-4 mr-1" />
-                        Teléfono de Contacto
-                    </label>
-                    <input
-                        type="tel"
-                        name="telefonoContacto"
-                        value={formData.telefonoContacto}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ej: 987654321"
-                        inputMode="numeric"
-                        maxLength={9}
-                    />
-                </div>
-
-                {/* Tipo de Ingreso */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        <FileText className="inline w-4 h-4 mr-1" />
-                        Tipo de Ingreso
-                    </label>
-                    <select
-                        name="tipoIngreso"
-                        value={formData.tipoIngreso}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                        <option value="">Seleccione...</option>
-                        <option value="Nuevo">Nuevo</option>
-                        <option value="Traslado">Traslado</option>
-                        <option value="Reinicio">Reinicio</option>
-                    </select>
-                </div>
-
-                {/* Estado del Alumno */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        <FileText className="inline w-4 h-4 mr-1" />
-                        Estado
-                    </label>
-                    <select
-                        name="estadoAlumno"
-                        value={formData.estadoAlumno}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                        <option value="Activo">Activo</option>
-                        <option value="Inactivo">Inactivo</option>
-                        <option value="Retirado">Retirado</option>
-                        <option value="Trasladado">Trasladado</option>
-                    </select>
-                </div>
-            </div>
-
-            {/* Observaciones de Salud */}
-            <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    <Stethoscope className="inline w-4 h-4 mr-1" />
-                    Observaciones de Salud
-                </label>
-                <textarea
-                    name="observacionesSalud"
-                    value={formData.observacionesSalud}
-                    onChange={handleChange}
-                    rows={3}
-                    className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Alergias, condiciones médicas, medicación, etc."
-                />
-            </div>
-
-            {/* Botones de Acción */}
-            <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4 border-t">
+            <div className="flex flex-col sm:flex-row justify-end gap-3 px-6 pt-5 pb-4 bg-gray-50 border-t border-gray-200 -mx-6 -mb-6 mt-auto rounded-b-xl">
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="w-full sm:w-auto px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 
-                             transition-colors duration-200 font-medium order-2 sm:order-1"
+                    className="w-full sm:w-auto px-4 py-3 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors duration-200 font-medium order-2 sm:order-1"
                     disabled={isLoading}
                 >
                     Cancelar
                 </button>
                 <button
                     type="submit"
-                    className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
-                             transition-colors duration-200 font-medium disabled:opacity-50 
-                             disabled:cursor-not-allowed order-1 sm:order-2"
+                    className="w-full sm:w-auto px-4 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-lg hover:from-emerald-700 hover:to-emerald-800 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed order-1 sm:order-2 shadow-md hover:shadow-lg"
                     disabled={isLoading}
                 >
-                    {isLoading ? 'Guardando...' : alumno ? 'Actualizar' : 'Crear'}
+                    {isLoading ? 'Guardando...' : alumno ? 'Actualizar Alumno' : 'Crear Alumno'}
                 </button>
             </div>
+            
         </form>
     );
 };
 
 export default AlumnoForm;
-

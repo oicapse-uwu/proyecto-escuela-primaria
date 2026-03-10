@@ -1,12 +1,10 @@
 import type { LucideIcon } from 'lucide-react';
 import {
-    BarChart3,
     BookOpen,
     Briefcase,
     Building,
     Building2,
     Calendar,
-    CalendarDays,
     CheckCircle,
     ClipboardCheck,
     ClipboardList,
@@ -15,7 +13,6 @@ import {
     DollarSign,
     FileCheck,
     FileText,
-    FileType,
     GraduationCap,
     Grid3x3,
     Layers,

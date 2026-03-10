@@ -57,7 +57,7 @@ export const useReportes = () => {
         setError(null);
 
         try {
-            const [institucionesData, suscripcionesData, usuariosData, superAdminsData, pagosCajaData, alumnosData, planesData, sedesData] = await Promise.all([
+            const results = await Promise.allSettled([
                 obtenerInstitucionesReporte(),
                 obtenerSuscripcionesReporte(),
                 obtenerUsuariosReporte(),
@@ -68,14 +68,24 @@ export const useReportes = () => {
                 obtenerSedesReporte()
             ]);
 
+            const endpointNames = ['Instituciones', 'Suscripciones', 'Usuarios', 'SuperAdmins', 'Pagos', 'Alumnos', 'Planes', 'Sedes'];
+            const data = results.map((result, index) => {
+                if (result.status === 'fulfilled') {
+                    return result.value;
+                }
+                toast.warning(`No se pudo cargar: ${endpointNames[index]}`);
+                return [];
+            });
+
+            const [institucionesData, suscripcionesData, usuariosData, superAdminsData, pagosCajaData, alumnosData, planesData, sedesData] = data;
+
             // JOIN en memoria: Combinar instituciones con su suscripción activa
-            const institucionesConSuscripcion = (institucionesData || []).map(inst => {
-                // Buscar la suscripción activa de esta institución
-                const suscActiva = (suscripcionesData || []).find(s => 
-                    s.idInstitucion?.idInstitucion === inst.idInstitucion && 
+            const institucionesConSuscripcion = (institucionesData || []).map((inst: any) => {
+                const suscActiva = (suscripcionesData || []).find((s: any) =>
+                    s.idInstitucion?.idInstitucion === inst.idInstitucion &&
                     normalizarEstado(s.idEstado?.nombre).includes('ACT')
                 );
-                
+
                 return {
                     ...inst,
                     estadoSuscripcion: suscActiva?.idEstado?.nombre || 'Sin suscripción',

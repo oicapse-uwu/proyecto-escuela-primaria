@@ -61,10 +61,16 @@ public class JwtFilter extends GenericFilter{
                             Long sedeId = Long.parseLong(parts[1]);
                             TenantContext.setSedeId(sedeId);
                             TenantContext.setUserType("ESCUELA");
-                            System.out.println("🏫 Usuario de ESCUELA - Sede ID: " + sedeId);
+                            // Extraer userId del formato ESCUELA_123
+                            String escuelaPart = parts[0]; // "ESCUELA_123"
+                            if (escuelaPart.startsWith("ESCUELA_")) {
+                                Long userId = Long.parseLong(escuelaPart.substring("ESCUELA_".length()));
+                                TenantContext.setUserId(userId);
+                                System.out.println("🏫 Usuario de ESCUELA - User ID: " + userId + " - Sede ID: " + sedeId);
+                            }
                         }
                     } catch (NumberFormatException e) {
-                        System.err.println("⚠️  Error al extraer sede del token: " + clienteId);
+                        System.err.println("⚠️  Error al extraer sede/usuario del token: " + clienteId);
                     }
                 } else if (clienteId.startsWith("SUPER_ADMIN") || clienteId.startsWith("ADMIN_")) {
                     TenantContext.setUserType("SUPER_ADMIN");

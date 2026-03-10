@@ -121,7 +121,7 @@ const AlumnosPage: React.FC = () => {
                 await eliminarAlumnoById(id);
                 toast.success('Alumno eliminado exitosamente');
             } catch (error) {
-                toast.error('Error al eliminar alumno');
+                toast.error('Error al eliminar el alumno');
             }
         }
     };
@@ -160,7 +160,7 @@ const AlumnosPage: React.FC = () => {
             setAlumnoEditar(null);
         } catch (error: any) {
             console.error('Error al guardar alumno:', error);
-            const errorMessage = error.message || (alumnoEditar ? 'Error al actualizar alumno' : 'Error al crear alumno');
+            const errorMessage = error.message || (alumnoEditar ? 'Error al actualizar el alumno' : 'Error al crear el alumno');
             toast.error(errorMessage);
         }
     };
@@ -354,7 +354,7 @@ const AlumnosPage: React.FC = () => {
                                                 <div className="ml-3">
                                                     <Link 
                                                         to={`/escuela/alumnos/${alumno.idAlumno}`}
-                                                        className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                                                        className="text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline uppercase"
                                                     >
                                                         {alumno.nombres} {alumno.apellidos}
                                                     </Link>
@@ -485,7 +485,7 @@ const AlumnosPage: React.FC = () => {
                                     <div className="ml-3">
                                         <Link 
                                             to={`/escuela/alumnos/${alumno.idAlumno}`}
-                                            className="font-semibold text-blue-600 hover:text-blue-800 hover:underline"
+                                            className="font-semibold text-blue-600 hover:text-blue-800 hover:underline uppercase"
                                         >
                                             {alumno.nombres} {alumno.apellidos}
                                         </Link>

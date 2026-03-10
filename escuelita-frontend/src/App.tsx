@@ -13,12 +13,11 @@ import {
 
 import AlumnosRoutes from './features/portal/alumnos/routes/AlumnosRoutes';
 import ApoderadosRoutes from './features/portal/apoderados/routes/apoderados.routes';
-import AreasRoutes from './features/portal/areas/routes/areas.routes';
-import EspecialidadesRoutes from './features/portal/especialidades/routes/especialidades.routes';
+import GestionAcademicaRoutes from './features/portal/academica/routes/GestionAcademicaRoutes';
 import EvaluacionesRoutes from './features/portal/evaluaciones/routes/EvaluacionesRoutes';
 import InfraestructuraRoutes from './features/portal/infraestructura/routes/InfraestructuraRoutes';
 import MatriculasRoutes from './features/portal/matriculas/routes/matriculas.routes';
-import UsuariosPortalRoutes from './features/portal/usuarios/routes/UsuariosPortalRoutes';
+import ConfiguracionRoutes from './features/portal/configuracion/routes/ConfiguracionRoutes';
 import TesoreriaRoutes from './features/portal/tesoreria/routes/TesoreriaRoutes';
 
 import EscuelaLayout from './layouts/EscuelaLayout';
@@ -74,11 +73,10 @@ function App() {
           {/* Módulos del Portal Escuela - Protegidos con ModuloGuard en frontend + @RequireModulo en backend */}
           <Route path="alumnos/*" element={<AlumnosRoutes />} />
           <Route path="infraestructura/*" element={<InfraestructuraRoutes />} />
-          <Route path="configuracion/usuarios/*" element={<UsuariosPortalRoutes />} />
+          <Route path="configuracion/*" element={<ConfiguracionRoutes />} />
           <Route path="apoderados/*" element={<ApoderadosRoutes />} />
           <Route path="matriculas/*" element={<MatriculasRoutes />} />
-          <Route path="academica/areas-cursos/*" element={<AreasRoutes />} />
-          <Route path="academica/especialidades/*" element={<EspecialidadesRoutes />} />
+          <Route path="academica/*" element={<GestionAcademicaRoutes />} />
           <Route path="evaluaciones/*" element={<EvaluacionesRoutes />} />
           <Route path="tesoreria/*" element={<TesoreriaRoutes />} />
         </Route>

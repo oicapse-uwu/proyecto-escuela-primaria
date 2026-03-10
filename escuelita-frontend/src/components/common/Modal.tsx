@@ -46,14 +46,14 @@ const Modal: React.FC<ModalProps> = ({
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 bg-gray-50">
-                    <h2 className="text-lg sm:text-xl font-bold text-gray-900">
+                <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-t-lg sm:rounded-t-xl">
+                    <h2 className="text-lg sm:text-xl font-bold">
                         {title}
                     </h2>
                     {showCloseButton && (
                         <button
                             onClick={onClose}
-                            className="p-1.5 hover:bg-gray-200 rounded-lg transition-colors text-gray-600 hover:text-gray-800"
+                            className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
                             aria-label="Cerrar"
                         >
                             <X className="w-5 h-5" />

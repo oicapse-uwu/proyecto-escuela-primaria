@@ -111,7 +111,7 @@ const MatriculasPage: React.FC = () => {
                 toast.success('Matrícula eliminada exitosamente');
                 cargarDatos();
             } catch (error) {
-                toast.error('Error al eliminar matrícula');
+                toast.error('Error al eliminar la matrícula');
             }
         }
     };
@@ -344,7 +344,7 @@ const MatriculasPage: React.FC = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm">
-                                                    <p className="font-medium text-gray-900">
+                                                    <p className="font-medium text-gray-900 uppercase">
                                                         {matricula.idAlumno?.nombres} {matricula.idAlumno?.apellidos}
                                                     </p>
                                                     <p className="text-gray-500">{matricula.idAlumno?.numeroDocumento}</p>
@@ -422,7 +422,7 @@ const MatriculasPage: React.FC = () => {
                             <div key={matricula.idMatricula} className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
                                 <div className="flex items-start justify-between mb-3">
                                     <div>
-                                        <p className="font-semibold text-gray-900">
+                                        <p className="font-semibold text-gray-900 uppercase">
                                             {matricula.idAlumno?.nombres} {matricula.idAlumno?.apellidos}
                                         </p>
                                         <p className="text-xs text-gray-500 mt-1">{matricula.codigoMatricula}</p>

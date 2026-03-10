@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.escuelita.www.entity.Evaluaciones;
 import com.escuelita.www.repository.EvaluacionesRepository;
+import com.escuelita.www.repository.PerfilDocenteRepository;
 import com.escuelita.www.service.IEvaluacionesService;
 import com.escuelita.www.util.TenantContext;
 
@@ -16,16 +17,25 @@ public class EvaluacionesService implements IEvaluacionesService {
     @Autowired
     private EvaluacionesRepository repoEvaluaciones;
 
+    @Autowired
+    private PerfilDocenteRepository repoPerfilDocente;
+
     public List<Evaluaciones> buscarTodos() {
         try {
             if (TenantContext.isSuperAdmin()) {
                 return repoEvaluaciones.findAll();
             }
+            Long userId = TenantContext.getUserId();
             Long sedeId = TenantContext.getSedeId();
-            if (sedeId == null) {
-                return repoEvaluaciones.findAll();
+            // Si tiene userId y es docente, filtrar solo por docente
+            if (userId != null && repoPerfilDocente.findByIdUsuario_IdUsuario(userId).isPresent()) {
+                return repoEvaluaciones.findByDocenteUsuarioId(userId);
             }
-            return repoEvaluaciones.findBySedeId(sedeId);
+            // Si no es docente (director, secretaria), filtrar por sede
+            if (sedeId != null) {
+                return repoEvaluaciones.findBySedeId(sedeId);
+            }
+            return repoEvaluaciones.findAll();
         } catch (Exception e) {
             System.out.println("Error en EvaluacionesService.buscarTodos(): " + e.getMessage());
             e.printStackTrace();

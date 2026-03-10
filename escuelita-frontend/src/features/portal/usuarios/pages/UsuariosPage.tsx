@@ -71,7 +71,7 @@ const UsuariosPage: React.FC = () => {
     };
 
     const handleEliminar = async (idUsuario: number) => {
-        if (!window.confirm('¿Deseas desactivar este usuario?')) {
+        if (!window.confirm('¿Está seguro de desactivar este usuario?')) {
             return;
         }
         await eliminarUsuario(idUsuario);
@@ -123,7 +123,7 @@ const UsuariosPage: React.FC = () => {
                         className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors flex items-center gap-2"
                     >
                         <Plus className="w-4 h-4" />
-                        Nuevo usuario
+                        Nuevo Usuario
                     </button>
                 </div>
             </div>
@@ -209,12 +209,12 @@ const UsuariosPage: React.FC = () => {
                                             <div className="w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-semibold flex items-center justify-center">
                                                 {(item.nombres?.charAt(0) || '').toUpperCase()}{(item.apellidos?.charAt(0) || '').toUpperCase()}
                                             </div>
-                                            <span>{item.nombres} {item.apellidos}</span>
+                                            <span className="uppercase">{item.nombres} {item.apellidos}</span>
                                         </div>
                                     </td>
                                     <td className="px-4 py-3 text-sm text-gray-700 font-medium">{item.usuario}</td>
                                     <td className="px-4 py-3 text-sm text-gray-700">{item.correo}</td>
-                                    <td className="px-4 py-3 text-sm text-gray-700">{item.idRol?.nombre ?? '-'}</td>
+                                    <td className="px-4 py-3 text-sm text-gray-700 uppercase">{item.idRol?.nombre ?? '-'}</td>
                                     <td className="px-4 py-3 text-sm text-gray-700">
                                         <div className="flex items-center justify-center gap-3">
                                             <button
@@ -242,10 +242,10 @@ const UsuariosPage: React.FC = () => {
                 <div className="md:hidden p-3 space-y-2">
                     {usuariosPaginados.map((item) => (
                         <div key={item.idUsuario} className="border rounded-lg p-3 shadow-sm bg-white">
-                            <p className="text-sm font-semibold text-gray-800">{item.nombres} {item.apellidos}</p>
+                            <p className="text-sm font-semibold text-gray-800 uppercase">{item.nombres} {item.apellidos}</p>
                             <p className="text-xs text-gray-600 mt-0.5">@{item.usuario}</p>
                             <div className="mt-2 flex items-center gap-2">
-                                <span className="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">{item.idRol?.nombre ?? '-'}</span>
+                                <span className="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 uppercase">{item.idRol?.nombre ?? '-'}</span>
                             </div>
                             <div className="mt-2 flex items-center gap-2">
                                 <button
@@ -268,7 +268,7 @@ const UsuariosPage: React.FC = () => {
                 {!loading && usuariosFiltrados.length === 0 && (
                     <div className="p-6 text-center text-gray-500">
                         <Shield className="w-10 h-10 mx-auto mb-2 text-gray-300" />
-                        No hay usuarios para mostrar.
+                        No hay usuarios registrados
                     </div>
                 )}
 
@@ -285,7 +285,7 @@ const UsuariosPage: React.FC = () => {
                     roles={roles}
                     tiposDocumento={tiposDocumento}
                     initialData={usuarioEditar}
-                    submitLabel={usuarioEditar ? 'Actualizar' : 'Guardar'}
+                    submitLabel={usuarioEditar ? 'Actualizar' : 'Crear'}
                     lockSede
                     onSubmit={handleSubmit}
                     onCancel={() => {

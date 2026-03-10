@@ -94,31 +94,31 @@ const AnioEscolarPage: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-white rounded-lg shadow p-4">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500 text-sm">Total Años</p>
-                            <p className="text-2xl font-bold text-gray-800">{aniosEscolares.length}</p>
+                            <p className="text-gray-600 text-sm">Total Años</p>
+                            <p className="text-2xl font-bold text-blue-700">{aniosEscolares.length}</p>
                         </div>
-                        <Calendar className="w-10 h-10 text-blue-500 opacity-50" />
+                        <Calendar className="w-10 h-10 text-blue-600" />
                     </div>
                 </div>
-                <div className="bg-white rounded-lg shadow p-4">
+                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500 text-sm">Años Activos</p>
-                            <p className="text-2xl font-bold text-gray-800">{aniosActivos}</p>
+                            <p className="text-gray-600 text-sm">Años Activos</p>
+                            <p className="text-2xl font-bold text-green-700">{aniosActivos}</p>
                         </div>
-                        <CalendarCheck2 className="w-10 h-10 text-green-500 opacity-50" />
+                        <CalendarCheck2 className="w-10 h-10 text-green-600" />
                     </div>
                 </div>
-                <div className="bg-white rounded-lg shadow p-4">
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500 text-sm">Resultados</p>
-                            <p className="text-2xl font-bold text-gray-800">{aniosFiltrados.length}</p>
+                            <p className="text-gray-600 text-sm">Mostrando</p>
+                            <p className="text-2xl font-bold text-purple-700">{aniosFiltrados.length}</p>
                         </div>
-                        <Search className="w-10 h-10 text-purple-500 opacity-50" />
+                        <Search className="w-10 h-10 text-purple-600" />
                     </div>
                 </div>
             </div>
@@ -153,7 +153,7 @@ const AnioEscolarPage: React.FC = () => {
                     <div className="p-8 text-center text-gray-500">Cargando años escolares...</div>
                 ) : aniosPaginados.length === 0 ? (
                     <div className="p-8 text-center text-gray-500">
-                        {searchTerm ? 'No se encontraron años escolares con ese criterio' : 'No hay años escolares registrados'}
+                        {searchTerm ? 'No se encontraron años escolares' : 'No hay años escolares registrados'}
                     </div>
                 ) : (
                     <>
@@ -174,7 +174,7 @@ const AnioEscolarPage: React.FC = () => {
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center space-x-2">
                                                     <Calendar className="w-5 h-5 text-primary" />
-                                                    <span className="font-medium text-gray-900">{anio.nombreAnio}</span>
+                                                    <span className="font-medium text-gray-900 uppercase">{anio.nombreAnio}</span>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-600">
@@ -226,7 +226,7 @@ const AnioEscolarPage: React.FC = () => {
                                     <div className="flex items-start justify-between mb-2">
                                         <div className="flex items-center space-x-2">
                                             <Calendar className="w-5 h-5 text-primary" />
-                                            <span className="font-medium text-gray-900">{anio.nombreAnio}</span>
+                                            <span className="font-medium text-gray-900 uppercase">{anio.nombreAnio}</span>
                                         </div>
                                         <div className="flex space-x-2">
                                             <button

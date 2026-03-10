@@ -11,4 +11,7 @@ import com.escuelita.www.entity.Asistencias;
 public interface AsistenciasRepository extends JpaRepository<Asistencias, Long> {
     @Query("SELECT a FROM Asistencias a WHERE a.idMatricula.idSeccion.idSede.idSede = :idSede")
     List<Asistencias> findBySedeId(@Param("idSede") Long idSede);
+
+    @Query("SELECT a FROM Asistencias a JOIN a.idAsignacion asig JOIN asig.idDocente d WHERE d.idUsuario.idUsuario = :idUsuario")
+    List<Asistencias> findByDocenteUsuarioId(@Param("idUsuario") Long idUsuario);
 }

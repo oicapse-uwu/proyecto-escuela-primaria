@@ -95,7 +95,7 @@ const RequisitosPage: React.FC = () => {
                 toast.success('Requisito eliminado exitosamente');
                 cargarDatos();
             } catch (error) {
-                toast.error('Error al eliminar requisito');
+                toast.error('Error al eliminar el requisito');
             }
         }
     };
@@ -119,7 +119,7 @@ const RequisitosPage: React.FC = () => {
             setShowModal(false);
             cargarDatos();
         } catch (error) {
-            toast.error(requisitoEditar ? 'Error al actualizar requisito' : 'Error al crear requisito');
+            toast.error(requisitoEditar ? 'Error al actualizar el requisito' : 'Error al crear el requisito');
         }
     };
 
@@ -272,7 +272,7 @@ const RequisitosPage: React.FC = () => {
                                             <div className="flex items-center">
                                                 <FileText className="w-5 h-5 mr-3 text-blue-500" />
                                                 <div>
-                                                    <p className="text-sm font-medium text-gray-900">
+                                                    <p className="text-sm font-medium text-gray-900 uppercase">
                                                         {requisito.nombreDocumento}
                                                     </p>
                                                 </div>
@@ -340,7 +340,7 @@ const RequisitosPage: React.FC = () => {
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-2">
                                         <FileText className="w-5 h-5 text-blue-500" />
-                                        <h3 className="font-semibold text-gray-900">
+                                        <h3 className="font-semibold text-gray-900 uppercase">
                                             {requisito.nombreDocumento}
                                         </h3>
                                     </div>

@@ -240,7 +240,7 @@ const ApoderadosPage: React.FC = () => {
                         <div key={apoderado.idApoderado} className="bg-white rounded-lg shadow p-4">
                             <div className="flex justify-between items-start mb-3">
                                 <div className="flex-1">
-                                    <h3 className="font-semibold text-gray-800">
+                                    <h3 className="font-semibold text-gray-800 uppercase">
                                         {apoderado.nombres} {apoderado.apellidos}
                                     </h3>
                                     <p className="text-sm text-gray-600 flex items-center mt-1">
@@ -334,7 +334,7 @@ const ApoderadosPage: React.FC = () => {
                                             </div>
                                         </td>
                                         <td className="px-4 py-3 text-sm">
-                                            <div className="text-gray-900 font-medium">
+                                            <div className="text-gray-900 font-medium uppercase">
                                                 {apoderado.nombres} {apoderado.apellidos}
                                             </div>
                                             {apoderado.lugarTrabajo && (

@@ -1,5 +1,6 @@
-import { AlertCircle, CalendarRange, X } from 'lucide-react';
+import { CalendarRange, X } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import type { AnioEscolar, Periodo, PeriodoDTO } from '../types';
 
 interface PeriodoFormProps {
@@ -32,10 +33,10 @@ const PeriodoForm: React.FC<PeriodoFormProps> = ({
     const periodosDelAnio = useMemo(() => {
         if (!formData.idAnio) return 0;
         return periodosExistentes.filter(p => {
-            const idAnio = typeof p.idAnio === 'object' ? p.idAnio.idAnioEscolar : p.idAnio;
+            const anioId = typeof p.idAnio === 'object' ? p.idAnio.idAnioEscolar : p.idAnio;
             // Si estamos editando, no contar el periodo actual
             if (periodo && p.idPeriodo === periodo.idPeriodo) return false;
-            return idAnio === formData.idAnio;
+            return anioId === formData.idAnio;
         }).length;
     }, [periodosExistentes, formData.idAnio, periodo]);
 
@@ -49,6 +50,62 @@ const PeriodoForm: React.FC<PeriodoFormProps> = ({
         if (periodo) return true; // Si está editando, siempre puede
         return periodosDelAnio < limiteMaximo;
     }, [periodo, periodosDelAnio, limiteMaximo]);
+
+    // Obtener períodos del mismo año (excluyendo el actual si es edición)
+    const periodosDelMismoAnio = useMemo(() => {
+        if (!formData.idAnio) return [];
+        return periodosExistentes.filter(p => {
+            const anioId = typeof p.idAnio === 'object' ? p.idAnio.idAnioEscolar : p.idAnio;
+            if (periodo && p.idPeriodo === periodo.idPeriodo) return false;
+            return anioId === formData.idAnio;
+        });
+    }, [periodosExistentes, formData.idAnio, periodo]);
+
+    // Validar solapamiento de fechas
+    const validarFechas = (fechaInicio: string, fechaFin: string): string => {
+        if (!fechaInicio || !fechaFin) return '';
+
+        const inicio = new Date(fechaInicio);
+        const fin = new Date(fechaFin);
+
+        if (fin <= inicio) {
+            return 'La fecha de fin debe ser posterior a la fecha de inicio.';
+        }
+
+        // Validar duración según tipo de período
+        const diffMs = fin.getTime() - inicio.getTime();
+        const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+        if (tipoPeriodo === 'BIMESTRE') {
+            if (diffDias > 75) {
+                return `Un bimestre no puede durar más de ~2 meses (75 días). Duración actual: ${diffDias} días.`;
+            }
+            if (diffDias < 30) {
+                return `Un bimestre debe durar al menos 1 mes (30 días). Duración actual: ${diffDias} días.`;
+            }
+        } else {
+            if (diffDias > 105) {
+                return `Un trimestre no puede durar más de ~3 meses (105 días). Duración actual: ${diffDias} días.`;
+            }
+            if (diffDias < 45) {
+                return `Un trimestre debe durar al menos 1.5 meses (45 días). Duración actual: ${diffDias} días.`;
+            }
+        }
+
+        // Validar solapamiento con otros períodos del mismo año
+        for (const p of periodosDelMismoAnio) {
+            if (!p.fechaInicio || !p.fechaFin) continue;
+            const pInicio = new Date(p.fechaInicio);
+            const pFin = new Date(p.fechaFin);
+
+            // Hay solapamiento si: inicio < finExistente AND fin > inicioExistente
+            if (inicio < pFin && fin > pInicio) {
+                return `Las fechas se cruzan con el periodo "${p.nombrePeriodo}" (${p.fechaInicio} - ${p.fechaFin}). Elija fechas que no se sobrepongan.`;
+            }
+        }
+
+        return '';
+    };
 
     useEffect(() => {
         if (periodo) {
@@ -74,7 +131,9 @@ const PeriodoForm: React.FC<PeriodoFormProps> = ({
             const tipoPeriodoNombre = value === 'TRIMESTRE' ? 'trimestres' : 'bimestres';
             
             if (!periodo && periodosDelAnio >= limite) {
-                setErrorValidacion(`Este año escolar ya tiene ${periodosDelAnio} períodos registrados. El límite para ${tipoPeriodoNombre} es ${limite}.`);
+                const msg = `Este año escolar ya tiene ${periodosDelAnio} períodos registrados. El límite para ${tipoPeriodoNombre} es ${limite}.`;
+                setErrorValidacion(msg);
+                toast.error(msg, { id: 'periodo-validation' });
             } else {
                 setErrorValidacion('');
             }
@@ -83,23 +142,39 @@ const PeriodoForm: React.FC<PeriodoFormProps> = ({
 
         const newValue = name === 'idAnio' ? Number(value) : value;
         
-        setFormData(prev => ({ 
-            ...prev, 
-            [name]: newValue
-        }));
+        setFormData(prev => {
+            const updated = { ...prev, [name]: newValue };
+            // Validar fechas cuando cambian
+            if (name === 'fechaInicio' || name === 'fechaFin') {
+                const fi = name === 'fechaInicio' ? value : prev.fechaInicio;
+                const ff = name === 'fechaFin' ? value : prev.fechaFin;
+                if (fi && ff) {
+                    const errorFechas = validarFechas(fi as string, ff as string);
+                    if (errorFechas) {
+                        setErrorValidacion(errorFechas);
+                        toast.error(errorFechas, { id: 'periodo-validation' });
+                    } else {
+                        setErrorValidacion('');
+                    }
+                }
+            }
+            return updated;
+        });
 
         // Validar límite cuando cambia el año escolar
         if (name === 'idAnio' && !periodo) {
             const periodoCount = periodosExistentes.filter(p => {
-                const idAnio = typeof p.idAnio === 'object' ? p.idAnio.idAnioEscolar : p.idAnio;
-                return idAnio === Number(value);
+                const anioId = typeof p.idAnio === 'object' ? p.idAnio.idAnioEscolar : p.idAnio;
+                return anioId === Number(value);
             }).length;
             
             const limite = tipoPeriodo === 'TRIMESTRE' ? 3 : 4;
             const tipoPeriodoNombre = tipoPeriodo === 'TRIMESTRE' ? 'trimestres' : 'bimestres';
             
             if (periodoCount >= limite) {
-                setErrorValidacion(`Este año escolar ya tiene ${limite} ${tipoPeriodoNombre} registrados. No puede agregar más.`);
+                const msg = `Este año escolar ya tiene ${limite} ${tipoPeriodoNombre} registrados. No puede agregar más.`;
+                setErrorValidacion(msg);
+                toast.error(msg, { id: 'periodo-validation' });
             } else {
                 setErrorValidacion('');
             }
@@ -112,8 +187,30 @@ const PeriodoForm: React.FC<PeriodoFormProps> = ({
         // Validación final antes de enviar
         if (!periodo && !puedeAgregarPeriodo) {
             const tipoPeriodoNombre = tipoPeriodo === 'TRIMESTRE' ? 'trimestres' : 'bimestres';
-            setErrorValidacion(`No puede agregar más ${tipoPeriodoNombre}. Ya alcanzó el límite de ${limiteMaximo} para este año escolar.`);
+            const msg = `No puede agregar más ${tipoPeriodoNombre}. Ya alcanzó el límite de ${limiteMaximo} para este año escolar.`;
+            setErrorValidacion(msg);
+            toast.error(msg, { id: 'periodo-validation' });
             return;
+        }
+
+        // Validar nombre duplicado en el mismo año
+        const nombreNormalizado = formData.nombrePeriodo.trim().toLowerCase();
+        const nombreDuplicado = periodosDelMismoAnio.some(
+            p => p.nombrePeriodo.trim().toLowerCase() === nombreNormalizado
+        );
+        if (nombreDuplicado) {
+            toast.error(`Ya existe un periodo con el nombre "${formData.nombrePeriodo.trim()}" en este año escolar.`, { id: 'periodo-validation' });
+            return;
+        }
+
+        // Validar fechas si ambas están presentes
+        if (formData.fechaInicio && formData.fechaFin) {
+            const errorFechas = validarFechas(formData.fechaInicio, formData.fechaFin);
+            if (errorFechas) {
+                setErrorValidacion(errorFechas);
+                toast.error(errorFechas, { id: 'periodo-validation' });
+                return;
+            }
         }
 
         await onSubmit(formData);
@@ -123,14 +220,14 @@ const PeriodoForm: React.FC<PeriodoFormProps> = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
                 {/* Header */}
-                <div className="bg-white border-b px-6 py-4 flex justify-between items-center rounded-t-lg">
-                    <h2 className="text-xl font-bold text-gray-800 flex items-center space-x-2">
-                        <CalendarRange className="w-5 h-5 text-primary" />
+                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] px-6 py-4 text-white flex justify-between items-center rounded-t-lg">
+                    <h2 className="text-xl font-bold flex items-center space-x-2">
+                        <CalendarRange className="w-5 h-5" />
                         <span>{periodo ? 'Editar Periodo' : 'Nuevo Periodo'}</span>
                     </h2>
                     <button
                         onClick={onCancel}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="p-2 hover:bg-white/20 rounded-lg transition-colors"
                         disabled={isLoading}
                     >
                         <X className="w-5 h-5" />
@@ -139,14 +236,6 @@ const PeriodoForm: React.FC<PeriodoFormProps> = ({
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                    {/* Mensaje de error de validación */}
-                    {errorValidacion && (
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-start space-x-2">
-                            <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                            <p className="text-sm text-red-800">{errorValidacion}</p>
-                        </div>
-                    )}
-
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             Tipo de División <span className="text-red-500">*</span>
@@ -212,28 +301,35 @@ const PeriodoForm: React.FC<PeriodoFormProps> = ({
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Fecha de Inicio
+                            Fecha de Inicio <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="date"
                             name="fechaInicio"
                             value={formData.fechaInicio}
                             onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            required
+                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${errorValidacion ? 'border-red-400' : 'border-gray-300'}`}
                         />
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Fecha de Fin
+                            Fecha de Fin <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="date"
                             name="fechaFin"
                             value={formData.fechaFin}
                             onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            required
+                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${errorValidacion ? 'border-red-400' : 'border-gray-300'}`}
                         />
+                        <p className="mt-1 text-xs text-gray-500">
+                            {tipoPeriodo === 'BIMESTRE' 
+                                ? 'Un bimestre dura aprox. 2 meses (30-75 días)' 
+                                : 'Un trimestre dura aprox. 3 meses (45-105 días)'}
+                        </p>
                     </div>
 
                     {/* Botones */}
@@ -248,9 +344,9 @@ const PeriodoForm: React.FC<PeriodoFormProps> = ({
                         </button>
                         <button
                             type="submit"
-                            disabled={isLoading || (!periodo && !puedeAgregarPeriodo)}
+                            disabled={isLoading || (!periodo && !puedeAgregarPeriodo) || !!errorValidacion}
                             className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            title={!puedeAgregarPeriodo && !periodo ? 'Límite de períodos alcanzado' : ''}
+                            title={!puedeAgregarPeriodo && !periodo ? 'Límite de períodos alcanzado' : errorValidacion || ''}
                         >
                             {isLoading ? 'Guardando...' : (periodo ? 'Actualizar' : 'Crear')}
                         </button>

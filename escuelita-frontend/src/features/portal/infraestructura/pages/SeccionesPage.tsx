@@ -129,31 +129,31 @@ const SeccionesPage: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-white rounded-lg shadow p-4">
+                <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg p-4 border border-indigo-200">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500 text-sm">Total Secciones</p>
-                            <p className="text-2xl font-bold text-gray-800">{secciones.length}</p>
+                            <p className="text-gray-600 text-sm">Total Secciones</p>
+                            <p className="text-2xl font-bold text-indigo-700">{secciones.length}</p>
                         </div>
-                        <Layers className="w-10 h-10 text-blue-500 opacity-50" />
+                        <Layers className="w-10 h-10 text-indigo-600" />
                     </div>
                 </div>
-                <div className="bg-white rounded-lg shadow p-4">
+                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500 text-sm">Total Vacantes</p>
-                            <p className="text-2xl font-bold text-gray-800">{totalVacantes}</p>
+                            <p className="text-gray-600 text-sm">Total Vacantes</p>
+                            <p className="text-2xl font-bold text-green-700">{totalVacantes}</p>
                         </div>
-                        <Users className="w-10 h-10 text-green-500 opacity-50" />
+                        <Users className="w-10 h-10 text-green-600" />
                     </div>
                 </div>
-                <div className="bg-white rounded-lg shadow p-4">
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500 text-sm">Resultados</p>
-                            <p className="text-2xl font-bold text-gray-800">{seccionesFiltradas.length}</p>
+                            <p className="text-gray-600 text-sm">Mostrando</p>
+                            <p className="text-2xl font-bold text-purple-700">{seccionesFiltradas.length}</p>
                         </div>
-                        <Search className="w-10 h-10 text-purple-500 opacity-50" />
+                        <Search className="w-10 h-10 text-purple-600" />
                     </div>
                 </div>
             </div>
@@ -188,7 +188,7 @@ const SeccionesPage: React.FC = () => {
                     <div className="p-8 text-center text-gray-500">Cargando secciones...</div>
                 ) : seccionesPaginadas.length === 0 ? (
                     <div className="p-8 text-center text-gray-500">
-                        {searchTerm ? 'No se encontraron secciones con ese criterio' : 'No hay secciones registradas'}
+                        {searchTerm ? 'No se encontraron secciones' : 'No hay secciones registradas'}
                     </div>
                 ) : (
                     <>
@@ -209,7 +209,7 @@ const SeccionesPage: React.FC = () => {
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center space-x-2">
                                                     <Layers className="w-5 h-5 text-primary" />
-                                                    <span className="font-medium text-gray-900">{seccion.nombreSeccion}</span>
+                                                    <span className="font-medium text-gray-900 uppercase">{seccion.nombreSeccion}</span>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
@@ -260,7 +260,7 @@ const SeccionesPage: React.FC = () => {
                                     <div className="flex items-start justify-between mb-2">
                                         <div className="flex items-center space-x-2">
                                             <Layers className="w-5 h-5 text-primary" />
-                                            <span className="font-medium text-gray-900">{seccion.nombreSeccion}</span>
+                                            <span className="font-medium text-gray-900 uppercase">{seccion.nombreSeccion}</span>
                                         </div>
                                         <div className="flex space-x-2">
                                             <button

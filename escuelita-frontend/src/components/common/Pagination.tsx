@@ -3,8 +3,12 @@ import React from 'react';
 
 interface PaginationProps {
     currentPage: number;
-    totalPages: number;
+    totalPages?: number;
+    totalItems?: number;
+    itemsPerPage?: number;
+    itemsPerPageOptions?: number[];
     onPageChange: (page: number) => void;
+    onItemsPerPageChange?: (itemsPerPage: number) => void;
 }
 
 /**
@@ -22,9 +26,15 @@ interface PaginationProps {
  */
 const Pagination: React.FC<PaginationProps> = ({
     currentPage,
-    totalPages,
-    onPageChange
+    totalPages: propTotalPages,
+    totalItems,
+    itemsPerPage = 10,
+    itemsPerPageOptions = [5, 10, 20, 50],
+    onPageChange,
+    onItemsPerPageChange
 }) => {
+    // Calcular totalPages si no se proporciona pero sí totalItems
+    const totalPages = propTotalPages || (totalItems ? Math.ceil(totalItems / itemsPerPage) : 0);
     const handlePrevious = () => {
         if (currentPage > 1) {
             onPageChange(currentPage - 1);
@@ -42,12 +52,27 @@ const Pagination: React.FC<PaginationProps> = ({
     return (
         <div className="bg-white px-4 py-3 sm:px-6 border-t border-gray-200">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                {/* Info de páginas */}
-                <div className="flex items-center gap-4">
+                {/* Info de páginas e items por página */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                     <p className="text-sm text-gray-700">
                         Página <span className="font-medium">{currentPage}</span> de{' '}
                         <span className="font-medium">{totalPages}</span>
                     </p>
+                    {onItemsPerPageChange && totalItems && (
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-700">Mostrar:</span>
+                            <select
+                                value={itemsPerPage}
+                                onChange={(e) => onItemsPerPageChange?.(Number(e.target.value))}
+                                className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                {itemsPerPageOptions.map(option => (
+                                    <option key={option} value={option}>{option}</option>
+                                ))}
+                            </select>
+                            <span className="text-sm text-gray-700">por página</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* Botones de navegación */}

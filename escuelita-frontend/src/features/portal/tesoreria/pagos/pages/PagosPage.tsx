@@ -1,10 +1,10 @@
-import { DollarSign, Edit, Eye, Plus, Search, Trash2 } from 'lucide-react';
+import { Eye, Plus, Search, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { Toaster } from 'sonner';
 import Pagination from '../../../../../components/common/Pagination';
 import PagoForm from '../components/PagoForm';
 import { usePagos } from '../hooks/usePagos';
-import type { PagosDTO, PagoFormData } from '../types';
+import type { PagoFormData, PagosDTO } from '../types';
 
 const PagosPage: React.FC = () => {
     const { 

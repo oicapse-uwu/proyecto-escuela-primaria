@@ -9,7 +9,7 @@ export const getPlanesApi = async (): Promise<Plan[]> => {
 
 // Obtener un plan por ID
 export const getPlanByIdApi = async (id: number): Promise<Plan> => {
-    const response = await api.get(`${API_ENDPOINTS.PLANES}/${id}`);
+    const response = await api.get('/restful/planes/' + id);
     return response.data;
 };
 
@@ -30,5 +30,5 @@ export const updatePlanApi = async (idPlan: number, plan: PlanFormData): Promise
 
 // Eliminar un plan
 export const deletePlanApi = async (id: number): Promise<void> => {
-    await api.delete(`${API_ENDPOINTS.PLANES}/${id}`);
+    await api.delete('/restful/planes/' + id);
 };

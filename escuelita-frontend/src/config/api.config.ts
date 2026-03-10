@@ -1,4 +1,7 @@
 import axios from 'axios';
+import { adminAuthService } from '../services/adminAuth.service';
+import { escuelaAuthService } from '../services/escuelaAuth.service';
+import { toast } from 'sonner';
 
 // Configuración de la instancia de Axios para la API
 export const api = axios.create({
@@ -11,18 +14,22 @@ export const api = axios.create({
 // Interceptor de solicitudes para agregar token de autenticación
 api.interceptors.request.use(
     (config) => {
-        const currentPath = window.location.pathname;
-        let token = null;
+        // Preferir el token según el servicio de autenticación activo
+        let token: string | null = null;
 
-        if (currentPath.startsWith('/admin')) {
-            token = localStorage.getItem('admin_token');
-        } else if (currentPath.startsWith('/escuela')) {
-            token = localStorage.getItem('escuela_token');
+        if (escuelaAuthService.isAuthenticated()) {
+            token = escuelaAuthService.getToken();
+        } else if (adminAuthService.isAuthenticated()) {
+            token = adminAuthService.getToken();
         } else {
-            token =
-                localStorage.getItem('admin_token') ||
-                localStorage.getItem('escuela_token');
+            // Fallback: leer localStorage directamente
+            token = localStorage.getItem('escuela_token') || localStorage.getItem('admin_token');
         }
+
+        // Debug: mostrar qué token se usará (no sensible, solo tipo)
+        try {
+            console.log('[API] Request', config.method, config.url, 'using token:', escuelaAuthService.isAuthenticated() ? 'escuela' : adminAuthService.isAuthenticated() ? 'admin' : 'none');
+        } catch {}
 
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -38,6 +45,21 @@ api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401 || error.response?.status === 403) {
+            try {
+                console.error('[API] Unauthorized response', error.response?.status, error.response?.data);
+            } catch {}
+
+            // Mostrar notificación visible para el usuario antes del redirect
+            try {
+                toast.error('Sesión expirada o no autorizada. Redirigiendo al login...');
+            } catch {}
+
+            // ALERT temporal para garantizar visibilidad en caso de que toasts no se muestren
+            try {
+                // eslint-disable-next-line no-alert
+                window.alert('Sesión expirada o no autorizada. Serás redirigido al login.');
+            } catch {}
+
             localStorage.removeItem('escuela_token');
             localStorage.removeItem('escuela_user');
             localStorage.removeItem('admin_token');

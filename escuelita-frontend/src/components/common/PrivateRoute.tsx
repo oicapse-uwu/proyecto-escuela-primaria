@@ -17,6 +17,11 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
     const isAuthenticated = isAdminRoute 
         ? adminAuthService.isAuthenticated()
         : escuelaAuthService.isAuthenticated();
+
+    // Debug log para entender redirecciones silenciosas
+    try {
+        console.log('[PrivateRoute] isAdminRoute:', isAdminRoute, 'isAuthenticated:', isAuthenticated, 'path:', location.pathname);
+    } catch {}
     
     // Redireccionar al login correspondiente si no está autenticado
     if (!isAuthenticated) {

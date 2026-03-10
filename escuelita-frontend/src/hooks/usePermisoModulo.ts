@@ -14,7 +14,7 @@ import { escuelaAuthService } from '../services/escuelaAuth.service';
  * const puedeEditar = usePermisoModulo(5, 'EDITAR');
  * const puedeEliminar = usePermisoModulo(5, 'ELIMINAR');
  */
-export const usePermisoModulo = (idModulo: number, codigoPermiso: string): boolean => {
+export const usePermisoModulo = (idModulo: number, _codigoPermiso?: string): boolean => {
   // Obtener el usuario actual
   const usuarioActual = escuelaAuthService.getCurrentUser();
   const idUsuario = usuarioActual?.idUsuario || null;
@@ -23,19 +23,20 @@ export const usePermisoModulo = (idModulo: number, codigoPermiso: string): boole
   const { modulosPermisos, isLoading } = useModulosPermisos(idUsuario);
 
   const tienePermiso = useMemo(() => {
+    // Detectar usuario, rol y sede
+    const esAdministrador = !!(usuarioActual?.rol?.nombreRol && usuarioActual.rol.nombreRol.toUpperCase().includes('ADMIN'));
+    const tieneSede = !!(usuarioActual && 'sede' in usuarioActual && usuarioActual.sede);
+
+    // Si es administrador (backend a veces no incluye 'sede') => acceso completo
+    if (esAdministrador) return true;
+
     if (isLoading || !modulosPermisos || !modulosPermisos.modulos) return false;
 
-    // Buscar el módulo
+    // Buscar el módulo - por ahora solo verificamos acceso al módulo completo
+    // Los permisos granulares (VER, CREAR, EDITAR, etc.) se manejarán después
     const modulo = modulosPermisos.modulos.find((m: any) => m.idModulo === idModulo);
-    if (!modulo) return false;
-
-    // Buscar el permiso dentro del módulo
-    const permiso = modulo.permisos?.find(
-      (p: any) => p.codigo?.toUpperCase() === codigoPermiso?.toUpperCase()
-    );
-
-    return !!permiso; // true si existe, false si no
-  }, [modulosPermisos, idModulo, codigoPermiso, isLoading]);
+    return !!modulo; // true si tiene acceso al módulo
+  }, [modulosPermisos, idModulo, isLoading, usuarioActual]);
 
   return tienePermiso;
 };
@@ -54,8 +55,9 @@ export const usePermisosDelModulo = (idModulo: number): string[] => {
   const permisos = useMemo(() => {
     if (isLoading || !modulosPermisos || !modulosPermisos.modulos) return [];
 
-    const modulo = modulosPermisos.modulos.find((m: any) => m.idModulo === idModulo);
-    return modulo?.permisos?.map((p: any) => p.codigo || '') ?? [];
+    const modulo = modulosPermisos.modulos.find((m: any) => m.idModulo === idModulo) as any;
+    const lista = modulo?.permisos ?? [];
+    return (Array.isArray(lista) ? lista.map((p: any) => p.codigo || '') : []) as string[];
   }, [modulosPermisos, idModulo, isLoading]);
 
   return permisos;

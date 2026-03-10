@@ -35,8 +35,7 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
         idInstitucion: 0,
         idPlan: 0,
         idCiclo: 0,
-        idEstado: 1, // El estado ahora es AUTOMÁTICO (gestionado por backend según pagos y fechas)
-        idMetodoPago: 0
+        idEstado: 1 // El estado ahora es AUTOMÁTICO (gestionado por backend según pagos y fechas)
     });
 
     /* 

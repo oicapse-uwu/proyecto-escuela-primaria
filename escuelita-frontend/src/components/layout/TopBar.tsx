@@ -52,7 +52,7 @@ const TopBar: React.FC<TopBarProps> = ({ onToggleSidebar }) => {
                             <Menu className="w-6 h-6" />
                         </button>
                         {/* Indicador de Sede (solo para escuelas) */}
-                        {!isAdminRoute && user?.sede && (
+                        {!isAdminRoute && user && 'sede' in user && user.sede && (
                             <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 bg-primary/10 rounded-lg border border-primary/20">
                                 <Building2 className="w-4 h-4 text-primary" />
                                 <span className="text-sm font-medium text-primary">

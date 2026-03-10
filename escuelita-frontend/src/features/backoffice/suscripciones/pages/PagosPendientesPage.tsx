@@ -215,8 +215,7 @@ const PagosPendientesPage: React.FC = () => {
                 idInstitucion: selectedSuscripcion.idInstitucion.idInstitucion,
                 idPlan: selectedSuscripcion.idPlan.idPlan,
                 idCiclo: selectedSuscripcion.idCiclo.idCiclo,
-                idEstado: estadoActiva?.idEstado || selectedSuscripcion.idEstado.idEstado,
-                idMetodoPago: Number(formPago.idMetodo)
+                idEstado: estadoActiva?.idEstado || selectedSuscripcion.idEstado.idEstado
             });
 
             toast.success('Pago registrado correctamente');

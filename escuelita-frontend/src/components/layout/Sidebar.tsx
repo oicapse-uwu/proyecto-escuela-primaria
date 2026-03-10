@@ -74,10 +74,10 @@ const menuModulesConfig: Record<string, { icon: LucideIcon; subItems?: Record<st
         icon: GraduationCap,
         subItems: {
             'Áreas y Cursos': { path: '/escuela/academica/areas-cursos', icon: BookOpen },
-            'Malla Curricular': { path: '/escuela/academica/malla', icon: Grid3x3 },
+            'Malla Curricular': { path: '/escuela/academica/malla-curricular', icon: Grid3x3 },
             'Docentes': { path: '/escuela/academica/docentes', icon: User },
             'Especialidades': { path: '/escuela/academica/especialidades', icon: Briefcase },
-            'Asignación Docente': { path: '/escuela/academica/asignacion', icon: ClipboardList },
+            'Asignación Docente': { path: '/escuela/academica/asignacion-docente', icon: ClipboardList },
             'Horarios': { path: '/escuela/academica/horarios', icon: Clock },
         }
     },

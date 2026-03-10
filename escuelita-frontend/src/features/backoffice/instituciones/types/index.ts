@@ -37,6 +37,7 @@ export interface InstitucionDTO {
     codModular: string;
     tipoGestion: string;
     resolucionCreacion: string;
+    nombreDirector?: string;
     logoPath?: string;
     ruc?: string;
     razonSocial?: string;

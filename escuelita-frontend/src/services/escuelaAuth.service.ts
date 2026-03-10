@@ -65,6 +65,7 @@ class EscuelaAuthService {
     logout(): void {
         localStorage.removeItem(this.TOKEN_KEY);
         localStorage.removeItem(this.USER_KEY);
+        try { console.log('[escuelaAuthService] logout called - tokens removed'); } catch {}
     }
 
     getToken(): string | null {
@@ -84,7 +85,9 @@ class EscuelaAuthService {
     }
 
     isAuthenticated(): boolean {
-        return this.getToken() !== null;
+        const auth = this.getToken() !== null;
+        try { console.log('[escuelaAuthService] isAuthenticated ->', auth); } catch {}
+        return auth;
     }
 
     isProfesor(): boolean {

@@ -32,8 +32,8 @@ const ModuloGuard: React.FC<ModuloGuardProps> = ({
         // Un usuario de IE SIEMPRE tiene sede asignada
         const hasSede = !!(user && 'sede' in user && user.sede);
         
-        // Detectar si es Administrador comparando nombre de rol exacto
-        const isAdmin = user?.rol?.nombreRol?.toUpperCase() === 'ADMINISTRADOR';
+        // Detectar si es Administrador comparando nombre de rol (incluye 'ADMIN')
+        const isAdmin = !!(user?.rol?.nombreRol && user.rol.nombreRol.toUpperCase().includes('ADMIN'));
         
         return {
             esAdministrador: isAdmin,
@@ -48,13 +48,17 @@ const ModuloGuard: React.FC<ModuloGuardProps> = ({
     }
 
     // Si es Administrador → Permitir acceso a TODOS los módulos
-    if (esAdministrador && tieneSede) {
+    // Nota: algunos admin pueden no tener la propiedad `sede` en la respuesta
+    // del backend; permitir acceso de administrador independientemente de eso.
+    if (esAdministrador) {
+        console.log('[ModuloGuard] Rol admin detectado - acceso total', { esAdministrador, tieneSede });
         return <>{children}</>;
     }
 
     // Si es otro rol de IE → Validar que tenga el módulo específico
     if (tieneSede) {
         const tieneAcceso = tieneModulo(requiereModulo);
+        console.log('[ModuloGuard] Verificando módulo', { requiereModulo, tieneAcceso, tieneSede, esAdministrador });
         
         if (tieneAcceso) {
             return <>{children}</>;

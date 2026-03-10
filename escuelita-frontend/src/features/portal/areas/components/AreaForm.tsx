@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
 import { Layers } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import Modal from '../../../../components/common/Modal';
 import type { Area, AreaDTO } from '../types/areas.types';
 
@@ -15,7 +15,6 @@ const AreaForm: React.FC<AreaFormProps> = ({ isOpen, onClose, area, onSubmit, is
     const [formData, setFormData] = useState<AreaDTO>({
         nombreArea: '',
         descripcion: '',
-        idSede: 1,
         estado: 1
     });
 
@@ -24,11 +23,10 @@ const AreaForm: React.FC<AreaFormProps> = ({ isOpen, onClose, area, onSubmit, is
             setFormData({
                 nombreArea: area.nombreArea || '',
                 descripcion: area.descripcion || '',
-                idSede: typeof area.idSede === 'object' ? area.idSede?.idSede || 1 : area.idSede || 1,
                 estado: area.estado || 1
             });
         } else if (isOpen) {
-            setFormData({ nombreArea: '', descripcion: '', idSede: 1, estado: 1 });
+            setFormData({ nombreArea: '', descripcion: '', estado: 1 });
         }
     }, [area, isOpen]);
 
@@ -36,7 +34,7 @@ const AreaForm: React.FC<AreaFormProps> = ({ isOpen, onClose, area, onSubmit, is
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: name === 'estado' || name === 'idSede' ? parseInt(value, 10) : value
+            [name]: name === 'estado' ? parseInt(value, 10) : value
         }));
     };
 
@@ -48,6 +46,13 @@ const AreaForm: React.FC<AreaFormProps> = ({ isOpen, onClose, area, onSubmit, is
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={area ? 'Editar Área' : 'Nueva Área'} size="md">
             <form onSubmit={handleSubmit} className="p-6">
+                {/* Mensaje informativo */}
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <p className="text-sm text-blue-700">
+                        <strong>Nota:</strong> Las áreas académicas son globales y compartidas entre todas las sedes (según MINEDU).
+                    </p>
+                </div>
+                
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Área *</label>
@@ -62,18 +67,12 @@ const AreaForm: React.FC<AreaFormProps> = ({ isOpen, onClose, area, onSubmit, is
                         <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
                         <textarea name="descripcion" value={formData.descripcion} onChange={handleChange} rows={3} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">ID Sede *</label>
-                            <input type="number" name="idSede" value={formData.idSede} onChange={handleChange} required min="1" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent" />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Estado *</label>
-                            <select name="estado" value={formData.estado} onChange={handleChange} required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
-                                <option value={1}>Activo</option>
-                                <option value={0}>Inactivo</option>
-                            </select>
-                        </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Estado *</label>
+                        <select name="estado" value={formData.estado} onChange={handleChange} required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <option value={1}>Activo</option>
+                            <option value={0}>Inactivo</option>
+                        </select>
                     </div>
                 </div>
                 <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">

@@ -3,7 +3,7 @@ package com.escuelita.www.entity;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({
-    "idCurso", "nombreCurso", "idArea", "estado" 
+    "idCurso", "nombreCurso", "idArea", "idSede", "estado" 
 })
 public class CursosDTO {
 
@@ -11,6 +11,7 @@ public class CursosDTO {
     private String nombreCurso;
 
     private Long idArea;
+    private Long idSede;
     
     private Integer estado = 1;
 
@@ -32,6 +33,12 @@ public class CursosDTO {
     public void setIdArea(Long idArea) {
         this.idArea = idArea;
     }
+    public Long getIdSede() {
+        return idSede;
+    }
+    public void setIdSede(Long idSede) {
+        this.idSede = idSede;
+    }
     public Integer getEstado() {
         return estado;
     }
@@ -40,7 +47,7 @@ public class CursosDTO {
     }
     @Override
     public String toString() {
-        return "CursosDTO [idCurso=" + idCurso + ", nombreCurso=" + nombreCurso + ", idArea=" + idArea + ", estado="
-                + estado + "]";
+        return "CursosDTO [idCurso=" + idCurso + ", nombreCurso=" + nombreCurso 
+                + ", idArea=" + idArea + ", idSede=" + idSede + ", estado=" + estado + "]";
     }
 }

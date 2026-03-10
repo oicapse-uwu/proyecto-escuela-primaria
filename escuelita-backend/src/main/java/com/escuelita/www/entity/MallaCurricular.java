@@ -21,13 +21,18 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE malla_curricular SET estado=0 WHERE id_malla=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idMalla", "idAnioEscolar", "idGrado", "idCurso", "estado"
+    "idMalla", "idSede", "idAnioEscolar", "idGrado", "idCurso", "estado"
 })
 public class MallaCurricular {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_malla")
     private Long idMalla;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_sede")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private Sedes idSede;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_anio")
@@ -60,6 +65,12 @@ public class MallaCurricular {
     public void setIdMalla(Long idMalla) {
         this.idMalla = idMalla;
     }
+    public Sedes getIdSede() {
+        return idSede;
+    }
+    public void setIdSede(Sedes idSede) {
+        this.idSede = idSede;
+    }
     public AnioEscolar getIdAnioEscolar() {
         return idAnioEscolar;
     }
@@ -86,7 +97,7 @@ public class MallaCurricular {
     }
     @Override
     public String toString() {
-        return "MallaCurricular [idMalla=" + idMalla + ", idAnioEscolar=" + idAnioEscolar + ", idGrado=" + idGrado
-                + ", idCurso=" + idCurso + ", estado=" + estado + "]";
+        return "MallaCurricular [idMalla=" + idMalla + ", idSede=" + idSede + ", idAnioEscolar=" + idAnioEscolar 
+                + ", idGrado=" + idGrado + ", idCurso=" + idCurso + ", estado=" + estado + "]";
     }
 }

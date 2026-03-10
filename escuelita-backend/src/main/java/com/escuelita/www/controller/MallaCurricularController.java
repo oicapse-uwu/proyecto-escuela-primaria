@@ -20,11 +20,14 @@ import com.escuelita.www.entity.Cursos;
 import com.escuelita.www.entity.Grados;
 import com.escuelita.www.entity.MallaCurricular;
 import com.escuelita.www.entity.MallaCurricularDTO;
+import com.escuelita.www.entity.Sedes;
 import com.escuelita.www.repository.AnioEscolarRepository;
 import com.escuelita.www.repository.CursosRepository;
 import com.escuelita.www.repository.GradosRepository;
-import com.escuelita.www.service.IMallaCurricularService;
+import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.security.RequireModulo;
+import com.escuelita.www.service.IMallaCurricularService;
+import com.escuelita.www.util.TenantContext;
 
 @RestController
 @RequestMapping("/restful")
@@ -38,16 +41,27 @@ public class MallaCurricularController {
     private GradosRepository repoGrados;
     @Autowired
     private CursosRepository repoCursos;
+    @Autowired
+    private SedesRepository repoSedes;
 
     @GetMapping("/mallacurricular")
-    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
     public List<MallaCurricular> buscarTodos() {
+        // El service ya filtra por sede usando TenantContext
         return serviceMallaCurricular.buscarTodos();
     }
+    
     @PostMapping("/mallacurricular")
-    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
     public ResponseEntity<?> guardar(@RequestBody MallaCurricularDTO dto) {
         MallaCurricular mallaCurricular = new MallaCurricular();
+
+        // Asignar la sede automáticamente desde TenantContext
+        Long sedeId = TenantContext.getSedeId();
+        if (sedeId != null) {
+            Sedes sede = repoSedes.findById(sedeId).orElse(null);
+            mallaCurricular.setIdSede(sede);
+        }
 
         AnioEscolar anioEscolar = repoAnioEscolar
             .findById(dto.getIdAnioEscolar())
@@ -65,8 +79,9 @@ public class MallaCurricularController {
 
         return ResponseEntity.ok(serviceMallaCurricular.guardar(mallaCurricular));
     }
+    
     @PutMapping("/mallacurricular")
-    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
     public ResponseEntity<?> modificar(@RequestBody MallaCurricularDTO dto) {
         if (dto.getIdMalla() == null) {
             return ResponseEntity.badRequest()
@@ -74,6 +89,13 @@ public class MallaCurricularController {
         }
         MallaCurricular mallaCurricular = new MallaCurricular();
         mallaCurricular.setIdMalla(dto.getIdMalla());
+
+        // Asignar la sede automáticamente desde TenantContext
+        Long sedeId = TenantContext.getSedeId();
+        if (sedeId != null) {
+            Sedes sede = repoSedes.findById(sedeId).orElse(null);
+            mallaCurricular.setIdSede(sede);
+        }
 
         AnioEscolar anioEscolar = repoAnioEscolar
             .findById(dto.getIdAnioEscolar())
@@ -91,13 +113,15 @@ public class MallaCurricularController {
 
         return ResponseEntity.ok(serviceMallaCurricular.modificar(mallaCurricular));
     }
+    
     @GetMapping("/mallacurricular/{id}")
-    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
     public Optional<MallaCurricular> buscarId(@PathVariable("id") Long id) {
         return serviceMallaCurricular.buscarId(id);
     }
+    
     @DeleteMapping("/mallacurricular/{id}")
-    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
     public String eliminar(@PathVariable Long id){
         serviceMallaCurricular.eliminar(id);
         return "Malla curricular eliminada correctamente";

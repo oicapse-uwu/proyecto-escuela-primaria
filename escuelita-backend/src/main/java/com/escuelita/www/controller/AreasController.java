@@ -16,10 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.escuelita.www.entity.Areas;
 import com.escuelita.www.entity.AreasDTO;
-import com.escuelita.www.entity.Sedes;
-import com.escuelita.www.repository.SedesRepository;
-import com.escuelita.www.service.IAreasService;
 import com.escuelita.www.security.RequireModulo;
+import com.escuelita.www.service.IAreasService;
 
 @RestController
 @RequestMapping("/restful")
@@ -27,46 +25,36 @@ public class AreasController {
 
     @Autowired
     private IAreasService serviceAreas;
-    @Autowired
-    private SedesRepository repoSedes;
 
     @GetMapping("/areas")
-    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
     public List<Areas> buscarTodos() {
+        // Las áreas son globales, se devuelven todas
         return serviceAreas.buscarTodos();
     }
     @PostMapping("/areas")
-    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
     public ResponseEntity<?> guardar(@RequestBody AreasDTO dto) {
+        // Las áreas son globales, no se asignan a ninguna sede
         Areas areas = new Areas();
         areas.setNombreArea(dto.getNombreArea());
         areas.setDescripcion(dto.getDescripcion());
 
-        Sedes sedes = repoSedes
-                .findById(dto.getIdSede())
-                .orElse(null);
-
-        areas.setIdSede(sedes);
-
         return ResponseEntity.ok(serviceAreas.guardar(areas));
     }
     @PutMapping("/areas")
-    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACA DÉMICA
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
     public ResponseEntity<?> modificar(@RequestBody AreasDTO dto) {
         if (dto.getIdArea() == null) {
             return ResponseEntity.badRequest()
                     .body("ID de área es requerido");
         }
+        // Las áreas son globales, no se asignan a ninguna sede
         Areas areas = new Areas();
         areas.setIdArea(dto.getIdArea());
         areas.setNombreArea(dto.getNombreArea());
         areas.setDescripcion(dto.getDescripcion());
 
-        Sedes sedes = repoSedes
-            .findById(dto.getIdSede())
-            .orElse(null);
-
-        areas.setIdSede(sedes);
         return ResponseEntity.ok(serviceAreas.modificar(areas));
     }
     @DeleteMapping("/areas/{id}")

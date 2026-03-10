@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { useModulosPermisos } from './useModulosPermisos';
 import { escuelaAuthService } from '../services/escuelaAuth.service';
+import { useModulosPermisos } from './useModulosPermisos';
 
 /**
  * Hook para verificar si el usuario tiene un permiso específico en un módulo

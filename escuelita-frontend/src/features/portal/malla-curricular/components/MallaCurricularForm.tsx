@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import Modal from '../../../../components/common/Modal';
-import type { MallaCurricularFormData, Curso, Area } from '../types';
+import type { Area, Curso, MallaCurricularFormData } from '../types';
 
 interface MallaCurricularFormProps {
     isOpen: boolean;

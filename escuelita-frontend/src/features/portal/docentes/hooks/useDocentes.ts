@@ -1,12 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { docentesApi } from '../api/docentesApi';
 import { filtrarPorSedeActual } from '../../../../utils/sedeFilter';
+import { docentesApi } from '../api/docentesApi';
 import type {
+    Especialidad,
     PerfilDocente,
     PerfilDocenteFormData,
-    Usuario,
-    Especialidad
+    Usuario
 } from '../types';
 
 export const useDocentes = () => {

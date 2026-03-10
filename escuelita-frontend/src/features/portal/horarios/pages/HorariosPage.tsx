@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Search, Edit, Trash2, Calendar } from 'lucide-react';
+import { Calendar, Edit, Plus, Search, Trash2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import HorarioForm from '../components/HorarioForm';
 import { useHorarios } from '../hooks/useHorarios';

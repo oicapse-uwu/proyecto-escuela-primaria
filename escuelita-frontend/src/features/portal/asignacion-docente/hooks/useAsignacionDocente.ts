@@ -1,15 +1,15 @@
-import { useState, useCallback } from 'react';
-import { api, API_ENDPOINTS } from '../../../../config/api.config';
+import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
+import { api, API_ENDPOINTS } from '../../../../config/api.config';
 import { filtrarPorSedeActual } from '../../../../utils/sedeFilter';
 import type {
+    AnioEscolar,
     AsignacionDocente,
     AsignacionDocenteFormData,
-    PerfilDocenteOption,
     Curso,
     Grado,
-    Seccion,
-    AnioEscolar
+    PerfilDocenteOption,
+    Seccion
 } from '../types';
 
 export const useAsignacionDocente = () => {

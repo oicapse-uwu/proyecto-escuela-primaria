@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { useModulosPermisos } from './useModulosPermisos';
 import { escuelaAuthService } from '../services/escuelaAuth.service';
+import { useModulosPermisos } from './useModulosPermisos';
 
 interface ModuloGuardProps {
     requiereModulo: number;

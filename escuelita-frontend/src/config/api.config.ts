@@ -1,7 +1,7 @@
 import axios from 'axios';
+import { toast } from 'sonner';
 import { adminAuthService } from '../services/adminAuth.service';
 import { escuelaAuthService } from '../services/escuelaAuth.service';
-import { toast } from 'sonner';
 
 // Configuración de la instancia de Axios para la API
 export const api = axios.create({

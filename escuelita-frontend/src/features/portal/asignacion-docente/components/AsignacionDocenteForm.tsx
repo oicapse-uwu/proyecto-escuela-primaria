@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
-import { X, Save, UserCheck, BookOpen, GraduationCap, Home, Calendar } from 'lucide-react';
-import type { AsignacionDocenteFormData, PerfilDocenteOption, Curso, Grado, Seccion, AnioEscolar } from '../types';
+import { BookOpen, Calendar, GraduationCap, Home, Save, UserCheck, X } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import type { AnioEscolar, AsignacionDocenteFormData, Curso, Grado, PerfilDocenteOption, Seccion } from '../types';
 
 interface AsignacionDocenteFormProps {
     isOpen: boolean;

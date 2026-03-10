@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
+import { toast } from 'sonner';
 import Modal from '../../../../components/common/Modal';
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
-import { toast } from 'sonner';
-import type { PerfilDocenteFormData, Usuario, Especialidad } from '../types';
+import type { Especialidad, PerfilDocenteFormData, Usuario } from '../types';
 
 interface DocenteFormProps {
     isOpen: boolean;

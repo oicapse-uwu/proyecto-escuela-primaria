@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Search, Edit, Trash2, User } from 'lucide-react';
+import { Edit, Plus, Search, Trash2, User } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import DocenteForm from '../components/DocenteForm';
 import { useDocentes } from '../hooks/useDocentes';

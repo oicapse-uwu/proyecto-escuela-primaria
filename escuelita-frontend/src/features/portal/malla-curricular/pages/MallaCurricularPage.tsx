@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Search, Edit, Trash2, BookOpen } from 'lucide-react';
+import { BookOpen, Edit, Plus, Search, Trash2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import MallaCurricularForm from '../components/MallaCurricularForm';
 import { useMallaCurricular } from '../hooks/useMallaCurricular';

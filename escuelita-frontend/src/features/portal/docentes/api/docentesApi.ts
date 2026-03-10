@@ -2,11 +2,11 @@
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
 import { escuelaAuthService } from '../../../../services/escuelaAuth.service';
 import type {
-    PerfilDocente,
     CreatePerfilDocenteRequest,
+    Especialidad,
+    PerfilDocente,
     UpdatePerfilDocenteRequest,
-    Usuario,
-    Especialidad
+    Usuario
 } from '../types';
 
 // API functions for Docentes

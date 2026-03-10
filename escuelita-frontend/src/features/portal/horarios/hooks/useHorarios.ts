@@ -1,12 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { horariosApi } from '../api/horariosApi';
 import { filtrarPorSedeActual } from '../../../../utils/sedeFilter';
+import { horariosApi } from '../api/horariosApi';
 import type {
-    Horario,
-    HorarioFormData,
     AsignacionDocente,
-    Aula
+    Aula,
+    Horario,
+    HorarioFormData
 } from '../types';
 
 export const useHorarios = () => {

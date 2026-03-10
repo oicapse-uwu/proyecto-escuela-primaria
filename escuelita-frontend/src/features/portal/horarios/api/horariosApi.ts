@@ -1,10 +1,10 @@
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
 import type {
-    Horario,
-    CreateHorarioRequest,
-    UpdateHorarioRequest,
     AsignacionDocente,
-    Aula
+    Aula,
+    CreateHorarioRequest,
+    Horario,
+    UpdateHorarioRequest
 } from '../types';
 
 // API functions for Horarios

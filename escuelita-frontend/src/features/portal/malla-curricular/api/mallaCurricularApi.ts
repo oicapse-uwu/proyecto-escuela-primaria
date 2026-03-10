@@ -1,10 +1,10 @@
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
 import type {
-    MallaCurricular,
+    Area,
     CreateMallaCurricularRequest,
-    UpdateMallaCurricularRequest,
     Curso,
-    Area
+    MallaCurricular,
+    UpdateMallaCurricularRequest
 } from '../types';
 
 // API functions for Malla Curricular

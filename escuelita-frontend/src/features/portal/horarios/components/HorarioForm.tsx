@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import Modal from '../../../../components/common/Modal';
-import type { HorarioFormData, AsignacionDocente, Aula } from '../types';
+import type { AsignacionDocente, Aula, HorarioFormData } from '../types';
 
 interface HorarioFormProps {
     isOpen: boolean;

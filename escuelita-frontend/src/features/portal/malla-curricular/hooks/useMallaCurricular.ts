@@ -1,12 +1,12 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { mallaCurricularApi } from '../api/mallaCurricularApi';
 import { filtrarPorSedeActual } from '../../../../utils/sedeFilter';
+import { mallaCurricularApi } from '../api/mallaCurricularApi';
 import type {
-    MallaCurricular,
-    MallaCurricularFormData,
+    Area,
     Curso,
-    Area
+    MallaCurricular,
+    MallaCurricularFormData
 } from '../types';
 
 export const useMallaCurricular = () => {

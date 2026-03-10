@@ -3,27 +3,27 @@ import { Toaster } from 'sonner';
 import PrivateRoute from './components/common/PrivateRoute';
 
 import {
-  Dashboard,
-  InstitucionesRoutes,
-  ReportesRoutes,
-  RolesRoutes,
-  SedesRoutes,
-  SuscripcionesRoutes,
-  UsuariosRoutes
+    Dashboard,
+    InstitucionesRoutes,
+    ReportesRoutes,
+    RolesRoutes,
+    SedesRoutes,
+    SuscripcionesRoutes,
+    UsuariosRoutes
 } from './features/backoffice';
 
 import AlumnosRoutes from './features/portal/alumnos/routes/AlumnosRoutes';
 import ApoderadosRoutes from './features/portal/apoderados/routes/apoderados.routes';
 import AreasRoutes from './features/portal/areas/routes/areas.routes';
-import EspecialidadesRoutes from './features/portal/especialidades/routes/especialidades.routes';
-import InfraestructuraRoutes from './features/portal/infraestructura/routes/InfraestructuraRoutes';
-import MatriculasRoutes from './features/portal/matriculas/routes/matriculas.routes';
-import UsuariosPortalRoutes from './features/portal/usuarios/routes/UsuariosPortalRoutes';
-import TesoreriaRoutes from './features/portal/tesoreria/routes/TesoreriaRoutes';
-import MallaCurricularRoutes from './features/portal/malla-curricular/routes';
 import AsignacionDocenteRoutes from './features/portal/asignacion-docente/routes';
-import HorariosRoutes from './features/portal/horarios/routes';
 import DocentesRoutes from './features/portal/docentes/routes';
+import EspecialidadesRoutes from './features/portal/especialidades/routes/especialidades.routes';
+import HorariosRoutes from './features/portal/horarios/routes';
+import InfraestructuraRoutes from './features/portal/infraestructura/routes/InfraestructuraRoutes';
+import MallaCurricularRoutes from './features/portal/malla-curricular/routes';
+import MatriculasRoutes from './features/portal/matriculas/routes/matriculas.routes';
+import TesoreriaRoutes from './features/portal/tesoreria/routes/TesoreriaRoutes';
+import UsuariosPortalRoutes from './features/portal/usuarios/routes/UsuariosPortalRoutes';
 
 import EscuelaLayout from './layouts/EscuelaLayout';
 import SuperAdminLayout from './layouts/SuperAdminLayout';

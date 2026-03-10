@@ -17,7 +17,6 @@ import {
     Grid3x3,
     Layers,
     LayoutDashboard,
-    MapPin,
     Receipt,
     Settings,
     TrendingUp,
@@ -58,7 +57,6 @@ const menuModulesConfig: Record<string, { icon: LucideIcon; subItems?: Record<st
         icon: Building2,
         subItems: {
             'Institución': { path: '/escuela/infraestructura/institucion', icon: Building },
-            'Sedes': { path: '/escuela/infraestructura/sedes', icon: MapPin },
             'Año y Periodos': { path: '/escuela/infraestructura/anio-periodos', icon: Calendar },
             'Grados, Secciones y Aulas': { path: '/escuela/infraestructura/grados-secciones', icon: Layers },
         }

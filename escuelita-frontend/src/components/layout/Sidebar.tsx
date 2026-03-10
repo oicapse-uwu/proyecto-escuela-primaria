@@ -54,17 +54,14 @@ const menuModulesConfig: Record<string, { icon: LucideIcon; subItems?: Record<st
     'CONFIGURACIÓN': { 
         icon: Settings,
         subItems: {
-            'Institución': { path: '/escuela/configuracion/institucion', icon: Building },
-            'Año Escolar': { path: '/escuela/configuracion/anio-escolar', icon: Calendar },
-            'Periodos Académicos': { path: '/escuela/configuracion/periodos', icon: CalendarDays },
             'Usuarios y Roles': { path: '/escuela/configuracion/usuarios', icon: UserCog },
-            'Tipos de Documento': { path: '/escuela/configuracion/tipo-documentos', icon: FileType },
         }
     },
     'INFRAESTRUCTURA': {
         icon: Building2,
         subItems: {
             'Institución': { path: '/escuela/infraestructura/institucion', icon: Building },
+            'Sedes': { path: '/escuela/infraestructura/sedes', icon: MapPin },
             'Año y Periodos': { path: '/escuela/infraestructura/anio-periodos', icon: Calendar },
             'Grados, Secciones y Aulas': { path: '/escuela/infraestructura/grados-secciones', icon: Layers },
         }

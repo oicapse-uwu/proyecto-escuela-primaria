@@ -13,3 +13,20 @@ export interface AreaDTO {
     idSede: number;
     estado?: number;
 }
+
+export interface Curso {
+    idCurso: number;
+    nombreCurso: string;
+    idArea: {
+        idArea: number;
+        nombreArea: string;
+    };
+    estado: number;
+}
+
+export interface CursoDTO {
+    idCurso?: number;
+    nombreCurso: string;
+    idArea: number;
+    estado?: number;
+}

@@ -1,29 +1,39 @@
 import { useCallback, useState } from 'react';
 import {
     actualizarArea,
+    actualizarCurso,
     crearArea,
+    crearCurso,
     eliminarArea,
+    eliminarCurso,
     obtenerAreaPorId,
     obtenerTodasAreas,
+    obtenerTodosCursos,
 } from '../api/areasApi';
-import type { Area, AreaDTO } from '../types/areas.types';
+import type { Area, AreaDTO, Curso, CursoDTO } from '../types/areas.types';
 
 interface UseAreasReturn {
     areas: Area[];
     area: Area | null;
+    cursos: Curso[];
     loading: boolean;
     error: string | null;
     cargarAreas: () => Promise<void>;
     cargarArea: (id: number) => Promise<void>;
+    cargarCursos: () => Promise<void>;
     guardarArea: (area: AreaDTO) => Promise<void>;
     modificarArea: (area: AreaDTO) => Promise<void>;
     eliminarAreaById: (id: number) => Promise<void>;
+    guardarCurso: (curso: CursoDTO) => Promise<void>;
+    modificarCurso: (curso: CursoDTO) => Promise<void>;
+    eliminarCursoById: (id: number) => Promise<void>;
     limpiarError: () => void;
 }
 
 export const useAreas = (): UseAreasReturn => {
     const [areas, setAreas] = useState<Area[]>([]);
     const [area, setArea] = useState<Area | null>(null);
+    const [cursos, setCursos] = useState<Curso[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -107,16 +117,82 @@ export const useAreas = (): UseAreasReturn => {
         setError(null);
     }, []);
 
+    const cargarCursos = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const datos = await obtenerTodosCursos();
+            setCursos(datos);
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Error al cargar cursos';
+            setError(errorMessage);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    const guardarCurso = useCallback(async (nuevoCurso: CursoDTO) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const creado = await crearCurso(nuevoCurso);
+            setCursos(prev => [...prev, creado]);
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Error al crear curso';
+            setError(errorMessage);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    const modificarCurso = useCallback(async (cursoActualizado: CursoDTO) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const modificado = await actualizarCurso(cursoActualizado);
+            setCursos(prev =>
+                prev.map(c => (c.idCurso === modificado.idCurso ? modificado : c))
+            );
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Error al actualizar curso';
+            setError(errorMessage);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    const eliminarCursoById = useCallback(async (id: number) => {
+        setLoading(true);
+        setError(null);
+        try {
+            await eliminarCurso(id);
+            setCursos(prev => prev.filter(c => c.idCurso !== id));
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Error al eliminar curso';
+            setError(errorMessage);
+            throw err;
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     return {
         areas,
         area,
+        cursos,
         loading,
         error,
         cargarAreas,
         cargarArea,
+        cargarCursos,
         guardarArea,
         modificarArea,
         eliminarAreaById,
+        guardarCurso,
+        modificarCurso,
+        eliminarCursoById,
         limpiarError,
     };
 };

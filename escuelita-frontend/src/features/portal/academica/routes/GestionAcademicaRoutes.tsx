@@ -18,16 +18,20 @@ const GestionAcademicaRoutes = () => {
             fallback={<Navigate to="/escuela/dashboard" replace />}
         >
             <Routes>
-                <Route index element={<Navigate to="areas-cursos" replace />} />
+                <Route index element={<Navigate to="/escuela/academica/areas-cursos" replace />} />
 
                 <Route path="areas-cursos" element={<AreasPage />} />
                 <Route path="especialidades" element={<EspecialidadesPage />} />
-                <Route path="malla" element={<MallaCurricularPage />} />
+                <Route path="malla-curricular" element={<MallaCurricularPage />} />
                 <Route path="docentes" element={<DocentesPage />} />
-                <Route path="asignacion" element={<AsignacionDocentePage />} />
+                <Route path="asignacion-docente" element={<AsignacionDocentePage />} />
                 <Route path="horarios" element={<HorariosPage />} />
 
-                <Route path="*" element={<Navigate to="areas-cursos" replace />} />
+                {/* Alias para compatibilidad con rutas antiguas */}
+                <Route path="malla" element={<Navigate to="/escuela/academica/malla-curricular" replace />} />
+                <Route path="asignacion" element={<Navigate to="/escuela/academica/asignacion-docente" replace />} />
+
+                <Route path="*" element={<Navigate to="/escuela/academica/areas-cursos" replace />} />
             </Routes>
         </ModuloGuard>
     );

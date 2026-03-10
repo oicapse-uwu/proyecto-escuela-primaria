@@ -1,5 +1,5 @@
-import { api } from '../../../../config/api.config';
-import type { Area, AreaDTO } from '../types/areas.types';
+import { api, API_ENDPOINTS } from '../../../../config/api.config';
+import type { Area, AreaDTO, Curso, CursoDTO } from '../types/areas.types';
 
 const ENDPOINT = '/restful/areas';
 
@@ -19,7 +19,6 @@ export const crearArea = async (area: AreaDTO): Promise<Area> => {
 };
 
 export const actualizarArea = async (area: AreaDTO): Promise<Area> => {
-    // AQUÍ ESTÁ EL CAMBIO: idArea en lugar de id_area
     if (!area.idArea) {
         throw new Error('ID de área es requerido para actualizar');
     }
@@ -29,5 +28,37 @@ export const actualizarArea = async (area: AreaDTO): Promise<Area> => {
 
 export const eliminarArea = async (id: number): Promise<string> => {
     const response = await api.delete<string>(`${ENDPOINT}/${id}`);
+    return response.data;
+};
+
+// ===== CURSOS =====
+
+export const obtenerTodosCursos = async (): Promise<Curso[]> => {
+    const response = await api.get<Curso[]>(API_ENDPOINTS.CURSOS);
+    return response.data;
+};
+
+export const crearCurso = async (curso: CursoDTO): Promise<Curso> => {
+    const response = await api.post<Curso>(API_ENDPOINTS.CURSOS, {
+        nombreCurso: curso.nombreCurso,
+        idArea: curso.idArea
+    });
+    return response.data;
+};
+
+export const actualizarCurso = async (curso: CursoDTO): Promise<Curso> => {
+    if (!curso.idCurso) {
+        throw new Error('ID de curso es requerido para actualizar');
+    }
+    const response = await api.put<Curso>(API_ENDPOINTS.CURSOS, {
+        idCurso: curso.idCurso,
+        nombreCurso: curso.nombreCurso,
+        idArea: curso.idArea
+    });
+    return response.data;
+};
+
+export const eliminarCurso = async (id: number): Promise<string> => {
+    const response = await api.delete<string>(`${API_ENDPOINTS.CURSOS}/${id}`);
     return response.data;
 };

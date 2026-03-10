@@ -1,6 +1,6 @@
 import { Edit, Package, Plus, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
-import { Toaster } from 'sonner';
+import { toast, Toaster } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
 import PlanForm from '../components/PlanForm';
 import { usePlanes } from '../hooks/usePlanes';
@@ -22,6 +22,7 @@ const PlanesPage: React.FC = () => {
     const handleNuevo = () => {
         setPlanEditar(null);
         setShowForm(true);
+        toast.info('Los límites de alumnos y sedes pueden dejarse vacíos para planes sin restricciones específicas.');
     };
 
     const handleEditar = (plan: Plan) => {
@@ -49,7 +50,7 @@ const PlanesPage: React.FC = () => {
 
     return (
         <div className="px-3 pt-6 pb-3 sm:px-4 sm:pt-8 sm:pb-4 lg:px-6 lg:pt-8 lg:pb-6 overflow-x-hidden">
-            <Toaster position="top-right" richColors />
+            <Toaster position="top-right" richColors expand={true} visibleToasts={5} />
             
             {/* Header */}
             <div className="mb-3 lg:mb-4">
@@ -65,7 +66,7 @@ const PlanesPage: React.FC = () => {
                     </div>
                     <button
                         onClick={handleNuevo}
-                        className="bg-primary text-white px-4 lg:px-6 py-2.5 lg:py-3 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md w-full sm:w-auto"
+                        className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white px-6 py-2.5 rounded-lg hover:from-[#1e40af] hover:to-[#312e81] transition-colors flex items-center justify-center gap-2 shadow-md font-semibold whitespace-nowrap w-full sm:w-auto"
                     >
                         <Plus className="w-5 h-5" />
                         <span>Nuevo Plan</span>
@@ -201,26 +202,26 @@ const PlanesPage: React.FC = () => {
                                         <tr key={plan.idPlan} className="hover:bg-gray-50 transition-colors">
                                             <td className="px-6 py-4">
                                                 <div>
-                                                    <div className="text-sm font-medium text-gray-900">
+                                                    <div className="text-xs font-medium text-gray-900">
                                                         {plan.nombrePlan}
                                                     </div>
                                                     {plan.descripcion && (
-                                                        <div className="text-sm text-gray-500 line-clamp-1">
+                                                        <div className="text-xs text-gray-500 line-clamp-1">
                                                             {plan.descripcion}
                                                         </div>
                                                     )}
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-900">
                                                 {formatPrice(plan.precioMensual)}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                                            <td className="px-6 py-4 whitespace-nowrap text-xs font-semibold text-gray-900">
                                                 {formatPrice(plan.precioAnual)}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                                            <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-900 text-center">
                                                 {plan.limiteAlumnos ?? <span className="text-green-600 font-medium">Ilimitado</span>}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center">
+                                            <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-900 text-center">
                                                 {plan.limiteSedes ?? <span className="text-green-600 font-medium">Ilimitado</span>}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-center">

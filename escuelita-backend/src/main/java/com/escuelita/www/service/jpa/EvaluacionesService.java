@@ -17,10 +17,20 @@ public class EvaluacionesService implements IEvaluacionesService {
     private EvaluacionesRepository repoEvaluaciones;
 
     public List<Evaluaciones> buscarTodos() {
-        if (TenantContext.isSuperAdmin()) {
+        try {
+            if (TenantContext.isSuperAdmin()) {
+                return repoEvaluaciones.findAll();
+            }
+            Long sedeId = TenantContext.getSedeId();
+            if (sedeId == null) {
+                return repoEvaluaciones.findAll();
+            }
+            return repoEvaluaciones.findBySedeId(sedeId);
+        } catch (Exception e) {
+            System.out.println("Error en EvaluacionesService.buscarTodos(): " + e.getMessage());
+            e.printStackTrace();
             return repoEvaluaciones.findAll();
         }
-        return repoEvaluaciones.findBySedeId(TenantContext.getSedeId());
     }
     
     @Override

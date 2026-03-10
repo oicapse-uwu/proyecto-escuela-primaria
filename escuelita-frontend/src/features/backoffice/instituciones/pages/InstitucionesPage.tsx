@@ -1,8 +1,10 @@
-import { Building2, Crown, Edit, FolderOpen, MapPin, Plus, Search, Trash2 } from 'lucide-react';
+import { Building2, Crown, Edit, FolderOpen, MapPin, Plus, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
+import { SearchFilterBar } from '../../../../components/common/SearchFilterBar';
+import Button from '../../../../components/ui/Button';
 import { obtenerTodasSedes } from '../../sedes/api/sedesApi';
 import type { Sede } from '../../sedes/types';
 import { getSuscripcionesApi } from '../../suscripciones/api/suscripcionesApi';
@@ -186,13 +188,12 @@ const InstitucionesPage: React.FC = () => {
                             Administra todas las instituciones educativas registradas en la plataforma
                         </p>
                     </div>
-                    <button
+                    <Button
                         onClick={handleNueva}
-                        className="bg-primary text-white px-4 lg:px-5 py-2.5 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md whitespace-nowrap"
+                        icon={<Plus className="w-5 h-5" />}
                     >
-                        <Plus className="w-5 h-5" />
-                        <span>Nueva Institución</span>
-                    </button>
+                        Nueva Institución
+                    </Button>
                 </div>
             </div>
 
@@ -210,18 +211,11 @@ const InstitucionesPage: React.FC = () => {
             </div>
 
             {/* Search Bar */}
-            <div className="mb-2 lg:mb-3 bg-white rounded-lg shadow p-3 lg:p-3">
-                <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 lg:w-5 lg:h-5" />
-                    <input
-                        type="text"
-                        placeholder="Buscar por nombre o código modular..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-9 lg:pl-10 pr-4 py-2.5 text-sm lg:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    />
-                </div>
-            </div>
+            <SearchFilterBar
+                searchValue={searchTerm}
+                onSearchChange={setSearchTerm}
+                searchPlaceholder="Buscar por nombre o código modular..."
+            />
 
             {/* Vista de Cards para móvil/tablet */}
             <div className="md:hidden space-y-3">

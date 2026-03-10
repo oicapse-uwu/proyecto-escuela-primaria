@@ -1,15 +1,18 @@
-import { ArrowLeft, Building2, Calendar, CheckCircle, Clock, DollarSign, Download, Eye, FileText, Filter, Plus, XCircle } from 'lucide-react';
+import { ArrowLeft, Building2, Calendar, CheckCircle, Clock, DollarSign, Eye, FileText, XCircle } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Toaster, toast } from 'sonner';
-import { api } from '../../../../config/api.config';
+import Pagination from '../../../../components/common/Pagination';
+import { adminAuthService } from '../../../../services/adminAuth.service';
 import { useInstituciones } from '../../instituciones/hooks/useInstituciones';
 import { getPagosPorSuscripcionApi } from '../api/pagosSuscripcionApi';
+import ComprobantePagoModal from '../components/ComprobantePagoModal';
 import PagoSuscripcionForm from '../components/PagoSuscripcionForm';
-import VerificarPagoModal from '../components/VerificarPagoModal';
 import { usePagosSuscripcion } from '../hooks/usePagosSuscripcion';
 import { useSuscripciones } from '../hooks/useSuscripciones';
 import type { EstadoVerificacion, PagoSuscripcion, PagoSuscripcionFormData } from '../types';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://primaria.spring.informaticapp.com:4040';
 
 const DetalleInstitucionPagosPage: React.FC = () => {
     const { idInstitucion } = useParams<{ idInstitucion: string }>();
@@ -28,8 +31,10 @@ const DetalleInstitucionPagosPage: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedPago, setSelectedPago] = useState<PagoSuscripcion | null>(null);
     const [pagoParaRegistrar, setPagoParaRegistrar] = useState<PagoSuscripcion | null>(null);
+    const [pagoParaVerBoleta, setPagoParaVerBoleta] = useState<PagoSuscripcion | null>(null);
     const [mostrarFormularioNuevoPago, setMostrarFormularioNuevoPago] = useState(false);
-    const [filterEstado, setFilterEstado] = useState<'todos' | EstadoVerificacion>('todos');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
 
     // Obtener datos de la institución
     const institucion = instituciones.find(i => i.idInstitucion === Number(idInstitucion));
@@ -42,7 +47,13 @@ const DetalleInstitucionPagosPage: React.FC = () => {
                 try {
                     setIsLoading(true);
                     const pagos = await getPagosPorSuscripcionApi(suscripcion.idSuscripcion);
-                    setPagosSuscripcion(pagos);
+                    // Ordenar por fecha de pago ascendente (más próximos primero)
+                    const pagosOrdenados = pagos.sort((a, b) => {
+                        const fechaA = a.fechaPago ? new Date(a.fechaPago).getTime() : 0;
+                        const fechaB = b.fechaPago ? new Date(b.fechaPago).getTime() : 0;
+                        return fechaA - fechaB;
+                    });
+                    setPagosSuscripcion(pagosOrdenados);
                 } catch (error) {
                     console.error('Error al cargar pagos:', error);
                     toast.error('Error al cargar los pagos de la suscripción');
@@ -58,40 +69,36 @@ const DetalleInstitucionPagosPage: React.FC = () => {
         cargarPagos();
     }, [suscripcion]);
 
-    // Filtrar pagos
-    const pagosFiltrados = pagosSuscripcion.filter(pago => {
-        if (filterEstado === 'todos') return true;
-        return pago.estadoVerificacion === filterEstado;
-    });
-
     // Agrupar por estado
     const pagosVerificados = pagosSuscripcion.filter(p => p.estadoVerificacion === 'VERIFICADO');
     const pagosPendientes = pagosSuscripcion.filter(p => p.estadoVerificacion === 'PENDIENTE');
     const pagosRechazados = pagosSuscripcion.filter(p => p.estadoVerificacion === 'RECHAZADO');
 
+    // Paginación
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const pagosPaginados = pagosSuscripcion.slice(startIndex, endIndex);
+
     const getSuperAdminId = (): number => {
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        return user.idUsuario || 1;
+        const user = adminAuthService.getCurrentUser();
+        if (!user) {
+            console.error('No hay usuario autenticado');
+            return 1;
+        }
+        console.log('Usuario actual:', user);
+        return user.idUsuario;
     };
 
     const necesitaRegistro = (pago: PagoSuscripcion): boolean => {
         return pago.estadoVerificacion === 'PENDIENTE' && !pago.comprobanteUrl;
     };
 
-    const handleVerPago = (pago: PagoSuscripcion) => {
-        setSelectedPago(pago);
+    const handleVerComprobante = (pago: PagoSuscripcion) => {
+        setPagoParaVerBoleta(pago);
     };
 
     const handleRegistrarPago = (pago: PagoSuscripcion) => {
         setPagoParaRegistrar(pago);
-    };
-
-    const handleNuevoPago = () => {
-        if (!suscripcion) {
-            toast.error('Esta institución no tiene una suscripción activa');
-            return;
-        }
-        setMostrarFormularioNuevoPago(true);
     };
 
     const handleGuardarRegistro = async (formData: PagoSuscripcionFormData, comprobante: File) => {
@@ -110,7 +117,12 @@ const DetalleInstitucionPagosPage: React.FC = () => {
             // Recargar los pagos de la suscripción
             if (suscripcion) {
                 const pagos = await getPagosPorSuscripcionApi(suscripcion.idSuscripcion);
-                setPagosSuscripcion(pagos);
+                const pagosOrdenados = pagos.sort((a, b) => {
+                    const fechaA = a.fechaPago ? new Date(a.fechaPago).getTime() : 0;
+                    const fechaB = b.fechaPago ? new Date(b.fechaPago).getTime() : 0;
+                    return fechaA - fechaB;
+                });
+                setPagosSuscripcion(pagosOrdenados);
             }
             
             toast.success('✅ Pago registrado exitosamente');
@@ -127,7 +139,12 @@ const DetalleInstitucionPagosPage: React.FC = () => {
             // Recargar los pagos
             if (suscripcion) {
                 const pagos = await getPagosPorSuscripcionApi(suscripcion.idSuscripcion);
-                setPagosSuscripcion(pagos);
+                const pagosOrdenados = pagos.sort((a, b) => {
+                    const fechaA = a.fechaPago ? new Date(a.fechaPago).getTime() : 0;
+                    const fechaB = b.fechaPago ? new Date(b.fechaPago).getTime() : 0;
+                    return fechaA - fechaB;
+                });
+                setPagosSuscripcion(pagosOrdenados);
             }
             
             toast.success('✅ Pago verificado exitosamente');
@@ -145,7 +162,12 @@ const DetalleInstitucionPagosPage: React.FC = () => {
             // Recargar los pagos
             if (suscripcion) {
                 const pagos = await getPagosPorSuscripcionApi(suscripcion.idSuscripcion);
-                setPagosSuscripcion(pagos);
+                const pagosOrdenados = pagos.sort((a, b) => {
+                    const fechaA = a.fechaPago ? new Date(a.fechaPago).getTime() : 0;
+                    const fechaB = b.fechaPago ? new Date(b.fechaPago).getTime() : 0;
+                    return fechaA - fechaB;
+                });
+                setPagosSuscripcion(pagosOrdenados);
             }
             
             toast.success('⚠️ Pago rechazado');
@@ -189,37 +211,53 @@ const DetalleInstitucionPagosPage: React.FC = () => {
 
     return (
         <div className="p-6">
-            <Toaster position="top-right" richColors />
+            <Toaster position="top-right" richColors expand={true} visibleToasts={5} />
 
             {/* Header con botón volver */}
-            <div className="mb-6">
-                <button
-                    onClick={() => navigate('/admin/suscripciones/instituciones')}
-                    className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-4 transition-colors"
-                >
-                    <ArrowLeft className="w-5 h-5" />
-                    Volver al listado
-                </button>
+            <div className="mb-8 mt-4">
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => navigate('/admin/suscripciones/instituciones')}
+                        className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] hover:from-[#1e40af] hover:to-[#312e81] transition-all shadow-md"
+                        title="Volver al listado"
+                    >
+                        <ArrowLeft className="w-5 h-5 text-white" />
+                    </button>
+                    
+                    {/* Foto de la institución */}
+                    <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center flex-shrink-0 border-2 border-gray-300">
+                        {institucion.logoPath ? (
+                            <img 
+                                src={`${API_BASE_URL}${institucion.logoPath}`} 
+                                alt={institucion.nombre}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    const target = e.currentTarget;
+                                    target.style.display = 'none';
+                                    const parent = target.parentElement;
+                                    if (parent && parent.children.length === 1) {
+                                        const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                                        icon.setAttribute('class', 'w-8 h-8 text-gray-400');
+                                        icon.setAttribute('viewBox', '0 0 24 24');
+                                        icon.setAttribute('fill', 'none');
+                                        icon.setAttribute('stroke', 'currentColor');
+                                        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>';
+                                        parent.appendChild(icon);
+                                    }
+                                }}
+                            />
+                        ) : (
+                            <Building2 className="w-8 h-8 text-gray-400" />
+                        )}
+                    </div>
 
-                <div className="flex items-start justify-between">
-                    <div>
-                        <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                            <Building2 className="w-7 h-7 text-blue-600" />
+                    {/* Título y código modular en columna */}
+                    <div className="flex flex-col">
+                        <h1 className="text-2xl font-bold text-gray-800">
                             {institucion.nombre}
                         </h1>
-                        <p className="text-gray-600 mt-1">Código Modular: {institucion.codModular || 'N/A'}</p>
+                        <p className="text-sm text-gray-600">Código Modular: {institucion.codModular || 'N/A'}</p>
                     </div>
-                    
-                    {/* Botón para registrar nuevo pago */}
-                    {suscripcion && (
-                        <button
-                            onClick={handleNuevoPago}
-                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg"
-                        >
-                            <Plus className="w-5 h-5" />
-                            Registrar Nuevo Pago
-                        </button>
-                    )}
                 </div>
             </div>
 
@@ -298,120 +336,114 @@ const DetalleInstitucionPagosPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Filtros */}
-            <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
-                <div className="flex items-center gap-4">
-                    <Filter className="w-5 h-5 text-gray-400" />
-                    <select
-                        value={filterEstado}
-                        onChange={(e) => setFilterEstado(e.target.value as 'todos' | EstadoVerificacion)}
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                        <option value="todos">📊 Todos los estados ({pagosSuscripcion.length})</option>
-                        <option value="VERIFICADO">✅ Verificados ({pagosVerificados.length})</option>
-                        <option value="PENDIENTE">⏳ Pendientes ({pagosPendientes.length})</option>
-                        <option value="RECHAZADO">❌ Rechazados ({pagosRechazados.length})</option>
-                    </select>
-                </div>
-            </div>
-
-            {/* Lista de pagos */}
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            {/* Tabla de pagos */}
+            <div className="bg-white rounded-lg shadow overflow-hidden">
                 {isLoading ? (
-                    <div className="p-12 text-center">
-                        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                        <p className="mt-2 text-gray-500">Cargando pagos...</p>
+                    <div className="flex justify-center items-center h-64">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
                     </div>
-                ) : pagosFiltrados.length === 0 ? (
-                    <div className="p-12 text-center">
-                        <DollarSign className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                        <h3 className="text-lg font-semibold text-gray-700 mb-2">No hay pagos</h3>
-                        <p className="text-gray-500">No se encontraron pagos con los filtros seleccionados</p>
+                ) : pagosPaginados.length === 0 ? (
+                    <div className="text-center py-12">
+                        <DollarSign className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <p className="text-gray-500 text-lg">No se encontraron pagos registrados</p>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        N° Pago
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Fecha Pago
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Monto
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Estado
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Comprobante
-                                    </th>
-                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
-                                        Acciones
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {pagosFiltrados.map(pago => (
-                                    <tr key={pago.idPago} className="hover:bg-gray-50">
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className="font-medium text-gray-900">{pago.numeroPago}</span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <div className="flex items-center gap-1">
-                                                <Calendar className="w-4 h-4" />
-                                                {pago.fechaPago ? new Date(pago.fechaPago).toLocaleDateString() : 'N/A'}
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                            S/ {pago.montoPagado?.toFixed(2) || '0.00'}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            {getEstadoBadge(pago.estadoVerificacion)}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {pago.comprobanteUrl ? (
-                                                <a
-                                                    href={`${api.defaults.baseURL}/pagos-suscripcion/comprobante/${pago.comprobanteUrl}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-blue-600 hover:text-blue-700 flex items-center gap-1"
-                                                >
-                                                    <Download className="w-4 h-4" />
-                                                    Ver
-                                                </a>
-                                            ) : (
-                                                <span className="text-gray-400">Sin comprobante</span>
-                                            )}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                                            <div className="flex justify-end gap-2">
-                                                {necesitaRegistro(pago) ? (
-                                                    <button
-                                                        onClick={() => handleRegistrarPago(pago)}
-                                                        className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs flex items-center gap-1"
-                                                    >
-                                                        <FileText className="w-3 h-3" />
-                                                        Registrar
-                                                    </button>
-                                                ) : (
-                                                    <button
-                                                        onClick={() => handleVerPago(pago)}
-                                                        className="px-3 py-1 bg-gray-600 text-white rounded hover:bg-gray-700 text-xs flex items-center gap-1"
-                                                    >
-                                                        <Eye className="w-3 h-3" />
-                                                        Ver
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </td>
+                    <>
+                        <div className="overflow-x-auto max-w-full">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50 sticky top-0 z-10">
+                                    <tr>
+                                        <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                            N° Pago
+                                        </th>
+                                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                            Fecha
+                                        </th>
+                                        <th className="px-2 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">
+                                            Monto
+                                        </th>
+                                        <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                                            Estado
+                                        </th>
+                                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[130px]">
+                                            Método Pago
+                                        </th>
+                                        <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 min-w-[120px]">
+                                            Acciones
+                                        </th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {pagosPaginados.map((pago) => (
+                                        <tr key={pago.idPago} className="hover:bg-gray-50 transition-colors">
+                                            <td className="px-3 py-3 whitespace-nowrap min-w-[120px]">
+                                                <div className="flex items-center">
+                                                    <div className="flex-shrink-0 h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                        <FileText className="w-4 h-4 text-blue-600" />
+                                                    </div>
+                                                    <div className="ml-3">
+                                                        <div className="text-sm font-medium text-gray-900">
+                                                            {pago.numeroPago}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-900 min-w-[120px]">
+                                                <div className="flex items-center gap-1">
+                                                    <Calendar className="w-3.5 h-3.5 text-gray-400" />
+                                                    {pago.fechaPago ? new Date(pago.fechaPago).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+                                                </div>
+                                            </td>
+                                            <td className="px-2 py-3 whitespace-nowrap text-xs text-right font-semibold text-gray-900 min-w-[100px]">
+                                                S/ {pago.montoPagado?.toFixed(2) || '0.00'}
+                                            </td>
+                                            <td className="px-2 py-3 whitespace-nowrap text-center min-w-[120px]">
+                                                {getEstadoBadge(pago.estadoVerificacion)}
+                                            </td>
+                                            <td className="px-2 py-3 whitespace-nowrap text-xs text-gray-900 min-w-[130px]">
+                                                {pago.nombreMetodoPago || 'N/A'}
+                                            </td>
+                                            <td className="px-2 py-3 whitespace-nowrap text-center sticky right-0 bg-white min-w-[120px]">
+                                                <div className="flex items-center justify-center gap-1">
+                                                    {necesitaRegistro(pago) && (
+                                                        <button
+                                                            onClick={() => handleRegistrarPago(pago)}
+                                                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                            title="Registrar Pago"
+                                                        >
+                                                            <FileText className="w-4 h-4" />
+                                                        </button>
+                                                    )}
+                                                    {pago.comprobanteUrl && (
+                                                        <button
+                                                            onClick={() => handleVerComprobante(pago)}
+                                                            className="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                                            title="Ver Boleta"
+                                                        >
+                                                            <Eye className="w-4 h-4" />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        {/* Paginación */}
+                        {pagosSuscripcion.length > 0 && (
+                            <div className="border-t border-gray-200">
+                                <Pagination
+                                    currentPage={currentPage}
+                                    totalItems={pagosSuscripcion.length}
+                                    itemsPerPage={itemsPerPage}
+                                    onPageChange={setCurrentPage}
+                                    onItemsPerPageChange={setItemsPerPage}
+                                />
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
 
@@ -450,12 +482,11 @@ const DetalleInstitucionPagosPage: React.FC = () => {
                 />
             )}
 
-            {selectedPago && (
-                <VerificarPagoModal
-                    pago={selectedPago}
-                    onClose={() => setSelectedPago(null)}
-                    onVerificar={() => handleVerificar(selectedPago.idPago)}
-                    onRechazar={handleRechazar}
+            {/* Modal de Comprobante/Boleta */}
+            {pagoParaVerBoleta && (
+                <ComprobantePagoModal
+                    pago={pagoParaVerBoleta}
+                    onClose={() => setPagoParaVerBoleta(null)}
                 />
             )}
         </div>

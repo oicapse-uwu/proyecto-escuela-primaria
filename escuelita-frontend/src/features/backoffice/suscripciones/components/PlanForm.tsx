@@ -63,7 +63,7 @@ const PlanForm: React.FC<PlanFormProps> = ({ planEditar, onSubmit, onCancel }) =
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
                 {/* Header */}
-                <div className="bg-primary text-white px-6 py-4 flex items-center justify-between">
+                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                         <Package className="w-6 h-6" />
                         <h2 className="text-xl font-bold">
@@ -181,10 +181,7 @@ const PlanForm: React.FC<PlanFormProps> = ({ planEditar, onSubmit, onCancel }) =
                             </div>
                         </div>
 
-                        {/* Nota informativa */}
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-                            <p><strong>Nota:</strong> Los límites de alumnos y sedes pueden dejarse vacíos para planes sin restricciones específicas.</p>
-                        </div>
+
                     </div>
                 </form>
 
@@ -202,7 +199,7 @@ const PlanForm: React.FC<PlanFormProps> = ({ planEditar, onSubmit, onCancel }) =
                         type="submit"
                         onClick={handleSubmit}
                         disabled={isSubmitting}
-                        className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-6 py-2.5 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-lg hover:from-[#1e40af] hover:to-[#312e81] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                     >
                         {isSubmitting ? 'Guardando...' : (planEditar ? 'Actualizar Plan' : 'Crear Plan')}
                     </button>

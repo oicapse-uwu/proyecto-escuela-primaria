@@ -18,7 +18,7 @@ const InstitucionDetailModal: React.FC<InstitucionDetailModalProps> = ({ institu
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
                 {/* Header con gradiente y logo */}
-                <div className="relative bg-gradient-to-r from-blue-600 to-primary p-8 text-white">
+                <div className="relative bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] p-8 text-white">
                     <button
                         onClick={onClose}
                         className="absolute top-4 right-4 p-2 hover:bg-white/20 rounded-full transition-colors"

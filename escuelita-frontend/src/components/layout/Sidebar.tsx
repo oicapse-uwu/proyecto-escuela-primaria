@@ -32,7 +32,7 @@ import {
     Wallet,
     X
 } from 'lucide-react';
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useModulosPermisos } from '../../hooks/useModulosPermisos';
 import { escuelaAuthService } from '../../services/escuelaAuth.service';
@@ -98,9 +98,9 @@ const menuModulesConfig: Record<string, { icon: LucideIcon; subItems?: Record<st
     'EVALUACIONES Y NOTAS': {
         icon: FileText,
         subItems: {
-            'Asistencias': { path: '/escuela/evaluaciones/asistencias', icon: CheckCircle },
-            'Evaluaciones': { path: '/escuela/evaluaciones/lista', icon: FileText },
             'Calificaciones': { path: '/escuela/evaluaciones/calificaciones', icon: ClipboardCheck },
+            'Asistencias': { path: '/escuela/evaluaciones/asistencias', icon: CheckCircle },
+            'Evaluaciones': { path: '/escuela/evaluaciones/evaluaciones', icon: FileText },
             'Promedios': { path: '/escuela/evaluaciones/promedios', icon: TrendingUp },
         }
     },

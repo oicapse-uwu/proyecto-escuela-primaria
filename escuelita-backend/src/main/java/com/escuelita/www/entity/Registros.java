@@ -6,7 +6,6 @@ import java.security.NoSuchAlgorithmException;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -78,8 +77,7 @@ public class Registros {
         return llave_secreta;
     }
     public void setLlave_secreta(String llave_secreta) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();                    
-        this.llave_secreta = encoder.encode(llave_secreta);
+        this.llave_secreta = llave_secreta;
     }
     public Integer getEstado() {
         return estado;

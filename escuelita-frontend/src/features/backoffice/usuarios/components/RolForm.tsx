@@ -26,7 +26,7 @@ const RolForm: React.FC<RolFormProps> = ({ rol, onSubmit, onCancel, isLoading = 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg shadow-xl max-w-xl w-full max-h-[90vh] overflow-hidden">
-                <div className="bg-gradient-to-r from-primary to-primary-light p-6 text-white flex justify-between items-center">
+                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] p-6 text-white flex justify-between items-center">
                     <h2 className="text-2xl font-bold flex items-center space-x-2">
                         <Shield className="w-6 h-6" />
                         <span>{rol ? 'Editar Rol' : 'Nuevo Rol'}</span>
@@ -64,7 +64,7 @@ const RolForm: React.FC<RolFormProps> = ({ rol, onSubmit, onCancel, isLoading = 
                         </button>
                         <button
                             type="submit"
-                            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50"
+                            className="px-6 py-2.5 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-lg hover:from-[#1e40af] hover:to-[#312e81] transition-colors disabled:opacity-50 font-semibold"
                             disabled={isLoading}
                         >
                             {isLoading ? 'Guardando...' : rol ? 'Actualizar' : 'Crear'}

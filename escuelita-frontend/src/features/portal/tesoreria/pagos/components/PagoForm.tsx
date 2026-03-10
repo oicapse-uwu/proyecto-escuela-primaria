@@ -1,6 +1,7 @@
 import { FileText, Trash2, X, AlertCircle, Check, DollarSign, CreditCard, Plus, CheckCircle } from 'lucide-react';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
+import Button from '../../../../../components/ui/Button';
 import type { PagoFormData } from '../types';
 
 interface PagoFormProps {
@@ -353,9 +354,10 @@ const PagoForm: React.FC<PagoFormProps> = ({
                             className="flex-1 px-4 py-2.5 text-gray-700 border-2 border-gray-300 rounded-lg hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 font-semibold"
                         >
                             Cancelar
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             type="submit"
+                            variant="primary"
                             disabled={isSubmitting || isLoading}
                             className="flex-1 px-4 py-2.5 bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-lg hover:shadow-lg active:scale-95 transition-all duration-200 font-semibold flex items-center justify-center gap-2 disabled:bg-orange-400 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
                         >

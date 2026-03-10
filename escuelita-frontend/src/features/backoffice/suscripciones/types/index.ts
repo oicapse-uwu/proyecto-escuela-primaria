@@ -128,6 +128,7 @@ export interface PagoSuscripcion {
     idSuscripcion: number;
     nombreInstitucion?: string;
     codModular?: string;
+    codModularInstitucion?: string;
     
     idMetodoPago: number | null; // Nullable: pagos programados no tienen método aún
     nombreMetodoPago?: string;
@@ -151,6 +152,7 @@ export interface PagoSuscripcionDTO {
     idSuscripcion: number;
     nombreInstitucion?: string;
     codModular?: string;
+    codModularInstitucion?: string;
     
     idMetodoPago: number;
     nombreMetodoPago?: string;

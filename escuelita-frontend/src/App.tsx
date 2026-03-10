@@ -15,6 +15,7 @@ import AlumnosRoutes from './features/portal/alumnos/routes/AlumnosRoutes';
 import ApoderadosRoutes from './features/portal/apoderados/routes/apoderados.routes';
 import AreasRoutes from './features/portal/areas/routes/areas.routes';
 import EspecialidadesRoutes from './features/portal/especialidades/routes/especialidades.routes';
+import EvaluacionesRoutes from './features/portal/evaluaciones/routes/EvaluacionesRoutes';
 import InfraestructuraRoutes from './features/portal/infraestructura/routes/InfraestructuraRoutes';
 import MatriculasRoutes from './features/portal/matriculas/routes/matriculas.routes';
 import UsuariosPortalRoutes from './features/portal/usuarios/routes/UsuariosPortalRoutes';
@@ -78,6 +79,7 @@ function App() {
           <Route path="matriculas/*" element={<MatriculasRoutes />} />
           <Route path="academica/areas-cursos/*" element={<AreasRoutes />} />
           <Route path="academica/especialidades/*" element={<EspecialidadesRoutes />} />
+          <Route path="evaluaciones/*" element={<EvaluacionesRoutes />} />
           <Route path="tesoreria/*" element={<TesoreriaRoutes />} />
         </Route>
 

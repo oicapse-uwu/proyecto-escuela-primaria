@@ -3,60 +3,34 @@ import { useModulosPermisos } from './useModulosPermisos';
 import { escuelaAuthService } from '../services/escuelaAuth.service';
 
 /**
- * Hook para verificar si el usuario tiene un permiso específico en un módulo
+ * Hook para verificar si el usuario tiene acceso a un módulo específico
  * @param idModulo - ID del módulo
- * @param codigoPermiso - Código del permiso (VER, CREAR, EDITAR, ELIMINAR, etc.)
- * @returns boolean - true si tiene permiso, false si no
+ * @returns boolean - true si tiene acceso, false si no
+ * 
+ * LÓGICA:
+ * - Si es ADMINISTRADOR DE IE: siempre true (acceso total a todos los módulos)
+ * - Si es otro rol: verifica si el módulo está asignado a su rol
  * 
  * @example
- * const puedeVer = usePermisoModulo(5, 'VER');
- * const puedeCrear = usePermisoModulo(5, 'CREAR');
- * const puedeEditar = usePermisoModulo(5, 'EDITAR');
- * const puedeEliminar = usePermisoModulo(5, 'ELIMINAR');
+ * const tieneAcceso = usePermisoModulo(7);
  */
-export const usePermisoModulo = (idModulo: number, codigoPermiso: string): boolean => {
+export const usePermisoModulo = (idModulo: number): boolean => {
   // Obtener el usuario actual
   const usuarioActual = escuelaAuthService.getCurrentUser();
-  const idUsuario = usuarioActual?.idUsuario || null;
+  const esAdministrador = usuarioActual?.rol?.nombreRol?.toUpperCase() === 'ADMINISTRADOR';
+  const tieneSede = !!(usuarioActual && 'sede' in usuarioActual && usuarioActual.sede);
 
-  // Cargar permisos del usuario
-  const { modulosPermisos, isLoading } = useModulosPermisos(idUsuario);
+  // Los administradores de IE tienen acceso a TODOS los módulos
+  if (esAdministrador && tieneSede) {
+    return true;
+  }
 
-  const tienePermiso = useMemo(() => {
-    if (isLoading || !modulosPermisos || !modulosPermisos.modulos) return false;
+  // Para otros roles, verificar si el módulo está asignado
+  const { tieneModulo } = useModulosPermisos(usuarioActual?.idUsuario || null);
+  
+  const tieneAcceso = useMemo(() => {
+    return tieneModulo(idModulo);
+  }, [idModulo]);
 
-    // Buscar el módulo
-    const modulo = modulosPermisos.modulos.find((m: any) => m.idModulo === idModulo);
-    if (!modulo) return false;
-
-    // Buscar el permiso dentro del módulo
-    const permiso = modulo.permisos?.find(
-      (p: any) => p.codigo?.toUpperCase() === codigoPermiso?.toUpperCase()
-    );
-
-    return !!permiso; // true si existe, false si no
-  }, [modulosPermisos, idModulo, codigoPermiso, isLoading]);
-
-  return tienePermiso;
-};
-
-/**
- * Hook para obtener todos los permisos de un módulo
- * @param idModulo - ID del módulo
- * @returns Array de códigos de permiso
- */
-export const usePermisosDelModulo = (idModulo: number): string[] => {
-  const usuarioActual = escuelaAuthService.getCurrentUser();
-  const idUsuario = usuarioActual?.idUsuario || null;
-
-  const { modulosPermisos, isLoading } = useModulosPermisos(idUsuario);
-
-  const permisos = useMemo(() => {
-    if (isLoading || !modulosPermisos || !modulosPermisos.modulos) return [];
-
-    const modulo = modulosPermisos.modulos.find((m: any) => m.idModulo === idModulo);
-    return modulo?.permisos?.map((p: any) => p.codigo || '') ?? [];
-  }, [modulosPermisos, idModulo, isLoading]);
-
-  return permisos;
+  return tieneAcceso;
 };

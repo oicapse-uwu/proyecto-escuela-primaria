@@ -69,8 +69,8 @@ const SuperAdminForm: React.FC<SuperAdminFormProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-                <div className="bg-gradient-to-r from-primary to-primary-light p-6 text-white flex justify-between items-center">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full h-[600px] overflow-hidden flex flex-col">
+                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] p-6 text-white flex justify-between items-center">
                     <h2 className="text-2xl font-bold flex items-center space-x-2">
                         <Shield className="w-6 h-6" />
                         <span>{superAdmin ? 'Editar Super Admin' : 'Nuevo Super Admin'}</span>
@@ -84,7 +84,7 @@ const SuperAdminForm: React.FC<SuperAdminFormProps> = ({
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto max-h-[calc(90vh-140px)]">
+                <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
                     {/* Foto de Perfil */}
                     <div className="flex flex-col items-center gap-2 pb-4 border-b">
                         <div
@@ -197,19 +197,12 @@ const SuperAdminForm: React.FC<SuperAdminFormProps> = ({
                                 value={formData.rolPlataforma}
                                 onChange={handleChange}
                                 required
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                className="w-full pl-3 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                             >
                                 <option value="SUPER_ADMIN">SUPER_ADMIN</option>
                                 <option value="ADMIN">ADMIN</option>
                             </select>
                         </div>
-                    </div>
-
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start space-x-2">
-                        <User className="w-4 h-4 text-blue-600 mt-0.5" />
-                        <p className="text-sm text-blue-700">
-                            Si estás editando y dejas la contraseña vacía, se conservará la contraseña actual.
-                        </p>
                     </div>
 
                     <div className="flex justify-end space-x-3 pt-2">
@@ -223,7 +216,7 @@ const SuperAdminForm: React.FC<SuperAdminFormProps> = ({
                         </button>
                         <button
                             type="submit"
-                            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50"
+                            className="px-6 py-2.5 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-lg hover:from-[#1e40af] hover:to-[#312e81] transition-colors disabled:opacity-50 font-semibold"
                             disabled={isLoading}
                         >
                             {isLoading ? 'Guardando...' : superAdmin ? 'Actualizar' : 'Crear'}

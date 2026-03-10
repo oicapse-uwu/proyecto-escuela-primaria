@@ -1,4 +1,4 @@
-import { Briefcase, ChevronDown, FileText, IdCard, Mail, Phone, Search, User } from 'lucide-react';
+import { Briefcase, ChevronDown, Search } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { useReniec } from '../../../../hooks/useReniec';
@@ -171,199 +171,195 @@ const ApoderadoForm: React.FC<ApoderadoFormProps> = ({
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-            {/* Información Básica */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-                {/* Tipo de Documento */}
+        <form onSubmit={handleSubmit} className="flex flex-col">
+            <div className="space-y-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        <FileText className="inline w-4 h-4 mr-1" />
-                        Tipo de Documento <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                        <select
-                            name="idTipoDoc"
-                            value={formData.idTipoDoc}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2.5 pr-9 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 truncate appearance-none bg-white cursor-pointer"
-                            required
-                        >
-                            <option value={0}>Seleccione tipo</option>
-                            {tiposDocumento.map(tipo => (
-                                <option key={tipo.idDocumento} value={tipo.idDocumento}>
-                                    {tipo.abreviatura} - {tipo.descripcion}
-                                </option>
-                            ))}
-                        </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-                    </div>
-                    <div className="mt-1 h-4">
-                        {/* Espacio reservado para mensajes */}
-                    </div>
-                </div>
 
-                {/* Número de Documento */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        <IdCard className="inline w-4 h-4 mr-1" />
-                        Número de Documento <span className="text-red-500">*</span>
-                    </label>
-                    <div className="flex gap-2">
-                        <input
-                            type="text"
-                            name="numeroDocumento"
-                            value={formData.numeroDocumento}
-                            onChange={handleChange}
-                            inputMode={requiereSoloNumeros ? 'numeric' : 'text'}
-                            maxLength={tipoDocumentoSeleccionado?.longitudMaxima ?? 20}
-                            disabled={!formData.idTipoDoc}
-                            className={`flex-1 px-3 py-2.5 text-base border rounded-lg focus:ring-2 transition-colors ${
-                                documentoError
-                                    ? 'border-red-500 focus:ring-red-500 bg-red-50'
-                                    : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
-                            } ${!formData.idTipoDoc ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                            placeholder={tipoDocumentoSeleccionado ? `Ej: ${'0'.repeat(tipoDocumentoSeleccionado.longitudMaxima ?? 8)}` : 'Seleccione tipo primero'}
-                            required
-                        />
-                        <button
-                            type="button"
-                            onClick={handleConsultarReniec}
-                            disabled={tipoDocumentoSeleccionado?.abreviatura?.toUpperCase() !== 'DNI' || !formData.numeroDocumento || formData.numeroDocumento.length !== 8 || loadingReniec}
-                            className={`px-3 py-2.5 rounded-lg transition-colors flex items-center justify-center whitespace-nowrap ${
-                                tipoDocumentoSeleccionado?.abreviatura?.toUpperCase() === 'DNI'
-                                    ? 'bg-green-600 text-white hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed'
-                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                            }`}
-                            title="Consultar en RENIEC"
-                        >
-                            <Search className={`${loadingReniec ? 'w-5 h-5 animate-spin' : 'w-5 h-5'}`} />
-                        </button>
-                    </div>
-                    <div className="mt-1 min-h-[20px]">
-                        {documentoError ? (
-                            <p className="text-xs text-red-600">{documentoError}</p>
-                        ) : tipoDocumentoSeleccionado?.longitudMaxima ? (
-                            <p className="text-xs text-gray-500">
-                                {tipoDocumentoSeleccionado.eslongitudExacta === 1
-                                    ? `Exactamente ${tipoDocumentoSeleccionado.longitudMaxima} caracteres`
-                                    : `Máximo ${tipoDocumentoSeleccionado.longitudMaxima} caracteres`}
-                                {requiereSoloNumeros ? ' · Solo números' : ''}
-                            </p>
-                        ) : (
-                            <p className="text-xs text-transparent">Espacio reservado</p>
-                        )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Tipo de Documento <span className="text-red-500">*</span>
+                            </label>
+                            <div className="relative">
+                                <select
+                                    name="idTipoDoc"
+                                    value={formData.idTipoDoc}
+                                    onChange={handleChange}
+                                    className="w-full px-3 py-2.5 pr-9 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent truncate appearance-none bg-white cursor-pointer"
+                                    required
+                                >
+                                    <option value={0}>Seleccione tipo</option>
+                                    {tiposDocumento.map(tipo => (
+                                        <option key={tipo.idDocumento} value={tipo.idDocumento}>
+                                            {tipo.abreviatura} - {tipo.descripcion}
+                                        </option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Número de Documento <span className="text-red-500">*</span>
+                            </label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    name="numeroDocumento"
+                                    value={formData.numeroDocumento}
+                                    onChange={handleChange}
+                                    inputMode={requiereSoloNumeros ? 'numeric' : 'text'}
+                                    maxLength={tipoDocumentoSeleccionado?.longitudMaxima ?? 20}
+                                    disabled={!formData.idTipoDoc}
+                                    className={`flex-1 px-3 py-2.5 text-base border rounded-lg focus:ring-2 transition-colors ${
+                                        documentoError
+                                            ? 'border-red-500 focus:ring-red-500 bg-red-50'
+                                            : 'border-gray-300 focus:ring-emerald-500 focus:border-transparent'
+                                    } ${!formData.idTipoDoc ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                    placeholder={tipoDocumentoSeleccionado ? `Ej: ${'0'.repeat(tipoDocumentoSeleccionado.longitudMaxima ?? 8)}` : 'Seleccione tipo primero'}
+                                    required
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleConsultarReniec}
+                                    disabled={tipoDocumentoSeleccionado?.abreviatura?.toUpperCase() !== 'DNI' || !formData.numeroDocumento || formData.numeroDocumento.length !== 8 || loadingReniec}
+                                    className={`px-3 py-2.5 rounded-lg transition-colors flex items-center justify-center whitespace-nowrap ${
+                                        tipoDocumentoSeleccionado?.abreviatura?.toUpperCase() === 'DNI'
+                                            ? 'bg-emerald-600 text-white hover:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed'
+                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    }`}
+                                    title="Consultar en RENIEC"
+                                >
+                                    <Search className={`${loadingReniec ? 'w-5 h-5 animate-spin' : 'w-5 h-5'}`} />
+                                </button>
+                            </div>
+                            <div className="mt-1 min-h-[20px]">
+                                {documentoError ? (
+                                    <p className="text-xs text-red-600">{documentoError}</p>
+                                ) : tipoDocumentoSeleccionado?.longitudMaxima ? (
+                                    <p className="text-xs text-gray-500">
+                                        {tipoDocumentoSeleccionado.eslongitudExacta === 1
+                                            ? `Exactamente ${tipoDocumentoSeleccionado.longitudMaxima} caracteres`
+                                            : `Máximo ${tipoDocumentoSeleccionado.longitudMaxima} caracteres`}
+                                        {requiereSoloNumeros ? ' · Solo números' : ''}
+                                    </p>
+                                ) : (
+                                    <p className="text-xs text-transparent">Espacio reservado</p>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                {/* Nombres */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        <User className="inline w-4 h-4 mr-1" />
-                        Nombres <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        name="nombres"
-                        value={formData.nombres}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ej: Juan Carlos"
-                        maxLength={100}
-                        required
-                    />
+                <div className="border-t border-gray-200 pt-6">
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Nombres <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                name="nombres"
+                                value={formData.nombres}
+                                onChange={handleChange}
+                                className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                placeholder="Ej: Juan Carlos"
+                                maxLength={100}
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Apellidos <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                name="apellidos"
+                                value={formData.apellidos}
+                                onChange={handleChange}
+                                className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                placeholder="Ej: García López"
+                                maxLength={100}
+                                required
+                            />
+                        </div>
+                    </div>
                 </div>
 
-                {/* Apellidos */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        <User className="inline w-4 h-4 mr-1" />
-                        Apellidos <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        name="apellidos"
-                        value={formData.apellidos}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ej: García López"
-                        maxLength={100}
-                        required
-                    />
-                </div>
+                <div className="border-t border-gray-200 pt-6">
 
-                {/* Teléfono Principal */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        <Phone className="inline w-4 h-4 mr-1" />
-                        Teléfono Principal <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="tel"
-                        name="telefonoPrincipal"
-                        value={formData.telefonoPrincipal}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ej: 987654321"
-                        inputMode="numeric"
-                        maxLength={9}
-                        required
-                    />
-                </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Teléfono Principal <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="tel"
+                                name="telefonoPrincipal"
+                                value={formData.telefonoPrincipal}
+                                onChange={handleChange}
+                                className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                placeholder="Ej: 987654321"
+                                inputMode="numeric"
+                                maxLength={9}
+                                required
+                            />
+                        </div>
 
-                {/* Correo Electrónico */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        <Mail className="inline w-4 h-4 mr-1" />
-                        Correo Electrónico
-                    </label>
-                    <input
-                        type="email"
-                        name="correo"
-                        value={formData.correo}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="ejemplo@correo.com"
-                        maxLength={100}
-                    />
-                </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Correo Electrónico
+                            </label>
+                            <input
+                                type="email"
+                                name="correo"
+                                value={formData.correo}
+                                onChange={handleChange}
+                                className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                placeholder="ejemplo@correo.com"
+                                maxLength={100}
+                            />
+                        </div>
 
-                {/* Lugar de Trabajo */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        <Briefcase className="inline w-4 h-4 mr-1" />
-                        Lugar de Trabajo
-                    </label>
-                    <input
-                        type="text"
-                        name="lugarTrabajo"
-                        value={formData.lugarTrabajo}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Ej: Empresa ABC"
-                        maxLength={100}
-                    />
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Lugar de Trabajo
+                            </label>
+                            <div className="relative">
+                                <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                                <input
+                                    type="text"
+                                    name="lugarTrabajo"
+                                    value={formData.lugarTrabajo}
+                                    onChange={handleChange}
+                                    className="w-full pl-10 pr-3 py-2.5 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                    placeholder="Ej: Empresa ABC"
+                                    maxLength={100}
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Botones de Acción */}
-            <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-4 border-t">
+            <div className="flex flex-col sm:flex-row justify-end gap-3 pt-5 mt-6 bg-gray-50 border-t border-gray-200 -mx-6 -mb-6 px-6 pb-4 rounded-b-xl">
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="w-full sm:w-auto px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 
-                             transition-colors duration-200 font-medium order-2 sm:order-1"
+                    className="w-full sm:w-auto px-4 py-3 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors duration-200 font-medium order-2 sm:order-1"
                     disabled={isLoading}
                 >
                     Cancelar
                 </button>
                 <button
                     type="submit"
-                    className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
-                             transition-colors duration-200 font-medium disabled:opacity-50 
-                             disabled:cursor-not-allowed order-1 sm:order-2"
+                    className="w-full sm:w-auto px-4 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-lg hover:from-emerald-700 hover:to-emerald-800 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed order-1 sm:order-2 shadow-md hover:shadow-lg"
                     disabled={isLoading}
                 >
-                    {isLoading ? 'Guardando...' : apoderado ? 'Actualizar' : 'Crear'}
+                    {isLoading ? 'Guardando...' : apoderado ? 'Actualizar Apoderado' : 'Crear Apoderado'}
                 </button>
             </div>
         </form>

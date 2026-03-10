@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.escuelita.www.entity.Alumnos;
@@ -23,8 +24,8 @@ import com.escuelita.www.entity.Secciones;
 import com.escuelita.www.repository.AlumnosRepository;
 import com.escuelita.www.repository.AnioEscolarRepository;
 import com.escuelita.www.repository.SeccionesRepository;
-import com.escuelita.www.service.IMatriculasService;
 import com.escuelita.www.security.RequireModulo;
+import com.escuelita.www.service.IMatriculasService;
 
 @RestController
 @RequestMapping("/restful")
@@ -50,12 +51,12 @@ public class MatriculasController {
         Matriculas matriculas = new Matriculas();
         matriculas.setCodigoMatricula(dto.getCodigoMatricula());
         matriculas.setFechaMatricula(dto.getFechaMatricula());
-        matriculas.setSituacionAcademicaPrevia(dto.getSituacionAcademicaPrevia());
+        matriculas.setFechaVencimientoPago(dto.getFechaVencimientoPago());
+        matriculas.setTipoIngreso(dto.getTipoIngreso());
         matriculas.setEstadoMatricula(dto.getEstadoMatricula());
-        matriculas.setObservacionesMatricula(dto.getObservacionesMatricula());
-        matriculas.setFechaRetiro(dto.getFechaRetiro());
-        matriculas.setMotivoRetiro(dto.getMotivoRetiro());
-        matriculas.setColegioDestino(dto.getColegioDestino());
+        matriculas.setVacanteGarantizada(dto.getVacanteGarantizada());
+        matriculas.setFechaPagoMatricula(dto.getFechaPagoMatricula());
+        matriculas.setObservaciones(dto.getObservaciones());
 
         Alumnos alumnos = repoAlumnos
             .findById(dto.getIdAlumno())
@@ -84,12 +85,12 @@ public class MatriculasController {
         matriculas.setIdMatricula(dto.getIdMatricula());
         matriculas.setCodigoMatricula(dto.getCodigoMatricula());
         matriculas.setFechaMatricula(dto.getFechaMatricula());
-        matriculas.setSituacionAcademicaPrevia(dto.getSituacionAcademicaPrevia());
+        matriculas.setFechaVencimientoPago(dto.getFechaVencimientoPago());
+        matriculas.setTipoIngreso(dto.getTipoIngreso());
         matriculas.setEstadoMatricula(dto.getEstadoMatricula());
-        matriculas.setObservacionesMatricula(dto.getObservacionesMatricula());
-        matriculas.setFechaRetiro(dto.getFechaRetiro());
-        matriculas.setMotivoRetiro(dto.getMotivoRetiro());
-        matriculas.setColegioDestino(dto.getColegioDestino());
+        matriculas.setVacanteGarantizada(dto.getVacanteGarantizada());
+        matriculas.setFechaPagoMatricula(dto.getFechaPagoMatricula());
+        matriculas.setObservaciones(dto.getObservaciones());
 
         Alumnos alumnos = repoAlumnos
             .findById(dto.getIdAlumno())
@@ -117,5 +118,29 @@ public class MatriculasController {
     public String eliminar(@PathVariable Long id){
         serviceMatriculas.eliminar(id);
         return "Matrícula eliminada correctamente";
-    }   
+    }
+    
+    @PutMapping("/matriculas/{id}/confirmar-pago")
+    @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
+    public ResponseEntity<?> confirmarPago(@PathVariable Long id) {
+        try {
+            String resultado = serviceMatriculas.confirmarPagoMatricula(id);
+            return ResponseEntity.ok(resultado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
+    @GetMapping("/matriculas/vacantes-disponibles")
+    @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
+    public ResponseEntity<?> consultarVacantesDisponibles(
+            @RequestParam("idSeccion") Long idSeccion,
+            @RequestParam("idAnio") Long idAnio) {
+        try {
+            int vacantesDisponibles = serviceMatriculas.consultarVacantesDisponibles(idSeccion, idAnio);
+            return ResponseEntity.ok(vacantesDisponibles);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

@@ -26,10 +26,9 @@ import jakarta.persistence.Table;
 @SQLDelete(sql = "UPDATE matriculas SET estado=0 WHERE id_matricula=?")
 @SQLRestriction("estado = 1")
 @JsonPropertyOrder({
-    "idMatricula", "codigoMatricula", "fechaMatricula", 
-    "situacionAcademicaPrevia", "estadoMatricula", 
-    "observacionesMatricula", "fechaRetiro", "motivoRetiro",
-    "colegioDestino", "idAlumno", "idSeccion", "idAnio", "estado"
+    "idMatricula", "codigoMatricula", "fechaMatricula", "fechaVencimientoPago",
+    "tipoIngreso", "estadoMatricula", "vacanteGarantizada", "fechaPagoMatricula",
+    "observaciones", "idAlumno", "idSeccion", "idAnio", "estado"
 })
 public class Matriculas {
     @Id
@@ -41,20 +40,20 @@ public class Matriculas {
     private String codigoMatricula;
     @Column(name = "fecha_matricula", nullable = false)
     private LocalDateTime fechaMatricula;
-    @Column(name = "situacion_academica_previa", 
-            columnDefinition = "ENUM('Promovido', 'Repitente', 'Ingresante')", nullable = false)
-    private String situacionAcademicaPrevia;
+    @Column(name = "fecha_vencimiento_pago")
+    private LocalDateTime fechaVencimientoPago;
+    @Column(name = "tipo_ingreso", 
+            columnDefinition = "ENUM('Nuevo', 'Promovido', 'Repitente', 'Trasladado_Entrante')", nullable = false)
+    private String tipoIngreso;
     @Column(name = "estado_matricula", 
-            columnDefinition = "ENUM('Activa', 'Retirada', 'Trasladado_Saliente')", nullable = false)
+            columnDefinition = "ENUM('Pendiente_Pago', 'Activa', 'Finalizada', 'Cancelada')", nullable = false)
     private String estadoMatricula;
-    @Column(name = "observaciones_matricula", columnDefinition = "TEXT")
-    private String observacionesMatricula;
-    @Column(name = "fecha_retiro")
-    private LocalDate fechaRetiro;
-    @Column(name = "motivo_retiro", columnDefinition = "TEXT")
-    private String motivoRetiro;
-    @Column(name = "colegio_destino", length = 150)
-    private String colegioDestino;
+    @Column(name = "vacante_garantizada")
+    private Boolean vacanteGarantizada = false;
+    @Column(name = "fecha_pago_matricula")
+    private LocalDateTime fechaPagoMatricula;
+    @Column(name = "observaciones", columnDefinition = "TEXT")
+    private String observaciones;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_alumno")
@@ -96,11 +95,17 @@ public class Matriculas {
     public void setFechaMatricula(LocalDateTime fechaMatricula) {
         this.fechaMatricula = fechaMatricula;
     }
-    public String getSituacionAcademicaPrevia() {
-        return situacionAcademicaPrevia;
+    public LocalDateTime getFechaVencimientoPago() {
+        return fechaVencimientoPago;
     }
-    public void setSituacionAcademicaPrevia(String situacionAcademicaPrevia) {
-        this.situacionAcademicaPrevia = situacionAcademicaPrevia;
+    public void setFechaVencimientoPago(LocalDateTime fechaVencimientoPago) {
+        this.fechaVencimientoPago = fechaVencimientoPago;
+    }
+    public String getTipoIngreso() {
+        return tipoIngreso;
+    }
+    public void setTipoIngreso(String tipoIngreso) {
+        this.tipoIngreso = tipoIngreso;
     }
     public String getEstadoMatricula() {
         return estadoMatricula;
@@ -108,29 +113,23 @@ public class Matriculas {
     public void setEstadoMatricula(String estadoMatricula) {
         this.estadoMatricula = estadoMatricula;
     }
-    public String getObservacionesMatricula() {
-        return observacionesMatricula;
+    public Boolean getVacanteGarantizada() {
+        return vacanteGarantizada;
     }
-    public void setObservacionesMatricula(String observacionesMatricula) {
-        this.observacionesMatricula = observacionesMatricula;
+    public void setVacanteGarantizada(Boolean vacanteGarantizada) {
+        this.vacanteGarantizada = vacanteGarantizada;
     }
-    public LocalDate getFechaRetiro() {
-        return fechaRetiro;
+    public LocalDateTime getFechaPagoMatricula() {
+        return fechaPagoMatricula;
     }
-    public void setFechaRetiro(LocalDate fechaRetiro) {
-        this.fechaRetiro = fechaRetiro;
+    public void setFechaPagoMatricula(LocalDateTime fechaPagoMatricula) {
+        this.fechaPagoMatricula = fechaPagoMatricula;
     }
-    public String getMotivoRetiro() {
-        return motivoRetiro;
+    public String getObservaciones() {
+        return observaciones;
     }
-    public void setMotivoRetiro(String motivoRetiro) {
-        this.motivoRetiro = motivoRetiro;
-    }
-    public String getColegioDestino() {
-        return colegioDestino;
-    }
-    public void setColegioDestino(String colegioDestino) {
-        this.colegioDestino = colegioDestino;
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
     }
     public Alumnos getIdAlumno() {
         return idAlumno;
@@ -159,10 +158,10 @@ public class Matriculas {
     @Override
     public String toString() {
         return "Matriculas [idMatricula=" + idMatricula + ", codigoMatricula=" + codigoMatricula + ", fechaMatricula="
-                + fechaMatricula + ", situacionAcademicaPrevia=" + situacionAcademicaPrevia + ", estadoMatricula="
-                + estadoMatricula + ", observacionesMatricula=" + observacionesMatricula + ", fechaRetiro="
-                + fechaRetiro + ", motivoRetiro=" + motivoRetiro + ", colegioDestino=" 
-                + colegioDestino + ", idAlumno=" + idAlumno + ", idSeccion=" + idSeccion + ", idAnio=" 
+                + fechaMatricula + ", fechaVencimientoPago=" + fechaVencimientoPago + ", tipoIngreso=" + tipoIngreso
+                + ", estadoMatricula=" + estadoMatricula + ", vacanteGarantizada=" + vacanteGarantizada 
+                + ", fechaPagoMatricula=" + fechaPagoMatricula + ", observaciones=" + observaciones 
+                + ", idAlumno=" + idAlumno + ", idSeccion=" + idSeccion + ", idAnio=" 
                 + idAnio + ", estado=" + estado + "]";
     }
 }

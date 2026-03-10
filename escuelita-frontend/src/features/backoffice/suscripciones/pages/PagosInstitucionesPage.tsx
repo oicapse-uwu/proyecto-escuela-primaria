@@ -109,7 +109,7 @@ const PagosInstitucionesPage: React.FC = () => {
     // Opciones de filtro para SearchFilterBar
     const filterOptions = useMemo(() => [
         { value: 'todos', label: 'Todos los estados' },
-        ...estadosUnicos.map(estado => ({ value: estado, label: estado }))
+        ...estadosUnicos.map(estado => ({ value: estado as string, label: estado as string }))
     ], [estadosUnicos]);
 
     // Calcular estadísticas generales

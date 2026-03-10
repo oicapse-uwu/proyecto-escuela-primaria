@@ -1,8 +1,7 @@
-import { Calendar, CheckCircle, Edit, FileText, IdCard, Phone, Plus, Search, Trash2, User, Users, XCircle } from 'lucide-react';
+import { Calendar, CheckCircle, Edit, FileText, IdCard, Phone, Plus, Search, Trash2, User, UserCircle, Users, X, XCircle } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Toaster, toast } from 'sonner';
-import Modal from '../../../../components/common/Modal';
 import Pagination from '../../../../components/common/Pagination';
 import { obtenerTodosDocumentos } from '../../matriculas/api/documentosAlumnoApi';
 import { obtenerTodosRequisitos } from '../../matriculas/api/requisitosApi';
@@ -563,19 +562,37 @@ const AlumnosPage: React.FC = () => {
             )}
 
             {/* Modal de formulario */}
-            <Modal
-                isOpen={showModal}
-                onClose={handleCancelar}
-                title={alumnoEditar ? 'Editar Alumno' : 'Nuevo Alumno'}
-            >
-                <AlumnoForm
-                    alumno={alumnoEditar}
-                    tiposDocumento={tiposDocumento}
-                    onSubmit={handleSubmit}
-                    onCancel={handleCancelar}
-                    isLoading={loading}
-                />
-            </Modal>
+            {showModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl w-[900px] h-[550px] overflow-hidden flex flex-col">
+                        {/* Header */}
+                        <div className="bg-gradient-to-r from-[#064e3b] via-[#065f46] to-[#059669] p-6 text-white flex justify-between items-center">
+                            <h2 className="text-2xl font-bold flex items-center space-x-2">
+                                <UserCircle className="w-6 h-6" />
+                                <span>{alumnoEditar ? 'Editar Alumno' : 'Nuevo Alumno'}</span>
+                            </h2>
+                            <button
+                                onClick={handleCancelar}
+                                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                                disabled={loading}
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        {/* Form */}
+                        <div className="flex-1 p-6 overflow-y-auto">
+                            <AlumnoForm
+                                alumno={alumnoEditar}
+                                tiposDocumento={tiposDocumento}
+                                onSubmit={handleSubmit}
+                                onCancel={handleCancelar}
+                                isLoading={loading}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

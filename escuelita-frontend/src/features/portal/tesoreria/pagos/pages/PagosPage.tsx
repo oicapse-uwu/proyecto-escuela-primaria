@@ -4,7 +4,7 @@ import { Toaster } from 'sonner';
 import Pagination from '../../../../../components/common/Pagination';
 import PagoForm from '../components/PagoForm';
 import { usePagos } from '../hooks/usePagos';
-import type { PagosDTO, PagoFormData } from '../types';
+import type { PagoFormData, PagosDTO } from '../types';
 
 const PagosPage: React.FC = () => {
     const { 

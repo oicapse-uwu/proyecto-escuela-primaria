@@ -53,3 +53,17 @@ export const eliminarMatricula = async (id: number): Promise<string> => {
     const response = await api.delete<string>(`${ENDPOINT}/${id}`);
     return response.data;
 };
+
+// Consulta vacantes disponibles en una sección
+export const consultarVacantesDisponibles = async (idSeccion: number, idAnio: number): Promise<number> => {
+    const response = await api.get<number>(`${ENDPOINT}/vacantes-disponibles`, {
+        params: { idSeccion, idAnio }
+    });
+    return response.data;
+};
+
+// Confirma el pago de una matrícula (valida capacidad y activa la matrícula)
+export const confirmarPagoMatricula = async (idMatricula: number): Promise<string> => {
+    const response = await api.put<string>(`${ENDPOINT}/${idMatricula}/confirmar-pago`);
+    return response.data;
+};

@@ -26,8 +26,7 @@ import jakarta.persistence.Table;
 @JsonPropertyOrder({
     "idAlumno", "numeroDocumento", "nombres", "apellidos", 
     "fechaNacimiento", "genero", "direccion", "telefonoContacto", 
-    "fotoUrl", "observacionesSalud", "tipoIngreso", "estadoAlumno",
-    "idSede", "idTipoDoc", "estado"
+    "fotoUrl", "observacionesSalud", "idSede", "idTipoDoc", "estado"
 })
 public class Alumnos {
     @Id
@@ -53,10 +52,6 @@ public class Alumnos {
     private String fotoUrl;
     @Column(name = "observaciones_salud", columnDefinition = "TEXT")
     private String observacionesSalud;
-    @Column(name = "tipo_ingreso", length = 50)
-    private String tipoIngreso;
-    @Column(name = "estado_alumno")
-    private String estadoAlumno;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="id_sede")
@@ -137,18 +132,6 @@ public class Alumnos {
     public void setObservacionesSalud(String observacionesSalud) {
         this.observacionesSalud = observacionesSalud;
     }
-    public String getTipoIngreso() {
-        return tipoIngreso;
-    }
-    public void setTipoIngreso(String tipoIngreso) {
-        this.tipoIngreso = tipoIngreso;
-    }
-    public String getEstadoAlumno() {
-        return estadoAlumno;
-    }
-    public void setEstadoAlumno(String estadoAlumno) {
-        this.estadoAlumno = estadoAlumno;
-    }
     public Sedes getIdSede() {
         return idSede;
     }
@@ -172,7 +155,7 @@ public class Alumnos {
         return "Alumnos [idAlumno=" + idAlumno + ", numeroDocumento=" + numeroDocumento + ", nombres=" + nombres
                 + ", apellidos=" + apellidos + ", fechaNacimiento=" + fechaNacimiento + ", genero=" + genero
                 + ", direccion=" + direccion + ", telefonoContacto=" + telefonoContacto + ", fotoUrl=" + fotoUrl
-                + ", observacionesSalud=" + observacionesSalud + ", tipoIngreso=" + tipoIngreso + ", estadoAlumno="
-                + estadoAlumno + ", idSede=" + idSede + ", idTipoDoc=" + idTipoDoc + ", estado=" + estado + "]";
+                + ", observacionesSalud=" + observacionesSalud + ", idSede=" + idSede + ", idTipoDoc=" + idTipoDoc 
+                + ", estado=" + estado + "]";
     }
 }

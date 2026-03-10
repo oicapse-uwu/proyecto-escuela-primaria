@@ -109,9 +109,9 @@ const menuModulesConfig: Record<string, { icon: LucideIcon; subItems?: Record<st
         subItems: {
             'Conceptos de Pago': { path: '/escuela/tesoreria/conceptos-pago', icon: DollarSign },
             'Métodos de Pago': { path: '/escuela/tesoreria/metodos-pago', icon: CreditCard },
+            'Deudas de Alumnos': { path: '/escuela/tesoreria/deudas-alumnos', icon: Users },
             'Registrar Pago': { path: '/escuela/tesoreria/pagos', icon: Receipt },
-            'Deudas por Alumno': { path: '/escuela/tesoreria/deudas-alumnos', icon: BarChart3 },
-            'Reportes de Caja': { path: '/escuela/tesoreria/reportes', icon: TrendingUp },
+            //'Reportes de Caja': { path: '/escuela/pagos/reportes', icon: TrendingUp },
         }
     },
 };

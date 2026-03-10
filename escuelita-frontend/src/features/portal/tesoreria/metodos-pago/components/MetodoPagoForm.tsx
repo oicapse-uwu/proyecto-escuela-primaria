@@ -1,4 +1,4 @@
-import { CreditCard, FileCheck, X } from 'lucide-react';
+import { AlertCircle, Check, CreditCard, FileCheck, X, Package } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import type { MetodoPago, MetodoPagoFormData } from '../types';
@@ -81,86 +81,115 @@ const MetodoPagoForm: React.FC<MetodoPagoFormProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-2xl w-full max-w-md">
-                <div className="flex justify-between items-center p-6 border-b border-gray-200">
-                    <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                        <CreditCard className="w-5 h-5 text-blue-600" />
-                        {metodo ? 'Editar Método de Pago' : 'Nuevo Método de Pago'}
-                    </h2>
-                    <button
-                        onClick={onCancel}
-                        className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                        <X className="w-5 h-5" />
-                    </button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all">
+                {/* Header con gradiente sutil */}
+                <div className="bg-gradient-to-r from-emerald-50 to-emerald-100 p-6 border-b-2 border-emerald-200">
+                    <div className="flex justify-between items-start">
+                        <div className="flex items-start gap-3">
+                            <div className="bg-emerald-600 rounded-lg p-2.5">
+                                <CreditCard className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-bold text-gray-900">
+                                    {metodo ? 'Editar Método de Pago' : 'Nuevo Método de Pago'}
+                                </h2>
+                                <p className="text-xs text-gray-600 mt-1">
+                                    {metodo ? 'Actualiza los detalles del método' : 'Crea un nuevo método de pago'}
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={onCancel}
+                            className="p-2 hover:bg-emerald-200 rounded-lg transition-all duration-200 hover:shadow-sm"
+                        >
+                            <X className="w-5 h-5 text-gray-600" />
+                        </button>
+                    </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                    {/* Nombre del Método */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Nombre del Método *
-                        </label>
-                        <input
-                            type="text"
-                            name="nombreMetodo"
-                            value={formData.nombreMetodo}
-                            onChange={handleChange}
-                            placeholder="Ej: Efectivo, Transferencia, Tarjeta, etc."
-                            className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                                errors.nombreMetodo
-                                    ? 'border-red-500 focus:ring-red-500'
-                                    : 'border-gray-300 focus:ring-blue-500'
-                            }`}
-                        />
-                        {errors.nombreMetodo && (
-                            <p className="text-red-500 text-xs mt-1">{errors.nombreMetodo}</p>
-                        )}
-                    </div>
-
-                    {/* Requiere Comprobante */}
-                    <div>
-                        <label className="flex items-center gap-3 cursor-pointer">
+                <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                    {/* Sección principal */}
+                    <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
+                        {/* Nombre del Método */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                <Package className="w-4 h-4 text-emerald-600" />
+                                Nombre del Método *
+                            </label>
                             <input
-                                type="checkbox"
-                                name="requiereComprobante"
-                                checked={formData.requiereComprobante === 1}
-                                onChange={(e) => {
-                                    setFormData(prev => ({
-                                        ...prev,
-                                        requiereComprobante: e.target.checked ? 1 : 0
-                                    }));
-                                }}
-                                className="w-4 h-4 text-blue-600 rounded focus:outline-none"
+                                type="text"
+                                name="nombreMetodo"
+                                value={formData.nombreMetodo}
+                                onChange={handleChange}
+                                placeholder="Ej: Efectivo, Transferencia, Tarjeta..."
+                                className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
+                                    errors.nombreMetodo
+                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
+                                        : 'border-gray-200 focus:ring-emerald-300 focus:border-emerald-500 bg-white hover:border-gray-300'
+                                }`}
                             />
-                            <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                                <FileCheck className="w-4 h-4" />
-                                Requiere Comprobante
-                            </span>
-                        </label>
-                        <p className="text-xs text-gray-500 mt-1 ml-7">
-                            {formData.requiereComprobante === 1 
-                                ? 'Este método requiere comprobante de pago' 
-                                : 'Este método no requiere comprobante'}
-                        </p>
+                            {errors.nombreMetodo && (
+                                <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
+                                    <AlertCircle className="w-3 h-3" />
+                                    {errors.nombreMetodo}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Requiere Comprobante */}
+                        <div className="p-3 bg-white rounded-lg border-2 border-gray-200 hover:border-emerald-300 transition-colors">
+                            <label className="flex items-center gap-3 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    name="requiereComprobante"
+                                    checked={formData.requiereComprobante === 1}
+                                    onChange={(e) => {
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            requiereComprobante: e.target.checked ? 1 : 0
+                                        }));
+                                    }}
+                                    className="w-5 h-5 text-emerald-600 rounded focus:outline-none cursor-pointer"
+                                />
+                                <span className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                                    <FileCheck className="w-4 h-4 text-emerald-600" />
+                                    Requiere Comprobante
+                                </span>
+                            </label>
+                            <p className="text-xs text-gray-600 mt-2 ml-8">
+                                {formData.requiereComprobante === 1 
+                                    ? 'Este método requiere comprobante de pago' 
+                                    : 'Este método no requiere comprobante'}
+                            </p>
+                        </div>
                     </div>
 
-                    {/* Botones */}
-                    <div className="flex gap-3 pt-4 border-t border-gray-200">
+                    {/* Botones con estilos mejorados */}
+                    <div className="flex gap-3 pt-6 border-t-2 border-gray-200">
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                            className="flex-1 px-4 py-2.5 text-gray-700 border-2 border-gray-300 rounded-lg hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 font-semibold"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting || isLoading}
-                            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:bg-blue-400"
+                            className="flex-1 px-4 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 active:scale-95 transition-all duration-200 font-semibold flex items-center justify-center gap-2 disabled:bg-emerald-400 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
                         >
-                            {isSubmitting || isLoading ? 'Guardando...' : 'Guardar'}
+                            {isSubmitting || isLoading ? (
+                                <>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                                    Guardando...
+                                </>
+                            ) : (
+                                <>
+                                    <Check className="w-4 h-4" />
+                                    Guardar
+                                </>
+                            )}
                         </button>
                     </div>
                 </form>

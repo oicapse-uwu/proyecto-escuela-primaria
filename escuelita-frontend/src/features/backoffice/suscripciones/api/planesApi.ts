@@ -1,4 +1,4 @@
-import { api, API_ENDPOINTS } from "../../../../config/api.config";
+import { api } from "../../../../config/api.config";
 import type { Plan, PlanFormData } from "../types";
 
 // Obtener todos los planes
@@ -30,5 +30,5 @@ export const updatePlanApi = async (idPlan: number, plan: PlanFormData): Promise
 
 // Eliminar un plan
 export const deletePlanApi = async (id: number): Promise<void> => {
-    await api.delete(`${API_ENDPOINTS.PLANES}/${id}`);
+    await api.delete('/restful/planes/' + id);
 };

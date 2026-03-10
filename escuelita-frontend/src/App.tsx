@@ -1,4 +1,5 @@
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import PrivateRoute from './components/common/PrivateRoute';
 
 import {
@@ -11,13 +12,13 @@ import {
   UsuariosRoutes
 } from './features/backoffice';
 
+import GestionAcademicaRoutes from './features/portal/academica/routes/GestionAcademicaRoutes';
 import AlumnosRoutes from './features/portal/alumnos/routes/AlumnosRoutes';
 import ApoderadosRoutes from './features/portal/apoderados/routes/apoderados.routes';
-import GestionAcademicaRoutes from './features/portal/academica/routes/GestionAcademicaRoutes';
+import ConfiguracionRoutes from './features/portal/configuracion/routes/ConfiguracionRoutes';
 import EvaluacionesRoutes from './features/portal/evaluaciones/routes/EvaluacionesRoutes';
 import InfraestructuraRoutes from './features/portal/infraestructura/routes/InfraestructuraRoutes';
 import MatriculasRoutes from './features/portal/matriculas/routes/matriculas.routes';
-import ConfiguracionRoutes from './features/portal/configuracion/routes/ConfiguracionRoutes';
 import TesoreriaRoutes from './features/portal/tesoreria/routes/TesoreriaRoutes';
 
 import EscuelaLayout from './layouts/EscuelaLayout';
@@ -30,6 +31,7 @@ import LoginEscuela from './pages/LoginEscuela';
 function App() {
   return (
     <Router>
+      <Toaster position="top-right" />
       <Routes>
         {/* Rutas públicas - Login */}
         <Route path="/login" element={<Login />} /> {/* Super Admin Login */}

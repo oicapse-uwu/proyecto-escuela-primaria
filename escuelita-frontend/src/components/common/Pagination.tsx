@@ -35,7 +35,6 @@ const Pagination: React.FC<PaginationProps> = ({
     const totalPages = totalItems !== undefined 
         ? Math.ceil(totalItems / itemsPerPage) 
         : (totalPagesProp || 0);
-
     const handlePrevious = () => {
         if (currentPage > 1) {
             onPageChange(currentPage - 1);

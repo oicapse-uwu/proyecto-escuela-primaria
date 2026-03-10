@@ -22,14 +22,11 @@ const DetalleInstitucionPagosPage: React.FC = () => {
     const { suscripciones, metodosPago } = useSuscripciones();
     const {
         registrar,
-        actualizarPagoProgramado,
-        verificar,
-        rechazar
+        actualizarPagoProgramado
     } = usePagosSuscripcion();
 
     const [pagosSuscripcion, setPagosSuscripcion] = useState<PagoSuscripcion[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [selectedPago, setSelectedPago] = useState<PagoSuscripcion | null>(null);
     const [pagoParaRegistrar, setPagoParaRegistrar] = useState<PagoSuscripcion | null>(null);
     const [pagoParaVerBoleta, setPagoParaVerBoleta] = useState<PagoSuscripcion | null>(null);
     const [mostrarFormularioNuevoPago, setMostrarFormularioNuevoPago] = useState(false);
@@ -131,51 +128,51 @@ const DetalleInstitucionPagosPage: React.FC = () => {
         }
     };
 
-    const handleVerificar = async (idPago: number) => {
-        try {
-            const idSuperAdmin = getSuperAdminId();
-            await verificar(idPago, idSuperAdmin);
-            
-            // Recargar los pagos
-            if (suscripcion) {
-                const pagos = await getPagosPorSuscripcionApi(suscripcion.idSuscripcion);
-                const pagosOrdenados = pagos.sort((a, b) => {
-                    const fechaA = a.fechaPago ? new Date(a.fechaPago).getTime() : 0;
-                    const fechaB = b.fechaPago ? new Date(b.fechaPago).getTime() : 0;
-                    return fechaA - fechaB;
-                });
-                setPagosSuscripcion(pagosOrdenados);
-            }
-            
-            toast.success('✅ Pago verificado exitosamente');
-            setSelectedPago(null);
-        } catch (error) {
-            toast.error('❌ Error al verificar el pago');
-        }
-    };
+    // const _handleVerificar = async (idPago: number) => {
+    //     try {
+    //         const idSuperAdmin = getSuperAdminId();
+    //         await verificar(idPago, idSuperAdmin);
+    //         
+    //         // Recargar los pagos
+    //         if (suscripcion) {
+    //             const pagos = await getPagosPorSuscripcionApi(suscripcion.idSuscripcion);
+    //             const pagosOrdenados = pagos.sort((a, b) => {
+    //                 const fechaA = a.fechaPago ? new Date(a.fechaPago).getTime() : 0;
+    //                 const fechaB = b.fechaPago ? new Date(b.fechaPago).getTime() : 0;
+    //                 return fechaA - fechaB;
+    //             });
+    //             setPagosSuscripcion(pagosOrdenados);
+    //         }
+    //         
+    //         toast.success('✅ Pago verificado exitosamente');
+    //         setSelectedPago(null);
+    //     } catch (error) {
+    //         toast.error('❌ Error al verificar el pago');
+    //     }
+    // };
 
-    const handleRechazar = async (idPago: number, motivo: string) => {
-        try {
-            const idSuperAdmin = getSuperAdminId();
-            await rechazar(idPago, motivo, idSuperAdmin);
-            
-            // Recargar los pagos
-            if (suscripcion) {
-                const pagos = await getPagosPorSuscripcionApi(suscripcion.idSuscripcion);
-                const pagosOrdenados = pagos.sort((a, b) => {
-                    const fechaA = a.fechaPago ? new Date(a.fechaPago).getTime() : 0;
-                    const fechaB = b.fechaPago ? new Date(b.fechaPago).getTime() : 0;
-                    return fechaA - fechaB;
-                });
-                setPagosSuscripcion(pagosOrdenados);
-            }
-            
-            toast.success('⚠️ Pago rechazado');
-            setSelectedPago(null);
-        } catch (error) {
-            toast.error('❌ Error al rechazar el pago');
-        }
-    };
+    // const _handleRechazar = async (idPago: number, motivo: string) => {
+    //     try {
+    //         const idSuperAdmin = getSuperAdminId();
+    //         await rechazar(idPago, motivo, idSuperAdmin);
+    //         
+    //         // Recargar los pagos
+    //         if (suscripcion) {
+    //             const pagos = await getPagosPorSuscripcionApi(suscripcion.idSuscripcion);
+    //             const pagosOrdenados = pagos.sort((a, b) => {
+    //                 const fechaA = a.fechaPago ? new Date(a.fechaPago).getTime() : 0;
+    //                 const fechaB = b.fechaPago ? new Date(b.fechaPago).getTime() : 0;
+    //                 return fechaA - fechaB;
+    //             });
+    //             setPagosSuscripcion(pagosOrdenados);
+    //         }
+    //         
+    //         toast.success('⚠️ Pago rechazado');
+    //         setSelectedPago(null);
+    //     } catch (error) {
+    //         toast.error('❌ Error al rechazar el pago');
+    //     }
+    // };
 
     const getEstadoBadge = (estado: EstadoVerificacion) => {
         const badges = {

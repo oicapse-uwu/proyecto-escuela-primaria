@@ -33,8 +33,8 @@ const ConceptoPagoForm: React.FC<ConceptoPagoFormProps> = ({
                 nombreConcepto: concepto.nombreConcepto,
                 monto: concepto.monto,
                 estadoConcepto: concepto.estadoConcepto,
-                idInstitucion: concepto.idInstitucion.idInstitucion,
-                idGrado: concepto.idGrado.idGrado
+                idInstitucion: concepto.idInstitucion?.idInstitucion ?? 0,
+                idGrado: concepto.idGrado?.idGrado ?? 0
             });
         }
     }, [concepto]);

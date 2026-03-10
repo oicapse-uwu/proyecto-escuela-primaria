@@ -1,21 +1,19 @@
-import { Calendar, CheckCircle, Edit, FileText, GraduationCap, Plus, Search, Trash2, User } from 'lucide-react';
+import { Calendar, CheckCircle, Edit, FileText, GraduationCap, Plus, Search, Trash2, User, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Toaster, toast } from 'sonner';
-import Modal from '../../../../components/common/Modal';
 import Pagination from '../../../../components/common/Pagination';
-import SearchableSelect from '../../../../components/common/SearchableSelect';
 import { filtrarPorSedeActual } from '../../../../utils/sedeFilter';
 import { obtenerTodosAlumnos } from '../../alumnos/api/alumnosApi';
 import type { Alumno } from '../../alumnos/types';
 import {
     actualizarMatricula,
-    consultarVacantesDisponibles,
     crearMatricula,
     eliminarMatricula,
     obtenerTodasMatriculas,
     obtenerTodasSecciones,
     obtenerTodosAniosEscolares
 } from '../api/matriculasApi';
+import MatriculaForm from '../components/MatriculaForm';
 import type { AnioEscolar, Matricula, MatriculaFormData, Seccion } from '../types';
 
 const MatriculasPage: React.FC = () => {
@@ -30,23 +28,8 @@ const MatriculasPage: React.FC = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [filterEstado, setFilterEstado] = useState<string>('');
-    const [vacantesDisponibles, setVacantesDisponibles] = useState<number | null>(null);
-    const [cargandoVacantes, setCargandoVacantes] = useState(false);
 
-    const [formData, setFormData] = useState<MatriculaFormData>({
-        idAlumno: 0,
-        idSeccion: 0,
-        idAnio: 0,
-        codigoMatricula: '',
-        situacionAcademicaPrevia: 'Ingresante',
-        estadoMatricula: 'Activa',
-        fechaMatricula: new Date().toISOString().split('T')[0],
-        observacionesMatricula: '',
-        fechaRetiro: '',
-        motivoRetiro: '',
-        colegioDestino: ''
-    });
-
+    // Cargar datos al montar el componente
     useEffect(() => {
         cargarDatos();
     }, []);
@@ -110,74 +93,14 @@ const MatriculasPage: React.FC = () => {
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm, filterEstado]);
-    
-    // Consultar vacantes disponibles cuando cambia sección o año
-    useEffect(() => {
-        const consultarVacantes = async () => {
-            if (formData.idSeccion && formData.idAnio && formData.idSeccion !== 0 && formData.idAnio !== 0) {
-                setCargandoVacantes(true);
-                try {
-                    const vacantes = await consultarVacantesDisponibles(formData.idSeccion, formData.idAnio);
-                    setVacantesDisponibles(vacantes);
-                } catch (error) {
-                    console.error('Error al consultar vacantes:', error);
-                    setVacantesDisponibles(null);
-                } finally {
-                    setCargandoVacantes(false);
-                }
-            } else {
-                setVacantesDisponibles(null);
-            }
-        };
-        
-        consultarVacantes();
-    }, [formData.idSeccion, formData.idAnio]);
 
     const handleNuevo = () => {
         setMatriculaEditar(null);
-        setVacantesDisponibles(null);
-        setFormData({
-            idAlumno: 0,
-            idSeccion: 0,
-            idAnio: 0,
-            codigoMatricula: generarCodigoMatricula(),
-            situacionAcademicaPrevia: 'Ingresante',
-            estadoMatricula: 'Activa',
-            fechaMatricula: new Date().toISOString().split('T')[0],
-            observacionesMatricula: '',
-            fechaRetiro: '',
-            motivoRetiro: '',
-            colegioDestino: ''
-        });
         setShowModal(true);
-    };
-
-    const generarCodigoMatricula = () => {
-        const fecha = new Date();
-        const año = fecha.getFullYear();
-        const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-        return `MAT-${año}-${random}`;
     };
 
     const handleEditar = (matricula: Matricula) => {
         setMatriculaEditar(matricula);
-        const fecha = matricula.fechaMatricula
-            ? String(matricula.fechaMatricula).split('T')[0]
-            : new Date().toISOString().split('T')[0];
-        setFormData({
-            idMatricula: matricula.idMatricula,
-            idAlumno: matricula.idAlumno?.idAlumno || 0,
-            idSeccion: matricula.idSeccion?.idSeccion || 0,
-            idAnio: (matricula.idAnio as any)?.idAnioEscolar || 0,
-            codigoMatricula: matricula.codigoMatricula || '',
-            situacionAcademicaPrevia: matricula.situacionAcademicaPrevia || 'Ingresante',
-            estadoMatricula: matricula.estadoMatricula || 'Activa',
-            fechaMatricula: fecha,
-            observacionesMatricula: matricula.observacionesMatricula || '',
-            fechaRetiro: matricula.fechaRetiro || '',
-            motivoRetiro: matricula.motivoRetiro || '',
-            colegioDestino: matricula.colegioDestino || ''
-        });
         setShowModal(true);
     };
 
@@ -193,44 +116,10 @@ const MatriculasPage: React.FC = () => {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        if (!formData.idAlumno || formData.idAlumno === 0) {
-            toast.error('Debe seleccionar un alumno');
-            return;
-        }
-        if (!formData.idSeccion || formData.idSeccion === 0) {
-            toast.error('Debe seleccionar una sección');
-            return;
-        }
-        if (!formData.idAnio || formData.idAnio === 0) {
-            toast.error('Debe seleccionar un año escolar');
-            return;
-        }
-        if (!formData.fechaMatricula) {
-            toast.error('La fecha de matrícula es obligatoria');
-            return;
-        }
-        
-        // Advertencia si no hay vacantes disponibles (solo para nuevos sin vacante garantizada)
-        if (!matriculaEditar && vacantesDisponibles !== null && vacantesDisponibles <= 0) {
-            toast.error('⚠️ No hay vacantes disponibles en esta sección');
-            return;
-        }
-
-        // El backend espera LocalDateTime — agrega hora si no tiene
-        const fechaConHora = formData.fechaMatricula.includes('T')
-            ? formData.fechaMatricula
-            : `${formData.fechaMatricula}T00:00:00`;
-
+    const handleSubmit = async (formData: MatriculaFormData) => {
         const payload = {
             ...formData,
-            fechaMatricula: fechaConHora,
-            observacionesMatricula: formData.observacionesMatricula || undefined,
-            fechaRetiro: formData.fechaRetiro || undefined,
-            motivoRetiro: formData.motivoRetiro || undefined,
-            colegioDestino: formData.colegioDestino || undefined,
+            observaciones: formData.observaciones || undefined,
         };
 
         try {
@@ -256,17 +145,22 @@ const MatriculasPage: React.FC = () => {
         }
     };
 
+    const handleCancelar = () => {
+        setShowModal(false);
+        setMatriculaEditar(null);
+    };
+
     const totalMatriculas = matriculasFiltradas.length;
     const matriculasActivas = matriculasFiltradas.filter(m => m.estadoMatricula === 'Activa').length;
-    const matriculasRetiradas = matriculasFiltradas.filter(m => m.estadoMatricula === 'Retirada').length;
-    const matriculasTrasladadas = matriculasFiltradas.filter(m => m.estadoMatricula === 'Trasladado_Saliente').length;
+    const matriculasPendientes = matriculasFiltradas.filter(m => m.estadoMatricula === 'Pendiente_Pago').length;
+    const matriculasCanceladas = matriculasFiltradas.filter(m => m.estadoMatricula === 'Cancelada').length;
 
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <div className="text-center">
-                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                    <p className="mt-4 text-gray-600">Cargando...</p>
+                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+                    <p className="mt-4 text-gray-600 font-medium">Cargando...</p>
                 </div>
             </div>
         );
@@ -281,7 +175,7 @@ const MatriculasPage: React.FC = () => {
                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
                     <div>
                         <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 flex items-center space-x-3">
-                            <GraduationCap className="w-7 h-7 text-primary" />
+                            <GraduationCap className="w-7 h-7 text-emerald-700" />
                             <span>Gestión de Matrículas</span>
                         </h1>
                         <p className="text-gray-600 mt-1 text-sm lg:text-base">
@@ -290,7 +184,7 @@ const MatriculasPage: React.FC = () => {
                     </div>
                     <button
                         onClick={handleNuevo}
-                        className="bg-primary text-white px-4 lg:px-5 py-2.5 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md whitespace-nowrap"
+                        className="bg-emerald-700 text-white px-4 lg:px-5 py-2.5 rounded-lg hover:bg-emerald-800 transition-colors flex items-center justify-center space-x-2 shadow-md whitespace-nowrap"
                     >
                         <Plus className="w-5 h-5" />
                         <span>Nueva Matrícula</span>
@@ -300,7 +194,7 @@ const MatriculasPage: React.FC = () => {
 
             {/* Estadísticas */}
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-600">Total</p>
@@ -311,44 +205,44 @@ const MatriculasPage: React.FC = () => {
                         </div>
                     </div>
                 </div>
-                <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-600">Activas</p>
-                            <p className="text-2xl font-bold text-green-600">{matriculasActivas}</p>
+                            <p className="text-2xl font-bold text-emerald-600">{matriculasActivas}</p>
                         </div>
-                        <div className="p-3 bg-green-50 rounded-lg">
-                            <CheckCircle className="w-6 h-6 text-green-600" />
+                        <div className="p-3 bg-emerald-50 rounded-lg">
+                            <CheckCircle className="w-6 h-6 text-emerald-600" />
                         </div>
                     </div>
                 </div>
-                <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-sm text-gray-600">Retiradas</p>
-                            <p className="text-2xl font-bold text-red-600">{matriculasRetiradas}</p>
+                            <p className="text-sm text-gray-600">Pendiente Pago</p>
+                            <p className="text-2xl font-bold text-yellow-600">{matriculasPendientes}</p>
+                        </div>
+                        <div className="p-3 bg-yellow-50 rounded-lg">
+                            <FileText className="w-6 h-6 text-yellow-600" />
+                        </div>
+                    </div>
+                </div>
+                <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-sm text-gray-600">Canceladas</p>
+                            <p className="text-2xl font-bold text-red-600">{matriculasCanceladas}</p>
                         </div>
                         <div className="p-3 bg-red-50 rounded-lg">
-                            <FileText className="w-6 h-6 text-red-600" />
-                        </div>
-                    </div>
-                </div>
-                <div className="bg-white rounded-lg border border-gray-200 p-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-gray-600">Trasladados</p>
-                            <p className="text-2xl font-bold text-orange-600">{matriculasTrasladadas}</p>
-                        </div>
-                        <div className="p-3 bg-orange-50 rounded-lg">
-                            <User className="w-6 h-6 text-orange-600" />
+                            <User className="w-6 h-6 text-red-600" />
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Búsqueda y filtros */}
-            <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4">
-                <div className="flex flex-col sm:flex-row gap-3">
+            <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4 shadow-sm">
+                <div className="flex flex-col sm:flex-row gap-4">
                     <div className="flex-1 relative">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                         <input
@@ -356,14 +250,13 @@ const MatriculasPage: React.FC = () => {
                             placeholder="Buscar por alumno o código..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg 
-                                     focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                         />
                     </div>
                     <select
                         value={filterEstado}
                         onChange={(e) => setFilterEstado(e.target.value)}
-                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
                     >
                         <option value="">Todos los estados</option>
                         <option value="Activa">Activa</option>
@@ -376,7 +269,7 @@ const MatriculasPage: React.FC = () => {
                             setItemsPerPage(Number(e.target.value));
                             setCurrentPage(1);
                         }}
-                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white"
                     >
                         <option value={10}>10 por página</option>
                         <option value={25}>25 por página</option>
@@ -387,7 +280,7 @@ const MatriculasPage: React.FC = () => {
             </div>
 
             {/* Tabla - Desktop */}
-            <div className="hidden lg:block bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="hidden lg:block bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
@@ -405,7 +298,7 @@ const MatriculasPage: React.FC = () => {
                                     Estado
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Situación Previa
+                                    Tipo de Ingreso
                                 </th>
                                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Acciones
@@ -429,14 +322,16 @@ const MatriculasPage: React.FC = () => {
                             ) : (
                                 matriculasPaginadas.map((matricula) => {
                                     const estadoColor: Record<string, string> = {
-                                        'Activa': 'bg-green-100 text-green-800',
-                                        'Retirada': 'bg-red-100 text-red-800',
-                                        'Trasladado_Saliente': 'bg-orange-100 text-orange-800'
+                                        'Pendiente_Pago': 'bg-yellow-100 text-yellow-800',
+                                        'Activa': 'bg-emerald-100 text-emerald-800',
+                                        'Finalizada': 'bg-gray-100 text-gray-800',
+                                        'Cancelada': 'bg-red-100 text-red-800'
                                     };
                                     const estadoLabel: Record<string, string> = {
+                                        'Pendiente_Pago': 'Pendiente de Pago',
                                         'Activa': 'Activa',
-                                        'Retirada': 'Retirada',
-                                        'Trasladado_Saliente': 'Trasladado Saliente'
+                                        'Finalizada': 'Finalizada',
+                                        'Cancelada': 'Cancelada'
                                     };
 
                                     return (
@@ -468,7 +363,7 @@ const MatriculasPage: React.FC = () => {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {matricula.situacionAcademicaPrevia || '-'}
+                                                {matricula.tipoIngreso || '-'}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 <div className="flex justify-end gap-2">
@@ -500,7 +395,7 @@ const MatriculasPage: React.FC = () => {
             {/* Cards - Mobile */}
             <div className="lg:hidden space-y-3">
                 {matriculasPaginadas.length === 0 ? (
-                    <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+                    <div className="bg-white rounded-lg border border-gray-200 p-8 text-center shadow-sm">
                         <GraduationCap className="w-12 h-12 mx-auto mb-2 text-gray-400" />
                         <p className="text-lg font-medium text-gray-900">No se encontraron matrículas</p>
                         <p className="text-sm text-gray-500 mt-1">
@@ -513,7 +408,7 @@ const MatriculasPage: React.FC = () => {
                 ) : (
                     matriculasPaginadas.map((matricula) => {
                         const estadoColor: Record<string, string> = {
-                            'Activa': 'bg-green-100 text-green-800',
+                            'Activa': 'bg-emerald-100 text-emerald-800',
                             'Retirada': 'bg-red-100 text-red-800',
                             'Trasladado_Saliente': 'bg-orange-100 text-orange-800'
                         };
@@ -524,7 +419,7 @@ const MatriculasPage: React.FC = () => {
                         };
 
                         return (
-                            <div key={matricula.idMatricula} className="bg-white rounded-lg border border-gray-200 p-4">
+                            <div key={matricula.idMatricula} className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
                                 <div className="flex items-start justify-between mb-3">
                                     <div>
                                         <p className="font-semibold text-gray-900">
@@ -581,259 +476,39 @@ const MatriculasPage: React.FC = () => {
             )}
 
             {/* Modal de formulario */}
-            <Modal
-                isOpen={showModal}
-                onClose={() => setShowModal(false)}
-                title={matriculaEditar ? 'Editar Matrícula' : 'Nueva Matrícula'}
-                size="xl"
-            >
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {showModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl w-[900px] h-[550px] overflow-hidden flex flex-col">
+                        {/* Header con degradado */}
+                        <div className="bg-gradient-to-r from-[#064e3b] via-[#065f46] to-[#059669] p-6 text-white flex justify-between items-center">
+                            <h2 className="text-2xl font-bold flex items-center space-x-2">
+                                <GraduationCap className="w-6 h-6" />
+                                <span>{matriculaEditar ? 'Editar Matrícula' : 'Nueva Matrícula'}</span>
+                            </h2>
+                            <button
+                                onClick={handleCancelar}
+                                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                                disabled={loading}
+                            >
+                                <X className="w-6 h-6" />
+                            </button>
+                        </div>
 
-                        {/* Alumno */}
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                <User className="inline w-4 h-4 mr-1" />
-                                Alumno <span className="text-red-500">*</span>
-                            </label>
-                            <SearchableSelect
-                                value={formData.idAlumno}
-                                onChange={(v) => setFormData({...formData, idAlumno: Number(v)})}
-                                options={alumnos}
-                                getOptionId={(a) => a.idAlumno}
-                                getOptionLabel={(a) => `${a.nombres} ${a.apellidos}`}
-                                getOptionSubtext={(a) => a.numeroDocumento}
-                                placeholder="Buscar por nombre o documento..."
-                                required
-                                emptyMessage="No se encontraron alumnos"
+                        {/* Form */}
+                        <div className="flex-1 p-6 overflow-y-auto">
+                            <MatriculaForm
+                                matricula={matriculaEditar}
+                                alumnos={alumnos}
+                                secciones={secciones}
+                                aniosEscolares={aniosEscolares}
+                                onSubmit={handleSubmit}
+                                onCancel={handleCancelar}
+                                isLoading={loading}
                             />
                         </div>
-
-                        {/* Sección */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Sección <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                                value={formData.idSeccion}
-                                onChange={(e) => setFormData({...formData, idSeccion: Number(e.target.value)})}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                required
-                            >
-                                <option value={0}>Seleccione sección...</option>
-                                {secciones.map(s => (
-                                    <option key={s.idSeccion} value={s.idSeccion}>
-                                        {s.idGrado?.nombreGrado ? `${s.idGrado.nombreGrado} - ${s.nombreSeccion}` : s.nombreSeccion}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {/* Año Escolar */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Año Escolar <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                                value={formData.idAnio}
-                                onChange={(e) => setFormData({...formData, idAnio: Number(e.target.value)})}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                required
-                            >
-                                <option value={0}>Seleccione año escolar...</option>
-                                {aniosEscolares.map(a => (
-                                    <option key={a.idAnioEscolar} value={a.idAnioEscolar}>
-                                        {a.nombreAnio}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {/* Indicador de Vacantes Disponibles */}
-                        {formData.idSeccion > 0 && formData.idAnio > 0 && (
-                            <div className="col-span-2">
-                                {cargandoVacantes ? (
-                                    <div className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                                        <span className="text-sm text-gray-600">Consultando vacantes disponibles...</span>
-                                    </div>
-                                ) : vacantesDisponibles !== null && (
-                                    <div className={`flex items-center gap-2 p-3 rounded-lg border ${
-                                        vacantesDisponibles === 0 
-                                            ? 'bg-red-50 border-red-200 text-red-800'
-                                            : vacantesDisponibles <= 5
-                                            ? 'bg-yellow-50 border-yellow-200 text-yellow-800'
-                                            : 'bg-green-50 border-green-200 text-green-800'
-                                    }`}>
-                                        {vacantesDisponibles === 0 ? (
-                                            <>
-                                                <span className="text-lg">❌</span>
-                                                <span className="text-sm font-medium">Sin vacantes disponibles - No se puede crear matrícula</span>
-                                            </>
-                                        ) : vacantesDisponibles <= 5 ? (
-                                            <>
-                                                <span className="text-lg">⚠️</span>
-                                                <span className="text-sm font-medium">¡Atención! Solo quedan {vacantesDisponibles} {vacantesDisponibles === 1 ? 'vacante' : 'vacantes'} disponibles</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <span className="text-lg">✅</span>
-                                                <span className="text-sm font-medium">{vacantesDisponibles} vacantes disponibles</span>
-                                            </>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {/* Código Matrícula */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                <FileText className="inline w-4 h-4 mr-1" />
-                                Código Matrícula
-                            </label>
-                            <input
-                                type="text"
-                                value={formData.codigoMatricula}
-                                onChange={(e) => setFormData({...formData, codigoMatricula: e.target.value})}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                placeholder="MAT-2026-0001"
-                            />
-                        </div>
-
-                        {/* Fecha Matrícula */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                <Calendar className="inline w-4 h-4 mr-1" />
-                                Fecha Matrícula <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="date"
-                                value={formData.fechaMatricula}
-                                onChange={(e) => setFormData({...formData, fechaMatricula: e.target.value})}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                required
-                            />
-                        </div>
-
-                        {/* Situación Académica Previa */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Situación Académica Previa <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                                value={formData.situacionAcademicaPrevia}
-                                onChange={(e) => setFormData({...formData, situacionAcademicaPrevia: e.target.value as any})}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                required
-                            >
-                                <option value="Ingresante">Ingresante</option>
-                                <option value="Promovido">Promovido</option>
-                                <option value="Repitente">Repitente</option>
-                            </select>
-                        </div>
-
-                        {/* Estado */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Estado <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                                value={formData.estadoMatricula}
-                                onChange={(e) => setFormData({...formData, estadoMatricula: e.target.value as any})}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                required
-                            >
-                                <option value="Activa">Activa</option>
-                                <option value="Retirada">Retirada</option>
-                                <option value="Trasladado_Saliente">Trasladado Saliente</option>
-                            </select>
-                        </div>
-
-                        {/* Observaciones */}
-                        <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Observaciones
-                            </label>
-                            <textarea
-                                value={formData.observacionesMatricula || ''}
-                                onChange={(e) => setFormData({...formData, observacionesMatricula: e.target.value})}
-                                rows={2}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
-                                placeholder="Observaciones generales..."
-                            />
-                        </div>
-
-                        {/* Campos condicionales: Retirada */}
-                        {formData.estadoMatricula === 'Retirada' && (
-                            <>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Fecha de Retiro
-                                    </label>
-                                    <input
-                                        type="date"
-                                        value={formData.fechaRetiro || ''}
-                                        onChange={(e) => setFormData({...formData, fechaRetiro: e.target.value})}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Motivo de Retiro
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={formData.motivoRetiro || ''}
-                                        onChange={(e) => setFormData({...formData, motivoRetiro: e.target.value})}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                        placeholder="Motivo del retiro..."
-                                    />
-                                </div>
-                            </>
-                        )}
-
-                        {/* Campos condicionales: Traslado */}
-                        {formData.estadoMatricula === 'Trasladado_Saliente' && (
-                            <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Colegio Destino
-                                </label>
-                                <input
-                                    type="text"
-                                    value={formData.colegioDestino || ''}
-                                    onChange={(e) => setFormData({...formData, colegioDestino: e.target.value})}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    placeholder="Nombre del colegio destino..."
-                                />
-                            </div>
-                        )}
-
                     </div>
-
-                    {/* Botones */}
-                    <div className="flex justify-end gap-3 pt-4 border-t mt-2">
-                        <button
-                            type="button"
-                            onClick={() => setShowModal(false)}
-                            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors font-medium"
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={!matriculaEditar && vacantesDisponibles !== null && vacantesDisponibles <= 0}
-                            className={`px-4 py-2 rounded-lg transition-colors font-medium ${
-                                !matriculaEditar && vacantesDisponibles !== null && vacantesDisponibles <= 0
-                                    ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                                    : 'bg-blue-600 text-white hover:bg-blue-700'
-                            }`}
-                        >
-                            {matriculaEditar ? 'Actualizar' : 'Crear'}
-                        </button>
-                    </div>
-                </form>
-            </Modal>
+                </div>
+            )}
         </div>
     );
 };

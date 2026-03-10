@@ -20,7 +20,6 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
     suscripcionEditar, 
     instituciones,
     planes,
-    estadosSuscripcion,
     ciclosFacturacion,
     onSubmit, 
     onCancel 
@@ -70,17 +69,6 @@ const SuscripcionForm: React.FC<SuscripcionFormProps> = ({
         }
         // Si es anual (típicamente 12 meses)
         return plan.precioAnual || 0;
-    };
-
-    // Helper para obtener el badge del estado
-    const getEstadoBadge = (idEstado: number): string => {
-        switch(idEstado) {
-            case 1: return 'bg-green-100 text-green-800 border border-green-200';
-            case 2: return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
-            case 3: return 'bg-red-100 text-red-800 border border-red-200';
-            case 4: return 'bg-gray-100 text-gray-800 border border-gray-200';
-            default: return 'bg-gray-100 text-gray-800 border border-gray-200';
-        }
     };
 
     useEffect(() => {

@@ -23,8 +23,8 @@ const VerificarPagoModal: React.FC<VerificarPagoModalProps> = ({
 
     // Validar que existe comprobante  
     const tieneComprobante = pago.comprobanteUrl && pago.comprobanteUrl.trim() !== '' && pago.comprobanteUrl !== 'null';
-    const comprobanteUrl = tieneComprobante ? getComprobanteUrlApi(pago.comprobanteUrl) : '';
-    const isPdf = tieneComprobante && pago.comprobanteUrl.toLowerCase().endsWith('.pdf');
+    const comprobanteUrl = tieneComprobante && pago.comprobanteUrl ? getComprobanteUrlApi(pago.comprobanteUrl) : '';
+    const isPdf = tieneComprobante && pago.comprobanteUrl && pago.comprobanteUrl.toLowerCase().endsWith('.pdf');
 
     console.log('🔍 Debug Comprobante:', {
         numeroComprobante: pago.numeroPago,

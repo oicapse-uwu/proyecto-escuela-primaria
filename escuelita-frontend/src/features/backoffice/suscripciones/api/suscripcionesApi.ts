@@ -1,5 +1,5 @@
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
-import type { CicloFacturacion, EstadoSuscripcion, MetodoPago, Suscripcion, SuscripcionDTO, SuscripcionFormData } from '../types';
+import type { CicloFacturacion, EstadoSuscripcion, MetodoPago, PagoCajaDTO, Suscripcion, SuscripcionDTO, SuscripcionFormData } from '../types';
 
 // Obtener todas las suscripciones
 export const getSuscripcionesApi = async (): Promise<Suscripcion[]> => {

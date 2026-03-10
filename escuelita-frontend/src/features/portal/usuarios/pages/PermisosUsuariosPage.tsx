@@ -181,7 +181,6 @@ const PermisosUsuariosPage: React.FC = () => {
                         setItemsPerPage(value);
                         setCurrentPage(1);
                     }}
-                    itemsPerPageOptions={[5, 10, 20, 50]}
                 />
             </div>
         </div>

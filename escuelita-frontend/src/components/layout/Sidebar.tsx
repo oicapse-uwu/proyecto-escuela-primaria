@@ -1,12 +1,10 @@
 import type { LucideIcon } from 'lucide-react';
 import {
-    BarChart3,
     BookOpen,
     Briefcase,
     Building,
     Building2,
     Calendar,
-    CalendarDays,
     CheckCircle,
     ClipboardCheck,
     ClipboardList,
@@ -15,12 +13,10 @@ import {
     DollarSign,
     FileCheck,
     FileText,
-    FileType,
     GraduationCap,
     Grid3x3,
     Layers,
     LayoutDashboard,
-    MapPin,
     Receipt,
     Settings,
     TrendingUp,
@@ -54,11 +50,7 @@ const menuModulesConfig: Record<string, { icon: LucideIcon; subItems?: Record<st
     'CONFIGURACIÓN': { 
         icon: Settings,
         subItems: {
-            'Institución': { path: '/escuela/configuracion/institucion', icon: Building },
-            'Año Escolar': { path: '/escuela/configuracion/anio-escolar', icon: Calendar },
-            'Periodos Académicos': { path: '/escuela/configuracion/periodos', icon: CalendarDays },
             'Usuarios y Roles': { path: '/escuela/configuracion/usuarios', icon: UserCog },
-            'Tipos de Documento': { path: '/escuela/configuracion/tipo-documentos', icon: FileType },
         }
     },
     'INFRAESTRUCTURA': {

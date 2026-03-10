@@ -29,11 +29,11 @@ const AreasPage: React.FC = () => {
     useEffect(() => { setCurrentPage(1); }, [searchTerm]);
 
     const handleEliminar = async (id: number) => {
-        if (window.confirm('¿Eliminar esta área?')) {
+        if (window.confirm('¿Está seguro de eliminar esta área?')) {
             try {
                 await eliminarAreaById(id);
-                toast.success('Área eliminada');
-            } catch (error) { toast.error('No se pudo eliminar'); }
+                toast.success('Área eliminada exitosamente');
+            } catch (error) { toast.error('Error al eliminar el área'); }
         }
     };
 
@@ -41,13 +41,13 @@ const AreasPage: React.FC = () => {
         try {
             if (areaEditar) {
                 await modificarArea({ ...data, idArea: areaEditar.idArea });
-                toast.success('Actualizada con éxito');
+                toast.success('Área actualizada exitosamente');
             } else {
                 await guardarArea(data);
-                toast.success('Creada con éxito');
+                toast.success('Área creada exitosamente');
             }
             setIsModalOpen(false);
-        } catch (error) { toast.error('Error al guardar'); }
+        } catch (error) { toast.error(areaEditar ? 'Error al actualizar el área' : 'Error al crear el área'); }
     };
 
     return (
@@ -66,7 +66,7 @@ const AreasPage: React.FC = () => {
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-4">
                 <div className="relative">
                     <Search className="absolute left-3 top-3 text-gray-400 w-5 h-5" />
-                    <input type="text" placeholder="Buscar..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary" />
+                    <input type="text" placeholder="Buscar área..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary" />
                 </div>
             </div>
 
@@ -88,7 +88,7 @@ const AreasPage: React.FC = () => {
                         <tbody className="divide-y divide-gray-100">
                             {paginadas.map((area) => (
                                 <tr key={area.idArea} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 font-medium">{area.nombreArea}</td>
+                                    <td className="px-6 py-4 font-medium uppercase">{area.nombreArea}</td>
                                     <td className="px-6 py-4 text-gray-600 text-sm">{area.descripcion || 'Sin descripción'}</td>
                                     <td className="px-6 py-4">
                                         <span className={`px-3 py-1 text-xs font-semibold rounded-full ${area.estado === 1 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>

@@ -13,7 +13,6 @@ import {
     Clock,
     CreditCard,
     DollarSign,
-    DoorOpen,
     FileCheck,
     FileText,
     FileType,
@@ -56,7 +55,6 @@ const menuModulesConfig: Record<string, { icon: LucideIcon; subItems?: Record<st
         icon: Settings,
         subItems: {
             'Institución': { path: '/escuela/configuracion/institucion', icon: Building },
-            'Sedes': { path: '/escuela/configuracion/sedes', icon: MapPin },
             'Año Escolar': { path: '/escuela/configuracion/anio-escolar', icon: Calendar },
             'Periodos Académicos': { path: '/escuela/configuracion/periodos', icon: CalendarDays },
             'Usuarios y Roles': { path: '/escuela/configuracion/usuarios', icon: UserCog },
@@ -66,8 +64,9 @@ const menuModulesConfig: Record<string, { icon: LucideIcon; subItems?: Record<st
     'INFRAESTRUCTURA': {
         icon: Building2,
         subItems: {
-            'Grados y Secciones': { path: '/escuela/infraestructura/grados-secciones', icon: Layers },
-            'Aulas': { path: '/escuela/infraestructura/aulas', icon: DoorOpen },
+            'Institución': { path: '/escuela/infraestructura/institucion', icon: Building },
+            'Año y Periodos': { path: '/escuela/infraestructura/anio-periodos', icon: Calendar },
+            'Grados, Secciones y Aulas': { path: '/escuela/infraestructura/grados-secciones', icon: Layers },
         }
     },
     'GESTIÓN ACADÉMICA': {

@@ -108,36 +108,36 @@ const AulasPage: React.FC = () => {
                     <span>Gestión de Aulas</span>
                 </h1>
                 <p className="text-gray-600 mt-1">
-                    Administre los espacios físicos para el dictado de clases - Sede: <span className="font-semibold text-primary">{currentUser?.sede?.nombreSede || 'No asignada'}</span>
+                    Administre los espacios físicos para el dictado de clases - Sede: <span className="font-semibold text-primary">{(sedeId && sedes.find(s => s.idSede === sedeId)?.nombreSede) || currentUser?.sede?.nombreSede || 'No asignada'}</span>
                 </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-white rounded-lg shadow p-4">
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500 text-sm">Total Aulas</p>
-                            <p className="text-2xl font-bold text-gray-800">{aulas.length}</p>
+                            <p className="text-gray-600 text-sm">Total Aulas</p>
+                            <p className="text-2xl font-bold text-blue-700">{aulas.length}</p>
                         </div>
-                        <DoorOpen className="w-10 h-10 text-blue-500 opacity-50" />
+                        <DoorOpen className="w-10 h-10 text-blue-600" />
                     </div>
                 </div>
-                <div className="bg-white rounded-lg shadow p-4">
+                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500 text-sm">Capacidad Total</p>
-                            <p className="text-2xl font-bold text-gray-800">{totalCapacidad}</p>
+                            <p className="text-gray-600 text-sm">Capacidad Total</p>
+                            <p className="text-2xl font-bold text-green-700">{totalCapacidad}</p>
                         </div>
-                        <Users className="w-10 h-10 text-green-500 opacity-50" />
+                        <Users className="w-10 h-10 text-green-600" />
                     </div>
                 </div>
-                <div className="bg-white rounded-lg shadow p-4">
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500 text-sm">Resultados</p>
-                            <p className="text-2xl font-bold text-gray-800">{aulasFiltradas.length}</p>
+                            <p className="text-gray-600 text-sm">Mostrando</p>
+                            <p className="text-2xl font-bold text-purple-700">{aulasFiltradas.length}</p>
                         </div>
-                        <Search className="w-10 h-10 text-purple-500 opacity-50" />
+                        <Search className="w-10 h-10 text-purple-600" />
                     </div>
                 </div>
             </div>
@@ -172,7 +172,7 @@ const AulasPage: React.FC = () => {
                     <div className="p-8 text-center text-gray-500">Cargando aulas...</div>
                 ) : aulasPaginadas.length === 0 ? (
                     <div className="p-8 text-center text-gray-500">
-                        {searchTerm ? 'No se encontraron aulas con ese criterio' : 'No hay aulas registradas'}
+                        {searchTerm ? 'No se encontraron aulas' : 'No hay aulas registradas'}
                     </div>
                 ) : (
                     <>
@@ -192,7 +192,7 @@ const AulasPage: React.FC = () => {
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center space-x-2">
                                                     <DoorOpen className="w-5 h-5 text-primary" />
-                                                    <span className="font-medium text-gray-900">{aula.nombreAula}</span>
+                                                    <span className="font-medium text-gray-900 uppercase">{aula.nombreAula}</span>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
@@ -237,7 +237,7 @@ const AulasPage: React.FC = () => {
                                     <div className="flex items-start justify-between mb-2">
                                         <div className="flex items-center space-x-2">
                                             <DoorOpen className="w-5 h-5 text-primary" />
-                                            <span className="font-medium text-gray-900">{aula.nombreAula}</span>
+                                            <span className="font-medium text-gray-900 uppercase">{aula.nombreAula}</span>
                                         </div>
                                         <div className="flex space-x-2">
                                             <button

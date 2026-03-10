@@ -1,4 +1,4 @@
-import { Building2, Edit, GraduationCap, Layers, Plus, Search, Trash2, Users } from 'lucide-react';
+import { Edit, GraduationCap, Layers, Plus, Search, Trash2 } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast, Toaster } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
@@ -190,156 +190,150 @@ const GradosSeccionesPage: React.FC = () => {
     const totalVacantes = seccionesDeSede.reduce((sum, s) => sum + (s.vacantes || 0), 0);
 
     return (
-        <div className="p-6">
+        <div className="p-3 sm:p-4 lg:px-6 lg:py-4 space-y-6">
             <Toaster position="top-right" richColors />
             
             {/* Header */}
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-800 flex items-center space-x-2">
+            <div>
+                <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
                     <Layers className="w-7 h-7 text-primary" />
                     <span>Grados y Secciones</span>
                 </h1>
-                <p className="text-gray-600 mt-1">
-                    Gestión completa de grados y secciones - Sede: <span className="font-semibold text-primary">{currentUser?.sede?.nombreSede || 'No asignada'}</span>
+                <p className="text-gray-500 mt-1">
+                    Sede: <span className="font-semibold text-primary">{(sedeId && sedes.find(s => s.idSede === sedeId)?.nombreSede) || currentUser?.sede?.nombreSede || 'No asignada'}</span>
                 </p>
             </div>
 
-            {/* Tabs */}
-            <div className="mb-6">
-                <div className="border-b border-gray-200">
-                    <nav className="-mb-px flex space-x-8">
+            {/* Tabs + Content */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="border-b border-gray-100">
+                    <nav className="flex">
                         <button
                             onClick={() => setActiveTab('grados')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${
+                            className={`flex-1 flex items-center justify-center gap-2.5 px-6 py-4 text-sm font-medium transition-all relative ${
                                 activeTab === 'grados'
-                                    ? 'border-primary text-primary'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                    ? 'text-primary'
+                                    : 'text-gray-400 hover:text-gray-600'
                             }`}
                         >
-                            <GraduationCap className="w-5 h-5" />
-                            <span>Grados ({gradosDeSede.length})</span>
+                            <GraduationCap className="w-[18px] h-[18px]" />
+                            <span>Grados</span>
+                            <span className={`ml-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
+                                activeTab === 'grados' ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-400'
+                            }`}>
+                                {gradosDeSede.length}
+                            </span>
+                            {activeTab === 'grados' && (
+                                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
+                            )}
                         </button>
                         <button
                             onClick={() => setActiveTab('secciones')}
-                            className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${
+                            className={`flex-1 flex items-center justify-center gap-2.5 px-6 py-4 text-sm font-medium transition-all relative ${
                                 activeTab === 'secciones'
-                                    ? 'border-primary text-primary'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                    ? 'text-primary'
+                                    : 'text-gray-400 hover:text-gray-600'
                             }`}
                         >
-                            <Layers className="w-5 h-5" />
-                            <span>Secciones ({seccionesDeSede.length})</span>
+                            <Layers className="w-[18px] h-[18px]" />
+                            <span>Secciones</span>
+                            <span className={`ml-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
+                                activeTab === 'secciones' ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-400'
+                            }`}>
+                                {seccionesDeSede.length}
+                            </span>
+                            {activeTab === 'secciones' && (
+                                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
+                            )}
                         </button>
                     </nav>
                 </div>
-            </div>
 
             {/* Tab Content - GRADOS */}
             {activeTab === 'grados' && (
-                <>
-                    {/* Stats - Grados */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div className="bg-white rounded-lg shadow p-4">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-gray-500 text-sm">Total Grados</p>
-                                    <p className="text-2xl font-bold text-gray-800">{grados.length}</p>
-                                </div>
-                                <GraduationCap className="w-10 h-10 text-blue-500 opacity-50" />
-                            </div>
+                <div className="p-5 sm:p-6 space-y-6">
+                    {/* Stats */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="bg-gradient-to-br from-slate-50 to-white rounded-xl p-4 border border-slate-100">
+                            <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Total Grados</p>
+                            <p className="text-3xl font-bold text-gray-800 mt-1">{gradosDeSede.length}</p>
                         </div>
-                        <div className="bg-white rounded-lg shadow p-4">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-gray-500 text-sm">Sedes Activas</p>
-                                    <p className="text-2xl font-bold text-gray-800">{sedes.length}</p>
-                                </div>
-                                <Building2 className="w-10 h-10 text-green-500 opacity-50" />
-                            </div>
-                        </div>
-                        <div className="bg-white rounded-lg shadow p-4">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-gray-500 text-sm">Resultados</p>
-                                    <p className="text-2xl font-bold text-gray-800">{gradosFiltrados.length}</p>
-                                </div>
-                                <Search className="w-10 h-10 text-purple-500 opacity-50" />
-                            </div>
+                        <div className="bg-gradient-to-br from-violet-50 to-white rounded-xl p-4 border border-violet-100">
+                            <p className="text-xs font-medium text-violet-400 uppercase tracking-wider">Mostrando</p>
+                            <p className="text-3xl font-bold text-violet-600 mt-1">{gradosFiltrados.length}</p>
                         </div>
                     </div>
 
-                    {/* Search & Actions - Grados */}
-                    <div className="bg-white rounded-lg shadow mb-6 p-4">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                            <div className="relative flex-1 max-w-md">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                <input
-                                    type="text"
-                                    placeholder="Buscar grado..."
-                                    value={searchTermGrados}
-                                    onChange={(e) => {
-                                        setSearchTermGrados(e.target.value);
-                                        setCurrentPageGrados(1);
-                                    }}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                />
-                            </div>
-                            <button
-                                onClick={handleNuevoGrado}
-                                className="flex items-center justify-center space-x-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors"
-                            >
-                                <Plus className="w-5 h-5" />
-                                <span>Nuevo Grado</span>
-                            </button>
+                    {/* Search & Actions */}
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div className="relative w-full sm:w-80">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                            <input
+                                type="text"
+                                placeholder="Buscar grado..."
+                                value={searchTermGrados}
+                                onChange={(e) => {
+                                    setSearchTermGrados(e.target.value);
+                                    setCurrentPageGrados(1);
+                                }}
+                                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all"
+                            />
                         </div>
+                        <button
+                            onClick={handleNuevoGrado}
+                            className="w-full sm:w-auto px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-all text-sm font-medium flex items-center justify-center gap-2 shadow-sm shadow-primary/20"
+                        >
+                            <Plus className="w-4 h-4" />
+                            <span>Nuevo Grado</span>
+                        </button>
                     </div>
 
-                    {/* Table - Grados */}
-                    <div className="bg-white rounded-lg shadow overflow-hidden">
+                    {/* Table */}
+                    <div className="overflow-hidden rounded-xl border border-gray-100">
                         {cargandoGrados ? (
-                            <div className="p-8 text-center text-gray-500">Cargando grados...</div>
+                            <div className="py-12 text-center">
+                                <div className="animate-spin rounded-full h-7 w-7 border-[3px] border-primary border-t-transparent mx-auto"></div>
+                            </div>
                         ) : gradosPaginados.length === 0 ? (
-                            <div className="p-8 text-center text-gray-500">
-                                {searchTermGrados ? 'No se encontraron grados con ese criterio' : 'No hay grados registrados'}
+                            <div className="py-12 text-center text-gray-400 text-sm">
+                                {searchTermGrados ? 'No se encontraron grados' : 'No hay grados registrados'}
                             </div>
                         ) : (
                             <>
-                                <div className="hidden md:block overflow-x-auto">
+                                {/* Desktop */}
+                                <div className="hidden md:block">
                                     <table className="w-full">
-                                        <thead className="bg-gray-50 border-b">
-                                            <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre del Grado</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sede</th>
-                                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                                        <thead>
+                                            <tr className="bg-gray-50/80">
+                                                <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Grado</th>
+                                                <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Sede</th>
+                                                <th className="px-5 py-3 text-center text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Acciones</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-200">
+                                        <tbody className="divide-y divide-gray-50">
                                             {gradosPaginados.map((grado) => (
-                                                <tr key={grado.idGrado} className="hover:bg-gray-50">
-                                                    <td className="px-6 py-4">
-                                                        <div className="flex items-center space-x-2">
-                                                            <GraduationCap className="w-5 h-5 text-primary" />
-                                                            <span className="font-medium text-gray-900">{grado.nombreGrado}</span>
+                                                <tr key={grado.idGrado} className="hover:bg-gray-50/50 transition-colors">
+                                                    <td className="px-5 py-3.5">
+                                                        <div className="flex items-center gap-2.5">
+                                                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                                                                <GraduationCap className="w-4 h-4 text-primary" />
+                                                            </div>
+                                                            <span className="font-semibold text-gray-800 text-sm uppercase">{grado.nombreGrado}</span>
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-4">
-                                                        <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                                            <Building2 className="w-4 h-4" />
-                                                            <span>{getSedeName(grado.idSede)}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-4 text-right">
-                                                        <div className="flex justify-end space-x-2">
+                                                    <td className="px-5 py-3.5 text-sm text-gray-500">{getSedeName(grado.idSede)}</td>
+                                                    <td className="px-5 py-3.5">
+                                                        <div className="flex items-center justify-center gap-1">
                                                             <button
                                                                 onClick={() => handleEditarGrado(grado)}
-                                                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                                className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
                                                                 title="Editar"
                                                             >
                                                                 <Edit className="w-4 h-4" />
                                                             </button>
                                                             <button
                                                                 onClick={() => handleEliminarGrado(grado.idGrado)}
-                                                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
                                                                 title="Eliminar"
                                                             >
                                                                 <Trash2 className="w-4 h-4" />
@@ -352,32 +346,22 @@ const GradosSeccionesPage: React.FC = () => {
                                     </table>
                                 </div>
 
-                                <div className="md:hidden divide-y divide-gray-200">
+                                {/* Mobile */}
+                                <div className="md:hidden divide-y divide-gray-50">
                                     {gradosPaginados.map((grado) => (
-                                        <div key={grado.idGrado} className="p-4">
-                                            <div className="flex items-start justify-between mb-2">
-                                                <div className="flex items-center space-x-2">
-                                                    <GraduationCap className="w-5 h-5 text-primary" />
-                                                    <span className="font-medium text-gray-900">{grado.nombreGrado}</span>
+                                        <div key={grado.idGrado} className="p-4 flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                                                    <GraduationCap className="w-4 h-4 text-primary" />
                                                 </div>
-                                                <div className="flex space-x-2">
-                                                    <button
-                                                        onClick={() => handleEditarGrado(grado)}
-                                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
-                                                    >
-                                                        <Edit className="w-4 h-4" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleEliminarGrado(grado.idGrado)}
-                                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
+                                                <div>
+                                                    <p className="font-semibold text-gray-800 text-sm uppercase">{grado.nombreGrado}</p>
+                                                    <p className="text-xs text-gray-400">{getSedeName(grado.idSede)}</p>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                                <Building2 className="w-4 h-4" />
-                                                <span>{getSedeName(grado.idSede)}</span>
+                                            <div className="flex gap-1">
+                                                <button onClick={() => handleEditarGrado(grado)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg"><Edit className="w-4 h-4" /></button>
+                                                <button onClick={() => handleEliminarGrado(grado.idGrado)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
                                             </div>
                                         </div>
                                     ))}
@@ -386,138 +370,109 @@ const GradosSeccionesPage: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Pagination - Grados */}
-                    {!cargandoGrados && gradosFiltrados.length > 0 && (
-                        <div className="mt-6">
-                            <Pagination
-                                currentPage={currentPageGrados}
-                                totalPages={totalPagesGrados}
-                                onPageChange={setCurrentPageGrados}
-                            />
-                        </div>
+                    {!cargandoGrados && gradosFiltrados.length > 0 && totalPagesGrados > 1 && (
+                        <Pagination currentPage={currentPageGrados} totalPages={totalPagesGrados} onPageChange={setCurrentPageGrados} />
                     )}
-                </>
+                </div>
             )}
 
             {/* Tab Content - SECCIONES */}
             {activeTab === 'secciones' && (
-                <>
-                    {/* Stats - Secciones */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div className="bg-white rounded-lg shadow p-4">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-gray-500 text-sm">Total Secciones</p>
-                                    <p className="text-2xl font-bold text-gray-800">{secciones.length}</p>
-                                </div>
-                                <Layers className="w-10 h-10 text-indigo-500 opacity-50" />
-                            </div>
+                <div className="p-5 sm:p-6 space-y-6">
+                    {/* Stats */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="bg-gradient-to-br from-slate-50 to-white rounded-xl p-4 border border-slate-100">
+                            <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">Total Secciones</p>
+                            <p className="text-3xl font-bold text-gray-800 mt-1">{seccionesDeSede.length}</p>
                         </div>
-                        <div className="bg-white rounded-lg shadow p-4">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-gray-500 text-sm">Total Vacantes</p>
-                                    <p className="text-2xl font-bold text-gray-800">{totalVacantes}</p>
-                                </div>
-                                <Users className="w-10 h-10 text-green-500 opacity-50" />
-                            </div>
+                        <div className="bg-gradient-to-br from-emerald-50 to-white rounded-xl p-4 border border-emerald-100">
+                            <p className="text-xs font-medium text-emerald-500 uppercase tracking-wider">Total Vacantes</p>
+                            <p className="text-3xl font-bold text-emerald-600 mt-1">{totalVacantes}</p>
                         </div>
-                        <div className="bg-white rounded-lg shadow p-4">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-gray-500 text-sm">Resultados</p>
-                                    <p className="text-2xl font-bold text-gray-800">{seccionesFiltradas.length}</p>
-                                </div>
-                                <Search className="w-10 h-10 text-purple-500 opacity-50" />
-                            </div>
+                        <div className="bg-gradient-to-br from-violet-50 to-white rounded-xl p-4 border border-violet-100">
+                            <p className="text-xs font-medium text-violet-400 uppercase tracking-wider">Mostrando</p>
+                            <p className="text-3xl font-bold text-violet-600 mt-1">{seccionesFiltradas.length}</p>
                         </div>
                     </div>
 
-                    {/* Search & Actions - Secciones */}
-                    <div className="bg-white rounded-lg shadow mb-6 p-4">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                            <div className="relative flex-1 max-w-md">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                <input
-                                    type="text"
-                                    placeholder="Buscar sección..."
-                                    value={searchTermSecciones}
-                                    onChange={(e) => {
-                                        setSearchTermSecciones(e.target.value);
-                                        setCurrentPageSecciones(1);
-                                    }}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                />
-                            </div>
-                            <button
-                                onClick={handleNuevaSeccion}
-                                className="flex items-center justify-center space-x-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors"
-                            >
-                                <Plus className="w-5 h-5" />
-                                <span>Nueva Sección</span>
-                            </button>
+                    {/* Search & Actions */}
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div className="relative w-full sm:w-80">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                            <input
+                                type="text"
+                                placeholder="Buscar sección..."
+                                value={searchTermSecciones}
+                                onChange={(e) => {
+                                    setSearchTermSecciones(e.target.value);
+                                    setCurrentPageSecciones(1);
+                                }}
+                                className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all"
+                            />
                         </div>
+                        <button
+                            onClick={handleNuevaSeccion}
+                            className="w-full sm:w-auto px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-all text-sm font-medium flex items-center justify-center gap-2 shadow-sm shadow-primary/20"
+                        >
+                            <Plus className="w-4 h-4" />
+                            <span>Nueva Sección</span>
+                        </button>
                     </div>
 
-                    {/* Table - Secciones */}
-                    <div className="bg-white rounded-lg shadow overflow-hidden">
+                    {/* Table */}
+                    <div className="overflow-hidden rounded-xl border border-gray-100">
                         {cargandoSecciones ? (
-                            <div className="p-8 text-center text-gray-500">Cargando secciones...</div>
+                            <div className="py-12 text-center">
+                                <div className="animate-spin rounded-full h-7 w-7 border-[3px] border-primary border-t-transparent mx-auto"></div>
+                            </div>
                         ) : seccionesPaginadas.length === 0 ? (
-                            <div className="p-8 text-center text-gray-500">
-                                {searchTermSecciones ? 'No se encontraron secciones con ese criterio' : 'No hay secciones registradas'}
+                            <div className="py-12 text-center text-gray-400 text-sm">
+                                {searchTermSecciones ? 'No se encontraron secciones' : 'No hay secciones registradas'}
                             </div>
                         ) : (
                             <>
-                                <div className="hidden md:block overflow-x-auto">
+                                {/* Desktop */}
+                                <div className="hidden md:block">
                                     <table className="w-full">
-                                        <thead className="bg-gray-50 border-b">
-                                            <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre de la Sección</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Grado</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sede</th>
-                                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Vacantes</th>
-                                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                                        <thead>
+                                            <tr className="bg-gray-50/80">
+                                                <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Sección</th>
+                                                <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Grado</th>
+                                                <th className="px-5 py-3 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Sede</th>
+                                                <th className="px-5 py-3 text-center text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Vacantes</th>
+                                                <th className="px-5 py-3 text-center text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Acciones</th>
                                             </tr>
                                         </thead>
-                                        <tbody className="divide-y divide-gray-200">
+                                        <tbody className="divide-y divide-gray-50">
                                             {seccionesPaginadas.map((seccion) => (
-                                                <tr key={seccion.idSeccion} className="hover:bg-gray-50">
-                                                    <td className="px-6 py-4">
-                                                        <div className="flex items-center space-x-2">
-                                                            <Layers className="w-5 h-5 text-primary" />
-                                                            <span className="font-medium text-gray-900">{seccion.nombreSeccion}</span>
+                                                <tr key={seccion.idSeccion} className="hover:bg-gray-50/50 transition-colors">
+                                                    <td className="px-5 py-3.5">
+                                                        <div className="flex items-center gap-2.5">
+                                                            <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+                                                                <Layers className="w-4 h-4 text-indigo-500" />
+                                                            </div>
+                                                            <span className="font-semibold text-gray-800 text-sm uppercase">{seccion.nombreSeccion}</span>
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-4">
-                                                        <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                                            <GraduationCap className="w-4 h-4" />
-                                                            <span>{getGradoName(seccion.idGrado)}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                                            <Building2 className="w-4 h-4" />
-                                                            <span>{getSedeName(seccion.idSede)}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-4 text-center">
-                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                                    <td className="px-5 py-3.5 text-sm text-gray-500">{getGradoName(seccion.idGrado)}</td>
+                                                    <td className="px-5 py-3.5 text-sm text-gray-500">{getSedeName(seccion.idSede)}</td>
+                                                    <td className="px-5 py-3.5 text-center">
+                                                        <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-sky-50 text-sky-600">
                                                             {seccion.vacantes || 0}
                                                         </span>
                                                     </td>
-                                                    <td className="px-6 py-4 text-right">
-                                                        <div className="flex justify-end space-x-2">
+                                                    <td className="px-5 py-3.5">
+                                                        <div className="flex items-center justify-center gap-1">
                                                             <button
                                                                 onClick={() => handleEditarSeccion(seccion)}
-                                                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                                className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
                                                                 title="Editar"
                                                             >
                                                                 <Edit className="w-4 h-4" />
                                                             </button>
                                                             <button
                                                                 onClick={() => handleEliminarSeccion(seccion.idSeccion)}
-                                                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                                className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
                                                                 title="Eliminar"
                                                             >
                                                                 <Trash2 className="w-4 h-4" />
@@ -530,42 +485,28 @@ const GradosSeccionesPage: React.FC = () => {
                                     </table>
                                 </div>
 
-                                <div className="md:hidden divide-y divide-gray-200">
+                                {/* Mobile */}
+                                <div className="md:hidden divide-y divide-gray-50">
                                     {seccionesPaginadas.map((seccion) => (
                                         <div key={seccion.idSeccion} className="p-4">
                                             <div className="flex items-start justify-between mb-2">
-                                                <div className="flex items-center space-x-2">
-                                                    <Layers className="w-5 h-5 text-primary" />
-                                                    <span className="font-medium text-gray-900">{seccion.nombreSeccion}</span>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-9 h-9 rounded-lg bg-indigo-50 flex items-center justify-center">
+                                                        <Layers className="w-4 h-4 text-indigo-500" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-semibold text-gray-800 text-sm uppercase">{seccion.nombreSeccion}</p>
+                                                        <p className="text-xs text-gray-400">{getGradoName(seccion.idGrado)} · {getSedeName(seccion.idSede)}</p>
+                                                    </div>
                                                 </div>
-                                                <div className="flex space-x-2">
-                                                    <button
-                                                        onClick={() => handleEditarSeccion(seccion)}
-                                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
-                                                    >
-                                                        <Edit className="w-4 h-4" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleEliminarSeccion(seccion.idSeccion)}
-                                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
+                                                <div className="flex gap-1">
+                                                    <button onClick={() => handleEditarSeccion(seccion)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg"><Edit className="w-4 h-4" /></button>
+                                                    <button onClick={() => handleEliminarSeccion(seccion.idSeccion)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
                                                 </div>
                                             </div>
-                                            <div className="space-y-1">
-                                                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                                    <GraduationCap className="w-4 h-4" />
-                                                    <span>{getGradoName(seccion.idGrado)}</span>
-                                                </div>
-                                                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                                    <Building2 className="w-4 h-4" />
-                                                    <span>{getSedeName(seccion.idSede)}</span>
-                                                </div>
-                                                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                                    <Users className="w-4 h-4" />
-                                                    <span>Vacantes: {seccion.vacantes || 0}</span>
-                                                </div>
+                                            <div className="ml-12 flex items-center gap-2">
+                                                <span className="text-xs text-gray-400">Vacantes:</span>
+                                                <span className="px-2 py-0.5 rounded-lg text-xs font-semibold bg-sky-50 text-sky-600">{seccion.vacantes || 0}</span>
                                             </div>
                                         </div>
                                     ))}
@@ -574,20 +515,12 @@ const GradosSeccionesPage: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Pagination - Secciones */}
-                    {!cargandoSecciones && seccionesFiltradas.length > 0 && (
-                        <div className="mt-6">
-                            <Pagination
-                                currentPage={currentPageSecciones}
-                                totalPages={totalPagesSecciones}
-                                onPageChange={setCurrentPageSecciones}
-                            />
-                        </div>
+                    {!cargandoSecciones && seccionesFiltradas.length > 0 && totalPagesSecciones > 1 && (
+                        <Pagination currentPage={currentPageSecciones} totalPages={totalPagesSecciones} onPageChange={setCurrentPageSecciones} />
                     )}
-                </>
+                </div>
             )}
-
-            {/* Modals */}
+            </div>
             {showModalGrado && (
                 <GradoForm
                     grado={gradoSeleccionado}

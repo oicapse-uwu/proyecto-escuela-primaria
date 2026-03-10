@@ -261,7 +261,7 @@ const DeudasAlumnosPage: React.FC = () => {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-800">
+                                            <td className="px-6 py-4 text-sm text-gray-800 uppercase">
                                                 {deuda.idConcepto.nombreConcepto}
                                             </td>
                                             <td className="px-6 py-4 text-sm font-bold text-right">

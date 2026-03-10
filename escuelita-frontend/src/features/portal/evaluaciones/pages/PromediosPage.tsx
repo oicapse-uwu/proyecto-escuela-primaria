@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { usePermisoModulo } from '../../../../hooks/usePermisoModulo';
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
+import { useCalificaciones, useAsignacionesDocente } from '../hooks';
 import type { Periodos, Calificaciones } from '../types';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -33,40 +34,40 @@ interface EditingRow {
 const PromediosPage: React.FC = () => {
   const tieneAcceso = usePermisoModulo(7);
 
+  // Usar hooks que filtran automáticamente por docente logueado
+  const { calificaciones, loading: loadingCalificaciones } = useCalificaciones();
+  const { asignaciones } = useAsignacionesDocente();
+
   // Estados
   const [periodos, setPeriodos] = useState<Periodos[]>([]);
-  const [calificaciones, setCalificaciones] = useState<Calificaciones[]>([]);
   const [filters, setFilters] = useState<FilterState>({
     idPeriodo: 0,
   });
   const [editingRow, setEditingRow] = useState<EditingRow | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [loadingData, setLoadingData] = useState(true);
+  const [loadingPeriodos, setLoadingPeriodos] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Cargar períodos y calificaciones
+  // Cargar solo períodos (las calificaciones ya vienen filtradas del hook)
   useEffect(() => {
-    const cargarDatos = async () => {
+    const cargarPeriodos = async () => {
       try {
-        setLoadingData(true);
+        setLoadingPeriodos(true);
         
         const resPeriodos = await api.get<Periodos[]>(API_ENDPOINTS.PERIODOS);
         setPeriodos(resPeriodos.data || []);
-
-        const resCalificaciones = await api.get<Calificaciones[]>(API_ENDPOINTS.CALIFICACIONES);
-        setCalificaciones(resCalificaciones.data || []);
       } catch (err) {
-        console.error('Error al cargar datos:', err);
-        toast.error('Error al cargar datos');
+        console.error('Error al cargar períodos:', err);
+        toast.error('Error al cargar períodos');
       } finally {
-        setLoadingData(false);
+        setLoadingPeriodos(false);
       }
     };
 
     if (tieneAcceso) {
-      cargarDatos();
+      cargarPeriodos();
     }
   }, [tieneAcceso]);
 
@@ -326,7 +327,7 @@ const PromediosPage: React.FC = () => {
           <div className="flex gap-2">
             <button
               onClick={() => window.location.reload()}
-              disabled={loadingData}
+              disabled={loadingCalificaciones || loadingPeriodos}
               className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
             >
               <RefreshCw className="w-4 h-4" />
@@ -334,7 +335,7 @@ const PromediosPage: React.FC = () => {
             </button>
             <button
               onClick={handleExportPDF}
-              disabled={loadingData || promediosFiltrados.length === 0}
+              disabled={loadingCalificaciones || loadingPeriodos || promediosFiltrados.length === 0}
               className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
             >
               <Download className="w-4 h-4" />
@@ -352,7 +353,7 @@ const PromediosPage: React.FC = () => {
                 <select
                   value={filters.idPeriodo}
                   onChange={(e) => setFilters({ ...filters, idPeriodo: Number(e.target.value) })}
-                  disabled={loadingData}
+                  disabled={loadingCalificaciones || loadingPeriodos}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
                   <option value={0}>Todos</option>
@@ -473,7 +474,7 @@ const PromediosPage: React.FC = () => {
                       <td className="px-6 py-4 text-right">
                         <button
                           onClick={() => handleEditClick(promedio)}
-                          disabled={loadingData}
+                          disabled={loadingCalificaciones || loadingPeriodos}
                           className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
                           title="Ver detalles"
                         >
@@ -509,7 +510,7 @@ const PromediosPage: React.FC = () => {
           </>
         ) : (
           <div className="p-8 text-center text-gray-500">
-            {loadingData ? 'Cargando promedios...' : 'No hay promedios para los filtros aplicados'}
+            {loadingCalificaciones || loadingPeriodos ? 'Cargando promedios...' : 'No hay promedios para los filtros aplicados'}
           </div>
         )}
       </div>
@@ -526,7 +527,7 @@ const PromediosPage: React.FC = () => {
                 </div>
                 <button
                   onClick={() => handleEditClick(promedio)}
-                  disabled={loadingData}
+                  disabled={loadingCalificaciones || loadingPeriodos}
                   className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
                 >
                   <Eye className="w-4 h-4" />
@@ -545,7 +546,7 @@ const PromediosPage: React.FC = () => {
           ))
         ) : (
           <div className="p-8 text-center text-gray-500">
-            {loadingData ? 'Cargando promedios...' : 'No hay promedios para los filtros aplicados'}
+            {loadingCalificaciones || loadingPeriodos ? 'Cargando promedios...' : 'No hay promedios para los filtros aplicados'}
           </div>
         )}
       </div>

@@ -1,16 +1,48 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { Calificaciones, CalificacionesDTO } from '../types';
+import { escuelaAuthService } from '../../../../services/escuelaAuth.service';
 import {
   obtenerTodasCalificaciones,
   crearCalificacion,
   actualizarCalificacion,
   eliminarCalificacion,
 } from '../api/evaluacionesApi';
+import { useAsignacionesDocente } from './useAsignacionesDocente';
 
 export const useCalificaciones = () => {
   const [calificaciones, setCalificaciones] = useState<Calificaciones[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Obtener asignaciones del docente logueado
+  const { idAsignacionesArray } = useAsignacionesDocente();
+
+  // Filtrar calificaciones según el rol del usuario
+  const calificacionesFiltradas = useMemo(() => {
+    const usuarioActual = escuelaAuthService.getCurrentUser();
+    const esProfesor = escuelaAuthService.isProfesor();
+    const esAdministrador = usuarioActual?.rol?.nombreRol?.toUpperCase() === 'ADMINISTRADOR';
+
+    // Si es profesor, mostrar solo sus calificaciones (filtradas por asignación de evaluación)
+    if (esProfesor && !esAdministrador) {
+      return calificaciones.filter(calif => {
+        const evalu = (calif as any).idEvaluacion;
+        const idAsignacion = typeof evalu === 'object' 
+          ? evalu?.idAsignacion 
+          : null;
+        
+        // Obtener el ID de la asignación (puede ser objeto o número)
+        const idAsigNum = typeof idAsignacion === 'object' 
+          ? idAsignacion?.idAsignacion 
+          : idAsignacion;
+        
+        return idAsigNum && idAsignacionesArray.includes(idAsigNum);
+      });
+    }
+
+    // Si es administrador, mostrar todas
+    return calificaciones;
+  }, [calificaciones, idAsignacionesArray]);
 
   const cargarCalificaciones = async () => {
     setLoading(true);
@@ -78,7 +110,7 @@ export const useCalificaciones = () => {
   }, []);
 
   return {
-    calificaciones,
+    calificaciones: calificacionesFiltradas,
     loading,
     error,
     crear,

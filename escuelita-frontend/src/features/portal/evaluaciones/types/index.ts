@@ -119,6 +119,14 @@ export interface Cursos {
   idCurso: number;
   nombreCurso?: string;
   nombre?: string;
+  idArea?: number;
+  estado?: number;
+}
+
+export interface Area {
+  idArea: number;
+  nombreArea?: string;
+  nombre?: string;
   estado?: number;
 }
 
@@ -138,4 +146,8 @@ export interface AsignacionDocente {
   idCurso?: Cursos | number;
   idAnioEscolar?: AnioEscolar | number;
   estado?: number;
+  // Campos enriquecidos desde cursos y áreas
+  nombreCurso?: string;
+  nombreArea?: string;
+  idArea?: number;
 }

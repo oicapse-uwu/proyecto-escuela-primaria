@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { usePermisoModulo } from '../../../../hooks/usePermisoModulo';
 import { useAsistencias } from '../hooks/useAsistencias';
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
+import { escuelaAuthService } from '../../../../services/escuelaAuth.service';
 import type { AsignacionDocente } from '../types';
 import type { AsistenciasDTO } from '../types';
 import { CheckCircle, XCircle, Clock, Shield, Users, Calendar } from 'lucide-react';
@@ -28,6 +29,11 @@ const AsistenciasPage: React.FC = () => {
   const tieneAcceso = usePermisoModulo(7);
   const { crearMultiples, loading } = useAsistencias();
 
+  // Detectar rol del usuario
+  const usuarioActual = escuelaAuthService.getCurrentUser();
+  const esProfesor = escuelaAuthService.isProfesor();
+  const esAdministrador = usuarioActual?.rol?.nombreRol?.toUpperCase() === 'ADMINISTRADOR';
+
   // Estados
   const [asignaciones, setAsignaciones] = useState<AsignacionDocente[]>([]);
   const [selectedAsignacion, setSelectedAsignacion] = useState<number>(0);
@@ -45,7 +51,16 @@ const AsistenciasPage: React.FC = () => {
       try {
         setLoadingData(true);
         const data = await api.get<AsignacionDocente[]>(API_ENDPOINTS.ASIGNACION_DOCENTE);
-        setAsignaciones(data.data || []);
+        const asignacionesData = data.data || [];
+        setAsignaciones(asignacionesData);
+        
+        // Si es profesor con una sola asignación, auto-seleccionar
+        if (esProfesor && !esAdministrador && asignacionesData.length === 1) {
+          setSelectedAsignacion(asignacionesData[0].idAsignacion);
+        } else if (esProfesor && !esAdministrador && asignacionesData.length > 1) {
+          // Si hay varias, seleccionar la primera
+          setSelectedAsignacion(asignacionesData[0].idAsignacion);
+        }
       } catch (err) {
         toast.error('Error al cargar tus asignaciones');
         console.error(err);
@@ -197,24 +212,48 @@ const AsistenciasPage: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Mi Asignación *</label>
-            <select
-              value={selectedAsignacion}
-              onChange={(e) => setSelectedAsignacion(Number(e.target.value))}
-              disabled={loadingData || asignaciones.length === 0}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            >
-              <option value={0}>Selecciona una clase...</option>
-              {asignaciones.map((asig) => {
-                const curso = typeof asig.idCurso === 'object' ? asig.idCurso.nombreCurso : asig.idCurso;
-                const seccion = typeof asig.idSeccion === 'object' ? asig.idSeccion.nombreSeccion : `Sección ${asig.idSeccion}`;
-                return (
-                  <option key={asig.idAsignacion} value={asig.idAsignacion}>
-                    {`${curso} - ${seccion}`}
-                  </option>
-                );
-              })}
-            </select>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {esProfesor && !esAdministrador && asignaciones.length === 1 ? 'Mi Clase' : 'Mi Asignación'} *
+            </label>
+            {esProfesor && !esAdministrador && asignaciones.length === 1 ? (
+              // PROFESOR CON UNA SOLA CLASE - Mostrar como texto
+              <div className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 flex items-center">
+                {asignaciones.length > 0 && (
+                  <span className="font-medium">
+                    {(() => {
+                      const seccionNombre = typeof asignaciones[0].idSeccion === 'object' 
+                        ? asignaciones[0].idSeccion.nombreSeccion 
+                        : `Sección ${asignaciones[0].idSeccion}`;
+                      
+                      return `${asignaciones[0].nombreCurso} (${asignaciones[0].nombreArea}) - ${seccionNombre}`;
+                    })()}
+                  </span>
+                )}
+              </div>
+            ) : (
+              // ADMINISTRADOR O PROFESOR CON VARIAS CLASES - Mostrar select
+              <select
+                value={selectedAsignacion}
+                onChange={(e) => setSelectedAsignacion(Number(e.target.value))}
+                disabled={loadingData || asignaciones.length === 0}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              >
+                <option value={0}>Selecciona una clase...</option>
+                {Array.from(
+                  new Map(
+                    asignaciones.map((asig) => [asig.idAsignacion, asig])
+                  ).values()
+                ).map((asig) => {
+                  const seccion = typeof asig.idSeccion === 'object' ? asig.idSeccion.nombreSeccion : `Sección ${asig.idSeccion}`;
+                  
+                  return (
+                    <option key={asig.idAsignacion} value={asig.idAsignacion}>
+                      {`${asig.nombreCurso} (${asig.nombreArea}) - ${seccion}`}
+                    </option>
+                  );
+                })}
+              </select>
+            )}
           </div>
 
           <div>

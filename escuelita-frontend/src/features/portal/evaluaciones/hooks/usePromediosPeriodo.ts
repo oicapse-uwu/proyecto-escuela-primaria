@@ -1,16 +1,41 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { PromediosPeriodo, PromediosPeriodoDTO } from '../types';
+import { escuelaAuthService } from '../../../../services/escuelaAuth.service';
 import {
   obtenerTodosPromediosPeriodo,
   crearPromediosPeriodo,
   actualizarPromediosPeriodo,
   eliminarPromediosPeriodo,
 } from '../api/evaluacionesApi';
+import { useAsignacionesDocente } from './useAsignacionesDocente';
 
 export const usePromediosPeriodo = () => {
   const [promedios, setPromedios] = useState<PromediosPeriodo[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Obtener asignaciones del docente logueado
+  const { idAsignacionesArray } = useAsignacionesDocente();
+
+  // Filtrar promedios según el rol del usuario
+  const promediosFiltrados = useMemo(() => {
+    const usuarioActual = escuelaAuthService.getCurrentUser();
+    const esProfesor = escuelaAuthService.isProfesor();
+    const esAdministrador = usuarioActual?.rol?.nombreRol?.toUpperCase() === 'ADMINISTRADOR';
+
+    // Si es profesor, mostrar solo sus promedios (filtrados por asignación)
+    if (esProfesor && !esAdministrador) {
+      return promedios.filter(prom => {
+        const idAsignacion = typeof prom.idAsignacion === 'object' 
+          ? prom.idAsignacion?.idAsignacion 
+          : prom.idAsignacion;
+        return idAsignacionesArray.includes(idAsignacion);
+      });
+    }
+
+    // Si es administrador, mostrar todos
+    return promedios;
+  }, [promedios, idAsignacionesArray]);
 
   const cargarPromedios = async () => {
     setLoading(true);
@@ -69,7 +94,7 @@ export const usePromediosPeriodo = () => {
   }, []);
 
   return {
-    promedios,
+    promedios: promediosFiltrados,
     loading,
     error,
     crear,

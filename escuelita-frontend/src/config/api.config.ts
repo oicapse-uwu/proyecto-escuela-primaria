@@ -37,7 +37,12 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401 || error.response?.status === 403) {
+        const requestUrl = error.config?.url || '';
+
+        // No interceptar 401/403 en endpoints de autenticación (login)
+        const isAuthEndpoint = requestUrl.includes('/auth/');
+
+        if (!isAuthEndpoint && (error.response?.status === 401 || error.response?.status === 403)) {
             localStorage.removeItem('escuela_token');
             localStorage.removeItem('escuela_user');
             localStorage.removeItem('admin_token');
@@ -45,7 +50,7 @@ api.interceptors.response.use(
 
             const currentPath = window.location.pathname;
 
-            if (currentPath.startsWith('/admin')) {
+            if (currentPath.startsWith('/admin') || currentPath === '/login') {
                 window.location.href = '/login';
             } else {
                 window.location.href = '/escuela/login';

@@ -10,6 +10,7 @@ public class TenantContext {
 
     private static final ThreadLocal<Long> currentSedeId = new ThreadLocal<>();
     private static final ThreadLocal<String> currentUserType = new ThreadLocal<>();
+    private static final ThreadLocal<Long> currentUserId = new ThreadLocal<>();
 
     /* Establece el ID de la sede para el request actual
     @param sedeId ID de la sede del usuario autenticado */
@@ -35,6 +36,21 @@ public class TenantContext {
         return currentUserType.get();
     }
 
+    /* Establece el ID del usuario para el request actual */
+    public static void setUserId(Long userId) {
+        currentUserId.set(userId);
+    }
+
+    /* Obtiene el ID del usuario del request actual */
+    public static Long getUserId() {
+        return currentUserId.get();
+    }
+
+    /* Verifica si hay un userId establecido en el contexto */
+    public static boolean hasUserId() {
+        return currentUserId.get() != null;
+    }
+
     /* Verifica si el usuario actual es un Super Admin
     @return true si es Super Admin */
     public static boolean isSuperAdmin() {
@@ -47,6 +63,7 @@ public class TenantContext {
     public static void clear() {
         currentSedeId.remove();
         currentUserType.remove();
+        currentUserId.remove();
     }
 
     /* Verifica si hay una sede establecida en el contexto

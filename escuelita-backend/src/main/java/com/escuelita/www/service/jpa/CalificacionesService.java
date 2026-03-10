@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.escuelita.www.entity.Calificaciones;
 import com.escuelita.www.repository.CalificacionesRepository;
+import com.escuelita.www.repository.PerfilDocenteRepository;
 import com.escuelita.www.service.ICalificacionesService;
 import com.escuelita.www.util.TenantContext;
 
@@ -14,12 +15,23 @@ import com.escuelita.www.util.TenantContext;
 public class CalificacionesService implements ICalificacionesService {
     @Autowired
     private CalificacionesRepository repoCalificaciones;
-    
+
+    @Autowired
+    private PerfilDocenteRepository repoPerfilDocente;
+
     public List<Calificaciones> buscarTodos() {
         if (TenantContext.isSuperAdmin()) {
             return repoCalificaciones.findAll();
         }
-        return repoCalificaciones.findBySedeId(TenantContext.getSedeId());
+        Long userId = TenantContext.getUserId();
+        Long sedeId = TenantContext.getSedeId();
+        if (userId != null && repoPerfilDocente.findByIdUsuario_IdUsuario(userId).isPresent()) {
+            return repoCalificaciones.findByDocenteUsuarioId(userId);
+        }
+        if (sedeId != null) {
+            return repoCalificaciones.findBySedeId(sedeId);
+        }
+        return repoCalificaciones.findAll();
     }
     
     @Override

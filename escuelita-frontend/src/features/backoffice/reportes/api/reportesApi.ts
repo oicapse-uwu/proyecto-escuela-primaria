@@ -2,6 +2,7 @@ import { api, API_ENDPOINTS } from '../../../../config/api.config';
 import { getPlanesApi } from '../../suscripciones/api/planesApi';
 import type { Plan } from '../../suscripciones/types';
 import type {
+    ReporteAcademico,
     ReporteAlumno,
     ReporteInstitucion,
     ReportePagoCaja,
@@ -48,4 +49,9 @@ export const obtenerAlumnosReporte = async (): Promise<ReporteAlumno[]> => {
 
 export const obtenerPlanesReporte = async (): Promise<Plan[]> => {
     return await getPlanesApi();
+};
+
+export const obtenerReporteAcademico = async (): Promise<ReporteAcademico[]> => {
+    const response = await api.get<ReporteAcademico[]>('/restful/reportes/academico');
+    return response.data;
 };

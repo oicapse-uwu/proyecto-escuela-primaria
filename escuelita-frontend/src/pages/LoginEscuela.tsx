@@ -26,7 +26,13 @@ const LoginEscuela: React.FC = () => {
             navigate('/escuela');
         } catch (err: any) {
             console.error('Error en login:', err);
-            setError(err.response?.data?.mensaje || 'Usuario o contraseña incorrectos');
+            if (err.response) {
+                setError(err.response.data?.mensaje || 'Usuario o contraseña incorrectos');
+            } else if (err.request) {
+                setError('No se pudo conectar con el servidor. Verifica que el backend esté corriendo.');
+            } else {
+                setError('Error inesperado. Intenta nuevamente.');
+            }
         } finally {
             setIsLoading(false);
         }

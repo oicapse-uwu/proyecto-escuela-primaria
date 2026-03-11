@@ -3,13 +3,13 @@ import { Toaster } from 'sonner';
 import PrivateRoute from './components/common/PrivateRoute';
 
 import {
-  Dashboard,
-  InstitucionesRoutes,
-  ReportesRoutes,
-  RolesRoutes,
-  SedesRoutes,
-  SuscripcionesRoutes,
-  UsuariosRoutes
+    Dashboard,
+    InstitucionesRoutes,
+    ReportesRoutes,
+    RolesRoutes,
+    SedesRoutes,
+    SuscripcionesRoutes,
+    UsuariosRoutes
 } from './features/backoffice';
 
 import GestionAcademicaRoutes from './features/portal/academica/routes/GestionAcademicaRoutes';
@@ -24,6 +24,7 @@ import TesoreriaRoutes from './features/portal/tesoreria/routes/TesoreriaRoutes'
 import EscuelaLayout from './layouts/EscuelaLayout';
 import SuperAdminLayout from './layouts/SuperAdminLayout';
 
+import ConsultaNotasPage from './pages/ConsultaNotasPage';
 import DashboardEscuela from './pages/DashboardEscuela';
 import Login from './pages/Login';
 import LoginEscuela from './pages/LoginEscuela';
@@ -36,6 +37,7 @@ function App() {
         {/* Rutas públicas - Login */}
         <Route path="/login" element={<Login />} /> {/* Super Admin Login */}
         <Route path="/escuela/login" element={<LoginEscuela />} /> {/* Escuela Login */}
+        <Route path="/portal/:idSede" element={<ConsultaNotasPage />} /> {/* Portal público de padres */}
 
         {/* Rutas protegidas - Super Admin */}
         <Route

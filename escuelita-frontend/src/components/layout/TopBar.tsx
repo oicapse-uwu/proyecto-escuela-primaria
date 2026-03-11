@@ -1,4 +1,4 @@
-import { Bell, Building2, ChevronDown, LogOut, Menu, User } from 'lucide-react';
+import { Building2, ChevronDown, LogOut, Menu, User, Users } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { adminAuthService } from '../../services/adminAuth.service';
@@ -66,14 +66,20 @@ const TopBar: React.FC<TopBarProps> = ({ onToggleSidebar }) => {
                         )}
                     </div>
 
-                    {/* Right side - User profile y notificaciones */}
+                    {/* Right side - User profile */}
                     <div className="flex items-center space-x-2 lg:space-x-4">
-                        {/* Notificaciones */}
-                        <button className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors hidden sm:block">
-                            <Bell className="w-5 h-5" />
-                            {/* Badge de notificaciones pendientes */}
-                            <span className="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
-                        </button>
+                        {/* Botón Portal de Padres (solo para rutas de escuela) */}
+                        {!isAdminRoute && user && 'sede' in user && user.sede?.idSede && (
+                            <a
+                                href={`/portal/${user.sede.idSede}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="Portal de Padres"
+                                className="p-2 text-gray-600 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors hidden sm:flex items-center gap-1.5"
+                            >
+                                <Users className="w-5 h-5" />
+                            </a>
+                        )}
 
                         {/* User Menu */}
                         {user && (

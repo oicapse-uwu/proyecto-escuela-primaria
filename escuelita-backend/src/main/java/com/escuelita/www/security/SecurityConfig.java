@@ -41,7 +41,8 @@ public class SecurityConfig {
                         , "/auth/admin/**"  // Autenticación Super Admin
                         , "/auth/escuela/**"  // Autenticación Escuela
                         , "/utils/**"
-                        , "/uploads/**").permitAll()  // Permitir acceso a archivos subidos
+                        , "/uploads/**"
+                        , "/portal/**").permitAll()  // Portal público de padres
                     // Permitir endpoints GET de lectura (dropdowns)
                     .requestMatchers(HttpMethod.GET, "/restful/metodospago", "/restful/deudasalumno", "/restful/conceptospago", "/restful/instituciones", "/restful/grados", "/restful/matriculas", "/restful/alumnos").permitAll()
                     .anyRequest().authenticated()     // Resto de endpoints requieren autenticación

@@ -14,4 +14,8 @@ public interface CalificacionesRepository extends JpaRepository<Calificaciones, 
 
     @Query("SELECT c FROM Calificaciones c JOIN c.idEvaluacion e JOIN e.idAsignacion a JOIN a.idDocente d WHERE d.idUsuario.idUsuario = :idUsuario")
     List<Calificaciones> findByDocenteUsuarioId(@Param("idUsuario") Long idUsuario);
+
+    // Para portal de padres: calificaciones de un alumno por su idAlumno
+    @Query("SELECT c FROM Calificaciones c WHERE c.idMatricula.idAlumno.idAlumno = :idAlumno")
+    List<Calificaciones> findByAlumnoId(@Param("idAlumno") Long idAlumno);
 }

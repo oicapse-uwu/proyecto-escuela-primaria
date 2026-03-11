@@ -192,7 +192,7 @@ const AlumnoApoderadoPage: React.FC = () => {
                     </div>
                     <button
                         onClick={handleNuevo}
-                        className="bg-primary text-white px-4 lg:px-5 py-2.5 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md whitespace-nowrap"
+                        className="bg-gradient-to-r from-escuela to-escuela-light text-white px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 whitespace-nowrap"
                     >
                         <Plus className="w-5 h-5" />
                         <span>Nueva Relación</span>
@@ -570,8 +570,7 @@ const AlumnoApoderadoPage: React.FC = () => {
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 
-                                     transition-colors duration-200 font-medium"
+                            className="px-6 py-2.5 bg-gradient-to-r from-escuela to-escuela-light text-white rounded-lg font-semibold hover:shadow-lg transition-all"
                         >
                             {relacionEditar ? 'Actualizar' : 'Crear'}
                         </button>

@@ -281,7 +281,7 @@ const GradosSeccionesPage: React.FC = () => {
                         </div>
                         <button
                             onClick={handleNuevoGrado}
-                            className="w-full sm:w-auto px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-all text-sm font-medium flex items-center justify-center gap-2 shadow-sm shadow-primary/20"
+                            className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-escuela to-escuela-light text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
                         >
                             <Plus className="w-4 h-4" />
                             <span>Nuevo Grado</span>
@@ -412,7 +412,7 @@ const GradosSeccionesPage: React.FC = () => {
                         </div>
                         <button
                             onClick={handleNuevaSeccion}
-                            className="w-full sm:w-auto px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-all text-sm font-medium flex items-center justify-center gap-2 shadow-sm shadow-primary/20"
+                            className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-escuela to-escuela-light text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
                         >
                             <Plus className="w-4 h-4" />
                             <span>Nueva Sección</span>

@@ -22,11 +22,15 @@ const TopBar: React.FC<TopBarProps> = ({ onToggleSidebar }) => {
         ? adminAuthService.getCurrentUser()
         : escuelaAuthService.getCurrentUser();
 
-    // Escuchar cambios en el usuario admin (ej: foto de perfil)
+    // Escuchar cambios en el usuario admin o escuela (ej: foto de perfil)
     useEffect(() => {
         const handler = () => forceUpdate(n => n + 1);
         window.addEventListener('adminUserUpdated', handler);
-        return () => window.removeEventListener('adminUserUpdated', handler);
+        window.addEventListener('escuelaUserUpdated', handler);
+        return () => {
+            window.removeEventListener('adminUserUpdated', handler);
+            window.removeEventListener('escuelaUserUpdated', handler);
+        };
     }, []);
 
     const handleLogout = () => {

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import type { CalificacionesDTO, Evaluaciones } from '../types';
+import React, { useEffect, useState } from 'react';
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
+import type { CalificacionesDTO, Evaluaciones } from '../types';
 
 interface CalificacionFormProps {
   onSubmit: (data: CalificacionesDTO) => Promise<void>;
@@ -281,7 +281,7 @@ const CalificacionForm: React.FC<CalificacionFormProps> = ({
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+        className="w-full bg-gradient-to-r from-escuela to-escuela-light text-white py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
       >
         {loading ? 'Guardando...' : 'Guardar Calificación'}
       </button>

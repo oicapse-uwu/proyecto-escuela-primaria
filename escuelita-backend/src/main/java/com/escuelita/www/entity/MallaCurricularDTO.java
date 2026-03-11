@@ -3,12 +3,12 @@ package com.escuelita.www.entity;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({
-    "idMalla", "idAnio", "idGrado", "idCurso", "estado" 
+    "idMalla", "idSede", "idAnio", "idGrado", "idCurso", "estado" 
 })
 public class MallaCurricularDTO {
 
     private Long idMalla;
-
+    private Long idSede;
     private Long idAnioEscolar;
     private Long idGrado;
     private Long idCurso;
@@ -20,6 +20,12 @@ public class MallaCurricularDTO {
     }
     public void setIdMalla(Long idMalla) {
         this.idMalla = idMalla;
+    }
+    public Long getIdSede() {
+        return idSede;
+    }
+    public void setIdSede(Long idSede) {
+        this.idSede = idSede;
     }
     public Long getIdAnioEscolar() {
         return idAnioEscolar;
@@ -47,7 +53,7 @@ public class MallaCurricularDTO {
     }
     @Override
     public String toString() {
-        return "MallaCurricularDTO [idMalla=" + idMalla + ", idAnioEscolar=" + idAnioEscolar + ", idGrado=" + idGrado
-                + ", idCurso=" + idCurso + ", estado=" + estado + "]";
+        return "MallaCurricularDTO [idMalla=" + idMalla + ", idSede=" + idSede + ", idAnioEscolar=" + idAnioEscolar 
+                + ", idGrado=" + idGrado + ", idCurso=" + idCurso + ", estado=" + estado + "]";
     }
 }

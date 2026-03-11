@@ -184,10 +184,11 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full overflow-hidden flex flex-col">
+            <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] p-6 text-white flex justify-between items-center">
-                    <h2 className="text-2xl font-bold flex items-center space-x-2">
+                <div className="bg-gradient-to-r from-escuela-light to-escuela-dark p-6 text-white flex justify-between items-center flex-shrink-0">
+                    <h2 className="text-xl font-bold flex items-center gap-3">
+                        <span className="w-1 h-6 bg-white/70 rounded-full flex-shrink-0"></span>
                         <Building2 className="w-6 h-6" />
                         <span>{institucion ? 'Editar Institución' : 'Nueva Institución'}</span>
                     </h2>
@@ -209,7 +210,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                 onClick={() => setActiveTab('basica')}
                                 className={`px-6 py-3 font-medium text-sm transition-all ${
                                     activeTab === 'basica'
-                                        ? 'border-b-2 border-primary text-primary bg-white'
+                                        ? 'border-b-2 border-escuela text-escuela bg-white'
                                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                                 }`}
                             >
@@ -221,7 +222,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                 onClick={() => setActiveTab('facturacion')}
                                 className={`px-6 py-3 font-medium text-sm transition-all ${
                                     activeTab === 'facturacion'
-                                        ? 'border-b-2 border-primary text-primary bg-white'
+                                        ? 'border-b-2 border-escuela text-escuela bg-white'
                                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                                 }`}
                             >
@@ -233,7 +234,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                 onClick={() => setActiveTab('logo')}
                                 className={`px-6 py-3 font-medium text-sm transition-all ${
                                     activeTab === 'logo'
-                                        ? 'border-b-2 border-primary text-primary bg-white'
+                                        ? 'border-b-2 border-escuela text-escuela bg-white'
                                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                                 }`}
                             >
@@ -258,7 +259,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                         value={formData.nombre}
                                         onChange={handleChange}
                                         required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
                                         placeholder="Ej: I.E. San Martín de Porres"
                                     />
                                 </div>
@@ -278,7 +279,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                         required
                                         maxLength={7}
                                         pattern="[0-9]{7}"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
                                         placeholder="Ej: 1234567"
                                     />
                                 </div>
@@ -292,7 +293,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                         value={formData.tipoGestion}
                                         onChange={handleChange}
                                         required
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
                                     >
                                         <option value="Pública">Pública</option>
                                         <option value="Privada">Privada</option>
@@ -319,7 +320,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 transition-colors ${
                                                 resolucionTouched && !resolucionValida && formData.resolucionCreacion && formData.resolucionCreacion.trim() !== ''
                                                     ? 'border-red-500 focus:ring-red-500 focus:border-red-500 bg-red-50'
-                                                    : 'border-gray-300 focus:ring-primary focus:border-transparent'
+                                                    : 'border-gray-300 focus:ring-escuela focus:border-transparent'
                                             }`}
                                             placeholder="Ej: R.D. N° 1234-2024-DRELM"
                                         />
@@ -344,7 +345,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                         {/* Ventana flotante de ayuda */}
                         {showHelperWindow && (
                             <div 
-                                className="fixed z-[9999] bg-white border-2 border-primary rounded-lg shadow-2xl"
+                                className="fixed z-[9999] bg-white border-2 border-escuela rounded-lg shadow-2xl"
                                 style={{
                                     left: `${helperPosition.x}px`,
                                     top: `${helperPosition.y}px`,
@@ -353,7 +354,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                 }}
                             >
                                 <div 
-                                    className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] p-3 rounded-t-lg cursor-move flex justify-between items-center"
+                                    className="bg-gradient-to-r from-escuela-light to-escuela-dark p-3 rounded-t-lg cursor-move flex justify-between items-center"
                                     onMouseDown={handleMouseDown}
                                 >
                                     <div className="flex items-center gap-2 text-white">
@@ -370,14 +371,14 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                 </div>
 
                                 <div className="p-4 max-h-[420px] overflow-y-auto">
-                                    <p className="text-xs text-gray-600 mb-3 bg-blue-50 border border-blue-200 rounded p-2">
+                                    <p className="text-xs text-gray-600 mb-3 bg-green-50 border border-green-200 rounded p-2">
                                         👆 <span className="font-semibold">Haz clic en un ejemplo</span> para copiarlo y editarlo
                                     </p>
                                     <div className="text-xs space-y-3">
                                         {/* R.D. */}
                                         <div 
                                             onClick={() => copiarEjemplo('R.D. N° 1234-2024-DRELM')}
-                                            className="bg-white p-2 rounded border border-gray-200 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group"
+                                            className="bg-white p-2 rounded border border-gray-200 cursor-pointer hover:border-escuela hover:bg-escuela/5 transition-all group"
                                         >
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
@@ -388,14 +389,14 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                                         <span className="text-blue-600">R.D.</span> N° <span className="text-blue-600">1234</span>-<span className="text-blue-600">2024</span>-<span className="text-green-600 font-semibold">DRELM</span>
                                                     </p>
                                                 </div>
-                                                <Copy className="w-4 h-4 text-gray-400 group-hover:text-primary flex-shrink-0 ml-2" />
+                                                <Copy className="w-4 h-4 text-gray-400 group-hover:text-escuela flex-shrink-0 ml-2" />
                                             </div>
                                         </div>
                                         
                                         {/* R.D.R. */}
                                         <div 
                                             onClick={() => copiarEjemplo('R.D.R. N° 123456-2024-DRE-LIMA')}
-                                            className="bg-white p-2 rounded border border-gray-200 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group"
+                                            className="bg-white p-2 rounded border border-gray-200 cursor-pointer hover:border-escuela hover:bg-escuela/5 transition-all group"
                                         >
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
@@ -406,14 +407,14 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                                         <span className="text-blue-600">R.D.R.</span> N° <span className="text-blue-600">123456</span>-<span className="text-blue-600">2024</span>-<span className="text-green-600 font-semibold">DRE-LIMA</span>
                                                     </p>
                                                 </div>
-                                                <Copy className="w-4 h-4 text-gray-400 group-hover:text-primary flex-shrink-0 ml-2" />
+                                                <Copy className="w-4 h-4 text-gray-400 group-hover:text-escuela flex-shrink-0 ml-2" />
                                             </div>
                                         </div>
                                         
                                         {/* R.G.R. */}
                                         <div 
                                             onClick={() => copiarEjemplo('R.G.R. N° 5678-2024-GRE-CALLAO')}
-                                            className="bg-white p-2 rounded border border-gray-200 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group"
+                                            className="bg-white p-2 rounded border border-gray-200 cursor-pointer hover:border-escuela hover:bg-escuela/5 transition-all group"
                                         >
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
@@ -424,14 +425,14 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                                         <span className="text-blue-600">R.G.R.</span> N° <span className="text-blue-600">5678</span>-<span className="text-blue-600">2024</span>-<span className="text-green-600 font-semibold">GRE-CALLAO</span>
                                                     </p>
                                                 </div>
-                                                <Copy className="w-4 h-4 text-gray-400 group-hover:text-primary flex-shrink-0 ml-2" />
+                                                <Copy className="w-4 h-4 text-gray-400 group-hover:text-escuela flex-shrink-0 ml-2" />
                                             </div>
                                         </div>
                                         
                                         {/* R.M. */}
                                         <div 
                                             onClick={() => copiarEjemplo('R.M. N° 999-2024-UGEL-01')}
-                                            className="bg-white p-2 rounded border border-gray-200 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group"
+                                            className="bg-white p-2 rounded border border-gray-200 cursor-pointer hover:border-escuela hover:bg-escuela/5 transition-all group"
                                         >
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
@@ -442,7 +443,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                                         <span className="text-blue-600">R.M.</span> N° <span className="text-blue-600">999</span>-<span className="text-blue-600">2024</span>-<span className="text-green-600 font-semibold">UGEL-01</span>
                                                     </p>
                                                 </div>
-                                                <Copy className="w-4 h-4 text-gray-400 group-hover:text-primary flex-shrink-0 ml-2" />
+                                                <Copy className="w-4 h-4 text-gray-400 group-hover:text-escuela flex-shrink-0 ml-2" />
                                             </div>
                                         </div>
                                     </div>
@@ -467,7 +468,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                         }}
                                         maxLength={11}
                                         pattern="[0-9]{11}"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
                                         placeholder="Ej: 20123456789"
                                     />
                                 </div>
@@ -481,7 +482,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                         name="razonSocial"
                                         value={formData.razonSocial}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
                                         placeholder="Ej: Institución Educativa San Martín S.A.C."
                                     />
                                 </div>
@@ -495,7 +496,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                         name="domicilioFiscal"
                                         value={formData.domicilioFiscal}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
                                         placeholder="Ej: Av. Principal 123, Lima"
                                     />
                                 </div>
@@ -509,7 +510,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                         name="representanteLegal"
                                         value={formData.representanteLegal}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
                                         placeholder="Ej: Juan Pérez García"
                                     />
                                 </div>
@@ -523,7 +524,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                         name="correoFacturacion"
                                         value={formData.correoFacturacion}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
                                         placeholder="Ej: facturacion@institucion.edu.pe"
                                     />
                                 </div>
@@ -539,7 +540,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                         onChange={handleChange}
                                         maxLength={9}
                                         pattern="[0-9]{9}"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
                                         placeholder="Ej: 987654321"
                                     />
                                 </div>
@@ -562,12 +563,12 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                                 <img 
                                                     src={imagePreview} 
                                                     alt="Logo preview" 
-                                                    className="h-32 w-32 rounded-full object-cover border-4 border-primary/20 shadow-lg"
+                                                    className="h-32 w-32 rounded-full object-cover border-4 border-escuela/20 shadow-lg"
                                                 />
                                             </div>
                                         ) : (
-                                            <div className="h-32 w-32 bg-primary/10 rounded-full flex items-center justify-center border-4 border-primary/20 shadow-lg">
-                                                <Building2 className="w-16 h-16 text-primary" />
+                                            <div className="h-32 w-32 bg-escuela/10 rounded-full flex items-center justify-center border-4 border-escuela/20 shadow-lg">
+                                                <Building2 className="w-16 h-16 text-escuela" />
                                             </div>
                                         )}
                                     </div>
@@ -578,7 +579,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                                             type="file"
                                             accept="image/*"
                                             onChange={handleFileChange}
-                                            className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-dark transition-all"
+                                            className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-escuela file:text-white hover:file:bg-escuela-dark transition-all"
                                         />
                                         <div className="mt-3">
                                             <p className="text-xs text-gray-500">
@@ -617,8 +618,7 @@ const InstitucionForm: React.FC<InstitucionFormProps> = ({
                         <button
                             type="submit"
                             disabled={isLoading || uploadingFile}
-                            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 flex items-center space-x-2"
-                        >
+                            className="px-6 py-2 bg-escuela text-white rounded-lg hover:bg-escuela-dark transition-colors disabled:opacity-50 flex items-center space-x-2">
                             {(isLoading || uploadingFile) ? (
                                 <>
                                     <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>

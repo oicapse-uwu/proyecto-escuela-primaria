@@ -165,10 +165,12 @@ const ApoderadosPage: React.FC = () => {
                     </div>
                     <button
                         onClick={handleNuevo}
-                        className="bg-primary text-white px-4 lg:px-5 py-2.5 rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center space-x-2 shadow-md whitespace-nowrap"
+                        className="bg-gradient-to-r from-escuela to-escuela-light text-white px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2 whitespace-nowrap"
                     >
                         <Plus className="w-5 h-5" />
-                        <span>Nuevo Apoderado</span>
+                        <span>Nuevo Apoder
+
+ado</span>
                     </button>
                 </div>
             </div>

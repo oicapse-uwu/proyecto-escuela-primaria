@@ -59,11 +59,12 @@ const GradoForm: React.FC<GradoFormProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] px-6 py-4 text-white flex justify-between items-center rounded-t-lg">
-                    <h2 className="text-xl font-bold flex items-center space-x-2">
-                        <GraduationCap className="w-5 h-5" />
+                <div className="bg-gradient-to-r from-escuela-light to-escuela-dark p-6 text-white flex justify-between items-center flex-shrink-0">
+                    <h2 className="text-xl font-bold flex items-center gap-3">
+                        <span className="w-1 h-6 bg-white/70 rounded-full flex-shrink-0"></span>
+                        <GraduationCap className="w-6 h-6" />
                         <span>{grado ? 'Editar Grado' : 'Nuevo Grado'}</span>
                     </h2>
                     <button
@@ -76,7 +77,7 @@ const GradoForm: React.FC<GradoFormProps> = ({
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             Nombre del Grado <span className="text-red-500">*</span>
@@ -86,7 +87,7 @@ const GradoForm: React.FC<GradoFormProps> = ({
                             value={formData.nombreGrado}
                             onChange={handleChange}
                             required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
                         >
                             {GRADOS_PRIMARIA.map(g => (
                                 <option key={g} value={g}>{g}</option>
@@ -107,7 +108,7 @@ const GradoForm: React.FC<GradoFormProps> = ({
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50"
+                            className="px-6 py-2 bg-escuela text-white rounded-lg hover:bg-escuela-dark transition-colors disabled:opacity-50"
                         >
                             {isLoading ? 'Guardando...' : (grado ? 'Actualizar' : 'Crear')}
                         </button>

@@ -138,7 +138,7 @@ const TipoDocumentosPage: React.FC = () => {
                 </div>
                 <button
                     onClick={handleNuevo}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                    className="bg-gradient-to-r from-escuela to-escuela-light text-white px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2"
                 >
                     <Plus className="w-4 h-4" /> Nuevo Tipo
                 </button>

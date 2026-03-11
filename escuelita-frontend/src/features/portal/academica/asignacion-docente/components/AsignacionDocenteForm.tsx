@@ -251,14 +251,14 @@ const AsignacionDocenteForm: React.FC<AsignacionDocenteFormProps> = ({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                            className="px-6 py-2.5 font-medium border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
                             disabled={isSubmitting}
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2 disabled:opacity-50"
+                            className="px-6 py-2.5 font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2 disabled:opacity-50"
                             disabled={isSubmitting || loading}
                         >
                             <Save size={18} />

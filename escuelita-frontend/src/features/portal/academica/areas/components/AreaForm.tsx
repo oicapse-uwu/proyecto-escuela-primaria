@@ -76,8 +76,8 @@ const AreaForm: React.FC<AreaFormProps> = ({ isOpen, onClose, area, onSubmit, is
                     </div>
                 </div>
                 <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">
-                    <button type="button" onClick={onClose} disabled={isLoading} className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">Cancelar</button>
-                    <button type="submit" disabled={isLoading} className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark">{isLoading ? 'Guardando...' : area ? 'Actualizar' : 'Crear'}</button>
+                    <button type="button" onClick={onClose} disabled={isLoading} className="px-6 py-2.5 font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">Cancelar</button>
+                    <button type="submit" disabled={isLoading} className="px-6 py-2.5 font-semibold bg-primary text-white rounded-lg hover:bg-primary-dark">{isLoading ? 'Guardando...' : area ? 'Actualizar' : 'Crear'}</button>
                 </div>
             </form>
         </Modal>

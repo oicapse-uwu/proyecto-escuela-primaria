@@ -1,10 +1,20 @@
-﻿import { Clock, Edit, Plus, Search, Trash2 } from 'lucide-react';
+﻿import { BookOpen, ChevronDown, Clock, Edit, GraduationCap, Layers, Plus, Trash2, X } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast, Toaster } from 'sonner';
-import Pagination from '../../../../../components/common/Pagination';
 import { api, API_ENDPOINTS } from '../../../../../config/api.config';
 
 // ==================== Types ====================
+
+interface Grado {
+    idGrado: number;
+    nombreGrado: string;
+}
+
+interface SeccionOption {
+    idSeccion: number;
+    nombreSeccion: string;
+    idGrado?: { idGrado: number; nombreGrado: string } | null;
+}
 
 interface UsuarioNested {
     nombres: string;
@@ -19,6 +29,7 @@ interface DocenteNested {
 interface CursoNested {
     idCurso: number;
     nombreCurso: string;
+    idArea?: { idArea: number; nombreArea: string } | null;
 }
 
 interface SeccionNested {
@@ -65,10 +76,30 @@ interface AulaOption {
 
 const DIAS_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
+// Same hues as MallaCurricular AREA_COLORS for visual consistency
+const AREA_COLORS = [
+    { bg: 'bg-yellow-50',  border: 'border-yellow-300', text: 'text-yellow-900', sub: 'text-yellow-700' },
+    { bg: 'bg-sky-50',     border: 'border-sky-300',    text: 'text-sky-900',    sub: 'text-sky-700'   },
+    { bg: 'bg-pink-50',    border: 'border-pink-300',   text: 'text-pink-900',   sub: 'text-pink-700'  },
+    { bg: 'bg-emerald-50', border: 'border-emerald-300',text: 'text-emerald-900',sub: 'text-emerald-700'},
+    { bg: 'bg-orange-50',  border: 'border-orange-300', text: 'text-orange-900', sub: 'text-orange-700' },
+    { bg: 'bg-purple-50',  border: 'border-purple-300', text: 'text-purple-900', sub: 'text-purple-700' },
+    { bg: 'bg-teal-50',    border: 'border-teal-300',   text: 'text-teal-900',   sub: 'text-teal-700'  },
+    { bg: 'bg-rose-50',    border: 'border-rose-300',   text: 'text-rose-900',   sub: 'text-rose-700'  },
+];
+
 function formatHora(hora: string): string {
     if (!hora) return '';
-    // "08:00:00" -> "08:00"
     return hora.substring(0, 5);
+}
+
+function formatHoraDisplay(hora: string): string {
+    if (!hora) return '';
+    const [hStr, mStr] = hora.substring(0, 5).split(':');
+    const h = parseInt(hStr, 10);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12 = h % 12 || 12;
+    return `${h12}:${mStr} ${ampm}`;
 }
 
 function getDocenteLabel(asignacion: AsignacionNested | null): string {
@@ -77,28 +108,21 @@ function getDocenteLabel(asignacion: AsignacionNested | null): string {
     return `${nombres} ${apellidos}`.trim();
 }
 
-function getCursoLabel(asignacion: AsignacionNested | null): string {
-    return asignacion?.idCurso?.nombreCurso ?? 'Sin curso';
-}
-
-function getSeccionLabel(asignacion: AsignacionNested | null): string {
-    return asignacion?.idSeccion?.nombreSeccion ?? 'Sin sección';
-}
-
-function getAulaLabel(aula: AulaNested | null): string {
-    return aula?.nombreAula ?? 'Sin aula';
-}
-
 function buildAsignacionLabel(asignacion: AsignacionNested): string {
     const docente = asignacion.idDocente?.idUsuario
         ? `${asignacion.idDocente.idUsuario.nombres} ${asignacion.idDocente.idUsuario.apellidos}`.trim()
         : 'Sin docente';
     const curso = asignacion.idCurso?.nombreCurso ?? 'Sin curso';
     const seccion = asignacion.idSeccion?.nombreSeccion ?? 'Sin sección';
-    return `${docente} - ${curso} - ${seccion}`;
+    return `${docente} — ${curso} (${seccion})`;
 }
 
-// ==================== Modal Form ====================
+function getColorByAreaId(idArea: number | undefined, map: Map<number, number>) {
+    const idx = idArea !== undefined ? (map.get(idArea) ?? 0) : 0;
+    return AREA_COLORS[idx % AREA_COLORS.length];
+}
+
+// ==================== Modal ====================
 
 interface FormState {
     diaSemana: string;
@@ -113,21 +137,17 @@ interface HorarioModalProps {
     asignaciones: AsignacionOption[];
     aulas: AulaOption[];
     isLoading: boolean;
+    prefill?: { diaSemana?: string; horaInicio?: string };
     onSubmit: (data: FormState) => void;
     onCancel: () => void;
 }
 
 const HorarioModal: React.FC<HorarioModalProps> = ({
-    horario,
-    asignaciones,
-    aulas,
-    isLoading,
-    onSubmit,
-    onCancel,
+    horario, asignaciones, aulas, isLoading, prefill, onSubmit, onCancel,
 }) => {
     const [form, setForm] = useState<FormState>({
-        diaSemana: horario?.diaSemana ?? '',
-        horaInicio: horario?.horaInicio ? formatHora(horario.horaInicio) : '',
+        diaSemana: horario?.diaSemana ?? prefill?.diaSemana ?? '',
+        horaInicio: horario?.horaInicio ? formatHora(horario.horaInicio) : prefill?.horaInicio ?? '',
         horaFin: horario?.horaFin ? formatHora(horario.horaFin) : '',
         idAsignacion: horario?.idAsignacion?.idAsignacion?.toString() ?? '',
         idAula: horario?.idAula?.idAula?.toString() ?? '',
@@ -140,7 +160,7 @@ const HorarioModal: React.FC<HorarioModalProps> = ({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!form.diaSemana || !form.horaInicio || !form.horaFin || !form.idAsignacion || !form.idAula) {
-            toast.error('Por favor, complete todos los campos');
+            toast.error('Complete todos los campos');
             return;
         }
         onSubmit(form);
@@ -148,131 +168,70 @@ const HorarioModal: React.FC<HorarioModalProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-lg">
-                <div className="flex items-center justify-between px-6 py-4 border-b">
-                    <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-primary" />
-                        {horario ? 'Editar Horario' : 'Nuevo Horario'}
-                    </h2>
-                    <button
-                        onClick={onCancel}
-                        className="text-gray-400 hover:text-gray-600 transition-colors text-xl leading-none"
-                        aria-label="Cerrar"
-                    >
-                        &times;
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-lg flex flex-col">
+                <div className="flex items-center justify-between px-6 py-5 bg-gradient-to-r from-escuela-light to-escuela-dark rounded-t-lg">
+                    <div className="flex items-center gap-3">
+                        <div className="w-1 self-stretch bg-white/60 rounded-full" />
+                        <h2 className="text-lg font-bold text-white">
+                            {horario ? 'Editar Horario' : 'Nuevo Horario'}
+                        </h2>
+                    </div>
+                    <button onClick={onCancel} className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/20 transition-colors">
+                        <X className="w-5 h-5" />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4">
-                    {/* Día de semana */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Día de la semana <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                            name="diaSemana"
-                            value={form.diaSemana}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
-                            required
-                        >
-                            <option value="">Seleccionar día</option>
-                            {DIAS_SEMANA.map(dia => (
-                                <option key={dia} value={dia}>{dia}</option>
-                            ))}
-                        </select>
+                <form onSubmit={handleSubmit}>
+                    <div className="p-6 grid grid-cols-2 gap-x-6 gap-y-5">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Día <span className="text-red-500">*</span></label>
+                            <select name="diaSemana" value={form.diaSemana} onChange={handleChange}
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-escuela focus:border-transparent" required>
+                                <option value="">Seleccionar día</option>
+                                {DIAS_SEMANA.map(d => <option key={d} value={d}>{d}</option>)}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Aula <span className="text-red-500">*</span></label>
+                            <select name="idAula" value={form.idAula} onChange={handleChange}
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-escuela focus:border-transparent" required>
+                                <option value="">Seleccionar aula</option>
+                                {aulas.map(a => <option key={a.idAula} value={a.idAula}>{a.nombreAula}</option>)}
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Hora inicio <span className="text-red-500">*</span></label>
+                            <input type="time" name="horaInicio" value={form.horaInicio} onChange={handleChange}
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-escuela focus:border-transparent" required />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Hora fin <span className="text-red-500">*</span></label>
+                            <input type="time" name="horaFin" value={form.horaFin} onChange={handleChange}
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-escuela focus:border-transparent" required />
+                        </div>
+
+                        <div className="col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1.5">Asignación (Docente · Curso · Sección) <span className="text-red-500">*</span></label>
+                            <select name="idAsignacion" value={form.idAsignacion} onChange={handleChange}
+                                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-escuela focus:border-transparent" required>
+                                <option value="">Seleccionar asignación</option>
+                                {asignaciones.map(a => <option key={a.idAsignacion} value={a.idAsignacion}>{a.label}</option>)}
+                            </select>
+                        </div>
                     </div>
 
-                    {/* Hora inicio */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Hora inicio <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="time"
-                            name="horaInicio"
-                            value={form.horaInicio}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
-                            required
-                        />
-                    </div>
-
-                    {/* Hora fin */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Hora fin <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="time"
-                            name="horaFin"
-                            value={form.horaFin}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
-                            required
-                        />
-                    </div>
-
-                    {/* Asignación */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Asignación (Docente - Curso - Sección) <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                            name="idAsignacion"
-                            value={form.idAsignacion}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
-                            required
-                        >
-                            <option value="">Seleccionar asignación</option>
-                            {asignaciones.map(a => (
-                                <option key={a.idAsignacion} value={a.idAsignacion}>
-                                    {a.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Aula */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Aula <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                            name="idAula"
-                            value={form.idAula}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
-                            required
-                        >
-                            <option value="">Seleccionar aula</option>
-                            {aulas.map(a => (
-                                <option key={a.idAula} value={a.idAula}>
-                                    {a.nombreAula}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="flex justify-end gap-3 pt-2">
-                        <button
-                            type="button"
-                            onClick={onCancel}
-                            disabled={isLoading}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
-                        >
+                    <div className="px-6 py-4 bg-gray-50 border-t rounded-b-lg flex justify-end gap-3">
+                        <button type="button" onClick={onCancel} disabled={isLoading}
+                            className="px-6 py-2.5 font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50">
                             Cancelar
                         </button>
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 flex items-center gap-2"
-                        >
-                            {isLoading && (
-                                <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            )}
-                            {horario ? 'Actualizar' : 'Crear'}
+                        <button type="submit" disabled={isLoading}
+                            className="px-6 py-2.5 font-medium text-white bg-gradient-to-r from-escuela to-escuela-light rounded-lg hover:shadow-lg transition-all disabled:opacity-50 flex items-center gap-2">
+                            {isLoading && <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                            {horario ? 'Actualizar' : 'Crear Horario'}
                         </button>
                     </div>
                 </form>
@@ -287,100 +246,131 @@ const HorariosPage: React.FC = () => {
     const [horarios, setHorarios] = useState<Horario[]>([]);
     const [asignaciones, setAsignaciones] = useState<AsignacionOption[]>([]);
     const [aulas, setAulas] = useState<AulaOption[]>([]);
+    const [grados, setGrados] = useState<Grado[]>([]);
+    const [secciones, setSecciones] = useState<SeccionOption[]>([]);
     const [loading, setLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const [searchTerm, setSearchTerm] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
+    const [selectedGradoId, setSelectedGradoId] = useState<number | null>(null);
+    const [selectedSeccionId, setSelectedSeccionId] = useState<number | null>(null);
 
     const [showModal, setShowModal] = useState(false);
     const [horarioSeleccionado, setHorarioSeleccionado] = useState<Horario | null>(null);
+    const [prefill, setPrefill] = useState<{ diaSemana?: string; horaInicio?: string } | undefined>();
 
-    // ---- Fetch data ----
+    // ---- Fetch ----
 
     const fetchHorarios = async () => {
-        setLoading(true);
         try {
             const res = await api.get<Horario[]>(API_ENDPOINTS.HORARIOS);
-            const activos = (res.data ?? []).filter(h => h.estado === 1);
-            setHorarios(activos);
+            setHorarios((res.data ?? []).filter(h => h.estado === 1));
         } catch {
-            toast.error('Error al cargar los horarios');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchAsignaciones = async () => {
-        try {
-            const res = await api.get<AsignacionNested[]>(API_ENDPOINTS.ASIGNACION_DOCENTE);
-            const options: AsignacionOption[] = (res.data ?? []).map(a => ({
-                idAsignacion: a.idAsignacion,
-                label: buildAsignacionLabel(a),
-                idDocente: a.idDocente ?? null,
-                idCurso: a.idCurso ?? null,
-                idSeccion: a.idSeccion ?? null,
-            }));
-            setAsignaciones(options);
-        } catch {
-            toast.error('Error al cargar las asignaciones');
-        }
-    };
-
-    const fetchAulas = async () => {
-        try {
-            const res = await api.get<AulaNested[]>(API_ENDPOINTS.AULAS);
-            setAulas(res.data ?? []);
-        } catch {
-            toast.error('Error al cargar las aulas');
+            toast.error('Error al actualizar los horarios');
         }
     };
 
     useEffect(() => {
-        fetchHorarios();
-        fetchAsignaciones();
-        fetchAulas();
+        const init = async () => {
+            setLoading(true);
+            try {
+                const [resHorarios, resAsig, resAulas, resGrados, resSecciones] = await Promise.all([
+                    api.get<Horario[]>(API_ENDPOINTS.HORARIOS),
+                    api.get<AsignacionNested[]>(API_ENDPOINTS.ASIGNACION_DOCENTE),
+                    api.get<AulaNested[]>(API_ENDPOINTS.AULAS),
+                    api.get<Grado[]>(API_ENDPOINTS.GRADOS),
+                    api.get<SeccionOption[]>(API_ENDPOINTS.SECCIONES),
+                ]);
+                setHorarios((resHorarios.data ?? []).filter(h => h.estado === 1));
+                setAsignaciones((resAsig.data ?? []).map(a => ({
+                    idAsignacion: a.idAsignacion,
+                    label: buildAsignacionLabel(a),
+                    idDocente: a.idDocente ?? null,
+                    idCurso: a.idCurso ?? null,
+                    idSeccion: a.idSeccion ?? null,
+                })));
+                setAulas(resAulas.data ?? []);
+                setGrados(resGrados.data ?? []);
+                setSecciones(resSecciones.data ?? []);
+            } catch {
+                toast.error('Error al cargar los datos');
+            } finally {
+                setLoading(false);
+            }
+        };
+        init();
     }, []);
 
-    // ---- Filter + Pagination ----
+    // ---- Derived ----
 
-    const horariosFiltrados = useMemo(() => {
-        const term = searchTerm.toLowerCase().trim();
-        if (!term) return horarios;
-        return horarios.filter(h => {
-            const dia = h.diaSemana?.toLowerCase() ?? '';
-            const docente = getDocenteLabel(h.idAsignacion).toLowerCase();
-            const curso = getCursoLabel(h.idAsignacion).toLowerCase();
-            const aula = getAulaLabel(h.idAula).toLowerCase();
-            return dia.includes(term) || docente.includes(term) || curso.includes(term) || aula.includes(term);
-        });
-    }, [horarios, searchTerm]);
+    const seccionesFiltradas = useMemo(
+        () => selectedGradoId ? secciones.filter(s => s.idGrado?.idGrado === selectedGradoId) : [],
+        [secciones, selectedGradoId]
+    );
 
-    const totalPages = Math.ceil(horariosFiltrados.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const horariosPaginados = horariosFiltrados.slice(startIndex, startIndex + itemsPerPage);
+    const horariosFiltrados = useMemo(
+        () => selectedSeccionId
+            ? horarios.filter(h => h.idAsignacion?.idSeccion?.idSeccion === selectedSeccionId)
+            : [],
+        [horarios, selectedSeccionId]
+    );
+
+    const timeSlots = useMemo(() => {
+        const slots = new Set(horariosFiltrados.map(h => formatHora(h.horaInicio)));
+        return Array.from(slots).sort();
+    }, [horariosFiltrados]);
+
+    const activeDays = useMemo(() => {
+        const withData = new Set(horariosFiltrados.map(h => h.diaSemana));
+        return DIAS_SEMANA.filter(d => d !== 'Sábado' || withData.has('Sábado'));
+    }, [horariosFiltrados]);
+
+    const gridMap = useMemo(() => {
+        const map: Record<string, Record<string, Horario[]>> = {};
+        for (const h of horariosFiltrados) {
+            const dia = h.diaSemana;
+            const hora = formatHora(h.horaInicio);
+            if (!map[dia]) map[dia] = {};
+            if (!map[dia][hora]) map[dia][hora] = [];
+            map[dia][hora].push(h);
+        }
+        return map;
+    }, [horariosFiltrados]);
+
+    // Stable area → color index map (same area always = same color, ordered by first occurrence across all asignaciones)
+    const areaColorMap = useMemo(() => {
+        const map = new Map<number, number>();
+        let idx = 0;
+        for (const a of asignaciones) {
+            const areaId = a.idCurso?.idArea?.idArea;
+            if (areaId !== undefined && !map.has(areaId)) {
+                map.set(areaId, idx++);
+            }
+        }
+        return map;
+    }, [asignaciones]);
 
     // ---- Handlers ----
 
-    const handleNuevoHorario = () => {
+    const handleNuevo = (diaSemana?: string, horaInicio?: string) => {
         setHorarioSeleccionado(null);
+        setPrefill({ diaSemana, horaInicio });
         setShowModal(true);
     };
 
-    const handleEditarHorario = (horario: Horario) => {
+    const handleEditar = (horario: Horario) => {
         setHorarioSeleccionado(horario);
+        setPrefill(undefined);
         setShowModal(true);
     };
 
-    const handleEliminarHorario = async (id: number) => {
-        if (!window.confirm('¿Está seguro de eliminar este horario?')) return;
+    const handleEliminar = async (id: number) => {
+        if (!window.confirm('¿Eliminar este horario?')) return;
         try {
             await api.delete(`${API_ENDPOINTS.HORARIOS}/${id}`);
-            toast.success('Horario eliminado exitosamente');
+            toast.success('Horario eliminado');
             await fetchHorarios();
         } catch {
-            toast.error('Error al eliminar el horario');
+            toast.error('Error al eliminar');
         }
     };
 
@@ -395,20 +385,17 @@ const HorariosPage: React.FC = () => {
                 idAula: Number(formData.idAula),
                 ...(horarioSeleccionado ? { idHorario: horarioSeleccionado.idHorario } : {}),
             };
-
             if (horarioSeleccionado) {
                 await api.put(API_ENDPOINTS.HORARIOS, body);
-                toast.success('Horario actualizado exitosamente');
+                toast.success('Horario actualizado');
             } else {
                 await api.post(API_ENDPOINTS.HORARIOS, body);
-                toast.success('Horario creado exitosamente');
+                toast.success('Horario creado');
             }
-
             setShowModal(false);
-            setHorarioSeleccionado(null);
             await fetchHorarios();
         } catch {
-            toast.error(horarioSeleccionado ? 'Error al actualizar el horario' : 'Error al crear el horario');
+            toast.error('Error al guardar');
         } finally {
             setIsSubmitting(false);
         }
@@ -416,219 +403,201 @@ const HorariosPage: React.FC = () => {
 
     // ==================== Render ====================
 
+    const selectedGrado = grados.find(g => g.idGrado === selectedGradoId);
+    const selectedSeccion = secciones.find(s => s.idSeccion === selectedSeccionId);
+
     return (
-        <div className="p-6">
+        <div className="space-y-6 p-4 md:p-6">
             <Toaster position="top-right" richColors />
 
             {/* Header */}
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                    <Clock className="w-7 h-7 text-primary" />
-                    <span>Gestión de Horarios</span>
-                </h1>
-                <p className="text-gray-600 mt-1">
-                    Administre los horarios de clases asignados por docente, curso y sección.
-                </p>
+            <div className="flex items-center gap-3">
+                <Clock className="w-7 h-7 text-escuela" />
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">Horarios</h1>
+                    <p className="text-sm text-gray-500">Gestione los horarios de clases por sección</p>
+                </div>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-white rounded-lg shadow p-4">
-                    <div className="flex items-center justify-between">
+            {!loading && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="bg-white rounded-xl border p-4 flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500 text-sm">Total Horarios</p>
-                            <p className="text-2xl font-bold text-gray-800">{horarios.length}</p>
+                            <p className="text-xs text-gray-500 uppercase font-medium tracking-wide">Total Horarios</p>
+                            <p className="text-3xl font-bold text-blue-600 mt-1">{horarios.length}</p>
                         </div>
-                        <Clock className="w-10 h-10 text-blue-500 opacity-50" />
+                        <div className="p-2 bg-blue-100 rounded-lg"><Clock className="w-6 h-6 text-blue-600" /></div>
+                    </div>
+                    <div className="bg-white rounded-xl border p-4 flex items-center justify-between">
+                        <div>
+                            <p className="text-xs text-gray-500 uppercase font-medium tracking-wide">Grados</p>
+                            <p className="text-3xl font-bold text-emerald-600 mt-1">{grados.length}</p>
+                        </div>
+                        <div className="p-2 bg-emerald-100 rounded-lg"><GraduationCap className="w-6 h-6 text-emerald-600" /></div>
+                    </div>
+                    <div className="bg-white rounded-xl border p-4 flex items-center justify-between">
+                        <div>
+                            <p className="text-xs text-gray-500 uppercase font-medium tracking-wide">Secciones</p>
+                            <p className="text-3xl font-bold text-purple-600 mt-1">{secciones.length}</p>
+                        </div>
+                        <div className="p-2 bg-purple-100 rounded-lg"><Layers className="w-6 h-6 text-purple-600" /></div>
+                    </div>
+                    <div className="bg-white rounded-xl border p-4 flex items-center justify-between">
+                        <div>
+                            <p className="text-xs text-gray-500 uppercase font-medium tracking-wide">Esta sección</p>
+                            <p className="text-3xl font-bold text-amber-600 mt-1">{horariosFiltrados.length}</p>
+                        </div>
+                        <div className="p-2 bg-amber-100 rounded-lg"><BookOpen className="w-6 h-6 text-amber-600" /></div>
                     </div>
                 </div>
-                <div className="bg-white rounded-lg shadow p-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-gray-500 text-sm">Días con clases</p>
-                            <p className="text-2xl font-bold text-gray-800">
-                                {new Set(horarios.map(h => h.diaSemana)).size}
-                            </p>
-                        </div>
-                        <Clock className="w-10 h-10 text-green-500 opacity-50" />
-                    </div>
-                </div>
-                <div className="bg-white rounded-lg shadow p-4">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-gray-500 text-sm">Resultados</p>
-                            <p className="text-2xl font-bold text-gray-800">{horariosFiltrados.length}</p>
-                        </div>
-                        <Search className="w-10 h-10 text-purple-500 opacity-50" />
-                    </div>
-                </div>
-            </div>
+            )}
 
-            {/* Search + Action */}
-            <div className="bg-white rounded-lg shadow mb-6 p-4">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                    <div className="relative flex-1 max-w-md">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                        <input
-                            type="text"
-                            placeholder="Buscar por día, docente, curso o aula..."
-                            value={searchTerm}
+            {/* Selectors + button row */}
+            <div className="bg-white rounded-lg shadow px-5 py-4 flex flex-wrap items-end gap-3">
+                <div className="w-44">
+                    <label className="block text-xs text-gray-500 mb-1.5">Grado</label>
+                    <div className="relative">
+                        <GraduationCap className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <select
+                            value={selectedGradoId ?? ''}
                             onChange={e => {
-                                setSearchTerm(e.target.value);
-                                setCurrentPage(1);
+                                const v = e.target.value ? Number(e.target.value) : null;
+                                setSelectedGradoId(v);
+                                setSelectedSeccionId(null);
                             }}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
-                        />
+                            className="w-full pl-10 pr-10 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent appearance-none"
+                        >
+                            <option value="">— Grado —</option>
+                            {grados.map(g => <option key={g.idGrado} value={g.idGrado}>{g.nombreGrado}</option>)}
+                        </select>
+                        <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                     </div>
-                    <button
-                        onClick={handleNuevoHorario}
-                        className="bg-gradient-to-r from-escuela to-escuela-light text-white px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
-                    >
-                        <Plus className="w-5 h-5" />
-                        <span>Nuevo Horario</span>
-                    </button>
                 </div>
+                <div className="w-40">
+                    <label className="block text-xs text-gray-500 mb-1.5">Sección</label>
+                    <div className="relative">
+                        <Layers className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <select
+                            value={selectedSeccionId ?? ''}
+                            onChange={e => setSelectedSeccionId(e.target.value ? Number(e.target.value) : null)}
+                            disabled={!selectedGradoId}
+                            className="w-full pl-8 pr-7 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent appearance-none disabled:bg-gray-50 disabled:text-gray-400"
+                        >
+                            <option value="">— Sección —</option>
+                            {seccionesFiltradas.map(s => <option key={s.idSeccion} value={s.idSeccion}>{s.nombreSeccion}</option>)}
+                        </select>
+                        <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    </div>
+                </div>
+                <div className="flex-1" />
+                <button
+                    onClick={() => handleNuevo()}
+                    disabled={!selectedSeccionId}
+                    className="bg-gradient-to-r from-escuela to-escuela-light text-white px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+                    title={!selectedSeccionId ? 'Selecciona un grado y sección primero' : undefined}
+                >
+                    <Plus className="w-4 h-4" />
+                    Nuevo Horario
+                </button>
             </div>
 
-            {/* Table / Cards */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-                {loading ? (
-                    <div className="p-8 text-center text-gray-500">Cargando horarios...</div>
-                ) : horariosPaginados.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500">
-                        {searchTerm ? 'No se encontraron horarios con ese criterio' : 'No hay horarios registrados'}
+            {/* Grid / Empty state */}
+            {loading ? (
+                <div className="flex justify-center py-16">
+                    <div className="animate-spin rounded-full h-10 w-10 border-4 border-escuela border-t-transparent" />
+                </div>
+            ) : !selectedSeccionId ? (
+                <div className="bg-white rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center py-20 gap-3">
+                    <Clock className="w-12 h-12 text-gray-200" />
+                    <p className="text-gray-400 font-medium">Selecciona un grado y una sección</p>
+                    <p className="text-gray-300 text-sm">para visualizar su horario semanal</p>
+                </div>
+            ) : (
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    {/* Panel header */}
+                    <div className="px-5 py-4 border-b">
+                        <h2 className="font-bold text-gray-800">
+                            {selectedGrado?.nombreGrado} — {selectedSeccion?.nombreSeccion}
+                        </h2>
+                        <p className="text-xs text-gray-400 mt-0.5">
+                            {new Set(horariosFiltrados.map(h => h.diaSemana)).size} días con clases · {horariosFiltrados.length} bloques
+                        </p>
                     </div>
-                ) : (
-                    <>
-                        {/* Desktop table */}
-                        <div className="hidden md:block overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-gray-50 border-b">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Día</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Hora Inicio</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Hora Fin</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Docente</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Curso</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Sección</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide">Aula</th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wide">Acciones</th>
+
+                    {timeSlots.length === 0 ? (
+                        <div className="py-16 text-center text-gray-400">
+                            <p>No hay horarios para esta sección aún.</p>
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse min-w-[600px]">
+                                <thead>
+                                    <tr className="bg-gray-50">
+                                        <th className="w-20 px-4 py-3 text-xs font-semibold text-gray-500 uppercase border-b border-r text-center">
+                                            Hora
+                                        </th>
+                                        {activeDays.map(dia => (
+                                            <th key={dia} className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase border-b text-center">
+                                                {dia}
+                                            </th>
+                                        ))}
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-200">
-                                    {horariosPaginados.map(horario => (
-                                        <tr key={horario.idHorario} className="hover:bg-gray-50">
-                                            <td className="px-6 py-4">
-                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                    <Clock className="w-3 h-3" />
-                                                    {horario.diaSemana}
-                                                </span>
+                                <tbody>
+                                    {timeSlots.map((slot, rowIdx) => (
+                                        <tr key={slot} className={rowIdx % 2 === 0 ? 'bg-white' : 'bg-gray-50/40'}>
+                                            <td className="px-3 py-3 text-xs font-bold text-gray-500 text-center border-r whitespace-nowrap align-top">
+                                                {formatHoraDisplay(slot)}
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-700">
-                                                {formatHora(horario.horaInicio)}
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-gray-700">
-                                                {formatHora(horario.horaFin)}
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-gray-700">
-                                                {getDocenteLabel(horario.idAsignacion)}
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-gray-700">
-                                                {getCursoLabel(horario.idAsignacion)}
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-gray-700">
-                                                {getSeccionLabel(horario.idAsignacion)}
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-gray-700">
-                                                {getAulaLabel(horario.idAula)}
-                                            </td>
-                                            <td className="px-6 py-4 text-right">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <button
-                                                        onClick={() => handleEditarHorario(horario)}
-                                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                                        title="Editar"
-                                                    >
-                                                        <Edit className="w-4 h-4" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleEliminarHorario(horario.idHorario)}
-                                                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                        title="Eliminar"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                </div>
-                                            </td>
+                                            {activeDays.map(dia => {
+                                                const blocks = gridMap[dia]?.[slot] ?? [];
+                                                return (
+                                                    <td key={dia} className="px-2 py-2 align-top border-l border-gray-100 min-w-[130px]">
+                                                        <div className="space-y-1">
+                                                            {blocks.map(h => {
+                                                                const color = getColorByAreaId(h.idAsignacion?.idCurso?.idArea?.idArea, areaColorMap);
+                                                                return (
+                                                                    <div
+                                                                        key={h.idHorario}
+                                                                        className={`group relative rounded-lg border px-2.5 py-2 ${color.bg} ${color.border}`}
+                                                                    >
+                                                                        <p className={`text-xs font-bold leading-tight ${color.text}`}>
+                                                                            {h.idAsignacion?.idCurso?.nombreCurso ?? '—'}
+                                                                        </p>
+                                                                        <p className={`text-xs mt-0.5 truncate ${color.sub}`}>
+                                                                            {getDocenteLabel(h.idAsignacion)}
+                                                                        </p>
+                                                                        <p className={`text-xs opacity-70 ${color.sub}`}>
+                                                                            {h.idAula?.nombreAula ?? '—'} · {formatHoraDisplay(h.horaInicio)}–{formatHoraDisplay(h.horaFin)}
+                                                                        </p>
+                                                                        <div className="absolute top-1 right-1 hidden group-hover:flex gap-0.5 bg-white/80 rounded p-0.5">
+                                                                            <button
+                                                                                onClick={() => handleEditar(h)}
+                                                                                className="p-1 text-blue-500 hover:text-blue-700 rounded transition-colors"
+                                                                            >
+                                                                                <Edit className="w-3 h-3" />
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={() => handleEliminar(h.idHorario)}
+                                                                                className="p-1 text-red-500 hover:text-red-700 rounded transition-colors"
+                                                                            >
+                                                                                <Trash2 className="w-3 h-3" />
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </td>
+                                                );
+                                            })}
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
-
-                        {/* Mobile cards */}
-                        <div className="md:hidden divide-y divide-gray-200">
-                            {horariosPaginados.map(horario => (
-                                <div key={horario.idHorario} className="p-4">
-                                    <div className="flex items-start justify-between mb-3">
-                                        <div className="flex items-center gap-2">
-                                            <Clock className="w-5 h-5 text-primary flex-shrink-0" />
-                                            <span className="font-medium text-gray-900">{horario.diaSemana}</span>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={() => handleEditarHorario(horario)}
-                                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                            >
-                                                <Edit className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                onClick={() => handleEliminarHorario(horario.idHorario)}
-                                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-1 text-sm text-gray-600 pl-7">
-                                        <p>
-                                            <span className="font-medium text-gray-700">Horario: </span>
-                                            {formatHora(horario.horaInicio)} - {formatHora(horario.horaFin)}
-                                        </p>
-                                        <p>
-                                            <span className="font-medium text-gray-700">Docente: </span>
-                                            {getDocenteLabel(horario.idAsignacion)}
-                                        </p>
-                                        <p>
-                                            <span className="font-medium text-gray-700">Curso: </span>
-                                            {getCursoLabel(horario.idAsignacion)}
-                                        </p>
-                                        <p>
-                                            <span className="font-medium text-gray-700">Sección: </span>
-                                            {getSeccionLabel(horario.idAsignacion)}
-                                        </p>
-                                        <p>
-                                            <span className="font-medium text-gray-700">Aula: </span>
-                                            {getAulaLabel(horario.idAula)}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </>
-                )}
-            </div>
-
-            {/* Pagination */}
-            {!loading && horariosFiltrados.length > 0 && (
-                <div className="mt-6">
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={setCurrentPage}
-                        itemsPerPage={itemsPerPage}
-                        totalItems={horariosFiltrados.length}
-                    />
+                    )}
                 </div>
             )}
 
@@ -639,11 +608,9 @@ const HorariosPage: React.FC = () => {
                     asignaciones={asignaciones}
                     aulas={aulas}
                     isLoading={isSubmitting}
+                    prefill={prefill}
                     onSubmit={handleSubmit}
-                    onCancel={() => {
-                        setShowModal(false);
-                        setHorarioSeleccionado(null);
-                    }}
+                    onCancel={() => { setShowModal(false); setHorarioSeleccionado(null); }}
                 />
             )}
         </div>

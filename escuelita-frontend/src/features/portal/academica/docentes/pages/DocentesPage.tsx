@@ -489,14 +489,14 @@ const DocentesPage: React.FC = () => {
                         <div className="px-6 py-4 bg-gray-50 border-t rounded-b-lg flex justify-end gap-3">
                             <button
                                 onClick={() => setShowModal(false)}
-                                className="px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
+                                className="px-6 py-2.5 font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
                             >
                                 Cancelar
                             </button>
                             <button
                                 onClick={handleGuardar}
                                 disabled={isSubmitting}
-                                className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-escuela to-escuela-light rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
+                                className="px-6 py-2.5 font-medium text-white bg-gradient-to-r from-escuela to-escuela-light rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
                             >
                                 {isSubmitting ? 'Guardando...' : seleccionado ? 'Actualizar Docente' : 'Crear Docente'}
                             </button>

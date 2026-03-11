@@ -169,7 +169,7 @@ const DocenteForm: React.FC<DocenteFormProps> = ({
                             <button
                                 type="button"
                                 onClick={searchByEmail}
-                                className="px-4 py-2 bg-gradient-to-r from-escuela to-escuela-light text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+                                className="px-6 py-2.5 bg-gradient-to-r from-escuela to-escuela-light text-white rounded-lg font-semibold hover:shadow-lg transition-all"
                             >Buscar</button>
                         </div>
                     </div>
@@ -252,14 +252,14 @@ const DocenteForm: React.FC<DocenteFormProps> = ({
                         <button
                             type="button"
                             onClick={handleClose}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                            className="px-6 py-2.5 font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                             disabled={loading}
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors disabled:opacity-50"
+                            className="px-6 py-2.5 font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50"
                             disabled={loading}
                         >
                             {loading ? 'Guardando...' : (initialData?.idDocente ? 'Actualizar' : 'Crear')}

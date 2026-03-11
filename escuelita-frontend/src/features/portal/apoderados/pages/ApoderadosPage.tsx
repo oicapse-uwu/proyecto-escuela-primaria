@@ -156,7 +156,7 @@ const ApoderadosPage: React.FC = () => {
                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
                     <div>
                         <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 flex items-center space-x-3">
-                            <Users className="w-7 h-7 lg:w-7 lg:h-7 text-primary" />
+                            <Users className="w-7 h-7 lg:w-7 lg:h-7 text-escuela" />
                             <span>Gestión de Apoderados</span>
                         </h1>
                         <p className="text-gray-600 mt-1 text-sm lg:text-base">
@@ -183,18 +183,18 @@ ado</span>
                             <p className="text-sm text-gray-600">Total Apoderados</p>
                             <p className="text-2xl font-bold text-gray-800">{apoderados.length}</p>
                         </div>
-                        <Users className="w-10 h-10 text-primary opacity-50" />
+                        <Users className="w-10 h-10 text-escuela opacity-50" />
                     </div>
                 </div>
                 <div className="bg-white rounded-lg shadow p-4">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm text-gray-600">Con Correo</p>
-                            <p className="text-2xl font-bold text-blue-600">
+                            <p className="text-2xl font-bold text-escuela">
                                 {apoderados.filter(a => a.correo && a.correo.trim() !== '').length}
                             </p>
                         </div>
-                        <Mail className="w-10 h-10 text-blue-500 opacity-50" />
+                        <Mail className="w-10 h-10 text-escuela opacity-50" />
                     </div>
                 </div>
                 <div className="bg-white rounded-lg shadow p-4">
@@ -253,7 +253,7 @@ ado</span>
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => handleEditar(apoderado)}
-                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                        className="p-2 text-escuela hover:bg-emerald-50 rounded-lg transition-colors"
                                     >
                                         <Edit className="w-4 h-4" />
                                     </button>
@@ -356,7 +356,7 @@ ado</span>
                                             <div className="flex items-center justify-center space-x-2">
                                                 <button
                                                     onClick={() => handleEditar(apoderado)}
-                                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                    className="p-2 text-escuela hover:bg-emerald-50 rounded-lg transition-colors"
                                                     title="Editar"
                                                 >
                                                     <Edit className="w-4 h-4" />

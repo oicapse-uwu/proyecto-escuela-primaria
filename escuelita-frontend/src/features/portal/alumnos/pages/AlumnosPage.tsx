@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Toaster, toast } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
+import { getLimitesSedesApi } from '../../../backoffice/suscripciones/api/limitesSedesApi';
 import { obtenerTodosDocumentos } from '../../matriculas/api/documentosAlumnoApi';
 import { obtenerTodosRequisitos } from '../../matriculas/api/requisitosApi';
 import type { DocumentoAlumno, RequisitoDocumento } from '../../matriculas/types';
@@ -30,6 +31,7 @@ const AlumnosPage: React.FC = () => {
     const [loadingData, setLoadingData] = useState(true);
     const [documentos, setDocumentos] = useState<DocumentoAlumno[]>([]);
     const [requisitos, setRequisitos] = useState<RequisitoDocumento[]>([]);
+    const [limiteAlumnos, setLimiteAlumnos] = useState<number | null>(null);
 
     // Cargar alumnos al montar
     useEffect(() => {
@@ -41,16 +43,26 @@ const AlumnosPage: React.FC = () => {
         const cargarDatos = async () => {
             try {
                 setLoadingData(true);
-                const [tiposData, requisitosData, documentosData] = await Promise.all([
+                const [tiposData, requisitosData, documentosData, limitesData] = await Promise.all([
                     obtenerTiposDocumento(),
                     obtenerTodosRequisitos(),
                     obtenerTodosDocumentos(),
+                    getLimitesSedesApi(),
                 ]);
                 setTiposDocumento(tiposData);
                 setRequisitos(requisitosData);
                 setDocumentos(documentosData);
-            } catch (error) {
-                console.error('Error cargando datos:', error);
+
+                const userStr = localStorage.getItem('escuela_user');
+                const user = userStr ? JSON.parse(userStr) : null;
+                const idSede = user?.sede?.idSede;
+                if (idSede) {
+                    const limiteSede = limitesData.find(
+                        l => l.idSede.idSede === idSede && l.estado === 1
+                    );
+                    if (limiteSede) setLimiteAlumnos(limiteSede.limiteAlumnosAsignado);
+                }
+            } catch {
                 toast.error('Error al cargar datos');
             } finally {
                 setLoadingData(false);
@@ -106,6 +118,13 @@ const AlumnosPage: React.FC = () => {
     }, [searchTerm]);
 
     const handleNuevo = () => {
+        if (limiteAlumnos !== null && alumnos.length >= limiteAlumnos) {
+            toast.error(
+                `No se puede crear el alumno. Esta sede ha alcanzado su límite de ${limiteAlumnos} alumno${limiteAlumnos !== 1 ? 's' : ''} activos (${alumnos.length} actuales).`,
+                { duration: 5000 }
+            );
+            return;
+        }
         setAlumnoEditar(null);
         setShowModal(true);
     };
@@ -120,7 +139,7 @@ const AlumnosPage: React.FC = () => {
             try {
                 await eliminarAlumnoById(id);
                 toast.success('Alumno eliminado exitosamente');
-            } catch (error) {
+            } catch {
                 toast.error('Error al eliminar el alumno');
             }
         }
@@ -158,9 +177,8 @@ const AlumnosPage: React.FC = () => {
             }
             setShowModal(false);
             setAlumnoEditar(null);
-        } catch (error: any) {
-            console.error('Error al guardar alumno:', error);
-            const errorMessage = error.message || (alumnoEditar ? 'Error al actualizar el alumno' : 'Error al crear el alumno');
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : (alumnoEditar ? 'Error al actualizar el alumno' : 'Error al crear el alumno');
             toast.error(errorMessage);
         }
     };
@@ -207,7 +225,7 @@ const AlumnosPage: React.FC = () => {
                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
                     <div>
                         <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 flex items-center space-x-3">
-                            <Users className="w-7 h-7 text-primary" />
+                            <Users className="w-7 h-7 text-escuela" />
                             <span>Gestión de Alumnos</span>
                         </h1>
                         <p className="text-gray-600 mt-1 text-sm lg:text-base">
@@ -232,8 +250,8 @@ const AlumnosPage: React.FC = () => {
                             <p className="text-sm text-gray-600">Total Alumnos</p>
                             <p className="text-2xl font-bold text-gray-800">{totalAlumnos}</p>
                         </div>
-                        <div className="p-3 bg-blue-50 rounded-lg">
-                            <Users className="w-6 h-6 text-blue-600" />
+                        <div className="p-3 bg-emerald-50 rounded-lg">
+                            <Users className="w-6 h-6 text-escuela" />
                         </div>
                     </div>
                 </div>
@@ -261,33 +279,17 @@ const AlumnosPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Búsqueda y filtros */}
+            {/* Búsqueda */}
             <div className="bg-white rounded-lg border border-gray-200 p-4 mb-4">
-                <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="flex-1 relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                        <input
-                            type="text"
-                            placeholder="Buscar por nombre, apellido, documento o sede..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg 
-                                     focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        />
-                    </div>
-                    <select
-                        value={itemsPerPage}
-                        onChange={(e) => {
-                            setItemsPerPage(Number(e.target.value));
-                            setCurrentPage(1);
-                        }}
-                        className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                    >
-                        <option value={10}>10 por página</option>
-                        <option value={25}>25 por página</option>
-                        <option value={50}>50 por página</option>
-                        <option value={100}>100 por página</option>
-                    </select>
+                <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                        type="text"
+                        placeholder="Buscar por nombre, apellido, documento o sede..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
                 </div>
             </div>
 
@@ -556,6 +558,7 @@ const AlumnosPage: React.FC = () => {
                         currentPage={currentPage}
                         totalItems={alumnosFiltrados.length}
                         itemsPerPage={itemsPerPage}
+                        onItemsPerPageChange={setItemsPerPage}
                         onPageChange={setCurrentPage}
                     />
                 </div>

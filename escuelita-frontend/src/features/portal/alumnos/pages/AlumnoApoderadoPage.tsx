@@ -126,7 +126,7 @@ const AlumnoApoderadoPage: React.FC = () => {
                 await eliminarRelacion(id);
                 toast.success('Relación eliminada exitosamente');
                 cargarDatos();
-            } catch (error) {
+            } catch {
                 toast.error('Error al eliminar la relación');
             }
         }
@@ -158,7 +158,7 @@ const AlumnoApoderadoPage: React.FC = () => {
             }
             setShowModal(false);
             cargarDatos();
-        } catch (error) {
+        } catch {
             toast.error(relacionEditar ? 'Error al actualizar la relación' : 'Error al crear la relación');
         }
     };
@@ -183,7 +183,7 @@ const AlumnoApoderadoPage: React.FC = () => {
                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-4">
                     <div>
                         <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 flex items-center space-x-3">
-                            <Link2 className="w-7 h-7 text-primary" />
+                            <Link2 className="w-7 h-7 text-escuela" />
                             <span>Relación Alumno-Apoderado</span>
                         </h1>
                         <p className="text-gray-600 mt-1 text-sm lg:text-base">
@@ -208,8 +208,8 @@ const AlumnoApoderadoPage: React.FC = () => {
                             <p className="text-sm text-gray-600">Total Relaciones</p>
                             <p className="text-2xl font-bold text-gray-800">{relacionesFiltradas.length}</p>
                         </div>
-                        <div className="p-3 bg-blue-50 rounded-lg">
-                            <Link2 className="w-6 h-6 text-blue-600" />
+                        <div className="p-3 bg-emerald-50 rounded-lg">
+                            <Link2 className="w-6 h-6 text-escuela" />
                         </div>
                     </div>
                 </div>
@@ -333,8 +333,7 @@ const AlumnoApoderadoPage: React.FC = () => {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                           bg-blue-100 text-blue-800">
+                                            <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-emerald-100 text-escuela">
                                                 {relacion.parentesco}
                                             </span>
                                         </td>
@@ -364,7 +363,7 @@ const AlumnoApoderadoPage: React.FC = () => {
                                             <div className="flex justify-end gap-2">
                                                 <button
                                                     onClick={() => handleEditar(relacion)}
-                                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                    className="p-2 text-escuela hover:bg-emerald-50 rounded-lg transition-colors"
                                                     title="Editar"
                                                 >
                                                     <Edit className="w-4 h-4" />
@@ -405,7 +404,7 @@ const AlumnoApoderadoPage: React.FC = () => {
                             <div className="flex items-start justify-between mb-3">
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-2">
-                                        <span className="px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        <span className="px-3 py-1 text-xs font-semibold rounded-full bg-emerald-100 text-escuela">
                                             {relacion.parentesco}
                                         </span>
                                         {relacion.esRepresentanteFinanciero && (
@@ -432,7 +431,7 @@ const AlumnoApoderadoPage: React.FC = () => {
                                 <div className="flex gap-1">
                                     <button
                                         onClick={() => handleEditar(relacion)}
-                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                        className="p-2 text-escuela hover:bg-emerald-50 rounded-lg transition-colors"
                                     >
                                         <Edit className="w-4 h-4" />
                                     </button>

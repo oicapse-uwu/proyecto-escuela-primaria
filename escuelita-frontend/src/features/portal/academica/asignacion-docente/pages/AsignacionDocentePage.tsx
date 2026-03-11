@@ -21,6 +21,7 @@ interface Docente {
 interface Seccion {
     idSeccion: number;
     nombreSeccion: string;
+    idGrado?: { idGrado: number; nombreGrado: string } | null;
 }
 
 interface Curso {
@@ -316,7 +317,9 @@ const AsignacionDocentePage: React.FC = () => {
                                                 {getNombreDocente(asig.idDocente)}
                                             </td>
                                             <td className="px-6 py-4 text-gray-600 text-sm">
-                                                {asig.idSeccion?.nombreSeccion ?? '�?"'}
+                                                {asig.idSeccion
+                                                    ? `${asig.idSeccion.idGrado?.nombreGrado ?? ''} - ${asig.idSeccion.nombreSeccion}`
+                                                    : '—'}
                                             </td>
                                             <td className="px-6 py-4 text-gray-600 text-sm">
                                                 {asig.idCurso?.nombreCurso ?? '�?"'}
@@ -381,7 +384,9 @@ const AsignacionDocentePage: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className="space-y-1.5 text-sm text-gray-600">
-                                    <p><span className="font-medium text-gray-700">Sección:</span> {asig.idSeccion?.nombreSeccion ?? '�?"'}</p>
+                                    <p><span className="font-medium text-gray-700">Sección:</span> {asig.idSeccion
+                                        ? `${asig.idSeccion.idGrado?.nombreGrado ?? ''} - ${asig.idSeccion.nombreSeccion}`
+                                        : '—'}</p>
                                     <p><span className="font-medium text-gray-700">Curso:</span> {asig.idCurso?.nombreCurso ?? '�?"'}</p>
                                     <p><span className="font-medium text-gray-700">Año Escolar:</span> {asig.idAnioEscolar?.nombreAnio ?? '�?"'}</p>
                                 </div>
@@ -442,7 +447,7 @@ const AsignacionDocentePage: React.FC = () => {
                                         onChange={v => setFormData(prev => ({ ...prev, idSeccion: v }))}
                                         options={secciones}
                                         getOptionId={s => s.idSeccion}
-                                        getOptionLabel={s => s.nombreSeccion}
+                                        getOptionLabel={s => s.idGrado ? `${s.idGrado.nombreGrado} - ${s.nombreSeccion}` : s.nombreSeccion}
                                         placeholder="Buscar sección..."
                                         emptyMessage="No se encontraron secciones"
                                     />

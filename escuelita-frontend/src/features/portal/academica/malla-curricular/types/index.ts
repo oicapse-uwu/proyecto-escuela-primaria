@@ -1,40 +1,59 @@
 // Tipos para el módulo de Malla Curricular
+
+// Respuesta real del backend
 export interface MallaCurricular {
-    idMallaCurricular: number;
-    anio: number;
-    grado: string;
+    idMalla: number;
+    idAnioEscolar: {
+        idAnioEscolar: number;
+        nombreAnio: string;
+    };
+    idGrado: {
+        idGrado: number;
+        nombreGrado: string;
+    };
     idCurso: {
         idCurso: number;
         nombreCurso: string;
-    };
-    idArea: {
-        idArea: number;
-        nombreArea: string;
-        idSede?: number;
+        idArea?: {
+            idArea: number;
+            nombreArea: string;
+        };
     };
     estado: number;
 }
 
 export interface MallaCurricularFormData {
-    idMallaCurricular?: number;
-    anio: number;
-    grado: string;
+    idMalla?: number;
+    idAnioEscolar: number;
+    idGrado: number;
     idCurso: number;
-    idArea: number;
+    idArea?: number; // para filtrar cursos en el formulario
     estado?: number;
 }
 
 export interface CreateMallaCurricularRequest {
-    anio: number;
-    grado: string;
+    idAnioEscolar: number;
+    idGrado: number;
     idCurso: number;
-    idArea: number;
 }
 
 export interface UpdateMallaCurricularRequest extends CreateMallaCurricularRequest {
-    idMallaCurricular: number;
+    idMalla: number;
     estado?: number;
 }
+
+export type Grado = {
+    idGrado: number;
+    nombreGrado: string;
+    estado: number;
+};
+
+export type AnioEscolarItem = {
+    idAnioEscolar: number;
+    nombreAnio: string;
+    activo?: number;
+    estado: number;
+};
 
 export interface Curso {
     idCurso: number;

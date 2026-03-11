@@ -1,7 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 import {
     BookOpen,
-    Briefcase,
     Building,
     Building2,
     Calendar,
@@ -71,7 +70,6 @@ const menuModulesConfig: Record<string, { icon: LucideIcon; subItems?: Record<st
             'Áreas y Cursos': { path: '/escuela/academica/areas-cursos', icon: BookOpen },
             'Malla Curricular': { path: '/escuela/academica/malla-curricular', icon: Grid3x3 },
             'Docentes': { path: '/escuela/academica/docentes', icon: User },
-            'Especialidades': { path: '/escuela/academica/especialidades', icon: Briefcase },
             'Asignación Docente': { path: '/escuela/academica/asignacion-docente', icon: ClipboardList },
             'Horarios': { path: '/escuela/academica/horarios', icon: Clock },
         }

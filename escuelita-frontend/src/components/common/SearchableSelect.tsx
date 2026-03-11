@@ -15,6 +15,7 @@ interface SearchableSelectProps<T> {
     disabled?: boolean;
     error?: string;
     className?: string;
+    inputClassName?: string;
     emptyMessage?: string;
 }
 
@@ -31,6 +32,7 @@ function SearchableSelect<T>({
     disabled = false,
     error,
     className = '',
+    inputClassName = '',
     emptyMessage = 'No se encontraron resultados'
 }: SearchableSelectProps<T>) {
     const [searchTerm, setSearchTerm] = useState('');
@@ -229,7 +231,7 @@ function SearchableSelect<T>({
                     disabled={disabled}
                     className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
                         error ? 'border-red-500' : 'border-gray-300'
-                    } ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                    } ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''} ${inputClassName}`}
                     required={required && !value}
                 />
             </div>

@@ -1,7 +1,8 @@
-﻿import { ClipboardList, Edit, Plus, Search, Trash2, X } from 'lucide-react';
+﻿import { BookOpen, ClipboardList, Edit, Layers, Plus, Search, Trash2, UserCheck, X } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast, Toaster } from 'sonner';
 import Pagination from '../../../../../components/common/Pagination';
+import SearchableSelect from '../../../../../components/common/SearchableSelect';
 import { api, API_ENDPOINTS } from '../../../../../config/api.config';
 
 // ===================== TYPES =====================
@@ -30,6 +31,8 @@ interface Curso {
 interface AnioEscolar {
     idAnioEscolar: number;
     nombreAnio: string;
+    activo?: number;
+    estado?: number;
 }
 
 interface AsignacionDocente {
@@ -42,10 +45,10 @@ interface AsignacionDocente {
 }
 
 interface AsignacionForm {
-    idDocente: number | '';
-    idSeccion: number | '';
-    idCurso: number | '';
-    idAnioEscolar: number | '';
+    idDocente: number | string;
+    idSeccion: number | string;
+    idCurso: number | string;
+    idAnioEscolar: number | string;
 }
 
 // ===================== HELPERS =====================
@@ -208,17 +211,17 @@ const AsignacionDocentePage: React.FC = () => {
     // ===================== RENDER =====================
 
     return (
-        <div className="p-4 lg:p-6 max-w-7xl mx-auto">
+        <div className="space-y-6 p-4 md:p-6">
             <Toaster position="top-right" richColors />
 
             {/* Header */}
-            <div className="flex justify-between items-center mb-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                        <ClipboardList className="text-primary w-7 h-7" />
-                        Asignación de Docentes
-                    </h1>
-                    <p className="text-gray-500 text-sm mt-1">Gestione las asignaciones de docentes a secciones y cursos</p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <ClipboardList className="w-7 h-7 text-escuela" />
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">Asignación Docente</h1>
+                        <p className="text-sm text-gray-500">Gestione las asignaciones de docentes a secciones y cursos</p>
+                    </div>
                 </div>
                 <button
                     onClick={openCrear}
@@ -230,8 +233,43 @@ const AsignacionDocentePage: React.FC = () => {
                 </button>
             </div>
 
+            {/* Stats Cards */}
+            {!loading && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="bg-white rounded-xl border p-4 flex items-center justify-between">
+                        <div>
+                            <p className="text-xs text-gray-500 uppercase font-medium tracking-wide">Total Asignaciones</p>
+                            <p className="text-3xl font-bold text-blue-600 mt-1">{asignaciones.length}</p>
+                        </div>
+                        <div className="p-2 bg-blue-100 rounded-lg"><ClipboardList className="w-6 h-6 text-blue-600" /></div>
+                    </div>
+                    <div className="bg-white rounded-xl border p-4 flex items-center justify-between">
+                        <div>
+                            <p className="text-xs text-gray-500 uppercase font-medium tracking-wide">Docentes Asignados</p>
+                            <p className="text-3xl font-bold text-green-600 mt-1">{new Set(asignaciones.map(a => a.idDocente?.idDocente).filter(Boolean)).size}</p>
+                        </div>
+                        <div className="p-2 bg-green-100 rounded-lg"><UserCheck className="w-6 h-6 text-green-600" /></div>
+                    </div>
+                    <div className="bg-white rounded-xl border p-4 flex items-center justify-between">
+                        <div>
+                            <p className="text-xs text-gray-500 uppercase font-medium tracking-wide">Secciones Cubiertas</p>
+                            <p className="text-3xl font-bold text-purple-600 mt-1">{new Set(asignaciones.map(a => a.idSeccion?.idSeccion).filter(Boolean)).size}</p>
+                        </div>
+                        <div className="p-2 bg-purple-100 rounded-lg"><Layers className="w-6 h-6 text-purple-600" /></div>
+                    </div>
+                    <div className="bg-white rounded-xl border p-4 flex items-center justify-between">
+                        <div>
+                            <p className="text-xs text-gray-500 uppercase font-medium tracking-wide">Cursos Asignados</p>
+                            <p className="text-3xl font-bold text-yellow-600 mt-1">{new Set(asignaciones.map(a => a.idCurso?.idCurso).filter(Boolean)).size}</p>
+                        </div>
+                        <div className="p-2 bg-yellow-100 rounded-lg"><BookOpen className="w-6 h-6 text-yellow-600" /></div>
+                    </div>
+                </div>
+            )}
+
             {/* Search */}
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-4">
+            <div className="bg-white rounded-lg shadow p-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Buscar asignación</label>
                 <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <input
@@ -239,7 +277,7 @@ const AsignacionDocentePage: React.FC = () => {
                         placeholder="Buscar por docente, sección o curso..."
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
                     />
                 </div>
             </div>
@@ -364,122 +402,96 @@ const AsignacionDocentePage: React.FC = () => {
 
             {/* Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-lg">
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl flex flex-col">
                         {/* Modal Header */}
-                        <div className="flex justify-between items-center p-6 border-b border-gray-200">
-                            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                                <ClipboardList className="w-5 h-5 text-primary" />
-                                {editingAsignacion ? 'Editar Asignación' : 'Nueva Asignación'}
-                            </h2>
-                            <button
-                                onClick={closeModal}
-                                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                            >
+                        <div className="flex items-center justify-between px-6 py-5 bg-gradient-to-r from-escuela-light to-escuela-dark rounded-t-lg">
+                            <div className="flex items-center gap-3">
+                                <div className="w-1 self-stretch bg-white/60 rounded-full" />
+                                <h2 className="text-lg font-bold text-white">
+                                    {editingAsignacion ? 'Editar Asignación' : 'Nueva Asignación'}
+                                </h2>
+                            </div>
+                            <button onClick={closeModal} className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/20 transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
 
-                        {/* Modal Body */}
-                        <form onSubmit={handleSubmit} className="p-6 space-y-5">
-                            {/* Docente */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                    Docente <span className="text-red-500">*</span>
-                                </label>
-                                <select
-                                    value={formData.idDocente}
-                                    onChange={e => setFormData(prev => ({ ...prev, idDocente: e.target.value ? Number(e.target.value) : '' }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
-                                    required
-                                >
-                                    <option value="">Seleccionar docente...</option>
-                                    {docentes.map(d => (
-                                        <option key={d.idDocente} value={d.idDocente}>
-                                            {getNombreDocente(d)}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+                        {/* Form */}
+                        <form onSubmit={handleSubmit}>
+                            <div className="p-8 grid grid-cols-2 gap-x-8 gap-y-6">
+                                {/* Docente */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Docente <span className="text-red-500">*</span></label>
+                                    <SearchableSelect<Docente>
+                                        value={formData.idDocente}
+                                        onChange={v => setFormData(prev => ({ ...prev, idDocente: v }))}
+                                        options={docentes}
+                                        getOptionId={d => d.idDocente}
+                                        getOptionLabel={d => getNombreDocente(d)}
+                                        placeholder="Buscar docente..."
+                                        emptyMessage="No se encontraron docentes"
+                                    />
+                                </div>
 
-                            {/* Sección */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                    Sección <span className="text-red-500">*</span>
-                                </label>
-                                <select
-                                    value={formData.idSeccion}
-                                    onChange={e => setFormData(prev => ({ ...prev, idSeccion: e.target.value ? Number(e.target.value) : '' }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
-                                    required
-                                >
-                                    <option value="">Seleccionar sección...</option>
-                                    {secciones.map(s => (
-                                        <option key={s.idSeccion} value={s.idSeccion}>
-                                            {s.nombreSeccion}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+                                {/* Sección */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Sección <span className="text-red-500">*</span></label>
+                                    <SearchableSelect<Seccion>
+                                        value={formData.idSeccion}
+                                        onChange={v => setFormData(prev => ({ ...prev, idSeccion: v }))}
+                                        options={secciones}
+                                        getOptionId={s => s.idSeccion}
+                                        getOptionLabel={s => s.nombreSeccion}
+                                        placeholder="Buscar sección..."
+                                        emptyMessage="No se encontraron secciones"
+                                    />
+                                </div>
 
-                            {/* Curso */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                    Curso <span className="text-red-500">*</span>
-                                </label>
-                                <select
-                                    value={formData.idCurso}
-                                    onChange={e => setFormData(prev => ({ ...prev, idCurso: e.target.value ? Number(e.target.value) : '' }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
-                                    required
-                                >
-                                    <option value="">Seleccionar curso...</option>
-                                    {cursos.map(c => (
-                                        <option key={c.idCurso} value={c.idCurso}>
-                                            {c.nombreCurso}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
+                                {/* Curso */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Curso <span className="text-red-500">*</span></label>
+                                    <SearchableSelect<Curso>
+                                        value={formData.idCurso}
+                                        onChange={v => setFormData(prev => ({ ...prev, idCurso: v }))}
+                                        options={cursos}
+                                        getOptionId={c => c.idCurso}
+                                        getOptionLabel={c => c.nombreCurso}
+                                        placeholder="Buscar curso..."
+                                        emptyMessage="No se encontraron cursos"
+                                    />
+                                </div>
 
-                            {/* Año Escolar */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                                    Año Escolar <span className="text-red-500">*</span>
-                                </label>
-                                <select
-                                    value={formData.idAnioEscolar}
-                                    onChange={e => setFormData(prev => ({ ...prev, idAnioEscolar: e.target.value ? Number(e.target.value) : '' }))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-sm"
-                                    required
-                                >
-                                    <option value="">Seleccionar año escolar...</option>
-                                    {anios.map(a => (
-                                        <option key={a.idAnioEscolar} value={a.idAnioEscolar}>
-                                            {a.nombreAnio}
-                                        </option>
-                                    ))}
-                                </select>
+                                {/* Año Escolar */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Año Escolar <span className="text-red-500">*</span></label>
+                                    <SearchableSelect<AnioEscolar>
+                                        value={formData.idAnioEscolar}
+                                        onChange={v => setFormData(prev => ({ ...prev, idAnioEscolar: v }))}
+                                        options={anios.filter(a => a.activo === 1 || a.activo === undefined)}
+                                        getOptionId={a => a.idAnioEscolar}
+                                        getOptionLabel={a => a.nombreAnio}
+                                        placeholder="Buscar año escolar..."
+                                        emptyMessage="No se encontraron años escolares"
+                                    />
+                                </div>
                             </div>
 
                             {/* Modal Footer */}
-                            <div className="flex gap-3 pt-2">
+                            <div className="px-6 py-4 bg-gray-50 border-t rounded-b-lg flex justify-end gap-3">
                                 <button
                                     type="button"
                                     onClick={closeModal}
-                                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                                    className="px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
                                 >
                                     Cancelar
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed text-sm font-medium flex items-center justify-center gap-2"
+                                    className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-escuela to-escuela-light rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
                                 >
-                                    {isSubmitting && (
-                                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
-                                    )}
-                                    {isSubmitting ? 'Guardando...' : editingAsignacion ? 'Actualizar' : 'Guardar'}
+                                    {isSubmitting ? 'Guardando...' : editingAsignacion ? 'Actualizar Asignación' : 'Crear Asignación'}
                                 </button>
                             </div>
                         </form>

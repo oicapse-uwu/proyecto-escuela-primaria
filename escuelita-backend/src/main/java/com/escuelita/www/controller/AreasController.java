@@ -32,6 +32,14 @@ public class AreasController {
         // Las áreas son globales, se devuelven todas
         return serviceAreas.buscarTodos();
     }
+
+    @GetMapping("/areas/{id}")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
+    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
+        return serviceAreas.buscarId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
     @PostMapping("/areas")
     @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
     public ResponseEntity<?> guardar(@RequestBody AreasDTO dto) {

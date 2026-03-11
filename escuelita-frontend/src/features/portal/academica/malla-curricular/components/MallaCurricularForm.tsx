@@ -1,6 +1,7 @@
-﻿import React, { useEffect } from 'react';
+﻿import React, { useEffect, useMemo } from 'react';
 import Modal from '../../../../../components/common/Modal';
-import type { Area, Curso, MallaCurricularFormData } from '../types';
+import SearchableSelect from '../../../../../components/common/SearchableSelect';
+import type { AnioEscolarItem, Curso, Grado, MallaCurricularFormData } from '../types';
 
 interface MallaCurricularFormProps {
     isOpen: boolean;
@@ -8,18 +9,10 @@ interface MallaCurricularFormProps {
     onSubmit: (data: MallaCurricularFormData) => Promise<void>;
     initialData?: MallaCurricularFormData;
     cursos: Curso[];
-    areas: Area[];
+    grados: Grado[];
+    anios: AnioEscolarItem[];
     loading?: boolean;
 }
-
-const GRADOS = [
-    { value: 'PRIMERO', label: 'Primero' },
-    { value: 'SEGUNDO', label: 'Segundo' },
-    { value: 'TERCERO', label: 'Tercero' },
-    { value: 'CUARTO', label: 'Cuarto' },
-    { value: 'QUINTO', label: 'Quinto' },
-    { value: 'SEXTO', label: 'Sexto' }
-];
 
 const MallaCurricularForm: React.FC<MallaCurricularFormProps> = ({
     isOpen,
@@ -27,34 +20,42 @@ const MallaCurricularForm: React.FC<MallaCurricularFormProps> = ({
     onSubmit,
     initialData,
     cursos,
-    areas,
+    grados,
+    anios,
     loading = false
 }) => {
-    const [formData, setFormData] = React.useState<MallaCurricularFormData>(() => 
-        initialData || {
-            anio: new Date().getFullYear(),
-            grado: '',
-            idCurso: 0,
-            idArea: 0
-        }
+    const [formData, setFormData] = React.useState<MallaCurricularFormData>(() =>
+        initialData || { idAnioEscolar: 0, idGrado: 0, idCurso: 0, idArea: 0 }
     );
 
-    // Sincronizar datos cuando cambia initialData
     useEffect(() => {
-        if (initialData && isOpen) {
-            // Solo leer initialData, no setear estado
-            // El estado se inicializa en useState
+        if (isOpen) {
+            setFormData(initialData || { idAnioEscolar: 0, idGrado: 0, idCurso: 0, idArea: 0 });
         }
-    }, [initialData, isOpen]);
+    }, [isOpen, initialData]);
+
+    const cursosFiltrados = useMemo(() => cursos.filter(c => {
+        const areaId = typeof c.idArea === 'object' ? c.idArea.idArea : c.idArea;
+        return areaId === formData.idArea;
+    }), [cursos, formData.idArea]);
+
+    // Derivar áreas únicas de los cursos disponibles
+    const areas = useMemo(() => {
+        const map = new Map<number, { idArea: number; nombreArea: string }>();
+        for (const c of cursos) {
+            if (typeof c.idArea === 'object' && c.idArea.idArea) {
+                map.set(c.idArea.idArea, { idArea: c.idArea.idArea, nombreArea: c.idArea.nombreArea });
+            }
+        }
+        return Array.from(map.values());
+    }, [cursos]);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        if (!formData.anio || !formData.grado || !formData.idCurso || !formData.idArea) {
+        if (!formData.idAnioEscolar || !formData.idGrado || !formData.idCurso) {
             alert('Todos los campos son obligatorios');
             return;
         }
-
         try {
             await onSubmit(formData);
             onClose();
@@ -64,12 +65,7 @@ const MallaCurricularForm: React.FC<MallaCurricularFormProps> = ({
     };
 
     const handleClose = () => {
-        setFormData({
-            anio: new Date().getFullYear(),
-            grado: '',
-            idCurso: 0,
-            idArea: 0
-        });
+        setFormData({ idAnioEscolar: 0, idGrado: 0, idCurso: 0, idArea: 0 });
         onClose();
     };
 
@@ -77,105 +73,78 @@ const MallaCurricularForm: React.FC<MallaCurricularFormProps> = ({
         <Modal
             isOpen={isOpen}
             onClose={handleClose}
-            title={initialData?.idMallaCurricular ? 'Editar Malla Curricular' : 'Nueva Malla Curricular'}
+            title={initialData?.idMalla ? 'Editar Malla Curricular' : 'Nueva Malla Curricular'}
         >
-            <form onSubmit={handleSubmit} className="space-y-4">
-                {/* Año */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Año *
-                    </label>
-                    <input
-                        type="number"
-                        value={formData.anio}
-                        onChange={(e) => setFormData({...formData, anio: Number(e.target.value)})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-escuela"
-                        min="2020"
-                        max="2030"
-                        required
-                    />
-                </div>
-
-                {/* Grado */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Grado *
-                    </label>
-                    <select
-                        value={formData.grado}
-                        onChange={(e) => setFormData({...formData, grado: e.target.value})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-escuela"
-                        required
-                    >
-                        <option value="">Seleccionar grado</option>
-                        {GRADOS.map(grado => (
-                            <option key={grado.value} value={grado.value}>
-                                {grado.label}
-                            </option>
-                        ))}
-                    </select>
+            <form onSubmit={handleSubmit} className="space-y-3 py-1">
+                {/* Año + Grado en fila */}
+                <div className="flex gap-3">
+                    <div className="flex-1">
+                        <SearchableSelect
+                            label="Año *"
+                            value={formData.idAnioEscolar || ''}
+                            onChange={(v) => setFormData({ ...formData, idAnioEscolar: Number(v) })}
+                            options={anios}
+                            getOptionId={(a) => a.idAnioEscolar}
+                            getOptionLabel={(a) => a.nombreAnio}
+                            placeholder="Buscar año..."
+                            emptyMessage="No hay años disponibles"
+                        />
+                    </div>
+                    <div className="flex-1">
+                        <SearchableSelect
+                            label="Grado *"
+                            value={formData.idGrado || ''}
+                            onChange={(v) => setFormData({ ...formData, idGrado: Number(v) })}
+                            options={grados}
+                            getOptionId={(g) => g.idGrado}
+                            getOptionLabel={(g) => g.nombreGrado}
+                            placeholder="Buscar grado..."
+                            emptyMessage="No se encontraron grados"
+                        />
+                    </div>
                 </div>
 
                 {/* Área */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Área *
-                    </label>
-                    <select
-                        value={formData.idArea}
-                        onChange={(e) => setFormData({...formData, idArea: Number(e.target.value)})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-escuela"
-                        required
-                    >
-                        <option value={0}>Seleccionar área</option>
-                        {areas.map(area => (
-                            <option key={area.idArea} value={area.idArea}>
-                                {area.nombreArea}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <SearchableSelect
+                    label="Área *"
+                    value={formData.idArea || ''}
+                    onChange={(v) => setFormData({ ...formData, idArea: Number(v), idCurso: 0 })}
+                    options={areas}
+                    getOptionId={(a) => a.idArea}
+                    getOptionLabel={(a) => a.nombreArea}
+                    placeholder="Buscar área..."
+                    emptyMessage="No se encontraron áreas"
+                />
 
                 {/* Curso */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Curso *
-                    </label>
-                    <select
-                        value={formData.idCurso}
-                        onChange={(e) => setFormData({...formData, idCurso: Number(e.target.value)})}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-escuela"
-                        required
-                    >
-                        <option value={0}>Seleccionar curso</option>
-                        {cursos
-                            .filter(curso => {
-                                const areaId = typeof curso.idArea === 'object' ? curso.idArea.idArea : curso.idArea;
-                                return areaId === formData.idArea;
-                            })
-                            .map(curso => (
-                                <option key={curso.idCurso} value={curso.idCurso}>
-                                    {curso.nombreCurso}
-                                </option>
-                            ))}
-                    </select>
-                </div>
+                <SearchableSelect
+                    label="Curso *"
+                    value={formData.idCurso || ''}
+                    onChange={(v) => setFormData({ ...formData, idCurso: Number(v) })}
+                    options={cursosFiltrados}
+                    getOptionId={(c) => c.idCurso}
+                    getOptionLabel={(c) => c.nombreCurso}
+                    placeholder={formData.idArea ? 'Buscar curso...' : 'Primero selecciona un área'}
+                    emptyMessage="No hay cursos para esta área"
+                    disabled={!formData.idArea}
+                    inputClassName="py-3"
+                />
 
-                <div className="flex justify-end space-x-3 pt-4">
+                <div className="flex justify-end gap-2 pt-2">
                     <button
                         type="button"
                         onClick={handleClose}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
                         disabled={loading}
                     >
                         Cancelar
                     </button>
                     <button
                         type="submit"
-                        className="bg-gradient-to-r from-escuela to-escuela-light text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
+                        className="bg-gradient-to-r from-escuela to-escuela-light text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 text-sm"
                         disabled={loading}
                     >
-                        {loading ? 'Guardando...' : (initialData?.idMallaCurricular ? 'Actualizar' : 'Crear')}
+                        {loading ? 'Guardando...' : (initialData?.idMalla ? 'Actualizar' : 'Crear')}
                     </button>
                 </div>
             </form>

@@ -1,7 +1,8 @@
-﻿import { Edit, Plus, Search, Trash2, User } from 'lucide-react';
+﻿import { BookOpen, Clock, Edit, Plus, Search, Trash2, UserCheck, Users, X } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast, Toaster } from 'sonner';
 import Pagination from '../../../../../components/common/Pagination';
+import SearchableSelect from '../../../../../components/common/SearchableSelect';
 import { api, API_ENDPOINTS } from '../../../../../config/api.config';
 
 interface Docente {
@@ -18,6 +19,7 @@ interface Usuario {
     idUsuario: number;
     nombres: string;
     apellidos: string;
+    idRol?: { idRol: number };
 }
 
 interface Especialidad {
@@ -40,8 +42,8 @@ const DocentesPage: React.FC = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Form state
-    const [formIdUsuario, setFormIdUsuario] = useState<string>('');
-    const [formIdEspecialidad, setFormIdEspecialidad] = useState<string>('');
+    const [formIdUsuario, setFormIdUsuario] = useState<number | string>('');
+    const [formIdEspecialidad, setFormIdEspecialidad] = useState<number | string>('');
     const [formGradoAcademico, setFormGradoAcademico] = useState('');
     const [formEstadoLaboral, setFormEstadoLaboral] = useState('Activo');
     const [formFechaContratacion, setFormFechaContratacion] = useState('');
@@ -55,7 +57,7 @@ const DocentesPage: React.FC = () => {
                 api.get<Especialidad[]>(API_ENDPOINTS.ESPECIALIDADES),
             ]);
             setDocentes(docentesRes.data || []);
-            setUsuarios(usuariosRes.data || []);
+            setUsuarios((usuariosRes.data || []).filter(u => u.idRol?.idRol === 2));
             setEspecialidades(especialidadesRes.data || []);
         } catch {
             toast.error('Error al cargar los datos');
@@ -157,6 +159,12 @@ const DocentesPage: React.FC = () => {
             ? `${docente.idUsuario.nombres} ${docente.idUsuario.apellidos}`
             : 'Sin usuario';
 
+    // Stats derivados
+    const totalDocentes = docentes.length;
+    const docentesActivos = docentes.filter(d => d.estadoLaboral === 'Activo').length;
+    const especialidadesEnUso = new Set(docentes.map(d => d.idEspecialidad?.idEspecialidad).filter(Boolean)).size;
+    const enLicencia = docentes.filter(d => d.estadoLaboral === 'Licencia').length;
+
     return (
         <div className="space-y-6 p-4 md:p-6">
             <Toaster richColors position="top-right" />
@@ -164,9 +172,7 @@ const DocentesPage: React.FC = () => {
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-100 rounded-lg">
-                        <User className="w-6 h-6 text-blue-600" />
-                    </div>
+                    <Users className="w-7 h-7 text-escuela" />
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">Docentes</h1>
                         <p className="text-sm text-gray-500">Gestión de perfiles docentes</p>
@@ -180,16 +186,61 @@ const DocentesPage: React.FC = () => {
                 </button>
             </div>
 
+            {/* Stats Cards */}
+            {!cargando && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="bg-white rounded-xl border p-4 flex items-center justify-between">
+                        <div>
+                            <p className="text-xs text-gray-500 uppercase font-medium tracking-wide">Total Docentes</p>
+                            <p className="text-3xl font-bold text-gray-900 mt-1">{totalDocentes}</p>
+                        </div>
+                        <div className="p-2 bg-blue-100 rounded-lg">
+                            <Users className="w-6 h-6 text-blue-600" />
+                        </div>
+                    </div>
+                    <div className="bg-white rounded-xl border p-4 flex items-center justify-between">
+                        <div>
+                            <p className="text-xs text-gray-500 uppercase font-medium tracking-wide">Docentes Activos</p>
+                            <p className="text-3xl font-bold text-green-600 mt-1">{docentesActivos}</p>
+                        </div>
+                        <div className="p-2 bg-green-100 rounded-lg">
+                            <UserCheck className="w-6 h-6 text-green-600" />
+                        </div>
+                    </div>
+                    <div className="bg-white rounded-xl border p-4 flex items-center justify-between">
+                        <div>
+                            <p className="text-xs text-gray-500 uppercase font-medium tracking-wide">Especialidades</p>
+                            <p className="text-3xl font-bold text-purple-600 mt-1">{especialidadesEnUso}</p>
+                        </div>
+                        <div className="p-2 bg-purple-100 rounded-lg">
+                            <BookOpen className="w-6 h-6 text-purple-600" />
+                        </div>
+                    </div>
+                    <div className="bg-white rounded-xl border p-4 flex items-center justify-between">
+                        <div>
+                            <p className="text-xs text-gray-500 uppercase font-medium tracking-wide">En Licencia</p>
+                            <p className="text-3xl font-bold text-yellow-600 mt-1">{enLicencia}</p>
+                        </div>
+                        <div className="p-2 bg-yellow-100 rounded-lg">
+                            <Clock className="w-6 h-6 text-yellow-600" />
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Search */}
-            <div className="relative max-w-md">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                    type="text"
-                    placeholder="Buscar por nombre, apellido o especialidad..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
+            <div className="bg-white rounded-lg shadow p-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Buscar docente</label>
+                <div className="relative w-full">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                        type="text"
+                        placeholder="Buscar por nombre, apellido o especialidad..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
+                    />
+                </div>
             </div>
 
             {/* Loading */}
@@ -320,124 +371,134 @@ const DocentesPage: React.FC = () => {
                     </div>
 
                     {/* Pagination */}
-                    {totalItems > itemsPerPage && (
-                        <Pagination
-                            currentPage={currentPage}
-                            totalItems={totalItems}
-                            itemsPerPage={itemsPerPage}
-                            onPageChange={setCurrentPage}
-                            onItemsPerPageChange={setItemsPerPage}
-                        />
-                    )}
+                    <Pagination
+                        currentPage={currentPage}
+                        totalItems={totalItems}
+                        itemsPerPage={itemsPerPage}
+                        onPageChange={setCurrentPage}
+                        onItemsPerPageChange={setItemsPerPage}
+                    />
                 </>
             )}
 
             {/* Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
-                        <div className="p-6 border-b">
-                            <h2 className="text-lg font-bold text-gray-900">
-                                {seleccionado ? 'Editar Docente' : 'Nuevo Docente'}
-                            </h2>
-                        </div>
-                        <div className="p-6 space-y-4">
-                            {/* Usuario */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Usuario *
-                                </label>
-                                <select
-                                    value={formIdUsuario}
-                                    onChange={(e) => setFormIdUsuario(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                >
-                                    <option value="">Seleccione un usuario</option>
-                                    {usuarios.map((u) => (
-                                        <option key={u.idUsuario} value={u.idUsuario}>
-                                            {u.nombres} {u.apellidos}
-                                        </option>
-                                    ))}
-                                </select>
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl flex flex-col">
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between px-6 py-5 bg-gradient-to-r from-escuela-light to-escuela-dark rounded-t-lg">
+                            <div className="flex items-center gap-3">
+                                <div className="w-1 self-stretch bg-white/60 rounded-full" />
+                                <h2 className="text-lg font-bold text-white">
+                                    {seleccionado ? 'Editar Docente' : 'Nuevo Docente'}
+                                </h2>
                             </div>
-
-                            {/* Especialidad */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Especialidad *
-                                </label>
-                                <select
-                                    value={formIdEspecialidad}
-                                    onChange={(e) => setFormIdEspecialidad(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                >
-                                    <option value="">Seleccione una especialidad</option>
-                                    {especialidades.map((e) => (
-                                        <option key={e.idEspecialidad} value={e.idEspecialidad}>
-                                            {e.nombreEspecialidad}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {/* Grado Academico */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Grado Academico *
-                                </label>
-                                <input
-                                    type="text"
-                                    value={formGradoAcademico}
-                                    onChange={(e) => setFormGradoAcademico(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="Ej: Licenciado en Educacion"
-                                />
-                            </div>
-
-                            {/* Estado Laboral */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Estado Laboral *
-                                </label>
-                                <select
-                                    value={formEstadoLaboral}
-                                    onChange={(e) => setFormEstadoLaboral(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                >
-                                    {ESTADOS_LABORALES.map((estado) => (
-                                        <option key={estado} value={estado}>
-                                            {estado}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {/* Fecha Contratacion */}
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    Fecha de Contratacion *
-                                </label>
-                                <input
-                                    type="date"
-                                    value={formFechaContratacion}
-                                    onChange={(e) => setFormFechaContratacion(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                />
-                            </div>
-                        </div>
-                        <div className="p-6 border-t flex justify-end gap-3">
                             <button
                                 onClick={() => setShowModal(false)}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                                className="p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/20 transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {/* Modal Body */}
+                        <div className="p-6 overflow-y-auto flex-1">
+                            <div className="grid grid-cols-2 gap-x-6 gap-y-5">
+                                {/* Usuario */}
+                                <div>
+                                    <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
+                                        <Users className="w-4 h-4 text-gray-400" />
+                                        Usuario <span className="text-red-500">*</span>
+                                    </label>
+                                    <SearchableSelect<Usuario>
+                                        value={formIdUsuario}
+                                        onChange={(v) => setFormIdUsuario(v)}
+                                        options={usuarios}
+                                        getOptionId={(u) => u.idUsuario}
+                                        getOptionLabel={(u) => `${u.nombres} ${u.apellidos}`}
+                                        placeholder="Buscar por nombre..."
+                                        emptyMessage="No se encontraron usuarios"
+                                    />
+                                </div>
+
+                                {/* Especialidad */}
+                                <div>
+                                    <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
+                                        <BookOpen className="w-4 h-4 text-gray-400" />
+                                        Especialidad <span className="text-red-500">*</span>
+                                    </label>
+                                    <SearchableSelect<Especialidad>
+                                        value={formIdEspecialidad}
+                                        onChange={(v) => setFormIdEspecialidad(v)}
+                                        options={especialidades}
+                                        getOptionId={(e) => e.idEspecialidad}
+                                        getOptionLabel={(e) => e.nombreEspecialidad}
+                                        placeholder="Buscar especialidad..."
+                                        emptyMessage="No se encontraron especialidades"
+                                    />
+                                </div>
+
+                                {/* Grado Academico */}
+                                <div>
+                                    <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
+                                        <UserCheck className="w-4 h-4 text-gray-400" />
+                                        Grado Académico <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formGradoAcademico}
+                                        onChange={(e) => setFormGradoAcademico(e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
+                                        placeholder="Ej: Licenciado en Educacion"
+                                    />
+                                </div>
+
+                                {/* Estado Laboral */}
+                                <div>
+                                    <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
+                                        <UserCheck className="w-4 h-4 text-gray-400" />
+                                        Estado Laboral <span className="text-red-500">*</span>
+                                    </label>
+                                    <SearchableSelect<{ id: string; label: string }>
+                                        value={formEstadoLaboral}
+                                        onChange={(v) => setFormEstadoLaboral(String(v))}
+                                        options={ESTADOS_LABORALES.map((e) => ({ id: e, label: e }))}
+                                        getOptionId={(o) => o.id}
+                                        getOptionLabel={(o) => o.label}
+                                        placeholder="Seleccionar estado..."
+                                    />
+                                </div>
+
+                                {/* Fecha Contratacion */}
+                                <div className="col-span-2">
+                                    <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
+                                        <Clock className="w-4 h-4 text-gray-400" />
+                                        Fecha de Contratación <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        type="date"
+                                        value={formFechaContratacion}
+                                        onChange={(e) => setFormFechaContratacion(e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="px-6 py-4 bg-gray-50 border-t rounded-b-lg flex justify-end gap-3">
+                            <button
+                                onClick={() => setShowModal(false)}
+                                className="px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
                             >
                                 Cancelar
                             </button>
                             <button
                                 onClick={handleGuardar}
                                 disabled={isSubmitting}
-                                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                                className="px-5 py-2 text-sm font-medium text-white bg-gradient-to-r from-escuela to-escuela-light rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
                             >
-                                {isSubmitting ? 'Guardando...' : seleccionado ? 'Actualizar' : 'Crear'}
+                                {isSubmitting ? 'Guardando...' : seleccionado ? 'Actualizar Docente' : 'Crear Docente'}
                             </button>
                         </div>
                     </div>

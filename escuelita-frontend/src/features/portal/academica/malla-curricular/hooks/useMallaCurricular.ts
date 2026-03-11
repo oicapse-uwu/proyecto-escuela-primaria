@@ -1,10 +1,11 @@
 ﻿import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { filtrarPorSedeActual } from '../../../../../utils/sedeFilter';
 import { mallaCurricularApi } from '../api/mallaCurricularApi';
 import type {
+    AnioEscolarItem,
     Area,
     Curso,
+    Grado,
     MallaCurricular,
     MallaCurricularFormData
 } from '../types';
@@ -13,25 +14,17 @@ export const useMallaCurricular = () => {
     const [mallasCurriculares, setMallasCurriculares] = useState<MallaCurricular[]>([]);
     const [cursos, setCursos] = useState<Curso[]>([]);
     const [areas, setAreas] = useState<Area[]>([]);
+    const [grados, setGrados] = useState<Grado[]>([]);
+    const [anios, setAnios] = useState<AnioEscolarItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Fetch all mallas curriculares
     const fetchMallasCurriculares = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
             const data = await mallaCurricularApi.getAll();
-            
-            // ðŸ”’ FILTRAR POR SEDE DEL USUARIO ACTUAL (por idArea.idSede)
-            const datosFiltrados = filtrarPorSedeActual(
-                data.map(malla => ({
-                    ...malla,
-                    idSede: malla.idArea?.idSede
-                }))
-            ) as MallaCurricular[];
-            
-            setMallasCurriculares(datosFiltrados);
+            setMallasCurriculares(data);
         } catch {
             const errorMessage = 'Error al cargar las mallas curriculares';
             setError(errorMessage);
@@ -41,37 +34,49 @@ export const useMallaCurricular = () => {
         }
     }, []);
 
-    // Fetch cursos
     const fetchCursos = useCallback(async () => {
         try {
             const data = await mallaCurricularApi.getCursos();
             setCursos(data);
         } catch (err) {
             console.error('Error al cargar cursos:', err);
-            toast.error('Error al cargar cursos');
         }
     }, []);
 
-    // Fetch areas
     const fetchAreas = useCallback(async () => {
         try {
             const data = await mallaCurricularApi.getAreas();
             setAreas(data);
         } catch (err) {
-            console.error('Error al cargar áreas:', err);
-            toast.error('Error al cargar áreas');
+            console.error('Error al cargar areas:', err);
         }
     }, []);
 
-    // Create malla curricular
+    const fetchGrados = useCallback(async () => {
+        try {
+            const data = await mallaCurricularApi.getGrados();
+            setGrados(data);
+        } catch (err) {
+            console.error('Error al cargar grados:', err);
+        }
+    }, []);
+
+    const fetchAnios = useCallback(async () => {
+        try {
+            const data = await mallaCurricularApi.getAnios();
+            setAnios(data);
+        } catch (err) {
+            console.error('Error al cargar anios:', err);
+        }
+    }, []);
+
     const createMallaCurricular = useCallback(async (data: MallaCurricularFormData) => {
         setLoading(true);
         try {
             const newMalla = await mallaCurricularApi.create({
-                anio: data.anio,
-                grado: data.grado,
+                idAnioEscolar: data.idAnioEscolar,
+                idGrado: data.idGrado,
                 idCurso: data.idCurso,
-                idArea: data.idArea
             });
             setMallasCurriculares(prev => [...prev, newMalla]);
             return newMalla;
@@ -80,20 +85,18 @@ export const useMallaCurricular = () => {
         }
     }, []);
 
-    // Update malla curricular
     const updateMallaCurricular = useCallback(async (id: number, data: MallaCurricularFormData) => {
         setLoading(true);
         try {
             const updatedMalla = await mallaCurricularApi.update(id, {
-                idMallaCurricular: id,
-                anio: data.anio,
-                grado: data.grado,
+                idMalla: id,
+                idAnioEscolar: data.idAnioEscolar,
+                idGrado: data.idGrado,
                 idCurso: data.idCurso,
-                idArea: data.idArea,
                 estado: data.estado
             });
             setMallasCurriculares(prev => prev.map(malla =>
-                malla.idMallaCurricular === id ? updatedMalla : malla
+                malla.idMalla === id ? updatedMalla : malla
             ));
             return updatedMalla;
         } finally {
@@ -101,33 +104,33 @@ export const useMallaCurricular = () => {
         }
     }, []);
 
-    // Delete malla curricular
     const deleteMallaCurricular = useCallback(async (id: number) => {
         setLoading(true);
         try {
             await mallaCurricularApi.delete(id);
-            setMallasCurriculares(prev => prev.filter(malla => malla.idMallaCurricular !== id));
+            setMallasCurriculares(prev => prev.filter(malla => malla.idMalla !== id));
         } finally {
             setLoading(false);
         }
     }, []);
 
-    // Initialize data
     useEffect(() => {
         fetchMallasCurriculares();
         fetchCursos();
         fetchAreas();
-    }, [fetchMallasCurriculares, fetchCursos, fetchAreas]);
+        fetchGrados();
+        fetchAnios();
+    }, [fetchMallasCurriculares, fetchCursos, fetchAreas, fetchGrados, fetchAnios]);
 
     return {
         mallasCurriculares,
         cursos,
         areas,
+        grados,
+        anios,
         loading,
         error,
         fetchMallasCurriculares,
-        fetchCursos,
-        fetchAreas,
         createMallaCurricular,
         updateMallaCurricular,
         deleteMallaCurricular

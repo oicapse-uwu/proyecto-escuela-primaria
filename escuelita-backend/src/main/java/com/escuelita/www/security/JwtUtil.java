@@ -1,33 +1,31 @@
 package com.escuelita.www.security;
 
-import java.security.Key;
 import java.util.Date;
+
+import javax.crypto.SecretKey;
 
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtUtil {
-    private final Key key = Keys
-                    .secretKeyFor(SignatureAlgorithm.HS256);
+    private final SecretKey key = Jwts.SIG.HS256.key().build();
     private final long EXPIRATION_TIME = 100L*365*24*60*60*1000;
 
     public String generarToken(String clienteId){
         return Jwts.builder()
-            .setSubject(clienteId)
-            .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() 
+            .subject(clienteId)
+            .issuedAt(new Date())
+            .expiration(new Date(System.currentTimeMillis() 
                     + EXPIRATION_TIME))
             .signWith(key)
             .compact();    
     }
     public boolean validarToken(String token){
         try {
-            Jwts.parserBuilder().setSigningKey(key).build()
-                    .parseClaimsJws(token);
+            Jwts.parser().verifyWith(key).build()
+                    .parseSignedClaims(token);
             return true;
         } catch (Exception e) {
             return false;
@@ -35,7 +33,7 @@ public class JwtUtil {
     }
     
     public String extraerClienteId(String token){
-        return Jwts.parserBuilder().setSigningKey(key).build()
-                    .parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parser().verifyWith(key).build()
+                    .parseSignedClaims(token).getPayload().getSubject();
     }
 }

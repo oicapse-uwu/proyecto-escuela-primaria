@@ -126,4 +126,20 @@ public class MallaCurricularController {
         serviceMallaCurricular.eliminar(id);
         return "Malla curricular eliminada correctamente";
     }
+
+    @GetMapping("/mallacurricular/grados")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
+    public List<Grados> buscarGradosBySede() {
+        Long sedeId = TenantContext.getSedeId();
+        if (sedeId == null) return List.of();
+        return repoGrados.findByIdSedeIdSede(sedeId);
+    }
+
+    @GetMapping("/mallacurricular/anios")
+    @RequireModulo(4)  // 4 = Módulo GESTIÓN ACADÉMICA
+    public List<AnioEscolar> buscarAniosBySede() {
+        Long sedeId = TenantContext.getSedeId();
+        if (sedeId == null) return List.of();
+        return repoAnioEscolar.findByIdSedeIdSede(sedeId);
+    }
 }

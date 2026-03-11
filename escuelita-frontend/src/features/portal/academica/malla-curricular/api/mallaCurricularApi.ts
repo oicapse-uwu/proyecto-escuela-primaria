@@ -1,8 +1,10 @@
 ﻿import { api, API_ENDPOINTS } from '../../../../../config/api.config';
 import type {
+    AnioEscolarItem,
     Area,
     CreateMallaCurricularRequest,
     Curso,
+    Grado,
     MallaCurricular,
     UpdateMallaCurricularRequest
 } from '../types';
@@ -48,5 +50,17 @@ export const mallaCurricularApi = {
     getAreas: async (): Promise<Area[]> => {
         const response = await api.get(API_ENDPOINTS.AREAS);
         return response.data;
-    }
+    },
+
+    // Get grados para malla curricular (módulo 4)
+    getGrados: async (): Promise<Grado[]> => {
+        const response = await api.get(API_ENDPOINTS.MALLA_CURRICULAR_GRADOS);
+        return response.data;
+    },
+
+    // Get años escolares para malla curricular (módulo 4)
+    getAnios: async (): Promise<AnioEscolarItem[]> => {
+        const response = await api.get(API_ENDPOINTS.MALLA_CURRICULAR_ANIOS);
+        return response.data;
+    },
 };

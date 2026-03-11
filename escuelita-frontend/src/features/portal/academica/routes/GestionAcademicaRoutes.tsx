@@ -4,7 +4,6 @@ import { escuelaAuthService } from '../../../../services/escuelaAuth.service';
 import AreasRoutes from '../areas/routes/areas.routes';
 import AsignacionDocenteRoutes from '../asignacion-docente/routes';
 import DocentesRoutes from '../docentes/routes';
-import EspecialidadesRoutes from '../especialidades/routes/especialidades.routes';
 import HorariosRoutes from '../horarios/routes';
 import MallaCurricularRoutes from '../malla-curricular/routes';
 
@@ -22,7 +21,6 @@ const GestionAcademicaRoutes = () => {
                 <Route path="areas-cursos/*" element={<AreasRoutes />} />
                 <Route path="malla-curricular/*" element={<MallaCurricularRoutes />} />
                 <Route path="docentes/*" element={<DocentesRoutes />} />
-                <Route path="especialidades/*" element={<EspecialidadesRoutes />} />
                 <Route path="asignacion-docente/*" element={<AsignacionDocenteRoutes />} />
                 <Route path="horarios/*" element={<HorariosRoutes />} />
                 <Route path="*" element={<Navigate to="areas-cursos" replace />} />

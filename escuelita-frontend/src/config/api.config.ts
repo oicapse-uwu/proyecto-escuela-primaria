@@ -120,6 +120,8 @@ export const API_ENDPOINTS = {
     ASIGNACION_DOCENTE: '/restful/asignaciondocente',
     PERFIL_DOCENTE: '/restful/perfildocente',
     MALLA_CURRICULAR: '/restful/mallacurricular',
+    MALLA_CURRICULAR_GRADOS: '/restful/mallacurricular/grados',
+    MALLA_CURRICULAR_ANIOS: '/restful/mallacurricular/anios',
     ESPECIALIDADES: '/restful/especialidades',
 
     // ===== INFRAESTRUCTURA =====

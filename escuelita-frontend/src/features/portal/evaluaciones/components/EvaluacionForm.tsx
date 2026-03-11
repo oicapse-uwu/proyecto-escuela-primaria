@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import type { EvaluacionesDTO } from '../types';
-import type { AsignacionDocente, Periodos, TiposNota, TiposEvaluacion } from '../types';
+import React, { useEffect, useState } from 'react';
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
 import { escuelaAuthService } from '../../../../services/escuelaAuth.service';
 import { useAsignacionesDocente } from '../hooks/useAsignacionesDocente';
+import type { AsignacionDocente, EvaluacionesDTO, Periodos, TiposEvaluacion, TiposNota } from '../types';
 
 interface EvaluacionFormProps {
   onSubmit: (data: EvaluacionesDTO) => Promise<void>;
@@ -433,7 +432,7 @@ const EvaluacionForm: React.FC<EvaluacionFormProps> = ({
       <button
         type="submit"
         disabled={loading}
-        className="mt-6 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+        className="mt-6 w-full bg-gradient-to-r from-escuela to-escuela-light text-white py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50"
       >
         {loading ? 'Guardando...' : 'Crear Evaluación'}
       </button>

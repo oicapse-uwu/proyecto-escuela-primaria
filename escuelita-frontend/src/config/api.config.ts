@@ -13,21 +13,40 @@ export const api = axios.create({
 // Interceptor de solicitudes para agregar token de autenticación
 api.interceptors.request.use(
     (config) => {
-        // Preferir el token según el servicio de autenticación activo
+        // Determinar el token correcto según el contexto de la URL actual
         let token: string | null = null;
-
-        if (escuelaAuthService.isAuthenticated()) {
-            token = escuelaAuthService.getToken();
-        } else if (adminAuthService.isAuthenticated()) {
+        const currentPath = window.location.pathname;
+        
+        // Si estamos en rutas de admin (/admin/* o /login), usar token de admin
+        if (currentPath.startsWith('/admin') || currentPath === '/login') {
             token = adminAuthService.getToken();
-        } else {
-            // Fallback: leer localStorage directamente
-            token = localStorage.getItem('escuela_token') || localStorage.getItem('admin_token');
+            if (!token) {
+                token = localStorage.getItem('admin_token');
+            }
+        } 
+        // Si estamos en rutas de escuela (/escuela/*), usar token de escuela
+        else if (currentPath.startsWith('/escuela')) {
+            token = escuelaAuthService.getToken();
+            if (!token) {
+                token = localStorage.getItem('escuela_token');
+            }
+        }
+        // Fallback: usar cualquier token disponible
+        else {
+            if (escuelaAuthService.isAuthenticated()) {
+                token = escuelaAuthService.getToken();
+            } else if (adminAuthService.isAuthenticated()) {
+                token = adminAuthService.getToken();
+            } else {
+                token = localStorage.getItem('escuela_token') || localStorage.getItem('admin_token');
+            }
         }
 
-        // Debug: mostrar qué token se usará (no sensible, solo tipo)
+        // Debug: mostrar qué token se usará
         try {
-            console.log('[API] Request', config.method, config.url, 'using token:', escuelaAuthService.isAuthenticated() ? 'escuela' : adminAuthService.isAuthenticated() ? 'admin' : 'none');
+            const tokenType = currentPath.startsWith('/admin') || currentPath === '/login' ? 'admin' : 
+                            currentPath.startsWith('/escuela') ? 'escuela' : 'auto';
+            console.log('[API] Request', config.method, config.url, 'from', currentPath, 'using token:', tokenType);
         } catch {}
 
         if (token) {

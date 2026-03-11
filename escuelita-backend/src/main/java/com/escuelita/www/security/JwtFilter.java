@@ -41,17 +41,12 @@ public class JwtFilter extends GenericFilter{
             // Primero intentar validar como token JWT (para Super Admins)
             if (jwtUtil.validarToken(token)) {
                 String clienteId = jwtUtil.extraerClienteId(token);
+                System.out.println("🔍 ClienteId extraído del token: " + clienteId);
                 
-                // Verificar si el clienteId existe en tabla Registros (acceso SUPER_ADMIN)
-                Optional<Registros> registroMatch = registrosRepository
-                            .findAll().stream()
-                            .filter(r -> clienteId.equals(r.getCliente_id()))
-                            .findFirst();
-                
-                if (registroMatch.isPresent()) {
-                    // Usuario de tabla Registros → acceso SUPER_ADMIN
+                // PRIMERO: Verificar si es SUPER_ADMIN (desde login de super admins)
+                if (clienteId.startsWith("SUPER_ADMIN_") || clienteId.startsWith("ADMIN_")) {
                     TenantContext.setUserType("SUPER_ADMIN");
-                    System.out.println("🔑 Token JWT de Registros '" + clienteId + "' - Acceso SUPER_ADMIN sin restricciones");
+                    System.out.println("👑 Super Admin detectado - Sin restricción de sede - ClienteId: " + clienteId);
                 } else if (clienteId.contains("_SEDE_")) {
                     // Extraer sede del token si es usuario de escuela
                     // Formato: "ESCUELA_123_SEDE_45"
@@ -72,9 +67,17 @@ public class JwtFilter extends GenericFilter{
                     } catch (NumberFormatException e) {
                         System.err.println("⚠️  Error al extraer sede/usuario del token: " + clienteId);
                     }
-                } else if (clienteId.startsWith("SUPER_ADMIN") || clienteId.startsWith("ADMIN_")) {
-                    TenantContext.setUserType("SUPER_ADMIN");
-                    System.out.println("👑 Super Admin - Sin restricción de sede");
+                } else {
+                    // Otros tipos de token - buscar en tabla Registros para compatibilidad
+                    Optional<Registros> registroMatch = registrosRepository
+                            .findAll().stream()
+                            .filter(r -> clienteId.equals(r.getCliente_id()))
+                            .findFirst();
+                    
+                    if (registroMatch.isPresent()) {
+                        TenantContext.setUserType("SUPER_ADMIN");
+                        System.out.println("🔑 Token JWT de Registros '" + clienteId + "' - Acceso SUPER_ADMIN");
+                    }
                 }
                 
                 UsernamePasswordAuthenticationToken auth =

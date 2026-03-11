@@ -1,10 +1,10 @@
 import { Building2, Edit, FileText, Mail, MapPin, Phone, Receipt, Shield, User } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast, Toaster } from 'sonner';
-import InstitucionForm from '../components/InstitucionForm';
-import { useSedes, useInstituciones } from '../hooks/useInfraestructura';
-import type { Institucion, InstitucionDTO } from '../types';
 import { escuelaAuthService } from '../../../../services/escuelaAuth.service';
+import InstitucionForm from '../components/InstitucionForm';
+import { useInstituciones, useSedes } from '../hooks/useInfraestructura';
+import type { Institucion, InstitucionDTO } from '../types';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://primaria.spring.informaticapp.com:4040';
 
@@ -55,9 +55,9 @@ const InstitucionPage: React.FC = () => {
             <Toaster position="top-right" richColors />
 
             {/* Header */}
-            <div className="mb-6">
+            <div className="mb-6 pt-6">
                 <h1 className="text-2xl font-bold text-gray-800 flex items-center space-x-2">
-                    <Building2 className="w-7 h-7 text-primary" />
+                    <Building2 className="w-7 h-7 text-escuela" />
                     <span>Institución</span>
                 </h1>
                 <p className="text-gray-600 mt-1">Gestión de datos legales de la institución educativa.</p>
@@ -76,7 +76,7 @@ const InstitucionPage: React.FC = () => {
                 <div className="space-y-6">
                     {/* Perfil principal */}
                     <div className="bg-white rounded-lg shadow overflow-hidden">
-                        <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] p-6 sm:p-8">
+                        <div className="bg-gradient-to-r from-escuela-light to-escuela-dark p-6 sm:p-8">
                             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
                                 {/* Logo */}
                                 <div className="flex-shrink-0">
@@ -125,7 +125,7 @@ const InstitucionPage: React.FC = () => {
                         <div className="bg-white rounded-lg shadow">
                             <div className="px-6 py-4 border-b border-gray-200">
                                 <h3 className="text-lg font-semibold text-gray-800 flex items-center space-x-2">
-                                    <Building2 className="w-5 h-5 text-primary" />
+                                    <Building2 className="w-5 h-5 text-escuela" />
                                     <span>Información Básica</span>
                                 </h3>
                             </div>
@@ -138,11 +138,6 @@ const InstitucionPage: React.FC = () => {
                                     value={institucion.resolucionCreacion}
                                     icon={<FileText className="w-4 h-4 text-gray-400" />}
                                 />
-                                <InfoRow
-                                    label="Director"
-                                    value={institucion.nombreDirector}
-                                    icon={<User className="w-4 h-4 text-gray-400" />}
-                                />
                             </div>
                         </div>
 
@@ -150,7 +145,7 @@ const InstitucionPage: React.FC = () => {
                         <div className="bg-white rounded-lg shadow">
                             <div className="px-6 py-4 border-b border-gray-200">
                                 <h3 className="text-lg font-semibold text-gray-800 flex items-center space-x-2">
-                                    <Receipt className="w-5 h-5 text-primary" />
+                                    <Receipt className="w-5 h-5 text-escuela" />
                                     <span>Datos de Facturación</span>
                                 </h3>
                             </div>

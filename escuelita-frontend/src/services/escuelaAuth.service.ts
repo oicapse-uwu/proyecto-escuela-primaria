@@ -106,6 +106,14 @@ class EscuelaAuthService {
         const user = this.getCurrentUser();
         return user?.sede?.idSede || null;
     }
+
+    updateCurrentUser(updates: Partial<EscuelaUsuario>): void {
+        const user = this.getCurrentUser();
+        if (!user) return;
+        const updated = { ...user, ...updates };
+        localStorage.setItem(this.USER_KEY, JSON.stringify(updated));
+        window.dispatchEvent(new Event('escuelaUserUpdated'));
+    }
 }
 
 export const escuelaAuthService = new EscuelaAuthService();

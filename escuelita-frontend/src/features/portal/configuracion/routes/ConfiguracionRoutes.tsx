@@ -1,9 +1,9 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import ModuloGuard from '../../../../hooks/ModuloGuard';
 import { escuelaAuthService } from '../../../../services/escuelaAuth.service';
-import PermisosUsuariosPage from '../../usuarios/pages/PermisosUsuariosPage';
-import RolesUsuariosPage from '../../usuarios/pages/RolesUsuariosPage';
-import UsuariosPage from '../../usuarios/pages/UsuariosPage';
+import PermisosUsuariosPage from '../usuarios/pages/PermisosUsuariosPage';
+import RolesUsuariosPage from '../usuarios/pages/RolesUsuariosPage';
+import UsuariosPage from '../usuarios/pages/UsuariosPage';
 
 const ConfiguracionRoutes = () => {
     const currentUser = escuelaAuthService.getCurrentUser();

@@ -63,11 +63,12 @@ const SeccionForm: React.FC<SeccionFormProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] px-6 py-4 text-white flex justify-between items-center rounded-t-lg">
-                    <h2 className="text-xl font-bold flex items-center space-x-2">
-                        <Layers className="w-5 h-5" />
+                <div className="bg-gradient-to-r from-escuela-light to-escuela-dark p-6 text-white flex justify-between items-center flex-shrink-0">
+                    <h2 className="text-xl font-bold flex items-center gap-3">
+                        <span className="w-1 h-6 bg-white/70 rounded-full flex-shrink-0"></span>
+                        <Layers className="w-6 h-6" />
                         <span>{seccion ? 'Editar Sección' : 'Nueva Sección'}</span>
                     </h2>
                     <button
@@ -80,7 +81,7 @@ const SeccionForm: React.FC<SeccionFormProps> = ({
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             Grado <span className="text-red-500">*</span>
@@ -90,7 +91,7 @@ const SeccionForm: React.FC<SeccionFormProps> = ({
                             value={formData.idGrado}
                             onChange={handleChange}
                             required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
                         >
                             {grados.map(grado => (
                                 <option key={grado.idGrado} value={grado.idGrado}>
@@ -110,7 +111,7 @@ const SeccionForm: React.FC<SeccionFormProps> = ({
                             value={formData.nombreSeccion}
                             onChange={handleChange}
                             required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
                             placeholder="Ej: A, B, C..."
                         />
                     </div>
@@ -128,7 +129,7 @@ const SeccionForm: React.FC<SeccionFormProps> = ({
                             required
                             min="1"
                             max={maxVacantes}
-                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
+                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent ${
                                 formData.vacantes > maxVacantes ? 'border-red-400 bg-red-50' : 'border-gray-300'
                             }`}
                         />
@@ -155,7 +156,7 @@ const SeccionForm: React.FC<SeccionFormProps> = ({
                         <button
                             type="submit"
                             disabled={isLoading || formData.vacantes > maxVacantes}
-                            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50"
+                            className="px-6 py-2 bg-escuela text-white rounded-lg hover:bg-escuela-dark transition-colors disabled:opacity-50"
                         >
                             {isLoading ? 'Guardando...' : (seccion ? 'Actualizar' : 'Crear')}
                         </button>

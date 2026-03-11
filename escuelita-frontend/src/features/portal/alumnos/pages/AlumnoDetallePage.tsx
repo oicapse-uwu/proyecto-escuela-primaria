@@ -306,7 +306,7 @@ const AlumnoDetallePage: React.FC = () => {
                     <p className="text-gray-600">Alumno no encontrado</p>
                     <button
                         onClick={() => navigate('/escuela/alumnos')}
-                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        className="mt-4 px-6 py-2.5 bg-gradient-to-r from-escuela to-escuela-light text-white rounded-lg font-semibold hover:shadow-lg transition-all"
                     >
                         Volver a la lista
                     </button>
@@ -411,7 +411,7 @@ const AlumnoDetallePage: React.FC = () => {
                                 {!editMode ? (
                                     <button
                                         onClick={() => setEditMode(true)}
-                                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                        className="bg-gradient-to-r from-escuela to-escuela-light text-white px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2"
                                     >
                                         <Edit className="w-4 h-4" />
                                         Editar
@@ -587,7 +587,7 @@ const AlumnoDetallePage: React.FC = () => {
                                         </button>
                                         <button
                                             type="submit"
-                                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                            className="bg-gradient-to-r from-escuela to-escuela-light text-white px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2"
                                         >
                                             <Save className="w-4 h-4" />
                                             Guardar Cambios
@@ -644,7 +644,7 @@ const AlumnoDetallePage: React.FC = () => {
                                 <h2 className="text-lg font-semibold">Apoderados del Alumno</h2>
                                 <button
                                     onClick={handleNuevaRelacion}
-                                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                    className="bg-gradient-to-r from-escuela to-escuela-light text-white px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2"
                                 >
                                     <UserPlus className="w-4 h-4" />
                                     Vincular Apoderado
@@ -823,7 +823,7 @@ const AlumnoDetallePage: React.FC = () => {
                                                                 ) : (
                                                                     <button
                                                                         onClick={() => handleAbrirModalDocumento(requisito)}
-                                                                        className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1"
+                                                                        className="px-3 py-1.5 bg-gradient-to-r from-escuela to-escuela-light text-white text-sm rounded-lg font-medium hover:shadow-lg transition-all flex items-center gap-1"
                                                                     >
                                                                         <Plus className="w-4 h-4" />
                                                                         Marcar
@@ -1030,7 +1030,7 @@ const AlumnoDetallePage: React.FC = () => {
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                            className="px-6 py-2.5 bg-gradient-to-r from-escuela to-escuela-light text-white rounded-lg font-semibold hover:shadow-lg transition-all"
                         >
                             {relacionEditar ? 'Actualizar' : 'Vincular'}
                         </button>
@@ -1145,7 +1145,7 @@ const AlumnoDetallePage: React.FC = () => {
                         <button
                             type="submit"
                             disabled={isUploadingFile}
-                            className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors order-1 sm:order-2 disabled:opacity-60 flex items-center justify-center gap-2"
+                            className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-escuela to-escuela-light text-white rounded-lg font-semibold hover:shadow-lg transition-all order-1 sm:order-2 disabled:opacity-60 flex items-center justify-center gap-2"
                         >
                             {isUploadingFile ? (
                                 <><span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span> Subiendo...</>

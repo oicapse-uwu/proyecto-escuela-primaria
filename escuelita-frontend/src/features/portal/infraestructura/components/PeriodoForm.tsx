@@ -218,11 +218,12 @@ const PeriodoForm: React.FC<PeriodoFormProps> = ({
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] px-6 py-4 text-white flex justify-between items-center rounded-t-lg">
-                    <h2 className="text-xl font-bold flex items-center space-x-2">
-                        <CalendarRange className="w-5 h-5" />
+                <div className="bg-gradient-to-r from-escuela-light to-escuela-dark p-6 text-white flex justify-between items-center flex-shrink-0">
+                    <h2 className="text-xl font-bold flex items-center gap-3">
+                        <span className="w-1 h-6 bg-white/70 rounded-full flex-shrink-0"></span>
+                        <CalendarRange className="w-6 h-6" />
                         <span>{periodo ? 'Editar Periodo' : 'Nuevo Periodo'}</span>
                     </h2>
                     <button
@@ -235,55 +236,59 @@ const PeriodoForm: React.FC<PeriodoFormProps> = ({
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Tipo de División <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                            name="tipoPeriodo"
-                            value={tipoPeriodo}
-                            onChange={handleChange}
-                            required
-                            disabled={!!periodo}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
-                        >
-                            <option value="BIMESTRE">Bimestres (máx. 4 períodos)</option>
-                            <option value="TRIMESTRE">Trimestres (máx. 3 períodos)</option>
-                        </select>
-                        {!periodo && (
-                            <p className="mt-1 text-xs text-gray-500">
-                                Seleccione cómo dividirá el año escolar
-                            </p>
-                        )}
+                <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
+                    {/* Fila 1: Tipo de División + Año Escolar */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Tipo de División <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                name="tipoPeriodo"
+                                value={tipoPeriodo}
+                                onChange={handleChange}
+                                required
+                                disabled={!!periodo}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                            >
+                                <option value="BIMESTRE">Bimestres (máx. 4 períodos)</option>
+                                <option value="TRIMESTRE">Trimestres (máx. 3 períodos)</option>
+                            </select>
+                            {!periodo && (
+                                <p className="mt-1 text-xs text-gray-500">
+                                    Seleccione cómo dividirá el año escolar
+                                </p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Año Escolar <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                name="idAnio"
+                                value={formData.idAnio}
+                                onChange={handleChange}
+                                required
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
+                            >
+                                {aniosEscolares.map(anio => (
+                                    <option key={anio.idAnioEscolar} value={anio.idAnioEscolar}>
+                                        {anio.nombreAnio}
+                                    </option>
+                                ))}
+                            </select>
+                            {!periodo && (
+                                <p className="mt-1 text-xs text-gray-600">
+                                    {tipoPeriodo === 'TRIMESTRE' ? 'Trimestres' : 'Bimestres'}: 
+                                    {' '}{periodosDelAnio}/{limiteMaximo} registrados
+                                    {puedeAgregarPeriodo && ` - Puede agregar ${limiteMaximo - periodosDelAnio} más`}
+                                </p>
+                            )}
+                        </div>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Año Escolar <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                            name="idAnio"
-                            value={formData.idAnio}
-                            onChange={handleChange}
-                            required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                        >
-                            {aniosEscolares.map(anio => (
-                                <option key={anio.idAnioEscolar} value={anio.idAnioEscolar}>
-                                    {anio.nombreAnio}
-                                </option>
-                            ))}
-                        </select>
-                        {!periodo && (
-                            <p className="mt-1 text-xs text-gray-600">
-                                {tipoPeriodo === 'TRIMESTRE' ? 'Trimestres' : 'Bimestres'}: 
-                                {' '}{periodosDelAnio}/{limiteMaximo} registrados
-                                {puedeAgregarPeriodo && ` - Puede agregar ${limiteMaximo - periodosDelAnio} más`}
-                            </p>
-                        )}
-                    </div>
-
+                    {/* Fila 2: Nombre del Periodo */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             Nombre del Periodo <span className="text-red-500">*</span>
@@ -294,43 +299,45 @@ const PeriodoForm: React.FC<PeriodoFormProps> = ({
                             value={formData.nombrePeriodo}
                             onChange={handleChange}
                             required
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent"
                             placeholder="Ej: Primer Bimestre, I Trimestre..."
                         />
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Fecha de Inicio <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="date"
-                            name="fechaInicio"
-                            value={formData.fechaInicio}
-                            onChange={handleChange}
-                            required
-                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${errorValidacion ? 'border-red-400' : 'border-gray-300'}`}
-                        />
+                    {/* Fila 3: Fechas */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Fecha de Inicio <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="date"
+                                name="fechaInicio"
+                                value={formData.fechaInicio}
+                                onChange={handleChange}
+                                required
+                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent ${errorValidacion ? 'border-red-400' : 'border-gray-300'}`}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Fecha de Fin <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                type="date"
+                                name="fechaFin"
+                                value={formData.fechaFin}
+                                onChange={handleChange}
+                                required
+                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-escuela focus:border-transparent ${errorValidacion ? 'border-red-400' : 'border-gray-300'}`}
+                            />
+                        </div>
                     </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Fecha de Fin <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="date"
-                            name="fechaFin"
-                            value={formData.fechaFin}
-                            onChange={handleChange}
-                            required
-                            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${errorValidacion ? 'border-red-400' : 'border-gray-300'}`}
-                        />
-                        <p className="mt-1 text-xs text-gray-500">
-                            {tipoPeriodo === 'BIMESTRE' 
-                                ? 'Un bimestre dura aprox. 2 meses (30-75 días)' 
-                                : 'Un trimestre dura aprox. 3 meses (45-105 días)'}
-                        </p>
-                    </div>
+                    <p className="-mt-2 text-xs text-gray-500">
+                        {tipoPeriodo === 'BIMESTRE' 
+                            ? 'Un bimestre dura aprox. 2 meses (30-75 días)' 
+                            : 'Un trimestre dura aprox. 3 meses (45-105 días)'}
+                    </p>
 
                     {/* Botones */}
                     <div className="flex justify-end space-x-3 pt-2">
@@ -345,7 +352,7 @@ const PeriodoForm: React.FC<PeriodoFormProps> = ({
                         <button
                             type="submit"
                             disabled={isLoading || (!periodo && !puedeAgregarPeriodo) || !!errorValidacion}
-                            className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-6 py-2 bg-escuela text-white rounded-lg hover:bg-escuela-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             title={!puedeAgregarPeriodo && !periodo ? 'Límite de períodos alcanzado' : errorValidacion || ''}
                         >
                             {isLoading ? 'Guardando...' : (periodo ? 'Actualizar' : 'Crear')}

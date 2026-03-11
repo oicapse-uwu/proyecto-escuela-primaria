@@ -1,4 +1,4 @@
-import { DoorOpen, Edit, GraduationCap, Layers, Plus, Search, Trash2, Users } from 'lucide-react';
+import { DoorOpen, Edit, GraduationCap, Layers, Plus, Trash2, Users } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast, Toaster } from 'sonner';
 import Pagination from '../../../../components/common/Pagination';
@@ -271,66 +271,83 @@ const GradosSeccionesAulasPage: React.FC = () => {
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-                            <Layers className="w-5 h-5 text-primary" />
+                        <div className="w-9 h-9 rounded-xl bg-escuela/10 flex items-center justify-center">
+                            <Layers className="w-5 h-5 text-escuela" />
                         </div>
                         Grados, Secciones y Aulas
                     </h1>
                     <p className="text-gray-400 text-sm mt-1">
-                        Gestiona la estructura académica &middot; Sede: <span className="font-semibold text-primary">{(sedeId && sedes.find(s => s.idSede === sedeId)?.nombreSede) || currentUser?.sede?.nombreSede || 'No asignada'}</span>
+                        Gestiona la estructura académica &middot; Sede: <span className="font-semibold text-escuela">{(sedeId && sedes.find(s => s.idSede === sedeId)?.nombreSede) || currentUser?.sede?.nombreSede || 'No asignada'}</span>
                     </p>
                 </div>
+                {activeTab === 'grados' ? (
+                    <button
+                        onClick={() => { setGradoSeleccionado(null); setShowModalGrado(true); }}
+                        className="px-6 py-2.5 bg-gradient-to-r from-escuela to-escuela-light text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2"
+                    >
+                        <Plus className="w-4 h-4" />
+                        <span>Nuevo Grado</span>
+                    </button>
+                ) : activeTab === 'secciones' ? (
+                    <button
+                        onClick={() => { setSeccionSeleccionada(null); setShowModalSeccion(true); }}
+                        className="px-6 py-2.5 bg-gradient-to-r from-escuela to-escuela-light text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2"
+                    >
+                        <Plus className="w-4 h-4" />
+                        <span>Nueva Sección</span>
+                    </button>
+                ) : (
+                    <button
+                        onClick={() => { setAulaSeleccionada(null); setShowModalAula(true); }}
+                        className="px-6 py-2.5 bg-gradient-to-r from-escuela to-escuela-light text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2"
+                    >
+                        <Plus className="w-4 h-4" />
+                        <span>Nueva Aula</span>
+                    </button>
+                )}
             </div>
 
             {/* Summary Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-                            <GraduationCap className="w-5 h-5 text-emerald-600" />
-                        </div>
+                    <div className="flex items-start justify-between">
                         <div>
-                            <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Grados</p>
-                            <p className="text-xl font-bold text-gray-800">{gradosDeSede.length}</p>
+                            <p className="text-sm text-gray-500">Grados</p>
+                            <p className="text-2xl font-bold text-escuela mt-1">{gradosDeSede.length}</p>
                         </div>
+                        <GraduationCap className="w-6 h-6 text-escuela" />
                     </div>
                 </div>
                 <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
-                            <Layers className="w-5 h-5 text-indigo-600" />
-                        </div>
+                    <div className="flex items-start justify-between">
                         <div>
-                            <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Secciones</p>
-                            <p className="text-xl font-bold text-gray-800">{seccionesDeSede.length}</p>
+                            <p className="text-sm text-gray-500">Secciones</p>
+                            <p className="text-2xl font-bold text-escuela mt-1">{seccionesDeSede.length}</p>
                         </div>
+                        <Layers className="w-6 h-6 text-escuela" />
                     </div>
                 </div>
                 <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
-                            <DoorOpen className="w-5 h-5 text-amber-600" />
-                        </div>
+                    <div className="flex items-start justify-between">
                         <div>
-                            <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Aulas</p>
-                            <p className="text-xl font-bold text-gray-800">{aulasDeSede.length}</p>
+                            <p className="text-sm text-gray-500">Aulas</p>
+                            <p className="text-2xl font-bold text-amber-500 mt-1">{aulasDeSede.length}</p>
                         </div>
+                        <DoorOpen className="w-6 h-6 text-amber-500" />
                     </div>
                 </div>
                 <div className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
-                    <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${limiteVacantes !== null && limiteVacantes > 0 && totalVacantes > limiteVacantes ? 'bg-red-50' : 'bg-sky-50'}`}>
-                            <Users className={`w-5 h-5 ${limiteVacantes !== null && limiteVacantes > 0 && totalVacantes > limiteVacantes ? 'text-red-600' : 'text-sky-600'}`} />
-                        </div>
+                    <div className="flex items-start justify-between">
                         <div>
-                            <p className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">Vacantes</p>
-                            <p className={`text-xl font-bold ${limiteVacantes !== null && limiteVacantes > 0 && totalVacantes > limiteVacantes ? 'text-red-600' : 'text-gray-800'}`}>
+                            <p className="text-sm text-gray-500">Vacantes</p>
+                            <p className={`text-2xl font-bold mt-1 ${limiteVacantes !== null && limiteVacantes > 0 && totalVacantes > limiteVacantes ? 'text-red-500' : 'text-escuela'}`}>
                                 {totalVacantes}
                                 {limiteVacantes !== null && limiteVacantes > 0 && (
                                     <span className="text-sm font-medium text-gray-400"> / {limiteVacantes}</span>
                                 )}
                             </p>
                         </div>
+                        <Users className={`w-6 h-6 ${limiteVacantes !== null && limiteVacantes > 0 && totalVacantes > limiteVacantes ? 'text-red-500' : 'text-escuela'}`} />
                     </div>
                 </div>
             </div>
@@ -338,8 +355,8 @@ const GradosSeccionesAulasPage: React.FC = () => {
             {/* Tabs + Content Card */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 {/* Tab Navigation */}
-                <div className="border-b border-gray-100 bg-gray-50/50">
-                    <nav className="flex gap-1 px-4 pt-3">
+                <div className="border-b border-gray-100">
+                    <nav className="flex gap-1 px-4">
                         {tabs.map(tab => {
                             const Icon = tab.icon;
                             const isActive = activeTab === tab.key;
@@ -347,19 +364,22 @@ const GradosSeccionesAulasPage: React.FC = () => {
                                 <button
                                     key={tab.key}
                                     onClick={() => setActiveTab(tab.key)}
-                                    className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-t-xl transition-all ${
+                                    className={`relative flex items-center gap-2 px-4 py-3.5 text-sm font-medium transition-all ${
                                         isActive
-                                            ? 'bg-white text-primary border border-gray-100 border-b-white -mb-px shadow-sm'
-                                            : 'text-gray-400 hover:text-gray-600 hover:bg-white/50'
+                                            ? 'text-escuela'
+                                            : 'text-gray-400 hover:text-gray-600'
                                     }`}
                                 >
                                     <Icon className="w-4 h-4" />
                                     <span>{tab.label}</span>
                                     <span className={`px-2 py-0.5 rounded-full text-[11px] font-semibold ${
-                                        isActive ? 'bg-primary/10 text-primary' : 'bg-gray-200/60 text-gray-400'
+                                        isActive ? 'bg-escuela/10 text-escuela' : 'bg-gray-100 text-gray-400'
                                     }`}>
                                         {getTabCount(tab.key)}
                                     </span>
+                                    {isActive && (
+                                        <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-escuela rounded-full" />
+                                    )}
                                 </button>
                             );
                         })}
@@ -369,36 +389,17 @@ const GradosSeccionesAulasPage: React.FC = () => {
                 {/* ===================== TAB: GRADOS ===================== */}
                 {activeTab === 'grados' && (
                     <div className="p-5 sm:p-6 space-y-5">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                            <div className="relative w-full sm:w-80">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                                <input
-                                    type="text"
-                                    placeholder="Buscar grado..."
-                                    value={searchTermGrados}
-                                    onChange={(e) => { setSearchTermGrados(e.target.value); setCurrentPageGrados(1); }}
-                                    className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all"
-                                />
-                            </div>
-                            <button
-                                onClick={() => { setGradoSeleccionado(null); setShowModalGrado(true); }}
-                                className="w-full sm:w-auto px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-all text-sm font-medium flex items-center justify-center gap-2 shadow-sm shadow-primary/20"
-                            >
-                                <Plus className="w-4 h-4" />
-                                <span>Nuevo Grado</span>
-                            </button>
-                        </div>
 
                         <div className="overflow-hidden rounded-xl border border-gray-100">
                             {cargandoGrados ? (
                                 <div className="py-16 text-center">
-                                    <div className="animate-spin rounded-full h-7 w-7 border-[3px] border-primary border-t-transparent mx-auto"></div>
+                                    <div className="animate-spin rounded-full h-7 w-7 border-[3px] border-escuela border-t-transparent mx-auto"></div>
                                     <p className="text-xs text-gray-400 mt-3">Cargando grados...</p>
                                 </div>
                             ) : gradosPaginados.length === 0 ? (
                                 <div className="py-16 text-center">
                                     <GraduationCap className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-                                    <p className="text-sm text-gray-400">{searchTermGrados ? 'No se encontraron grados' : 'No hay grados registrados'}</p>
+                                    <p className="text-sm text-gray-400">No hay grados registrados</p>
                                 </div>
                             ) : (
                                 <>
@@ -436,8 +437,8 @@ const GradosSeccionesAulasPage: React.FC = () => {
                                                             </td>
                                                             <td className="px-5 py-3.5">
                                                                 <div className="flex items-center justify-center gap-1">
-                                                                    <button onClick={() => { setGradoSeleccionado(grado); setShowModalGrado(true); }} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Editar"><Edit className="w-4 h-4" /></button>
-                                                                    <button onClick={() => handleEliminarGrado(grado.idGrado)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Eliminar"><Trash2 className="w-4 h-4" /></button>
+                                                                    <button onClick={() => { setGradoSeleccionado(grado); setShowModalGrado(true); }} className="p-2 text-escuela hover:bg-escuela/10 rounded-lg transition-all" title="Editar"><Edit className="w-4 h-4" /></button>
+                                                                    <button onClick={() => handleEliminarGrado(grado.idGrado)} className="p-2 text-red-400 hover:bg-red-50 rounded-lg transition-all" title="Eliminar"><Trash2 className="w-4 h-4" /></button>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -459,8 +460,8 @@ const GradosSeccionesAulasPage: React.FC = () => {
                                                     </div>
                                                 </div>
                                                 <div className="flex gap-1">
-                                                    <button onClick={() => { setGradoSeleccionado(grado); setShowModalGrado(true); }} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg"><Edit className="w-4 h-4" /></button>
-                                                    <button onClick={() => handleEliminarGrado(grado.idGrado)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
+                                                    <button onClick={() => { setGradoSeleccionado(grado); setShowModalGrado(true); }} className="p-2 text-escuela hover:bg-escuela/10 rounded-lg"><Edit className="w-4 h-4" /></button>
+                                                    <button onClick={() => handleEliminarGrado(grado.idGrado)} className="p-2 text-red-400 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
                                                 </div>
                                             </div>
                                         ))}
@@ -477,36 +478,17 @@ const GradosSeccionesAulasPage: React.FC = () => {
                 {/* ===================== TAB: SECCIONES ===================== */}
                 {activeTab === 'secciones' && (
                     <div className="p-5 sm:p-6 space-y-5">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                            <div className="relative w-full sm:w-80">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                                <input
-                                    type="text"
-                                    placeholder="Buscar sección..."
-                                    value={searchTermSecciones}
-                                    onChange={(e) => { setSearchTermSecciones(e.target.value); setCurrentPageSecciones(1); }}
-                                    className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all"
-                                />
-                            </div>
-                            <button
-                                onClick={() => { setSeccionSeleccionada(null); setShowModalSeccion(true); }}
-                                className="w-full sm:w-auto px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-all text-sm font-medium flex items-center justify-center gap-2 shadow-sm shadow-primary/20"
-                            >
-                                <Plus className="w-4 h-4" />
-                                <span>Nueva Sección</span>
-                            </button>
-                        </div>
 
                         <div className="overflow-hidden rounded-xl border border-gray-100">
                             {cargandoSecciones ? (
                                 <div className="py-16 text-center">
-                                    <div className="animate-spin rounded-full h-7 w-7 border-[3px] border-primary border-t-transparent mx-auto"></div>
+                                    <div className="animate-spin rounded-full h-7 w-7 border-[3px] border-escuela border-t-transparent mx-auto"></div>
                                     <p className="text-xs text-gray-400 mt-3">Cargando secciones...</p>
                                 </div>
                             ) : seccionesPaginadas.length === 0 ? (
                                 <div className="py-16 text-center">
                                     <Layers className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-                                    <p className="text-sm text-gray-400">{searchTermSecciones ? 'No se encontraron secciones' : 'No hay secciones registradas'}</p>
+                                    <p className="text-sm text-gray-400">No hay secciones registradas</p>
                                 </div>
                             ) : (
                                 <>
@@ -545,8 +527,8 @@ const GradosSeccionesAulasPage: React.FC = () => {
                                                         </td>
                                                         <td className="px-5 py-3.5">
                                                             <div className="flex items-center justify-center gap-1">
-                                                                <button onClick={() => { setSeccionSeleccionada(seccion); setShowModalSeccion(true); }} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Editar"><Edit className="w-4 h-4" /></button>
-                                                                <button onClick={() => handleEliminarSeccion(seccion.idSeccion)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Eliminar"><Trash2 className="w-4 h-4" /></button>
+                                                                <button onClick={() => { setSeccionSeleccionada(seccion); setShowModalSeccion(true); }} className="p-2 text-escuela hover:bg-escuela/10 rounded-lg transition-all" title="Editar"><Edit className="w-4 h-4" /></button>
+                                                                <button onClick={() => handleEliminarSeccion(seccion.idSeccion)} className="p-2 text-red-400 hover:bg-red-50 rounded-lg transition-all" title="Eliminar"><Trash2 className="w-4 h-4" /></button>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -568,8 +550,8 @@ const GradosSeccionesAulasPage: React.FC = () => {
                                                         </div>
                                                     </div>
                                                     <div className="flex gap-1">
-                                                        <button onClick={() => { setSeccionSeleccionada(seccion); setShowModalSeccion(true); }} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg"><Edit className="w-4 h-4" /></button>
-                                                        <button onClick={() => handleEliminarSeccion(seccion.idSeccion)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
+                                                        <button onClick={() => { setSeccionSeleccionada(seccion); setShowModalSeccion(true); }} className="p-2 text-escuela hover:bg-escuela/10 rounded-lg"><Edit className="w-4 h-4" /></button>
+                                                        <button onClick={() => handleEliminarSeccion(seccion.idSeccion)} className="p-2 text-red-400 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
                                                     </div>
                                                 </div>
                                                 <div className="ml-12">
@@ -592,36 +574,17 @@ const GradosSeccionesAulasPage: React.FC = () => {
                 {/* ===================== TAB: AULAS ===================== */}
                 {activeTab === 'aulas' && (
                     <div className="p-5 sm:p-6 space-y-5">
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                            <div className="relative w-full sm:w-80">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
-                                <input
-                                    type="text"
-                                    placeholder="Buscar aula..."
-                                    value={searchTermAulas}
-                                    onChange={(e) => { setSearchTermAulas(e.target.value); setCurrentPageAulas(1); }}
-                                    className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white transition-all"
-                                />
-                            </div>
-                            <button
-                                onClick={() => { setAulaSeleccionada(null); setShowModalAula(true); }}
-                                className="w-full sm:w-auto px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-dark transition-all text-sm font-medium flex items-center justify-center gap-2 shadow-sm shadow-primary/20"
-                            >
-                                <Plus className="w-4 h-4" />
-                                <span>Nueva Aula</span>
-                            </button>
-                        </div>
 
                         <div className="overflow-hidden rounded-xl border border-gray-100">
                             {cargandoAulas ? (
                                 <div className="py-16 text-center">
-                                    <div className="animate-spin rounded-full h-7 w-7 border-[3px] border-primary border-t-transparent mx-auto"></div>
+                                    <div className="animate-spin rounded-full h-7 w-7 border-[3px] border-escuela border-t-transparent mx-auto"></div>
                                     <p className="text-xs text-gray-400 mt-3">Cargando aulas...</p>
                                 </div>
                             ) : aulasPaginadas.length === 0 ? (
                                 <div className="py-16 text-center">
                                     <DoorOpen className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-                                    <p className="text-sm text-gray-400">{searchTermAulas ? 'No se encontraron aulas' : 'No hay aulas registradas'}</p>
+                                    <p className="text-sm text-gray-400">No hay aulas registradas</p>
                                 </div>
                             ) : (
                                 <>
@@ -653,8 +616,8 @@ const GradosSeccionesAulasPage: React.FC = () => {
                                                         </td>
                                                         <td className="px-5 py-3.5">
                                                             <div className="flex items-center justify-center gap-1">
-                                                                <button onClick={() => { setAulaSeleccionada(aula); setShowModalAula(true); }} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Editar"><Edit className="w-4 h-4" /></button>
-                                                                <button onClick={() => handleEliminarAula(aula.idAula)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Eliminar"><Trash2 className="w-4 h-4" /></button>
+                                                                <button onClick={() => { setAulaSeleccionada(aula); setShowModalAula(true); }} className="p-2 text-escuela hover:bg-escuela/10 rounded-lg transition-all" title="Editar"><Edit className="w-4 h-4" /></button>
+                                                                <button onClick={() => handleEliminarAula(aula.idAula)} className="p-2 text-red-400 hover:bg-red-50 rounded-lg transition-all" title="Eliminar"><Trash2 className="w-4 h-4" /></button>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -675,8 +638,8 @@ const GradosSeccionesAulasPage: React.FC = () => {
                                                     </div>
                                                 </div>
                                                 <div className="flex gap-1">
-                                                    <button onClick={() => { setAulaSeleccionada(aula); setShowModalAula(true); }} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg"><Edit className="w-4 h-4" /></button>
-                                                    <button onClick={() => handleEliminarAula(aula.idAula)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
+                                                    <button onClick={() => { setAulaSeleccionada(aula); setShowModalAula(true); }} className="p-2 text-escuela hover:bg-escuela/10 rounded-lg"><Edit className="w-4 h-4" /></button>
+                                                    <button onClick={() => handleEliminarAula(aula.idAula)} className="p-2 text-red-400 hover:bg-red-50 rounded-lg"><Trash2 className="w-4 h-4" /></button>
                                                 </div>
                                             </div>
                                         ))}

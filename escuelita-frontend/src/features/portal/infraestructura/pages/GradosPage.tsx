@@ -157,7 +157,7 @@ const GradosPage: React.FC = () => {
                     </div>
                     <button
                         onClick={handleNuevoGrado}
-                        className="flex items-center justify-center space-x-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors"
+                        className="bg-gradient-to-r from-escuela to-escuela-light text-white px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
                     >
                         <Plus className="w-5 h-5" />
                         <span>Nuevo Grado</span>

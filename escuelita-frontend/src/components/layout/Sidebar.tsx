@@ -27,10 +27,14 @@ import {
     Wallet,
     X
 } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { obtenerSedePorId } from '../../features/portal/infraestructura/api/infraestructuraApi';
+import type { Sede } from '../../features/portal/infraestructura/types';
 import { useModulosPermisos } from '../../hooks/useModulosPermisos';
 import { escuelaAuthService } from '../../services/escuelaAuth.service';
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://primaria.spring.informaticapp.com:4040';
 
 interface SidebarProps {
     isOpen?: boolean;
@@ -110,8 +114,18 @@ const menuModulesConfig: Record<string, { icon: LucideIcon; subItems?: Record<st
 const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
     const location = useLocation();
     const [expandedModules, setExpandedModules] = useState<string[]>([]);
+    const [sedeData, setSedeData] = useState<Sede | null>(null);
     const currentUser = escuelaAuthService.getCurrentUser();
     const { modulosPermisos } = useModulosPermisos(currentUser?.idUsuario ?? null);
+
+    useEffect(() => {
+        const sedeId = escuelaAuthService.getSedeId();
+        if (sedeId) {
+            obtenerSedePorId(sedeId)
+                .then(setSedeData)
+                .catch(() => setSedeData(null));
+        }
+    }, []);
 
     // Construir menú dinámico basado en los módulos del usuario
     const menuModules = useMemo(() => {
@@ -179,7 +193,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                 scrollbarGutter: 'stable'
             }}
         >
-            <div className="p-6 border-b border-escuela/30 bg-gradient-to-br from-escuela-dark via-escuela-light to-escuela relative">
+            <div className="p-6 border-b border-escuela/30 bg-gradient-to-br from-escuela-dark via-escuela-light to-escuela-dark relative">
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors lg:hidden"
@@ -188,48 +202,78 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                     <X className="w-5 h-5" />
                 </button>
                 <div className="flex flex-col items-center">
-                    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-3 border-2 border-escuela/30 shadow-lg p-3 transition-transform hover:scale-110 cursor-pointer">
-                        <img src="/src/assets/logo/Logo_escuelita.svg" alt="Logo Escuelita" className="w-full h-full object-contain" />
+                    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mb-3 border-2 border-escuela/30 shadow-lg p-3 transition-transform hover:scale-110 cursor-pointer overflow-hidden">
+                        {sedeData?.idInstitucion?.logoPath ? (
+                            <img
+                                src={sedeData.idInstitucion.logoPath.startsWith('http')
+                                    ? sedeData.idInstitucion.logoPath
+                                    : `${API_BASE}${sedeData.idInstitucion.logoPath}`
+                                }
+                                alt={sedeData.idInstitucion.nombre || 'Logo'}
+                                className="w-full h-full object-contain"
+                            />
+                        ) : (
+                            <img src="/src/assets/logo/Logo_escuelita.svg" alt="Logo Escuelita" className="w-full h-full object-contain" />
+                        )}
                     </div>
-                    <h2 className="text-lg font-bold text-center text-white">Sistema Escolar</h2>
-                    <p className="text-xs text-white/70 text-center mt-1">Gestión Integral</p>
+                    <h2 className="text-lg font-bold text-center text-white leading-tight">
+                        {sedeData?.idInstitucion?.nombre || 'Sistema Escolar'}
+                    </h2>
+                    <p className="text-xs text-white/70 text-center mt-1">
+                        {sedeData?.nombreSede || 'Gestión Integral'}
+                    </p>
                 </div>
             </div>
 
             <nav className="p-3 space-y-1 w-full pr-2">
                 {menuModules.map((module) => {
                     const IconComponent = module.icon;
+                    const moduleActive = isModuleActive(module);
+                    const isExpanded = expandedModules.includes(module.name);
                     return (
                         <div key={module.name} className="w-full">
                             {module.subItems ? (
                                 <>
                                     <button
                                         onClick={() => toggleModule(module.name)}
-                                        className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 ${
-                                            isModuleActive(module)
-                                                ? 'border-l-4 border-white'
-                                                : 'hover:bg-escuela/50'
+                                        className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 group relative ${
+                                            moduleActive
+                                                ? 'border-l-4 border-white bg-escuela/40 shadow-sm'
+                                                : isExpanded
+                                                    ? 'bg-escuela/30 hover:bg-escuela/50'
+                                                    : 'hover:bg-escuela/50'
                                         }`}
                                     >
-                                        <div className="flex items-center space-x-3">
-                                            <IconComponent className="w-5 h-5 text-white/90" />
-                                            <span className="text-sm font-semibold text-white">{module.name}</span>
+                                        <div className="flex items-center space-x-3 min-w-0 flex-1">
+                                            <IconComponent className="w-5 h-5 text-white/90 flex-shrink-0" />
+                                            <span className="text-sm font-semibold text-white truncate">{module.name}</span>
                                         </div>
+                                        <svg
+                                            className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 text-white/70 ${isExpanded ? 'rotate-180' : ''}`}
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
                                     </button>
-                                    {expandedModules.includes(module.name) && (
-                                        <div className="ml-4 mt-1 space-y-1 border-l-2 border-escuela/40">
+                                    {isExpanded && (
+                                        <div className="ml-4 mt-1 space-y-0.5 border-l-2 border-escuela/40">
                                             {module.subItems.map((subItem) => {
                                                 const SubIconComponent = subItem.icon;
+                                                const subActive = isActive(subItem.path);
                                                 return (
                                                     <Link
                                                         key={subItem.path}
                                                         to={subItem.path}
-                                                        className="flex items-center space-x-3 px-4 py-2 rounded-lg text-sm hover:bg-escuela/40"
+                                                        className={`flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm ml-2 transition-all duration-150 group relative ${
+                                                            subActive
+                                                                ? 'border-l-4 border-white bg-escuela/40'
+                                                                : 'hover:bg-escuela/40'
+                                                        }`}
                                                     >
                                                         {SubIconComponent && (
-                                                            <SubIconComponent className="w-4 h-4 text-white/70" />
+                                                            <SubIconComponent className={`w-4 h-4 flex-shrink-0 ${subActive ? 'text-white' : 'text-white/70 group-hover:text-white/90'}`} />
                                                         )}
-                                                        <span className="text-white/80">{subItem.name}</span>
+                                                        <span className={`font-medium truncate ${subActive ? 'text-white' : 'text-white/80 group-hover:text-white'}`}>{subItem.name}</span>
                                                     </Link>
                                                 );
                                             })}
@@ -239,10 +283,14 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
                             ) : (
                                 <Link
                                     to={module.path || '#'}
-                                    className="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-escuela/50"
+                                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 group relative ${
+                                        isActive(module.path)
+                                            ? 'border-l-4 border-white bg-escuela/40 shadow-sm'
+                                            : 'hover:bg-escuela/50'
+                                    }`}
                                 >
-                                    <IconComponent className="w-5 h-5 text-white/90" />
-                                    <span className="text-sm font-semibold text-white">{module.name}</span>
+                                    <IconComponent className="w-5 h-5 text-white/90 flex-shrink-0" />
+                                    <span className="text-sm font-semibold text-white truncate">{module.name}</span>
                                 </Link>
                             )}
                         </div>

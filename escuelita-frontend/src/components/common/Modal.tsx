@@ -38,16 +38,17 @@ const Modal: React.FC<ModalProps> = ({
 
     return (
         <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4"
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4"
             onClick={onClose}
         >
             <div 
-                className={`bg-white rounded-lg sm:rounded-xl shadow-2xl ${sizeClasses[size]} w-full max-h-[96vh] sm:max-h-[90vh] overflow-hidden flex flex-col`}
+                className={`bg-white rounded-lg shadow-xl ${sizeClasses[size]} w-full max-h-[90vh] overflow-hidden flex flex-col`}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-[#1e3a8a] to-[#1e1b4b] text-white rounded-t-lg sm:rounded-t-xl">
-                    <h2 className="text-lg sm:text-xl font-bold">
+                <div className="bg-gradient-to-r from-escuela-light to-escuela-dark p-6 text-white flex justify-between items-center flex-shrink-0">
+                    <h2 className="text-lg sm:text-xl font-bold flex items-center gap-3">
+                        <span className="w-1 h-6 bg-white/70 rounded-full flex-shrink-0"></span>
                         {title}
                     </h2>
                     {showCloseButton && (

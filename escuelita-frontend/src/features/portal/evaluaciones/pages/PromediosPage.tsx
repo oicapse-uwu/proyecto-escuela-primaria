@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { usePermisoModulo } from '../../../../hooks/usePermisoModulo';
-import { api, API_ENDPOINTS } from '../../../../config/api.config';
-import { useCalificaciones, useAsignacionesDocente } from '../hooks';
-import type { Periodos, Calificaciones } from '../types';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { BarChart3, Download, RefreshCw, Eye, Star, TrendingUp, Filter } from 'lucide-react';
+import { BarChart3, Download, Eye, Filter, RefreshCw, Star, TrendingUp } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { toast, Toaster } from 'sonner';
+import { api, API_ENDPOINTS } from '../../../../config/api.config';
+import { usePermisoModulo } from '../../../../hooks/usePermisoModulo';
+import { useAsignacionesDocente, useCalificaciones } from '../hooks';
+import type { Calificaciones, Periodos } from '../types';
 
 interface FilterState {
   idPeriodo: number;
@@ -328,7 +328,7 @@ const PromediosPage: React.FC = () => {
             <button
               onClick={() => window.location.reload()}
               disabled={loadingCalificaciones || loadingPeriodos}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className="bg-gradient-to-r from-escuela to-escuela-light text-white px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg transition-all disabled:opacity-50 flex items-center gap-2"
             >
               <RefreshCw className="w-4 h-4" />
               <span>Recargar</span>

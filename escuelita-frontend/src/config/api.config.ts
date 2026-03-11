@@ -42,13 +42,6 @@ api.interceptors.request.use(
             }
         }
 
-        // Debug: mostrar qué token se usará
-        try {
-            const tokenType = currentPath.startsWith('/admin') || currentPath === '/login' ? 'admin' : 
-                            currentPath.startsWith('/escuela') ? 'escuela' : 'auto';
-            console.log('[API] Request', config.method, config.url, 'from', currentPath, 'using token:', tokenType);
-        } catch {}
-
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }

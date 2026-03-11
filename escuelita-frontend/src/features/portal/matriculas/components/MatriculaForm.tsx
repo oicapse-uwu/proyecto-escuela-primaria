@@ -71,8 +71,8 @@ const MatriculaForm: React.FC<MatriculaFormProps> = ({
 
     // Consultar vacantes cuando cambien sección o año escolar
     useEffect(() => {
-        const consultarVacantes = async () => {
-            if (formData.idSeccion > 0 && formData.idAnio > 0) {
+        if (!matricula && formData.idSeccion > 0 && formData.idAnio > 0) {
+            const consultarVacantes = async () => {
                 try {
                     setCargandoVacantes(true);
                     const vacantes = await consultarVacantesDisponibles(
@@ -80,18 +80,23 @@ const MatriculaForm: React.FC<MatriculaFormProps> = ({
                         formData.idAnio
                     );
                     setVacantesDisponibles(vacantes);
+                    if (vacantes === 0) {
+                        toast.error('❌ Sin vacantes disponibles — esta sección ya no acepta más matrículas.', { duration: 5000 });
+                    } else if (vacantes <= 5) {
+                        toast.warning(`⚠️ Solo quedan ${vacantes} ${vacantes === 1 ? 'vacante' : 'vacantes'} disponibles en esta sección.`, { duration: 4000 });
+                    }
                 } catch (error) {
                     console.error('Error consultando vacantes:', error);
                     setVacantesDisponibles(null);
                 } finally {
                     setCargandoVacantes(false);
                 }
-            } else {
-                setVacantesDisponibles(null);
-            }
-        };
-        consultarVacantes();
-    }, [formData.idSeccion, formData.idAnio, formData.vacanteGarantizada]);
+            };
+            consultarVacantes();
+        } else {
+            setVacantesDisponibles(null);
+        }
+    }, [formData.idSeccion, formData.idAnio, matricula]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -341,54 +346,6 @@ const MatriculaForm: React.FC<MatriculaFormProps> = ({
                                 </p>
                             </div>
                         </div>
-
-                        {/* Indicador de Vacantes Disponibles */}
-                        {formData.idSeccion > 0 && formData.idAnio > 0 && (
-                            <div>
-                                {cargandoVacantes ? (
-                                    <div className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-emerald-600"></div>
-                                        <span className="text-sm text-gray-600">
-                                            Consultando vacantes disponibles...
-                                        </span>
-                                    </div>
-                                ) : vacantesDisponibles !== null ? (
-                                    <div
-                                        className={`flex items-center gap-3 p-3 rounded-lg border ${
-                                            vacantesDisponibles === 0
-                                                ? 'bg-red-50 border-red-200 text-red-800'
-                                                : vacantesDisponibles <= 5
-                                                ? 'bg-yellow-50 border-yellow-200 text-yellow-800'
-                                                : 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                                        }`}
-                                    >
-                                        {vacantesDisponibles === 0 ? (
-                                            <>
-                                                <span className="text-xl">❌</span>
-                                                <span className="text-sm font-medium">
-                                                    Sin vacantes disponibles - No se puede crear matrícula
-                                                </span>
-                                            </>
-                                        ) : vacantesDisponibles <= 5 ? (
-                                            <>
-                                                <span className="text-xl">⚠️</span>
-                                                <span className="text-sm font-medium">
-                                                    ¡Atención! Solo quedan {vacantesDisponibles}{' '}
-                                                    {vacantesDisponibles === 1 ? 'vacante' : 'vacantes'} disponibles
-                                                </span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <span className="text-xl">✅</span>
-                                                <span className="text-sm font-medium">
-                                                    {vacantesDisponibles} vacantes disponibles
-                                                </span>
-                                            </>
-                                        )}
-                                    </div>
-                                ) : null}
-                            </div>
-                        )}
 
                         {/* Observaciones */}
                         <div>

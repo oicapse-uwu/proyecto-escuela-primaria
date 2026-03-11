@@ -1,19 +1,20 @@
-import React, { useState, useMemo } from 'react';
-import { BookOpen, Plus, Search, Trash2, Edit, X } from 'lucide-react';
-import { usePermisoModulo } from '../../../../hooks/usePermisoModulo';
-import { useEvaluaciones } from '../hooks/useEvaluaciones';
-import EvaluacionForm from '../components/EvaluacionForm';
+import { BookOpen, Edit, Plus, Search, Trash2, X } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
 import { toast, Toaster } from 'sonner';
+import { usePermisoModulo } from '../../../../hooks/usePermisoModulo';
+import EvaluacionForm from '../components/EvaluacionForm';
+import { useEvaluaciones } from '../hooks/useEvaluaciones';
 
 const EvaluacionesPage: React.FC = () => {
   const tieneAcceso = usePermisoModulo(7);
-  const { evaluaciones, loading, error, crear, eliminar } = useEvaluaciones();
+  const { evaluaciones, loading, error, crear, actualizar, eliminar } = useEvaluaciones();
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editingData, setEditingData] = useState({ temaEspecifico: '' });
+  const [editingOriginal, setEditingOriginal] = useState<any | null>(null);
+  const [editingData, setEditingData] = useState({ temaEspecifico: '', fechaEvaluacion: '' });
   const itemsPerPage = 10;
 
   const getAsignacionDisplay = (asignacion: any) => {
@@ -109,11 +110,35 @@ const EvaluacionesPage: React.FC = () => {
   };
 
   const handleSaveEdit = async () => {
-    if (!editingId) return;
+    if (!editingId || !editingOriginal) return;
+    if (!editingData.temaEspecifico.trim()) { toast.error('El tema es requerido'); return; }
     try {
+      const idAsignacion = typeof editingOriginal.idAsignacion === 'object'
+        ? editingOriginal.idAsignacion?.idAsignacion
+        : editingOriginal.idAsignacion;
+      const idPeriodo = typeof editingOriginal.idPeriodo === 'object'
+        ? editingOriginal.idPeriodo?.idPeriodo
+        : editingOriginal.idPeriodo;
+      const idTipoNota = typeof editingOriginal.idTipoNota === 'object'
+        ? editingOriginal.idTipoNota?.idTipoNota
+        : editingOriginal.idTipoNota;
+      const idTipoEvaluacion = typeof editingOriginal.idTipoEvaluacion === 'object'
+        ? editingOriginal.idTipoEvaluacion?.idTipoEvaluacion
+        : editingOriginal.idTipoEvaluacion;
+      await actualizar({
+        idEvaluacion: editingId,
+        temaEspecifico: editingData.temaEspecifico,
+        fechaEvaluacion: editingData.fechaEvaluacion,
+        idAsignacion,
+        idPeriodo,
+        idTipoNota,
+        idTipoEvaluacion,
+        estado: 1,
+      });
       toast.success('Evaluación actualizada exitosamente');
       setEditingId(null);
-      setEditingData({ temaEspecifico: '' });
+      setEditingOriginal(null);
+      setEditingData({ temaEspecifico: '', fechaEvaluacion: '' });
     } catch (error) {
       toast.error('Error al actualizar la evaluación');
     }
@@ -138,7 +163,7 @@ const EvaluacionesPage: React.FC = () => {
             <div className="p-6 border-b border-gray-200 flex justify-between items-center">
               <h2 className="text-xl font-bold text-gray-800">Editar Evaluación</h2>
               <button
-                onClick={() => setEditingId(null)}
+                onClick={() => { setEditingId(null); setEditingOriginal(null); }}
                 className="text-gray-500 hover:text-gray-700"
               >
                 <X className="w-5 h-5" />
@@ -146,18 +171,27 @@ const EvaluacionesPage: React.FC = () => {
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tema</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tema *</label>
                 <input
                   type="text"
                   value={editingData.temaEspecifico}
-                  onChange={(e) => setEditingData({ temaEspecifico: e.target.value })}
+                  onChange={(e) => setEditingData(prev => ({ ...prev, temaEspecifico: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
+                <input
+                  type="date"
+                  value={editingData.fechaEvaluacion}
+                  onChange={(e) => setEditingData(prev => ({ ...prev, fechaEvaluacion: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
             </div>
             <div className="p-6 border-t border-gray-200 flex gap-3">
               <button
-                onClick={() => setEditingId(null)}
+                onClick={() => { setEditingId(null); setEditingOriginal(null); }}
                 className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Cancelar
@@ -305,7 +339,8 @@ const EvaluacionesPage: React.FC = () => {
                           <button
                             onClick={() => {
                               setEditingId(evaluacion.idEvaluacion!);
-                              setEditingData({ temaEspecifico: evaluacion.temaEspecifico });
+                              setEditingOriginal(evaluacion);
+                              setEditingData({ temaEspecifico: evaluacion.temaEspecifico, fechaEvaluacion: evaluacion.fechaEvaluacion || '' });
                             }}
                             disabled={loading}
                             className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
@@ -373,7 +408,8 @@ const EvaluacionesPage: React.FC = () => {
                   <button
                     onClick={() => {
                       setEditingId(evaluacion.idEvaluacion!);
-                      setEditingData({ temaEspecifico: evaluacion.temaEspecifico });
+                      setEditingOriginal(evaluacion);
+                      setEditingData({ temaEspecifico: evaluacion.temaEspecifico, fechaEvaluacion: evaluacion.fechaEvaluacion || '' });
                     }}
                     disabled={loading}
                     className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"

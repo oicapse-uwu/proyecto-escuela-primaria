@@ -1,16 +1,15 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { CheckCircle, Clock, Edit, TrendingUp, Users, X, XCircle } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { toast, Toaster } from 'sonner';
+import { api, API_ENDPOINTS } from '../../../../config/api.config';
 import { usePermisoModulo } from '../../../../hooks/usePermisoModulo';
 import { useAsistencias } from '../hooks/useAsistencias';
-import { api, API_ENDPOINTS } from '../../../../config/api.config';
-import type { Asistencias, AsignacionDocente, Secciones } from '../types';
-import { Users, CheckCircle, XCircle, Clock, TrendingUp, Filter, Edit, X } from 'lucide-react';
-import { toast, Toaster } from 'sonner';
+import type { AsignacionDocente, Asistencias, Grado, Secciones } from '../types';
 
 interface FilterState {
   idAsignacion: number;
   idSeccion: number;
-  fechaInicio: string;
-  fechaFin: string;
+  fecha: string;
 }
 
 interface EstadisticasAsistencia {
@@ -35,16 +34,15 @@ const AsistenciasReportePage: React.FC = () => {
   // Estados
   const [asignaciones, setAsignaciones] = useState<AsignacionDocente[]>([]);
   const [secciones, setSecciones] = useState<Secciones[]>([]);
+  const [grados, setGrados] = useState<Grado[]>([]);
   const [filters, setFilters] = useState<FilterState>({
     idAsignacion: 0,
     idSeccion: 0,
-    fechaInicio: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0],
-    fechaFin: new Date().toISOString().split('T')[0],
+    fecha: new Date().toISOString().split('T')[0],
   });
   const [editingRow, setEditingRow] = useState<EditingRow | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
-  const [showFilters, setShowFilters] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -54,12 +52,14 @@ const AsistenciasReportePage: React.FC = () => {
     const cargarDatos = async () => {
       try {
         setLoadingData(true);
-        const [asignacionesRes, seccionesRes] = await Promise.all([
+        const [asignacionesRes, seccionesRes, gradosRes] = await Promise.all([
           api.get<AsignacionDocente[]>(API_ENDPOINTS.ASIGNACION_DOCENTE),
           api.get<Secciones[]>(API_ENDPOINTS.SECCIONES),
+          api.get<Grado[]>(API_ENDPOINTS.GRADOS),
         ]);
         setAsignaciones(asignacionesRes.data || []);
         setSecciones(seccionesRes.data || []);
+        setGrados(gradosRes.data || []);
       } catch (err) {
         toast.error('Error al cargar datos de filtro');
         console.error(err);
@@ -74,17 +74,25 @@ const AsistenciasReportePage: React.FC = () => {
   }, [tieneAcceso]);
 
   // Filtrar asistencias
+  // Secciones con label enriquecido: "Primer Grado - Sección A"
+  const seccionesConGrado = useMemo(() => {
+    return secciones.map((s) => {
+      const gId = typeof s.idGrado === 'object' ? (s.idGrado as Grado)?.idGrado : s.idGrado;
+      const grado = grados.find((g) => g.idGrado === gId);
+      const label = grado
+        ? `${grado.nombreGrado} - ${s.nombreSeccion || `Sección ${s.idSeccion}`}`
+        : (s.nombreSeccion || `Sección ${s.idSeccion}`);
+      return { ...s, label };
+    });
+  }, [secciones, grados]);
+
   const asistenciasFiltradasList = useMemo(() => {
     return asistencias.filter((a) => {
-      const fecha = new Date(a.fecha);
-      const fechaInicioDate = new Date(filters.fechaInicio);
-      const fechaFinDate = new Date(filters.fechaFin);
-
-      const cumpleFecha = fecha >= fechaInicioDate && fecha <= fechaFinDate;
+      const cumpleFecha = !filters.fecha || a.fecha === filters.fecha;
       const asig = typeof (a as any).idAsignacion === 'object' ? (a as any).idAsignacion : null;
       const cumpleAsignacion = !filters.idAsignacion || asig?.idAsignacion === filters.idAsignacion;
-      const cumpleSeccion = !filters.idSeccion || asig?.idSeccion === filters.idSeccion;
-
+      const idSecAsig = typeof asig?.idSeccion === 'object' ? asig?.idSeccion?.idSeccion : asig?.idSeccion;
+      const cumpleSeccion = !filters.idSeccion || idSecAsig === filters.idSeccion;
       return cumpleFecha && cumpleAsignacion && cumpleSeccion;
     });
   }, [asistencias, filters]);
@@ -279,86 +287,63 @@ const AsistenciasReportePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Filters Toggle */}
-      <div className="mb-6">
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center space-x-2 bg-white text-gray-700 px-4 py-2 rounded-lg shadow hover:bg-gray-50 transition-colors"
-        >
-          <Filter className="w-5 h-5" />
-          <span>Filtros {showFilters ? '▼' : '▶'}</span>
-        </button>
-      </div>
-
-      {/* Filters Section */}
-      {showFilters && (
-        <div className="bg-white rounded-lg shadow mb-6 p-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Profesor</label>
-              <select
-                value={filters.idAsignacion}
-                onChange={(e) => setFilters({ ...filters, idAsignacion: Number(e.target.value) })}
-                disabled={loadingData}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
-                <option value={0}>Todos</option>
-                {asignaciones.map((asig) => {
-                  const doc = typeof asig.idDocente === 'object' ? (asig.idDocente as any) : null;
-                  let nombre = 'Sin nombre';
-                  if (doc && typeof doc === 'object') {
-                    if (doc.idUsuario && typeof doc.idUsuario === 'object') {
-                      nombre = `${doc.idUsuario.nombres || ''} ${doc.idUsuario.apellidos || ''}`.trim() || 'Sin nombre';
-                    }
+      {/* Filters */}
+      <div className="bg-white rounded-lg shadow mb-6 p-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Profesor</label>
+            <select
+              value={filters.idAsignacion}
+              onChange={(e) => setFilters({ ...filters, idAsignacion: Number(e.target.value) })}
+              disabled={loadingData}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            >
+              <option value={0}>Todos</option>
+              {asignaciones.map((asig) => {
+                const doc = typeof asig.idDocente === 'object' ? (asig.idDocente as any) : null;
+                let nombre = 'Sin nombre';
+                if (doc && typeof doc === 'object') {
+                  if (doc.idUsuario && typeof doc.idUsuario === 'object') {
+                    nombre = `${doc.idUsuario.nombres || ''} ${doc.idUsuario.apellidos || ''}`.trim() || 'Sin nombre';
                   }
-                  return (
-                    <option key={asig.idAsignacion} value={asig.idAsignacion}>
-                      {nombre}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Sección</label>
-              <select
-                value={filters.idSeccion}
-                onChange={(e) => setFilters({ ...filters, idSeccion: Number(e.target.value) })}
-                disabled={loadingData}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
-                <option value={0}>Todas</option>
-                {secciones.map((sec) => (
-                  <option key={sec.idSeccion} value={sec.idSeccion}>
-                    {sec.nombreSeccion || `Sección ${sec.idSeccion}`}
+                }
+                return (
+                  <option key={asig.idAsignacion} value={asig.idAsignacion}>
+                    {nombre}
                   </option>
-                ))}
-              </select>
-            </div>
+                );
+              })}
+            </select>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio</label>
-              <input
-                type="date"
-                value={filters.fechaInicio}
-                onChange={(e) => setFilters({ ...filters, fechaInicio: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              />
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Grado / Sección</label>
+            <select
+              value={filters.idSeccion}
+              onChange={(e) => setFilters({ ...filters, idSeccion: Number(e.target.value) })}
+              disabled={loadingData}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            >
+              <option value={0}>Todos</option>
+              {seccionesConGrado.map((sec) => (
+                <option key={sec.idSeccion} value={sec.idSeccion}>
+                  {sec.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Fin</label>
-              <input
-                type="date"
-                value={filters.fechaFin}
-                onChange={(e) => setFilters({ ...filters, fechaFin: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              />
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
+            <input
+              type="date"
+              value={filters.fecha}
+              onChange={(e) => setFilters({ ...filters, fecha: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
           </div>
         </div>
-      )}
+      </div>
 
       {/* Modal Edición */}
       {showEditModal && editingRow && (

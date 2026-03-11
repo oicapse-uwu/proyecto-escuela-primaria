@@ -93,6 +93,7 @@ const menuModulesConfig: Record<string, { icon: LucideIcon; subItems?: Record<st
         subItems: {
             'Calificaciones': { path: '/escuela/evaluaciones/calificaciones', icon: ClipboardCheck },
             'Asistencias': { path: '/escuela/evaluaciones/asistencias', icon: CheckCircle },
+            'Reporte Asistencias': { path: '/escuela/evaluaciones/asistencias-reporte', icon: ClipboardList },
             'Evaluaciones': { path: '/escuela/evaluaciones/evaluaciones', icon: FileText },
             'Promedios': { path: '/escuela/evaluaciones/promedios', icon: TrendingUp },
         }

@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { usePermisoModulo } from '../../../../hooks/usePermisoModulo';
-import { useAsistencias } from '../hooks/useAsistencias';
-import { api, API_ENDPOINTS } from '../../../../config/api.config';
-import { escuelaAuthService } from '../../../../services/escuelaAuth.service';
-import type { AsignacionDocente } from '../types';
-import type { AsistenciasDTO } from '../types';
-import { CheckCircle, XCircle, Clock, Shield, Users, Calendar } from 'lucide-react';
+import { Calendar, CheckCircle, Clock, Shield, Users, XCircle } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { toast, Toaster } from 'sonner';
+import { api, API_ENDPOINTS } from '../../../../config/api.config';
+import { usePermisoModulo } from '../../../../hooks/usePermisoModulo';
+import { escuelaAuthService } from '../../../../services/escuelaAuth.service';
+import { useAsignacionesDocente } from '../hooks/useAsignacionesDocente';
+import { useAsistencias } from '../hooks/useAsistencias';
+import type { AsistenciasDTO } from '../types';
 
 interface Matricula {
   idMatricula: number;
@@ -34,8 +34,10 @@ const AsistenciasPage: React.FC = () => {
   const esProfesor = escuelaAuthService.isProfesor();
   const esAdministrador = usuarioActual?.rol?.nombreRol?.toUpperCase() === 'ADMINISTRADOR';
 
+  // Asignaciones enriquecidas con nombreCurso y nombreArea
+  const { asignaciones, loading: loadingAsig } = useAsignacionesDocente();
+
   // Estados
-  const [asignaciones, setAsignaciones] = useState<AsignacionDocente[]>([]);
   const [selectedAsignacion, setSelectedAsignacion] = useState<number>(0);
   const [selectedFecha, setSelectedFecha] = useState<string>(
     new Date().toISOString().split('T')[0]
@@ -45,34 +47,12 @@ const AsistenciasPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Cargar asignaciones del profesor
+  // Auto-seleccionar primera asignación cuando carguen (solo para profesor)
   useEffect(() => {
-    const cargarAsignaciones = async () => {
-      try {
-        setLoadingData(true);
-        const data = await api.get<AsignacionDocente[]>(API_ENDPOINTS.ASIGNACION_DOCENTE);
-        const asignacionesData = data.data || [];
-        setAsignaciones(asignacionesData);
-        
-        // Si es profesor con una sola asignación, auto-seleccionar
-        if (esProfesor && !esAdministrador && asignacionesData.length === 1) {
-          setSelectedAsignacion(asignacionesData[0].idAsignacion);
-        } else if (esProfesor && !esAdministrador && asignacionesData.length > 1) {
-          // Si hay varias, seleccionar la primera
-          setSelectedAsignacion(asignacionesData[0].idAsignacion);
-        }
-      } catch (err) {
-        toast.error('Error al cargar tus asignaciones');
-        console.error(err);
-      } finally {
-        setLoadingData(false);
-      }
-    };
-
-    if (tieneAcceso) {
-      cargarAsignaciones();
+    if (esProfesor && !esAdministrador && asignaciones.length >= 1 && selectedAsignacion === 0) {
+      setSelectedAsignacion(asignaciones[0].idAsignacion);
     }
-  }, [tieneAcceso]);
+  }, [asignaciones, esProfesor, esAdministrador, selectedAsignacion]);
 
   // Cargar matrículas cuando se selecciona una asignación
   useEffect(() => {
@@ -145,15 +125,11 @@ const AsistenciasPage: React.FC = () => {
   const matriculasPaginadas = matriculas.slice(startIndex, startIndex + itemsPerPage);
 
   const handleEstadoChange = (index: number, estado: 'Presente' | 'Falta' | 'Tardanza' | 'Justificado') => {
-    const updated = [...matriculas];
-    updated[index].estadoAsistencia = estado;
-    setMatriculas(updated);
+    setMatriculas(prev => prev.map((m, i) => i === index ? { ...m, estadoAsistencia: estado } : m));
   };
 
   const handleObservacionesChange = (index: number, obs: string) => {
-    const updated = [...matriculas];
-    updated[index].observaciones = obs;
-    setMatriculas(updated);
+    setMatriculas(prev => prev.map((m, i) => i === index ? { ...m, observaciones: obs } : m));
   };
 
   const handleGuardar = async () => {
@@ -235,7 +211,7 @@ const AsistenciasPage: React.FC = () => {
               <select
                 value={selectedAsignacion}
                 onChange={(e) => setSelectedAsignacion(Number(e.target.value))}
-                disabled={loadingData || asignaciones.length === 0}
+                disabled={loadingData || loadingAsig || asignaciones.length === 0}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               >
                 <option value={0}>Selecciona una clase...</option>
@@ -357,7 +333,7 @@ const AsistenciasPage: React.FC = () => {
                       <td className="px-6 py-4 text-center">
                         <input
                           type="radio"
-                          name={`asistencia-${index}`}
+                          name={`asistencia-d-${index}`}
                           checked={mat.estadoAsistencia === 'Presente'}
                           onChange={() => handleEstadoChange(index, 'Presente')}
                           className="w-5 h-5 cursor-pointer accent-green-500"
@@ -366,7 +342,7 @@ const AsistenciasPage: React.FC = () => {
                       <td className="px-6 py-4 text-center">
                         <input
                           type="radio"
-                          name={`asistencia-${index}`}
+                          name={`asistencia-d-${index}`}
                           checked={mat.estadoAsistencia === 'Falta'}
                           onChange={() => handleEstadoChange(index, 'Falta')}
                           className="w-5 h-5 cursor-pointer accent-red-500"
@@ -375,7 +351,7 @@ const AsistenciasPage: React.FC = () => {
                       <td className="px-6 py-4 text-center">
                         <input
                           type="radio"
-                          name={`asistencia-${index}`}
+                          name={`asistencia-d-${index}`}
                           checked={mat.estadoAsistencia === 'Tardanza'}
                           onChange={() => handleEstadoChange(index, 'Tardanza')}
                           className="w-5 h-5 cursor-pointer accent-yellow-500"
@@ -384,7 +360,7 @@ const AsistenciasPage: React.FC = () => {
                       <td className="px-6 py-4 text-center">
                         <input
                           type="radio"
-                          name={`asistencia-${index}`}
+                          name={`asistencia-d-${index}`}
                           checked={mat.estadoAsistencia === 'Justificado'}
                           onChange={() => handleEstadoChange(index, 'Justificado')}
                           className="w-5 h-5 cursor-pointer accent-purple-500"
@@ -442,7 +418,7 @@ const AsistenciasPage: React.FC = () => {
                     <div className="flex items-center space-x-3">
                       <input
                         type="radio"
-                        name={`asistencia-${index}`}
+                        name={`asistencia-m-${index}`}
                         checked={mat.estadoAsistencia === 'Presente'}
                         onChange={() => handleEstadoChange(index, 'Presente')}
                         className="w-4 h-4 cursor-pointer accent-green-500"
@@ -455,7 +431,7 @@ const AsistenciasPage: React.FC = () => {
                     <div className="flex items-center space-x-3">
                       <input
                         type="radio"
-                        name={`asistencia-${index}`}
+                        name={`asistencia-m-${index}`}
                         checked={mat.estadoAsistencia === 'Falta'}
                         onChange={() => handleEstadoChange(index, 'Falta')}
                         className="w-4 h-4 cursor-pointer accent-red-500"
@@ -468,7 +444,7 @@ const AsistenciasPage: React.FC = () => {
                     <div className="flex items-center space-x-3">
                       <input
                         type="radio"
-                        name={`asistencia-${index}`}
+                        name={`asistencia-m-${index}`}
                         checked={mat.estadoAsistencia === 'Tardanza'}
                         onChange={() => handleEstadoChange(index, 'Tardanza')}
                         className="w-4 h-4 cursor-pointer accent-yellow-500"
@@ -481,7 +457,7 @@ const AsistenciasPage: React.FC = () => {
                     <div className="flex items-center space-x-3">
                       <input
                         type="radio"
-                        name={`asistencia-${index}`}
+                        name={`asistencia-m-${index}`}
                         checked={mat.estadoAsistencia === 'Justificado'}
                         onChange={() => handleEstadoChange(index, 'Justificado')}
                         className="w-4 h-4 cursor-pointer accent-purple-500"

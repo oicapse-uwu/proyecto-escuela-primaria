@@ -19,6 +19,8 @@ interface PromedioCalculado {
   idAlumno: any;
   idDocente: any;
   notaPromedio: number;
+  notaPromedioDisplay: string;
+  formato: 'LETRA' | 'NUMERO';
   cantidadCalificaciones: number;
   calificaciones: Calificaciones[];
 }
@@ -30,6 +32,11 @@ interface EditingRow {
   notaPromedio: string;
   comentarioLibreta: string;
 }
+
+// Escala literal peruana: C=1 (Inicio), B=2 (Proceso), A=3 (Esperado), AD=4 (Destacado)
+const LETRA_A_NUM: Record<string, number> = { C: 1, B: 2, A: 3, AD: 4 };
+const NUM_A_LETRA = (n: number): string => n >= 3.5 ? 'AD' : n >= 2.5 ? 'A' : n >= 1.5 ? 'B' : 'C';
+const esLetraGrade = (nota: string) => /^(AD|A|B|C)$/i.test((nota || '').trim());
 
 const PromediosPage: React.FC = () => {
   const tieneAcceso = usePermisoModulo(7);
@@ -84,7 +91,12 @@ const PromediosPage: React.FC = () => {
         ? (typeof evalu.idPeriodo === 'object' ? evalu.idPeriodo.idPeriodo : evalu.idPeriodo)
         : null;
 
-      const key = `${calif.idMatricula}_${idAsig}_${idPer}`;
+      const matric = (calif as any).idMatricula;
+      const idMat = typeof matric === 'object' && matric !== null
+        ? (matric.idMatricula ?? matric.id ?? JSON.stringify(matric))
+        : matric;
+
+      const key = `${idMat}_${idAsig}_${idPer}`;
       if (!grupos.has(key)) {
         grupos.set(key, { califs: [], key });
       }
@@ -101,12 +113,22 @@ const PromediosPage: React.FC = () => {
         ? (typeof evalu.idPeriodo === 'object' ? evalu.idPeriodo.idPeriodo : evalu.idPeriodo)
         : null;
       
-      const promedio = grupo.califs.reduce((sum, c) => {
-        const nota = typeof c.notaObtenida === 'string' 
-          ? parseFloat(c.notaObtenida) || 0 
-          : c.notaObtenida;
-        return sum + nota;
-      }, 0) / grupo.califs.length;
+      const formatoLetra = esLetraGrade(grupo.califs[0]?.notaObtenida || '');
+
+      let promedioNum = 0;
+      let display = '-';
+
+      if (formatoLetra) {
+        const nums = grupo.califs
+          .map(c => LETRA_A_NUM[(c.notaObtenida || '').toUpperCase().trim()] ?? 0)
+          .filter(n => n > 0);
+        promedioNum = nums.length > 0 ? nums.reduce((a, b) => a + b, 0) / nums.length : 0;
+        display = nums.length > 0 ? NUM_A_LETRA(promedioNum) : '-';
+      } else {
+        const nums = grupo.califs.map(c => parseFloat(c.notaObtenida) || 0);
+        promedioNum = parseFloat((nums.reduce((a, b) => a + b, 0) / nums.length).toFixed(2));
+        display = promedioNum.toString();
+      }
 
       return {
         idMatricula: primera.idMatricula,
@@ -116,7 +138,9 @@ const PromediosPage: React.FC = () => {
         idDocente: typeof evalu === 'object' && evalu.idAsignacion && typeof evalu.idAsignacion === 'object' 
           ? evalu.idAsignacion.idDocente 
           : null,
-        notaPromedio: parseFloat(promedio.toFixed(2)),
+        notaPromedio: promedioNum,
+        notaPromedioDisplay: display,
+        formato: formatoLetra ? 'LETRA' : 'NUMERO',
         cantidadCalificaciones: grupo.califs.length,
         calificaciones: grupo.califs,
       };
@@ -136,14 +160,18 @@ const PromediosPage: React.FC = () => {
   // Calcular estadísticas
   const stats = useMemo(() => {
     const total = promediosFiltrados.length;
-    const promedio = total > 0 
+    const allLetras = total > 0 && promediosFiltrados.every(p => p.formato === 'LETRA');
+    const avgNum = total > 0
       ? parseFloat((promediosFiltrados.reduce((sum, p) => sum + p.notaPromedio, 0) / total).toFixed(2))
       : 0;
-    const maxNota = total > 0 
-      ? Math.max(...promediosFiltrados.map(p => p.notaPromedio))
-      : 0;
-    
-    return { total, promedio, maxNota };
+    const maxNum = total > 0 ? Math.max(...promediosFiltrados.map(p => p.notaPromedio)) : 0;
+    return {
+      total,
+      promedio: avgNum,
+      maxNota: maxNum,
+      promedioDisplay: allLetras ? NUM_A_LETRA(avgNum) : avgNum.toString(),
+      maxNotaDisplay: allLetras ? NUM_A_LETRA(maxNum) : maxNum.toString(),
+    };
   }, [promediosFiltrados]);
 
   // Paginación
@@ -189,7 +217,7 @@ const PromediosPage: React.FC = () => {
       idMatricula: promedio.idMatricula,
       idAsignacion: promedio.idAsignacion,
       idPeriodo: promedio.idPeriodo,
-      notaPromedio: promedio.notaPromedio.toString(),
+      notaPromedio: promedio.notaPromedioDisplay,
       comentarioLibreta: '',
     });
     setShowEditModal(true);
@@ -231,7 +259,7 @@ const PromediosPage: React.FC = () => {
         getNombreAlumno(promedio),
         getNombreProfesor(promedio),
         getNombrePeriodo(promedio.idPeriodo),
-        promedio.notaPromedio.toString(),
+        promedio.notaPromedioDisplay,
         promedio.cantidadCalificaciones.toString(),
       ]);
 
@@ -298,7 +326,7 @@ const PromediosPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-500 text-sm">Promedio General</p>
-              <p className="text-2xl font-bold text-purple-600">{stats.promedio}</p>
+              <p className="text-2xl font-bold text-purple-600">{stats.promedioDisplay}</p>
             </div>
             <TrendingUp className="w-10 h-10 text-purple-500 opacity-50" />
           </div>
@@ -307,7 +335,7 @@ const PromediosPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-500 text-sm">Mejor Nota</p>
-              <p className="text-2xl font-bold text-green-600">{stats.maxNota}</p>
+              <p className="text-2xl font-bold text-green-600">{stats.maxNotaDisplay}</p>
             </div>
             <Star className="w-10 h-10 text-green-500 opacity-50" />
           </div>
@@ -459,11 +487,16 @@ const PromediosPage: React.FC = () => {
                       <td className="px-6 py-4 text-sm text-gray-600">{getNombrePeriodo(promedio.idPeriodo)}</td>
                       <td className="px-6 py-4 text-center">
                         <span className={`px-3 py-1 rounded-full text-sm font-bold ${
-                          promedio.notaPromedio >= 17 ? 'bg-green-100 text-green-700' :
-                          promedio.notaPromedio >= 14 ? 'bg-blue-100 text-blue-700' :
-                          'bg-yellow-100 text-yellow-700'
+                          promedio.formato === 'LETRA'
+                            ? promedio.notaPromedioDisplay === 'AD' ? 'bg-green-100 text-green-700'
+                              : promedio.notaPromedioDisplay === 'A' ? 'bg-blue-100 text-blue-700'
+                              : promedio.notaPromedioDisplay === 'B' ? 'bg-yellow-100 text-yellow-700'
+                              : 'bg-red-100 text-red-700'
+                            : promedio.notaPromedio >= 17 ? 'bg-green-100 text-green-700'
+                              : promedio.notaPromedio >= 14 ? 'bg-blue-100 text-blue-700'
+                              : 'bg-yellow-100 text-yellow-700'
                         }`}>
-                          {promedio.notaPromedio}
+                          {promedio.notaPromedioDisplay}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-center">
@@ -536,10 +569,15 @@ const PromediosPage: React.FC = () => {
               <div className="space-y-2 text-sm">
                 <p className="text-gray-600"><span className="font-medium">Período:</span> {getNombrePeriodo(promedio.idPeriodo)}</p>
                 <p className="text-gray-600"><span className="font-medium">Nota:</span> <span className={`px-2 py-1 rounded text-xs font-bold ${
-                  promedio.notaPromedio >= 17 ? 'bg-green-100 text-green-700' :
-                  promedio.notaPromedio >= 14 ? 'bg-blue-100 text-blue-700' :
-                  'bg-yellow-100 text-yellow-700'
-                }`}>{promedio.notaPromedio}</span></p>
+                  promedio.formato === 'LETRA'
+                    ? promedio.notaPromedioDisplay === 'AD' ? 'bg-green-100 text-green-700'
+                      : promedio.notaPromedioDisplay === 'A' ? 'bg-blue-100 text-blue-700'
+                      : promedio.notaPromedioDisplay === 'B' ? 'bg-yellow-100 text-yellow-700'
+                      : 'bg-red-100 text-red-700'
+                    : promedio.notaPromedio >= 17 ? 'bg-green-100 text-green-700'
+                      : promedio.notaPromedio >= 14 ? 'bg-blue-100 text-blue-700'
+                      : 'bg-yellow-100 text-yellow-700'
+                }`}>{promedio.notaPromedioDisplay}</span></p>
                 <p className="text-gray-600"><span className="font-medium">Calificaciones:</span> {promedio.cantidadCalificaciones}</p>
               </div>
             </div>

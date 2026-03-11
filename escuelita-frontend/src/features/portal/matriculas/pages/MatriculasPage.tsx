@@ -7,6 +7,8 @@ import { obtenerTodosAlumnos } from '../../alumnos/api/alumnosApi';
 import type { Alumno } from '../../alumnos/types';
 import {
     actualizarMatricula,
+    confirmarPagoMatricula,
+    consultarVacantesDisponibles,
     crearMatricula,
     eliminarMatricula,
     obtenerTodasMatriculas,
@@ -160,6 +162,86 @@ const MatriculasPage: React.FC = () => {
         setShowModal(false);
         setMatriculaEditar(null);
     };
+
+    const handleConfirmarPago = async (matricula: Matricula) => {
+        const idSeccion = matricula.idSeccion?.idSeccion;
+        const idAnio = matricula.idAnio?.idAnioEscolar;
+
+        // Verificar vacantes antes de confirmar
+        try {
+            if (idSeccion && idAnio) {
+                const vacantes = await consultarVacantesDisponibles(idSeccion, idAnio);
+                if (vacantes <= 0) {
+                    toast.error('❌ La sección ya no tiene vacantes. Esta matrícula será cancelada automáticamente.');
+                    // Cancelar esta matrícula porque la sección está llena
+                    await actualizarMatricula({
+                        ...matriculaToDTO(matricula),
+                        estadoMatricula: 'Cancelada',
+                        observaciones: (matricula.observaciones ? matricula.observaciones + ' | ' : '') +
+                            'Cancelada automáticamente: sección sin vacantes disponibles'
+                    });
+                    cargarDatos();
+                    return;
+                }
+            }
+        } catch {
+            // Si falla la consulta de vacantes, continuar con la confirmación
+        }
+
+        try {
+            await confirmarPagoMatricula(matricula.idMatricula);
+            toast.success('✅ Pago confirmado. Matrícula activada.');
+
+            // Si la sección ya está llena → cancelar otras Pendiente_Pago de la misma sección/año
+            if (idSeccion && idAnio) {
+                try {
+                    const vacantesRestantes = await consultarVacantesDisponibles(idSeccion, idAnio);
+                    if (vacantesRestantes <= 0) {
+                        const pendientes = matriculas.filter(m =>
+                            m.idMatricula !== matricula.idMatricula &&
+                            m.estadoMatricula === 'Pendiente_Pago' &&
+                            m.idSeccion?.idSeccion === idSeccion &&
+                            m.idAnio?.idAnioEscolar === idAnio
+                        );
+                        if (pendientes.length > 0) {
+                            await Promise.all(pendientes.map(p =>
+                                actualizarMatricula({
+                                    ...matriculaToDTO(p),
+                                    estadoMatricula: 'Cancelada',
+                                    observaciones: (p.observaciones ? p.observaciones + ' | ' : '') +
+                                        'Cancelada automáticamente: sección completa'
+                                })
+                            ));
+                            toast.info(`ℹ️ ${pendientes.length} matrícula(s) pendiente(s) fueron canceladas porque la sección se completó.`);
+                        }
+                    }
+                } catch {
+                    // No bloqueamos si falla la auto-cancelación
+                }
+            }
+            cargarDatos();
+        } catch (error: unknown) {
+            const axiosError = error as { response?: { data?: unknown } };
+            const msg = axiosError.response?.data;
+            toast.error('❌ ' + (typeof msg === 'string' ? msg : 'Error al confirmar pago'));
+        }
+    };
+
+    // Helper: convierte Matricula entity a DTO plano para actualizarMatricula
+    const matriculaToDTO = (m: Matricula) => ({
+        idMatricula: m.idMatricula,
+        idAlumno: m.idAlumno?.idAlumno || 0,
+        idSeccion: m.idSeccion?.idSeccion || 0,
+        idAnio: m.idAnio?.idAnioEscolar || 0,
+        codigoMatricula: m.codigoMatricula,
+        tipoIngreso: m.tipoIngreso as 'Nuevo' | 'Promovido' | 'Repitente' | 'Trasladado_Entrante',
+        estadoMatricula: m.estadoMatricula as 'Pendiente_Pago' | 'Activa' | 'Finalizada' | 'Cancelada',
+        fechaMatricula: m.fechaMatricula
+            ? (m.fechaMatricula.includes('T') ? m.fechaMatricula : `${m.fechaMatricula}T00:00:00`)
+            : '',
+        vacanteGarantizada: m.vacanteGarantizada || false,
+        observaciones: m.observaciones || '',
+    });
 
     const totalMatriculas = matriculasFiltradas.length;
     const matriculasActivas = matriculasFiltradas.filter(m => m.estadoMatricula === 'Activa').length;

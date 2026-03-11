@@ -175,7 +175,7 @@ public class MatriculasService implements IMatriculasService{
         try {
             // Obtener capacidad máxima de la sección usando native query
             Integer capacidadMaxima = (Integer) entityManager.createNativeQuery(
-                "SELECT capacidad_maxima FROM secciones WHERE id_seccion = :idSeccion")
+                "SELECT vacantes FROM secciones WHERE id_seccion = :idSeccion")
                 .setParameter("idSeccion", idSeccion)
                 .getSingleResult();
             

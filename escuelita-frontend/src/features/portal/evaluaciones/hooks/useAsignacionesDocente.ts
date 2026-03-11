@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { api, API_ENDPOINTS } from '../../../../config/api.config';
 import { escuelaAuthService } from '../../../../services/escuelaAuth.service';
-import type { AsignacionDocente, Cursos, Area } from '../types';
+import type { Area, AsignacionDocente, Cursos } from '../types';
 
 /**
  * Hook que obtiene las asignaciones del profesor/docente logueado
@@ -48,24 +48,6 @@ export const useAsignacionesDocente = () => {
       console.log('- Asignaciones (ya filtradas por JWT):', asignacionesData.length, asignacionesData);
       console.log('- Cursos:', cursosData.length, cursosData);
       console.log('- Áreas:', areasData.length, areasData);
-
-      // Si es profesor, el backend YA debe filtrar por JWT
-      // Pero aplicamos filtro adicional por seguridad
-      if (esProfesor && !esAdministrador) {
-        const usuarioId = usuarioActual?.id || usuarioActual?.idUsuario;
-        console.log('🔐 Profesor logueado - ID:', usuarioId);
-        
-        // El backend debe filtrar por idDocente == usuario actual
-        // Pero aquí aplicamos un segundo filtro por seguridad
-        asignacionesData = asignacionesData.filter(asig => {
-          const idDocente = typeof asig.idDocente === 'object' 
-            ? asig.idDocente?.idDocente 
-            : asig.idDocente;
-          return idDocente === usuarioId;
-        });
-        
-        console.log('✅ Asignaciones filtradas para profesor:', asignacionesData.length);
-      }
 
       // Crear mapas para búsqueda rápida
       const cursoMap = new Map(cursosData.map(c => [c.idCurso, c]));

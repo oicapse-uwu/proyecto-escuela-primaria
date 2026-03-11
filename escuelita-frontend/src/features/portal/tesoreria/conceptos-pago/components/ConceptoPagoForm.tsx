@@ -1,7 +1,11 @@
-import { AlertCircle, Check, DollarSign, GraduationCap, Building2, Package, X, FileText } from 'lucide-react';
+import { AlertCircle, Check, DollarSign, FileText, GraduationCap, Package, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { api, API_ENDPOINTS } from '../../../../../config/api.config';
+import { escuelaAuthService } from '../../../../../services/escuelaAuth.service';
 import type { ConceptoPago, ConceptoPagoFormData } from '../types';
+
+interface Grado { idGrado: number; nombreGrado: string; }
 
 interface ConceptoPagoFormProps {
     concepto?: ConceptoPago | null;
@@ -16,16 +20,27 @@ const ConceptoPagoForm: React.FC<ConceptoPagoFormProps> = ({
     onCancel, 
     isLoading = false 
 }) => {
+    const user = escuelaAuthService.getCurrentUser();
+    const idInstitucionActual = user?.sede?.idInstitucion ?? 0;
+
+    const [grados, setGrados] = useState<Grado[]>([]);
     const [formData, setFormData] = useState<ConceptoPagoFormData>({
         nombreConcepto: '',
         monto: 0,
         estadoConcepto: 1,
-        idInstitucion: 0,
+        idInstitucion: idInstitucionActual,
         idGrado: 0
     });
 
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Cargar grados al montar
+    useEffect(() => {
+        api.get<Grado[]>(API_ENDPOINTS.GRADOS)
+            .then(res => setGrados(res.data || []))
+            .catch(() => toast.error('Error al cargar grados'));
+    }, []);
 
     useEffect(() => {
         if (concepto) {
@@ -33,7 +48,7 @@ const ConceptoPagoForm: React.FC<ConceptoPagoFormProps> = ({
                 nombreConcepto: concepto.nombreConcepto,
                 monto: concepto.monto,
                 estadoConcepto: concepto.estadoConcepto,
-                idInstitucion: concepto.idInstitucion?.idInstitucion ?? 0,
+                idInstitucion: concepto.idInstitucion?.idInstitucion ?? idInstitucionActual,
                 idGrado: concepto.idGrado?.idGrado ?? 0
             });
         }
@@ -41,20 +56,12 @@ const ConceptoPagoForm: React.FC<ConceptoPagoFormProps> = ({
 
     const validateForm = () => {
         const newErrors: { [key: string]: string } = {};
-
         if (!formData.nombreConcepto.trim()) {
             newErrors.nombreConcepto = 'El nombre del concepto es requerido';
         }
         if (formData.monto <= 0) {
             newErrors.monto = 'El monto debe ser mayor a 0';
         }
-        if (formData.idInstitucion === 0) {
-            newErrors.idInstitucion = 'Debe seleccionar una institución';
-        }
-        if (formData.idGrado === 0) {
-            newErrors.idGrado = 'Debe seleccionar un grado';
-        }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -62,30 +69,23 @@ const ConceptoPagoForm: React.FC<ConceptoPagoFormProps> = ({
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         const parsedValue = name === 'monto' ? parseFloat(value) : 
-                          (name === 'idInstitucion' || name === 'idGrado' || name === 'estadoConcepto') ? parseInt(value) : value;
+                          (name === 'idGrado' || name === 'estadoConcepto') ? parseInt(value) : value;
         
         setFormData(prev => ({ ...prev, [name]: parsedValue }));
-        
         if (errors[name]) {
-            setErrors(prev => {
-                const newErrors = { ...prev };
-                delete newErrors[name];
-                return newErrors;
-            });
+            setErrors(prev => { const n = { ...prev }; delete n[name]; return n; });
         }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
         if (!validateForm()) {
             toast.error('Por favor, completa todos los campos correctamente');
             return;
         }
-
         setIsSubmitting(true);
         try {
-            await onSubmit(formData);
+            await onSubmit({ ...formData, idInstitucion: idInstitucionActual });
         } catch (error) {
             console.error('Error al guardar:', error);
         } finally {
@@ -185,60 +185,25 @@ const ConceptoPagoForm: React.FC<ConceptoPagoFormProps> = ({
 
                     {/* Sección de Configuración */}
                     <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
-                        {/* Institución */}
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                                <div className="bg-purple-100 rounded-lg p-1">
-                                    <Building2 className="w-4 h-4 text-purple-600" />
-                                </div>
-                                Institución *
-                            </label>
-                            <select
-                                name="idInstitucion"
-                                value={formData.idInstitucion}
-                                onChange={handleChange}
-                                className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 appearance-none ${
-                                    errors.idInstitucion
-                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
-                                        : 'border-gray-200 focus:ring-purple-300 focus:border-purple-500 bg-white hover:border-gray-300'
-                                }`}
-                            >
-                                <option value="0">Seleccionar institución</option>
-                            </select>
-                            {errors.idInstitucion && (
-                                <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
-                                    <AlertCircle className="w-3 h-3" />
-                                    {errors.idInstitucion}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Grado */}
+                        {/* Grado (opcional) */}
                         <div>
                             <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
                                 <div className="bg-yellow-100 rounded-lg p-1">
                                     <GraduationCap className="w-4 h-4 text-yellow-600" />
                                 </div>
-                                Grado *
+                                Grado <span className="text-gray-400 font-normal text-xs">(opcional — dejar vacío si aplica a todos los grados)</span>
                             </label>
                             <select
                                 name="idGrado"
                                 value={formData.idGrado}
                                 onChange={handleChange}
-                                className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 appearance-none ${
-                                    errors.idGrado
-                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
-                                        : 'border-gray-200 focus:ring-yellow-300 focus:border-yellow-500 bg-white hover:border-gray-300'
-                                }`}
+                                className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:border-yellow-500 transition-all duration-200 appearance-none bg-white hover:border-gray-300"
                             >
-                                <option value="0">Seleccionar grado</option>
+                                <option value={0}>— Todos los grados (ej: Matrícula) —</option>
+                                {grados.map(g => (
+                                    <option key={g.idGrado} value={g.idGrado}>{g.nombreGrado}</option>
+                                ))}
                             </select>
-                            {errors.idGrado && (
-                                <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
-                                    <AlertCircle className="w-3 h-3" />
-                                    {errors.idGrado}
-                                </div>
-                            )}
                         </div>
 
                         {/* Estado */}

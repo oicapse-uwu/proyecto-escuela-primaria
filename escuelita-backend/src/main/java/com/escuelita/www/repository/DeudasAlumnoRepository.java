@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.escuelita.www.entity.DeudasAlumno;
 
 public interface DeudasAlumnoRepository extends JpaRepository<DeudasAlumno, Long> {
+    java.util.List<DeudasAlumno> findByIdMatricula_IdMatricula(Long idMatricula);
 }

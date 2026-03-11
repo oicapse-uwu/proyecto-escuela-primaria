@@ -19,6 +19,10 @@ public class DeudasAlumnoService implements IDeudasAlumnoService {
         return repoDeudasAlumno.findAll();
     }
     @Override
+    public List<DeudasAlumno> buscarPorMatricula(Long idMatricula) {
+        return repoDeudasAlumno.findByIdMatricula_IdMatricula(idMatricula);
+    }
+    @Override
     public DeudasAlumno guardar(DeudasAlumno usuario) {
         return repoDeudasAlumno.save(usuario);
     }

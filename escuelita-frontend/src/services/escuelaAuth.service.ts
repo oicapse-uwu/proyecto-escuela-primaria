@@ -21,6 +21,7 @@ export interface LoginResponse {
         sede?: {
             idSede: number;
             nombreSede: string;
+            idInstitucion?: number;
         };
     };
 }
@@ -39,6 +40,7 @@ export interface EscuelaUsuario {
     sede?: {
         idSede: number;
         nombreSede: string;
+        idInstitucion?: number;
     };
 }
 

@@ -1,10 +1,9 @@
-// Sin tocar
 package com.escuelita.www.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,17 +14,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 import com.escuelita.www.entity.ConceptosPago;
 import com.escuelita.www.entity.ConceptosPagoDTO;
-import com.escuelita.www.entity.Institucion;
 import com.escuelita.www.entity.Grados;
-
+import com.escuelita.www.entity.Institucion;
+import com.escuelita.www.entity.Sedes;
 import com.escuelita.www.repository.GradosRepository;
 import com.escuelita.www.repository.InstitucionRepository;
-
-import com.escuelita.www.service.IConceptosPagoService;
+import com.escuelita.www.repository.SedesRepository;
 import com.escuelita.www.security.RequireModulo;
+import com.escuelita.www.service.IConceptosPagoService;
+import com.escuelita.www.util.TenantContext;
 
 @RestController
 @RequestMapping("/restful")
@@ -37,6 +36,8 @@ public class ConceptosPagoController {
     private InstitucionRepository repoInstitucion;
     @Autowired
     private GradosRepository repoGrados;
+    @Autowired
+    private SedesRepository repoSedes;
 
     @GetMapping("/conceptospago")
     @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
@@ -52,12 +53,21 @@ public class ConceptosPagoController {
         conceptosPago.setMonto(dto.getMonto());
         conceptosPago.setEstadoConcepto(dto.getEstadoConcepto());
 
-        Institucion institucion = repoInstitucion
-            .findById(dto.getIdInstitucion())
-            .orElse(null);
-        Grados grados= repoGrados
-            .findById(dto.getIdGrado())
-            .orElse(null);
+        // Auto-asignar institución desde el contexto del usuario (si no es SuperAdmin)
+        Institucion institucion = null;
+        Long sedeId = TenantContext.getSedeId();
+        if (sedeId != null && !TenantContext.isSuperAdmin()) {
+            Sedes sede = repoSedes.findById(sedeId).orElse(null);
+            if (sede != null) institucion = sede.getIdInstitucion();
+        } else if (dto.getIdInstitucion() != null && dto.getIdInstitucion() > 0) {
+            institucion = repoInstitucion.findById(dto.getIdInstitucion()).orElse(null);
+        }
+
+        // Grado es opcional (0 = sin grado específico, aplica a todos)
+        Grados grados = null;
+        if (dto.getIdGrado() != null && dto.getIdGrado() > 0) {
+            grados = repoGrados.findById(dto.getIdGrado()).orElse(null);
+        }
         
         conceptosPago.setIdInstitucion(institucion);
         conceptosPago.setIdGrado(grados);
@@ -77,12 +87,21 @@ public class ConceptosPagoController {
         conceptosPago.setMonto(dto.getMonto());
         conceptosPago.setEstadoConcepto(dto.getEstadoConcepto());
 
-        Institucion institucion = repoInstitucion
-            .findById(dto.getIdInstitucion())
-            .orElse(null);
-        Grados grados= repoGrados
-            .findById(dto.getIdGrado())
-            .orElse(null);
+        // Auto-asignar institución desde el contexto del usuario (si no es SuperAdmin)
+        Institucion institucion = null;
+        Long sedeIdCtx = TenantContext.getSedeId();
+        if (sedeIdCtx != null && !TenantContext.isSuperAdmin()) {
+            Sedes sede = repoSedes.findById(sedeIdCtx).orElse(null);
+            if (sede != null) institucion = sede.getIdInstitucion();
+        } else if (dto.getIdInstitucion() != null && dto.getIdInstitucion() > 0) {
+            institucion = repoInstitucion.findById(dto.getIdInstitucion()).orElse(null);
+        }
+
+        // Grado es opcional
+        Grados grados = null;
+        if (dto.getIdGrado() != null && dto.getIdGrado() > 0) {
+            grados = repoGrados.findById(dto.getIdGrado()).orElse(null);
+        }
         
         conceptosPago.setIdInstitucion(institucion);
         conceptosPago.setIdGrado(grados);

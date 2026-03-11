@@ -1,7 +1,16 @@
-import { Calendar, DollarSign, FileText, X, AlertCircle, Check, Users, BookOpen } from 'lucide-react';
+import { AlertCircle, BookOpen, Calendar, Check, DollarSign, FileText, Loader2, Users, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { api, API_ENDPOINTS } from '../../../../../config/api.config';
 import type { DeudasAlumno, DeudasAlumnoFormData } from '../types';
+
+interface ConceptoPago { idConcepto: number; nombreConcepto: string; monto: number; }
+interface MatriculaOpt {
+    idMatricula: number;
+    codigoMatricula: string;
+    estadoMatricula: string;
+    idAlumno?: { nombres: string; apellidos: string } | null;
+}
 
 interface DeudasAlumnoFormProps {
     deuda?: DeudasAlumno | null;
@@ -10,17 +19,26 @@ interface DeudasAlumnoFormProps {
     isLoading?: boolean;
 }
 
+const today = () => new Date().toISOString().split('T')[0];
+const in30days = () => {
+    const d = new Date(); d.setDate(d.getDate() + 30); return d.toISOString().split('T')[0];
+};
+
 const DeudasAlumnoForm: React.FC<DeudasAlumnoFormProps> = ({ 
     deuda, 
     onSubmit, 
     onCancel, 
     isLoading = false 
 }) => {
+    const [conceptos, setConceptos] = useState<ConceptoPago[]>([]);
+    const [matriculas, setMatriculas] = useState<MatriculaOpt[]>([]);
+    const [loadingOpts, setLoadingOpts] = useState(true);
+
     const [formData, setFormData] = useState<DeudasAlumnoFormData>({
         descripcionCuota: '',
         montoTotal: 0,
-        fechaEmision: '',
-        fechaVencimiento: '',
+        fechaEmision: today(),
+        fechaVencimiento: in30days(),
         estadoDeuda: 'Pendiente',
         idConcepto: 0,
         idMatricula: 0
@@ -28,6 +46,18 @@ const DeudasAlumnoForm: React.FC<DeudasAlumnoFormProps> = ({
 
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Cargar conceptos y matrículas al montar
+    useEffect(() => {
+        Promise.all([
+            api.get<ConceptoPago[]>(API_ENDPOINTS.CONCEPTOS_PAGO),
+            api.get<MatriculaOpt[]>(API_ENDPOINTS.MATRICULAS),
+        ]).then(([cRes, mRes]) => {
+            setConceptos(cRes.data || []);
+            setMatriculas(mRes.data || []);
+        }).catch(() => toast.error('Error al cargar datos del formulario'))
+          .finally(() => setLoadingOpts(false));
+    }, []);
 
     useEffect(() => {
         if (deuda) {
@@ -45,62 +75,50 @@ const DeudasAlumnoForm: React.FC<DeudasAlumnoFormProps> = ({
 
     const validateForm = () => {
         const newErrors: { [key: string]: string } = {};
-
-        if (!formData.descripcionCuota.trim()) {
-            newErrors.descripcionCuota = 'La descripción es requerida';
-        }
-        if (formData.montoTotal <= 0) {
-            newErrors.montoTotal = 'El monto debe ser mayor a 0';
-        }
-        if (!formData.fechaEmision) {
-            newErrors.fechaEmision = 'La fecha de emisión es requerida';
-        }
-        if (!formData.fechaVencimiento) {
-            newErrors.fechaVencimiento = 'La fecha de vencimiento es requerida';
-        }
-        if (formData.idConcepto === 0) {
-            newErrors.idConcepto = 'Debe seleccionar un concepto de pago';
-        }
-        if (formData.idMatricula === 0) {
-            newErrors.idMatricula = 'Debe seleccionar una matrícula';
-        }
-
+        if (!formData.descripcionCuota.trim()) newErrors.descripcionCuota = 'La descripción es requerida';
+        if (formData.montoTotal <= 0) newErrors.montoTotal = 'El monto debe ser mayor a 0';
+        if (!formData.fechaEmision) newErrors.fechaEmision = 'La fecha de emisión es requerida';
+        if (!formData.fechaVencimiento) newErrors.fechaVencimiento = 'La fecha de vencimiento es requerida';
+        if (formData.idConcepto === 0) newErrors.idConcepto = 'Debe seleccionar un concepto de pago';
+        if (formData.idMatricula === 0) newErrors.idMatricula = 'Debe seleccionar una matrícula';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        const parsedValue = name === 'montoTotal' ? parseFloat(value) : 
-                          (name === 'idConcepto' || name === 'idMatricula') ? parseInt(value) : value;
+        let parsedValue: string | number = value;
+        if (name === 'montoTotal') parsedValue = parseFloat(value) || 0;
+        if (name === 'idConcepto' || name === 'idMatricula') parsedValue = parseInt(value);
         
-        setFormData(prev => ({ ...prev, [name]: parsedValue }));
-        
-        if (errors[name]) {
-            setErrors(prev => {
-                const newErrors = { ...prev };
-                delete newErrors[name];
-                return newErrors;
-            });
-        }
+        setFormData(prev => {
+            const next = { ...prev, [name]: parsedValue };
+            // Al cambiar concepto, auto-rellenar monto y descripción
+            if (name === 'idConcepto') {
+                const c = conceptos.find(c => c.idConcepto === parseInt(value));
+                if (c) {
+                    next.montoTotal = c.monto;
+                    if (!prev.descripcionCuota || prev.idConcepto === 0)
+                        next.descripcionCuota = c.nombreConcepto;
+                }
+            }
+            return next;
+        });
+        if (errors[name]) setErrors(prev => { const n = { ...prev }; delete n[name]; return n; });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
-        if (!validateForm()) {
-            toast.error('Por favor, completa todos los campos correctamente');
-            return;
-        }
-
+        if (!validateForm()) { toast.error('Por favor, completa todos los campos correctamente'); return; }
         setIsSubmitting(true);
-        try {
-            await onSubmit(formData);
-        } catch (error) {
-            console.error('Error al guardar:', error);
-        } finally {
-            setIsSubmitting(false);
-        }
+        try { await onSubmit(formData); }
+        catch (error) { console.error('Error al guardar:', error); }
+        finally { setIsSubmitting(false); }
+    };
+
+    const matriculaLabel = (m: MatriculaOpt) => {
+        const alumno = m.idAlumno ? `${m.idAlumno.nombres} ${m.idAlumno.apellidos}` : '';
+        return `${m.codigoMatricula}${alumno ? ' — ' + alumno : ''} [${m.estadoMatricula}]`;
     };
 
     return (
@@ -121,16 +139,76 @@ const DeudasAlumnoForm: React.FC<DeudasAlumnoFormProps> = ({
                                 </p>
                             </div>
                         </div>
-                        <button
-                            onClick={onCancel}
-                            className="p-2 hover:bg-purple-200 rounded-lg transition-all duration-200"
-                        >
+                        <button onClick={onCancel} className="p-2 hover:bg-purple-200 rounded-lg transition-all duration-200">
                             <X className="w-5 h-5 text-gray-600" />
                         </button>
                     </div>
                 </div>
 
+                {loadingOpts ? (
+                    <div className="flex items-center justify-center p-12 gap-3 text-gray-500">
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Cargando datos...
+                    </div>
+                ) : (
                 <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                    {/* Concepto + Matrícula */}
+                    <div className="space-y-4 bg-purple-50 p-4 rounded-lg border border-purple-100">
+                        {/* Concepto de Pago */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                <BookOpen className="w-4 h-4 text-yellow-600" />
+                                Concepto de Pago *
+                            </label>
+                            <select
+                                name="idConcepto"
+                                value={formData.idConcepto}
+                                onChange={handleChange}
+                                className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
+                                    errors.idConcepto ? 'border-red-400 focus:ring-red-300 bg-red-50' : 'border-gray-200 focus:ring-yellow-300 focus:border-yellow-500 bg-white'
+                                }`}
+                            >
+                                <option value="0">— Seleccionar concepto —</option>
+                                {conceptos.map(c => (
+                                    <option key={c.idConcepto} value={c.idConcepto}>
+                                        {c.nombreConcepto} — S/. {Number(c.monto).toFixed(2)}
+                                    </option>
+                                ))}
+                            </select>
+                            {errors.idConcepto && (
+                                <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
+                                    <AlertCircle className="w-3 h-3" />{errors.idConcepto}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Matrícula */}
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                                <Users className="w-4 h-4 text-purple-600" />
+                                Matrícula *
+                            </label>
+                            <select
+                                name="idMatricula"
+                                value={formData.idMatricula}
+                                onChange={handleChange}
+                                className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
+                                    errors.idMatricula ? 'border-red-400 focus:ring-red-300 bg-red-50' : 'border-gray-200 focus:ring-purple-300 focus:border-purple-500 bg-white'
+                                }`}
+                            >
+                                <option value="0">— Seleccionar matrícula —</option>
+                                {matriculas.map(m => (
+                                    <option key={m.idMatricula} value={m.idMatricula}>{matriculaLabel(m)}</option>
+                                ))}
+                            </select>
+                            {errors.idMatricula && (
+                                <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
+                                    <AlertCircle className="w-3 h-3" />{errors.idMatricula}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
                     {/* Sección de datos principales */}
                     <div className="space-y-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
                         {/* Descripción */}
@@ -146,15 +224,12 @@ const DeudasAlumnoForm: React.FC<DeudasAlumnoFormProps> = ({
                                 placeholder="Ej: Cuota del mes de marzo..."
                                 rows={2}
                                 className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
-                                    errors.descripcionCuota
-                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
-                                        : 'border-gray-200 focus:ring-blue-300 focus:border-blue-500 bg-white hover:border-gray-300'
+                                    errors.descripcionCuota ? 'border-red-400 focus:ring-red-300 bg-red-50' : 'border-gray-200 focus:ring-blue-300 focus:border-blue-500 bg-white hover:border-gray-300'
                                 }`}
                             />
                             {errors.descripcionCuota && (
                                 <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
-                                    <AlertCircle className="w-3 h-3" />
-                                    {errors.descripcionCuota}
+                                    <AlertCircle className="w-3 h-3" />{errors.descripcionCuota}
                                 </div>
                             )}
                         </div>
@@ -174,69 +249,12 @@ const DeudasAlumnoForm: React.FC<DeudasAlumnoFormProps> = ({
                                 step="0.01"
                                 min="0"
                                 className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
-                                    errors.montoTotal
-                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
-                                        : 'border-gray-200 focus:ring-green-300 focus:border-green-500 bg-white hover:border-gray-300'
+                                    errors.montoTotal ? 'border-red-400 focus:ring-red-300 bg-red-50' : 'border-gray-200 focus:ring-green-300 focus:border-green-500 bg-white hover:border-gray-300'
                                 }`}
                             />
                             {errors.montoTotal && (
                                 <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
-                                    <AlertCircle className="w-3 h-3" />
-                                    {errors.montoTotal}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Concepto de Pago */}
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                                <BookOpen className="w-4 h-4 text-yellow-600" />
-                                Concepto de Pago *
-                            </label>
-                            <select
-                                name="idConcepto"
-                                value={formData.idConcepto}
-                                onChange={handleChange}
-                                className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
-                                    errors.idConcepto
-                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
-                                        : 'border-gray-200 focus:ring-yellow-300 focus:border-yellow-500 bg-white hover:border-gray-300'
-                                }`}
-                            >
-                                <option value="0">Seleccionar concepto</option>
-                                {/* TODO: Cargar conceptos dinámicamente */}
-                            </select>
-                            {errors.idConcepto && (
-                                <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
-                                    <AlertCircle className="w-3 h-3" />
-                                    {errors.idConcepto}
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Matrícula */}
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                                <Users className="w-4 h-4 text-purple-600" />
-                                Matrícula *
-                            </label>
-                            <select
-                                name="idMatricula"
-                                value={formData.idMatricula}
-                                onChange={handleChange}
-                                className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
-                                    errors.idMatricula
-                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
-                                        : 'border-gray-200 focus:ring-purple-300 focus:border-purple-500 bg-white hover:border-gray-300'
-                                }`}
-                            >
-                                <option value="0">Seleccionar matrícula</option>
-                                {/* TODO: Cargar matrículas dinámicamente */}
-                            </select>
-                            {errors.idMatricula && (
-                                <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
-                                    <AlertCircle className="w-3 h-3" />
-                                    {errors.idMatricula}
+                                    <AlertCircle className="w-3 h-3" />{errors.montoTotal}
                                 </div>
                             )}
                         </div>
@@ -256,15 +274,12 @@ const DeudasAlumnoForm: React.FC<DeudasAlumnoFormProps> = ({
                                 value={formData.fechaEmision}
                                 onChange={handleChange}
                                 className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
-                                    errors.fechaEmision
-                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
-                                        : 'border-gray-200 focus:ring-pink-300 focus:border-pink-500 bg-white hover:border-gray-300'
+                                    errors.fechaEmision ? 'border-red-400 focus:ring-red-300 bg-red-50' : 'border-gray-200 focus:ring-pink-300 focus:border-pink-500 bg-white hover:border-gray-300'
                                 }`}
                             />
                             {errors.fechaEmision && (
                                 <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
-                                    <AlertCircle className="w-3 h-3" />
-                                    {errors.fechaEmision}
+                                    <AlertCircle className="w-3 h-3" />{errors.fechaEmision}
                                 </div>
                             )}
                         </div>
@@ -281,15 +296,12 @@ const DeudasAlumnoForm: React.FC<DeudasAlumnoFormProps> = ({
                                 value={formData.fechaVencimiento}
                                 onChange={handleChange}
                                 className={`w-full px-4 py-2.5 border-2 rounded-lg focus:outline-none focus:ring-2 transition-all duration-200 ${
-                                    errors.fechaVencimiento
-                                        ? 'border-red-400 focus:ring-red-300 bg-red-50'
-                                        : 'border-gray-200 focus:ring-red-300 focus:border-red-500 bg-white hover:border-gray-300'
+                                    errors.fechaVencimiento ? 'border-red-400 focus:ring-red-300 bg-red-50' : 'border-gray-200 focus:ring-red-300 focus:border-red-500 bg-white hover:border-gray-300'
                                 }`}
                             />
                             {errors.fechaVencimiento && (
                                 <div className="flex items-center gap-1 text-red-600 text-xs mt-2">
-                                    <AlertCircle className="w-3 h-3" />
-                                    {errors.fechaVencimiento}
+                                    <AlertCircle className="w-3 h-3" />{errors.fechaVencimiento}
                                 </div>
                             )}
                         </div>
@@ -313,7 +325,7 @@ const DeudasAlumnoForm: React.FC<DeudasAlumnoFormProps> = ({
                         </select>
                     </div>
 
-                    {/* Botones mejorados */}
+                    {/* Botones */}
                     <div className="flex gap-3 pt-6 border-t-2 border-gray-200">
                         <button
                             type="button"
@@ -325,22 +337,17 @@ const DeudasAlumnoForm: React.FC<DeudasAlumnoFormProps> = ({
                         <button
                             type="submit"
                             disabled={isSubmitting || isLoading}
-                            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:shadow-lg active:scale-95 transition-all duration-200 font-semibold flex items-center justify-center gap-2 disabled:bg-purple-400 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+                            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:shadow-lg active:scale-95 transition-all duration-200 font-semibold flex items-center justify-center gap-2 disabled:bg-purple-400 disabled:cursor-not-allowed shadow-md"
                         >
                             {isSubmitting || isLoading ? (
-                                <>
-                                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                                    Guardando...
-                                </>
+                                <><div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>Guardando...</>
                             ) : (
-                                <>
-                                    <Check className="w-4 h-4" />
-                                    {deuda ? 'Actualizar' : 'Guardar'}
-                                </>
+                                <><Check className="w-4 h-4" />{deuda ? 'Actualizar' : 'Guardar'}</>
                             )}
                         </button>
                     </div>
                 </form>
+                )}
             </div>
         </div>
     );

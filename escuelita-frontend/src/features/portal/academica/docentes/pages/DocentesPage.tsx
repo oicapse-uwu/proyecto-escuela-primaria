@@ -4,13 +4,14 @@ import { toast, Toaster } from 'sonner';
 import Pagination from '../../../../../components/common/Pagination';
 import SearchableSelect from '../../../../../components/common/SearchableSelect';
 import { api, API_ENDPOINTS } from '../../../../../config/api.config';
+import { escuelaAuthService } from '../../../../../services/escuelaAuth.service';
 
 interface Docente {
     idDocente: number;
     gradoAcademico: string;
     fechaContratacion: string;
     estadoLaboral: string;
-    idUsuario: { idUsuario: number; nombres: string; apellidos: string } | null;
+    idUsuario: { idUsuario: number; nombres: string; apellidos: string; idSede?: { idSede: number } | null } | null;
     idEspecialidad: { idEspecialidad: number; nombreEspecialidad: string } | null;
     estado: number;
 }
@@ -20,6 +21,7 @@ interface Usuario {
     nombres: string;
     apellidos: string;
     idRol?: { idRol: number };
+    idSede?: { idSede: number } | null;
 }
 
 interface Especialidad {
@@ -56,8 +58,16 @@ const DocentesPage: React.FC = () => {
                 api.get<Usuario[]>(API_ENDPOINTS.USUARIOS),
                 api.get<Especialidad[]>(API_ENDPOINTS.ESPECIALIDADES),
             ]);
-            setDocentes(docentesRes.data || []);
-            setUsuarios((usuariosRes.data || []).filter(u => u.idRol?.idRol === 2));
+            const sedeActual = escuelaAuthService.getCurrentUser()?.sede?.idSede;
+            const todosDocentes: Docente[] = docentesRes.data || [];
+            setDocentes(sedeActual
+                ? todosDocentes.filter(d => d.idUsuario?.idSede?.idSede === sedeActual)
+                : todosDocentes
+            );
+            setUsuarios((usuariosRes.data || []).filter(u =>
+                u.idRol?.idRol === 2 &&
+                (!sedeActual || u.idSede?.idSede === sedeActual)
+            ));
             setEspecialidades(especialidadesRes.data || []);
         } catch {
             toast.error('Error al cargar los datos');

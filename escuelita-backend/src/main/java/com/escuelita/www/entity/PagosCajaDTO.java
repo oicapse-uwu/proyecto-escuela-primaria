@@ -2,6 +2,7 @@ package com.escuelita.www.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -19,6 +20,7 @@ public class PagosCajaDTO {
 
     private Long idMetodo;
     private Long idUsuario;
+    private List<PagoDetalleDTO> detalles;
 
     private Integer estado;
 
@@ -63,6 +65,12 @@ public class PagosCajaDTO {
     }
     public void setIdUsuario(Long idUsuario) {
         this.idUsuario = idUsuario;
+    }
+    public List<PagoDetalleDTO> getDetalles() {
+        return detalles;
+    }
+    public void setDetalles(List<PagoDetalleDTO> detalles) {
+        this.detalles = detalles;
     }
     public Integer getEstado() {
         return estado;

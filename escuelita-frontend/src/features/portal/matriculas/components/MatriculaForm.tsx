@@ -52,12 +52,22 @@ const MatriculaForm: React.FC<MatriculaFormProps> = ({
                 codigoMatricula: matricula.codigoMatricula || '',
                 tipoIngreso: matricula.tipoIngreso || 'Nuevo',
                 estadoMatricula: matricula.estadoMatricula || 'Pendiente_Pago',
-                fechaMatricula: matricula.fechaMatricula || new Date().toISOString().split('T')[0],
+                fechaMatricula: (matricula.fechaMatricula || '').split('T')[0] || new Date().toISOString().split('T')[0],
                 vacanteGarantizada: matricula.vacanteGarantizada || false,
                 observaciones: matricula.observaciones || ''
             });
         }
     }, [matricula]);
+
+    // Auto-seleccionar el año escolar activo al crear nueva matrícula
+    useEffect(() => {
+        if (!matricula && aniosEscolares.length > 0 && formData.idAnio === 0) {
+            const anioActivo = aniosEscolares.find(a => a.activo === 1);
+            if (anioActivo) {
+                setFormData(prev => ({ ...prev, idAnio: anioActivo.idAnioEscolar }));
+            }
+        }
+    }, [aniosEscolares, matricula]);
 
     // Consultar vacantes cuando cambien sección o año escolar
     useEffect(() => {

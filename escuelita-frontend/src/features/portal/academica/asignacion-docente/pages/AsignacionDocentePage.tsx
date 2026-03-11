@@ -4,6 +4,7 @@ import { toast, Toaster } from 'sonner';
 import Pagination from '../../../../../components/common/Pagination';
 import SearchableSelect from '../../../../../components/common/SearchableSelect';
 import { api, API_ENDPOINTS } from '../../../../../config/api.config';
+import { escuelaAuthService } from '../../../../../services/escuelaAuth.service';
 
 // ===================== TYPES =====================
 
@@ -11,6 +12,7 @@ interface UsuarioDocente {
     idUsuario: number;
     nombres: string;
     apellidos: string;
+    idSede?: { idSede: number } | null;
 }
 
 interface Docente {
@@ -101,7 +103,12 @@ const AsignacionDocentePage: React.FC = () => {
                 api.get(API_ENDPOINTS.ANIO_ESCOLAR),
             ]);
             setAsignaciones(Array.isArray(resAsig.data) ? resAsig.data : []);
-            setDocentes(Array.isArray(resDocentes.data) ? resDocentes.data : []);
+            const sedeActual = escuelaAuthService.getCurrentUser()?.sede?.idSede;
+            const todosDocentes: Docente[] = Array.isArray(resDocentes.data) ? resDocentes.data : [];
+            setDocentes(sedeActual
+                ? todosDocentes.filter(d => d.idUsuario?.idSede?.idSede === sedeActual)
+                : todosDocentes
+            );
             setSecciones(Array.isArray(resSecciones.data) ? resSecciones.data : []);
             setCursos(Array.isArray(resCursos.data) ? resCursos.data : []);
             setAnios(Array.isArray(resAnios.data) ? resAnios.data : []);

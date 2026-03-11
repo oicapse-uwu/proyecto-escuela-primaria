@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.escuelita.www.entity.ConceptosPago;
 import com.escuelita.www.entity.DeudasAlumno;
 import com.escuelita.www.entity.DeudasAlumnoDTO;
-import com.escuelita.www.entity.ConceptosPago;
 import com.escuelita.www.entity.Matriculas;
 import com.escuelita.www.repository.ConceptosPagoRepository;
 import com.escuelita.www.repository.MatriculasRepository;
-import com.escuelita.www.service.IDeudasAlumnoService;
 import com.escuelita.www.security.RequireModulo;
+import com.escuelita.www.service.IDeudasAlumnoService;
 
 @RestController
 @RequestMapping("/restful")
@@ -96,6 +96,11 @@ public class DeudasAlumnoController {
     @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
     public Optional<DeudasAlumno> buscarId(@PathVariable("id") Long id){
     return serviceDeudas.buscarId(id);
+    }
+    @GetMapping("/deudasalumno/matricula/{idMatricula}")
+    @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES
+    public List<DeudasAlumno> buscarPorMatricula(@PathVariable Long idMatricula) {
+        return serviceDeudas.buscarPorMatricula(idMatricula);
     }
     @DeleteMapping("/deudasalumno/{id}")
     @RequireModulo(8)  // 8 = Módulo PAGOS Y PENSIONES

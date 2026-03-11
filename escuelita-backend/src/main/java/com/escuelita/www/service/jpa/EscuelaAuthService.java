@@ -123,6 +123,9 @@ public class EscuelaAuthService {
                 usuario.getIdSede().getIdSede(), 
                 usuario.getIdSede().getNombreSede()
             );
+            if (usuario.getIdSede().getIdInstitucion() != null) {
+                sede.setIdInstitucion(usuario.getIdSede().getIdInstitucion().getIdInstitucion());
+            }
             dto.setSede(sede);
         }
         

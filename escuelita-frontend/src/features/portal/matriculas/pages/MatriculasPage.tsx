@@ -117,8 +117,13 @@ const MatriculasPage: React.FC = () => {
     };
 
     const handleSubmit = async (formData: MatriculaFormData) => {
+        const fechaMatricula = formData.fechaMatricula
+            ? (formData.fechaMatricula.includes('T') ? formData.fechaMatricula : `${formData.fechaMatricula}T00:00:00`)
+            : formData.fechaMatricula;
         const payload = {
             ...formData,
+            fechaMatricula,
+            codigoMatricula: formData.codigoMatricula || undefined,
             observaciones: formData.observaciones || undefined,
         };
 
@@ -132,12 +137,18 @@ const MatriculasPage: React.FC = () => {
             }
             setShowModal(false);
             cargarDatos();
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error(error);
-            const mensajeError = error.response?.data || error.message || 'Error en la operación';
-            
-            // Mostrar mensaje específico si es error de vacantes
+            const axiosError = error as { response?: { data?: unknown }; message?: string };
+            const data = axiosError.response?.data;
+            const mensajeError = typeof data === 'string'
+                ? data
+                : (data as { message?: string })?.message || axiosError.message || 'Error en la operación';
+
+            // Mostrar mensaje específico si es error de vacantes o permisos
             if (mensajeError.includes('No hay vacantes disponibles')) {
+                toast.error('❌ ' + mensajeError);
+            } else if (mensajeError.includes('No tienes permiso')) {
                 toast.error('❌ ' + mensajeError);
             } else {
                 toast.error(matriculaEditar ? 'Error al actualizar matrícula' : 'Error al crear matrícula');

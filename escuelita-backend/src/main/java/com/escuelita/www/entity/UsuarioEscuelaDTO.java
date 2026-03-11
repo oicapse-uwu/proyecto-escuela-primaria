@@ -93,6 +93,7 @@ public class UsuarioEscuelaDTO {
     public static class SedeDTO {
         private Long idSede;
         private String nombreSede;
+        private Long idInstitucion;
 
         public SedeDTO() {
         }
@@ -111,6 +112,12 @@ public class UsuarioEscuelaDTO {
         }
         public void setNombreSede(String nombreSede) {
             this.nombreSede = nombreSede;
+        }
+        public Long getIdInstitucion() {
+            return idInstitucion;
+        }
+        public void setIdInstitucion(Long idInstitucion) {
+            this.idInstitucion = idInstitucion;
         }
     }
 }

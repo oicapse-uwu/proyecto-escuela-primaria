@@ -48,31 +48,35 @@ public class MatriculasController {
     @PostMapping("/matriculas")
     @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
     public ResponseEntity<?> guardar(@RequestBody MatriculasDTO dto) {
-        Matriculas matriculas = new Matriculas();
-        matriculas.setCodigoMatricula(dto.getCodigoMatricula());
-        matriculas.setFechaMatricula(dto.getFechaMatricula());
-        matriculas.setFechaVencimientoPago(dto.getFechaVencimientoPago());
-        matriculas.setTipoIngreso(dto.getTipoIngreso());
-        matriculas.setEstadoMatricula(dto.getEstadoMatricula());
-        matriculas.setVacanteGarantizada(dto.getVacanteGarantizada());
-        matriculas.setFechaPagoMatricula(dto.getFechaPagoMatricula());
-        matriculas.setObservaciones(dto.getObservaciones());
+        try {
+            Matriculas matriculas = new Matriculas();
+            matriculas.setCodigoMatricula(dto.getCodigoMatricula());
+            matriculas.setFechaMatricula(dto.getFechaMatricula());
+            matriculas.setFechaVencimientoPago(dto.getFechaVencimientoPago());
+            matriculas.setTipoIngreso(dto.getTipoIngreso());
+            matriculas.setEstadoMatricula(dto.getEstadoMatricula());
+            matriculas.setVacanteGarantizada(dto.getVacanteGarantizada());
+            matriculas.setFechaPagoMatricula(dto.getFechaPagoMatricula());
+            matriculas.setObservaciones(dto.getObservaciones());
 
-        Alumnos alumnos = repoAlumnos
-            .findById(dto.getIdAlumno())
-            .orElse(null);
-        Secciones secciones = repoSecciones
-            .findById(dto.getIdSeccion())
-            .orElse(null);
-        AnioEscolar anioEscolar = repoAnioEscolar
-            .findById(dto.getIdAnio())
-            .orElse(null);
-        
-        matriculas.setIdAlumno(alumnos);
-        matriculas.setIdSeccion(secciones);
-        matriculas.setIdAnio(anioEscolar);
+            Alumnos alumnos = repoAlumnos
+                .findById(dto.getIdAlumno())
+                .orElse(null);
+            Secciones secciones = repoSecciones
+                .findById(dto.getIdSeccion())
+                .orElse(null);
+            AnioEscolar anioEscolar = repoAnioEscolar
+                .findById(dto.getIdAnio())
+                .orElse(null);
 
-        return ResponseEntity.ok(serviceMatriculas.guardar(matriculas));
+            matriculas.setIdAlumno(alumnos);
+            matriculas.setIdSeccion(secciones);
+            matriculas.setIdAnio(anioEscolar);
+
+            return ResponseEntity.ok(serviceMatriculas.guardar(matriculas));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
     @PutMapping("/matriculas")
     @RequireModulo(6)  // 6 = Módulo MATRÍCULAS
